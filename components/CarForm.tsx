@@ -52,7 +52,9 @@ function carToForm(car: MyGarageCar): CarForm {
   };
 }
 
-export function formToMyGarageCar(form: CarForm, id: string): MyGarageCar {
+export function formToMyGarageCar(form: CarForm, id: string, imagesList?: string[]): MyGarageCar {
+  const mainImage = imagesList && imagesList.length > 0 ? imagesList[0] : (form.image || DEFAULT_IMAGE);
+  
   return {
     id,
     brand: form.brand,
@@ -65,7 +67,7 @@ export function formToMyGarageCar(form: CarForm, id: string): MyGarageCar {
     price: parseInt(form.price) || 0,
     city: form.city || '-',
     country: 'Serbia',
-    image: form.image || DEFAULT_IMAGE,
+    image: mainImage,
     specs: {
       engine: form.engine || '-',
       displacement: form.displacement || '-',
@@ -95,9 +97,11 @@ export function formToMyGarageCar(form: CarForm, id: string): MyGarageCar {
 interface CarFormFieldsProps {
   form: CarForm;
   setForm: (f: CarForm) => void;
+  images: string[];
+  setImages: (imgs: string[]) => void;
 }
 
-function CarFormFields({ form, setForm }: CarFormFieldsProps) {
+function CarFormFields({ form, setForm, images, setImages }: CarFormFieldsProps) {
   function update<K extends keyof CarForm>(key: K, value: CarForm[K]) {
     setForm({ ...form, [key]: value });
   }
@@ -297,14 +301,9 @@ function CarFormFields({ form, setForm }: CarFormFieldsProps) {
         </div>
       </div>
 
-      <div>
-        <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Image URL (optional)</label>
-        <input
-          value={form.image}
-          onChange={e => update('image', e.target.value)}
-          placeholder="https://..."
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-amber-500 transition-colors"
-        />
+      {/* Nova ImageUpload komponenta umesto običnog tekstualnog inputa */}
+      <div className="pt-2">
+        <ImageUpload images={images} onChange={setImages} maxImages={5} />
       </div>
     </div>
   );
@@ -318,29 +317,32 @@ interface AddCarFormProps {
 
 export default function CarFormComponent({ onSave, onCancel, editingCar }: AddCarFormProps) {
   const [form, setForm] = useState<CarForm>(EMPTY_FORM);
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (editingCar) {
       setForm(carToForm(editingCar));
+      // Ako auto već ima sliku, ubacujemo je u niz
+      if (editingCar.image) {
+        setImages([editingCar.image]);
+      }
     } else {
       setForm(EMPTY_FORM);
+      setImages([]);
     }
   }, [editingCar]);
 
   function handleSave() {
     if (!form.brand.trim() || !form.model.trim() || !form.price.trim()) return;
     const id = editingCar?.id || `garage-${Date.now()}`;
-    onSave(formToMyGarageCar(form, id));
+    onSave(formToMyGarageCar(form, id, images));
   }
 
   const isValid = form.brand.trim() && form.model.trim() && form.price.trim();
 
-  // Allow custom model entry: if the selected model isn't in the list, keep it as-is
-  const availableModels = form.brand ? CAR_BRANDS[form.brand] || [] : [];
-
   return (
     <div>
-      <CarFormFields form={form} setForm={setForm} />
+      <CarFormFields form={form} setForm={setForm} images={images} setImages={setImages} />
       <div className="flex gap-2 mt-5">
         <button
           onClick={onCancel}
