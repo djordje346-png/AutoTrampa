@@ -9,7 +9,7 @@ interface ImageUploadProps {
   maxImages?: number;
 }
 
-export function ImageUpload({ images, onChange, maxImages = 5 }: ImageUploadProps) {
+export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadProps) {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
