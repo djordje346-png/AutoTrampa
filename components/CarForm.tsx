@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { BodyType, CarForm, FuelType, MyGarageCar, Transmission } from '@/types';
 import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
+import { ImageUpload } from '@/components/image-upload';
 
 const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV', 'Coupe', 'Convertible'];
 const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'Hybrid', 'Electric'];
