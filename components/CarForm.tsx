@@ -68,7 +68,8 @@ function carToForm(car: MyGarageCar): CarFormType {
     city: car.city === '-' ? '' : car.city,
     image: car.image,
     engine: car.specs.engine === '-' ? '' : car.specs.engine,
-    displacement: car.specs.displacement === '-' ? '' : car.specs.displacement,
+    displacement:
+      car.specs.displacement === '-' ? '' : car.specs.displacement,
     power: car.specs.power === '-' ? '' : car.specs.power,
     torque: car.specs.torque === '-' ? '' : car.specs.torque,
     fuelType: car.specs.fuelType,
@@ -167,7 +168,8 @@ function CarFormFields({
 
   return (
     <div className="space-y-7">
-      {/* BASIC INFORMATION */}
+
+      {/* OSNOVNI PODACI */}
       <section>
         <div className="mb-4">
           <h2 className="text-base font-semibold text-white">
@@ -179,15 +181,20 @@ function CarFormFields({
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
           <div>
-            <label className={labelClass}>Marka *</label>
+            <label className={labelClass}>
+              Marka *
+            </label>
 
             <select
               value={form.brand}
               onChange={(e) => updateBrand(e.target.value)}
               className={selectClass}
             >
-              <option value="">Izaberi marku...</option>
+              <option value="">
+                Izaberi marku...
+              </option>
 
               {BRAND_NAMES.map((brand) => (
                 <option key={brand} value={brand}>
@@ -198,11 +205,15 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Model *</label>
+            <label className={labelClass}>
+              Model *
+            </label>
 
             <select
               value={form.model}
-              onChange={(e) => update('model', e.target.value)}
+              onChange={(e) =>
+                update('model', e.target.value)
+              }
               disabled={!form.brand}
               className={selectClass}
             >
@@ -222,52 +233,72 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Generacija</label>
+            <label className={labelClass}>
+              Generacija
+            </label>
 
             <input
               value={form.generation}
-              onChange={(e) => update('generation', e.target.value)}
+              onChange={(e) =>
+                update('generation', e.target.value)
+              }
               placeholder="npr. E60"
               className={inputClass}
             />
           </div>
 
           <div>
-            <label className={labelClass}>Godina</label>
+            <label className={labelClass}>
+              Godina
+            </label>
 
             <input
               value={form.year}
               onChange={(e) =>
-                update('year', e.target.value.replace(/\D/g, '').slice(0, 4))
+                update(
+                  'year',
+                  e.target.value
+                    .replace(/\D/g, '')
+                    .slice(0, 4),
+                )
               }
               placeholder="npr. 2005"
               inputMode="numeric"
               className={inputClass}
             />
           </div>
+
         </div>
       </section>
 
-      {/* PRICE & LOCATION */}
+      {/* CENA I LOKACIJA */}
       <section className="border-t border-zinc-800/80 pt-7">
+
         <div className="mb-4">
           <h2 className="text-base font-semibold text-white">
             Cena i lokacija
           </h2>
+
           <p className="mt-1 text-xs text-zinc-500">
             Informacije koje kupac prvo vidi.
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
           <div>
-            <label className={labelClass}>Cena (EUR) *</label>
+            <label className={labelClass}>
+              Cena (EUR) *
+            </label>
 
             <div className="relative">
               <input
                 value={form.price}
                 onChange={(e) =>
-                  update('price', e.target.value.replace(/\D/g, ''))
+                  update(
+                    'price',
+                    e.target.value.replace(/\D/g, ''),
+                  )
                 }
                 placeholder="6 500"
                 inputMode="numeric"
@@ -281,13 +312,18 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Kilometraža</label>
+            <label className={labelClass}>
+              Kilometraža
+            </label>
 
             <div className="relative">
               <input
                 value={form.mileage}
                 onChange={(e) =>
-                  update('mileage', e.target.value.replace(/\D/g, ''))
+                  update(
+                    'mileage',
+                    e.target.value.replace(/\D/g, ''),
+                  )
                 }
                 placeholder="198 000"
                 inputMode="numeric"
@@ -301,51 +337,67 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Boja</label>
+            <label className={labelClass}>
+              Boja
+            </label>
 
             <input
               value={form.color}
-              onChange={(e) => update('color', e.target.value)}
+              onChange={(e) =>
+                update('color', e.target.value)
+              }
               placeholder="npr. Sapphire Black"
               className={inputClass}
             />
           </div>
 
           <div>
-            <label className={labelClass}>Grad</label>
+            <label className={labelClass}>
+              Grad
+            </label>
 
             <input
               value={form.city}
-              onChange={(e) => update('city', e.target.value)}
+              onChange={(e) =>
+                update('city', e.target.value)
+              }
               placeholder="npr. Kosovska Mitrovica"
               className={inputClass}
             />
           </div>
+
         </div>
       </section>
 
-      {/* BODY TYPE */}
+      {/* KAROSERIJA */}
       <section className="border-t border-zinc-800/80 pt-7">
+
         <div className="mb-4">
           <h2 className="text-base font-semibold text-white">
             Karoserija
           </h2>
+
           <p className="mt-1 text-xs text-zinc-500">
             Izaberite tip karoserije vozila.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+
           {BODY_TYPES.map((type) => {
-            const active = form.bodyType === type;
+            const active =
+              form.bodyType === type;
 
             return (
               <button
                 key={type}
                 type="button"
-                onClick={() => update('bodyType', type)}
+                onClick={() =>
+                  update('bodyType', type)
+                }
                 className={`
-                  min-h-10 rounded-xl border px-3 py-2 text-xs font-medium
+                  min-h-10 rounded-xl border px-3 py-2
+                  text-xs font-medium
                   transition-all duration-200
                   ${
                     active
@@ -358,39 +410,52 @@ function CarFormFields({
               </button>
             );
           })}
+
         </div>
       </section>
 
-      {/* ENGINE */}
+      {/* MOTOR */}
       <section className="border-t border-zinc-800/80 pt-7">
+
         <div className="mb-4">
           <h2 className="text-base font-semibold text-white">
             Specifikacije motora
           </h2>
+
           <p className="mt-1 text-xs text-zinc-500">
             Dodajte detalje motora i performansi.
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
           <div>
-            <label className={labelClass}>Motor</label>
+            <label className={labelClass}>
+              Motor
+            </label>
 
             <input
               value={form.engine}
-              onChange={(e) => update('engine', e.target.value)}
+              onChange={(e) =>
+                update('engine', e.target.value)
+              }
               placeholder="npr. M57D25"
               className={inputClass}
             />
           </div>
 
           <div>
-            <label className={labelClass}>Zapremina</label>
+            <label className={labelClass}>
+              Zapremina
+            </label>
 
             <input
               value={form.displacement}
               onChange={(e) =>
-                update('displacement', e.target.value)
+                update(
+                  'displacement',
+                  e.target.value,
+                )
               }
               placeholder="npr. 2.5L"
               className={inputClass}
@@ -398,12 +463,16 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Snaga</label>
+            <label className={labelClass}>
+              Snaga
+            </label>
 
             <div className="relative">
               <input
                 value={form.power}
-                onChange={(e) => update('power', e.target.value)}
+                onChange={(e) =>
+                  update('power', e.target.value)
+                }
                 placeholder="npr. 177"
                 className={`${inputClass} pr-14`}
               />
@@ -415,12 +484,16 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Obrtni moment</label>
+            <label className={labelClass}>
+              Obrtni moment
+            </label>
 
             <div className="relative">
               <input
                 value={form.torque}
-                onChange={(e) => update('torque', e.target.value)}
+                onChange={(e) =>
+                  update('torque', e.target.value)
+                }
                 placeholder="npr. 410"
                 className={`${inputClass} pr-14`}
               />
@@ -432,12 +505,17 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Gorivo</label>
+            <label className={labelClass}>
+              Gorivo
+            </label>
 
             <select
               value={form.fuelType}
               onChange={(e) =>
-                update('fuelType', e.target.value as FuelType)
+                update(
+                  'fuelType',
+                  e.target.value as FuelType,
+                )
               }
               className={selectClass}
             >
@@ -450,7 +528,9 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>Menjač</label>
+            <label className={labelClass}>
+              Menjač
+            </label>
 
             <select
               value={form.transmission}
@@ -472,19 +552,21 @@ function CarFormFields({
               ))}
             </select>
           </div>
+
         </div>
       </section>
 
-      {/* IMAGES */}
+      {/* FOTOGRAFIJE */}
       <section className="border-t border-zinc-800/80 pt-7">
+
         <div className="mb-4">
           <h2 className="text-base font-semibold text-white">
             Fotografije
           </h2>
 
           <p className="mt-1 text-xs text-zinc-500">
-            Dodajte do 5 fotografija. Prva fotografija biće
-            glavna fotografija oglasa.
+            Dodajte do 5 fotografija. Prva fotografija
+            biće glavna fotografija oglasa.
           </p>
         </div>
 
@@ -495,6 +577,7 @@ function CarFormFields({
             maxImages={5}
           />
         </div>
+
       </section>
     </div>
   );
@@ -511,15 +594,19 @@ export default function CarFormComponent({
   onCancel,
   editingCar,
 }: AddCarFormProps) {
-  const [form, setForm] = useState<CarFormType>(EMPTY_FORM);
-  const [images, setImages] = useState<string[]>([]);
+  const [form, setForm] =
+    useState<CarFormType>(EMPTY_FORM);
+
+  const [images, setImages] =
+    useState<string[]>([]);
 
   useEffect(() => {
     if (editingCar) {
       setForm(carToForm(editingCar));
 
       setImages(
-        editingCar.image && editingCar.image !== DEFAULT_IMAGE
+        editingCar.image &&
+          editingCar.image !== DEFAULT_IMAGE
           ? [editingCar.image]
           : [],
       );
@@ -539,9 +626,16 @@ export default function CarFormComponent({
     }
 
     const id =
-      editingCar?.id || `garage-${Date.now()}`;
+      editingCar?.id ||
+      `garage-${Date.now()}`;
 
-    onSave(formToMyGarageCar(form, id, images));
+    onSave(
+      formToMyGarageCar(
+        form,
+        id,
+        images,
+      ),
+    );
   }
 
   const isValid =
@@ -550,24 +644,22 @@ export default function CarFormComponent({
     Boolean(form.price.trim());
 
   return (
-    <div className="w-full">
-      {/* FORM HEADER */}
-      <div className="mb-7">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-              {editingCar
-                ? 'Izmeni automobil'
-                : 'Dodaj automobil'}
-            </h1>
+    <div className="w-full pb-28">
 
-            <p className="mt-1.5 max-w-xl text-sm leading-5 text-zinc-500">
-              {editingCar
-                ? 'Ažurirajte informacije o vašem automobilu.'
-                : 'Unesite informacije o automobilu koji želite da dodate u garažu.'}
-            </p>
-          </div>
-        </div>
+      {/* HEADER */}
+      <div className="mb-7">
+
+        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          {editingCar
+            ? 'Izmeni automobil'
+            : 'Dodaj automobil'}
+        </h1>
+
+        <p className="mt-1.5 max-w-xl text-sm leading-5 text-zinc-500">
+          {editingCar
+            ? 'Ažurirajte informacije o vašem automobilu.'
+            : 'Unesite informacije o automobilu koji želite da dodate u garažu.'}
+        </p>
 
         <div className="mt-5 h-px bg-zinc-800" />
       </div>
@@ -580,17 +672,57 @@ export default function CarFormComponent({
         setImages={setImages}
       />
 
-      {/* ACTIONS */}
-      <div className="mt-8 border-t border-zinc-800/80 pt-6">
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      {/* FIXED ACTION BAR */}
+      <div
+        className="
+          fixed
+          bottom-0
+          left-0
+          right-0
+          z-50
+          border-t
+          border-zinc-800
+          bg-zinc-950/95
+          px-4
+          py-3
+          backdrop-blur-xl
+          sm:px-6
+        "
+      >
+
+        <div
+          className="
+            mx-auto
+            flex
+            w-full
+            max-w-[1600px]
+            flex-col-reverse
+            gap-2
+            sm:flex-row
+            sm:justify-end
+            sm:gap-3
+          "
+        >
+
           <button
             type="button"
             onClick={onCancel}
             className="
-              h-11 w-full rounded-xl border border-zinc-700
-              bg-zinc-900 px-6 text-sm font-semibold text-zinc-300
-              transition-all duration-200
-              hover:border-zinc-600 hover:bg-zinc-800 hover:text-white
+              h-11
+              w-full
+              rounded-xl
+              border
+              border-zinc-700
+              bg-zinc-900
+              px-6
+              text-sm
+              font-semibold
+              text-zinc-300
+              transition-all
+              duration-200
+              hover:border-zinc-600
+              hover:bg-zinc-800
+              hover:text-white
               active:scale-[0.98]
               sm:w-auto
             "
@@ -602,9 +734,15 @@ export default function CarFormComponent({
             type="button"
             onClick={handleSave}
             disabled={!isValid}
-            className="
-              h-11 w-full rounded-xl px-6 text-sm font-bold
-              transition-all duration-200
+            className={`
+              h-11
+              w-full
+              rounded-xl
+              px-6
+              text-sm
+              font-bold
+              transition-all
+              duration-200
               active:scale-[0.98]
               sm:w-auto
               ${
@@ -612,20 +750,16 @@ export default function CarFormComponent({
                   ? 'bg-orange-500 text-zinc-950 shadow-lg shadow-orange-500/10 hover:bg-orange-400'
                   : 'cursor-not-allowed bg-zinc-800 text-zinc-600'
               }
-            "
+            `}
           >
             {editingCar
               ? 'Sačuvaj izmene'
-              : 'Dodaj u garažu'}
+              : 'Dodaj oglas'}
           </button>
-        </div>
 
-        {!isValid && (
-          <p className="mt-3 text-right text-xs text-zinc-600">
-            Marka, model i cena su obavezni.
-          </p>
-        )}
+        </div>
       </div>
+
     </div>
   );
 }
