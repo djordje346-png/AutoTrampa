@@ -576,6 +576,7 @@ function CarFormFields({
         </div>
 
       </section>
+
     </div>
   );
 }
@@ -715,7 +716,7 @@ export default function CarFormComponent({
         </div>
       </header>
 
-      {/* SCROLLABLE CONTENT */}
+      {/* CONTENT */}
       <main className="min-h-0 flex-1 overflow-y-auto">
 
         <div className="mx-auto w-full max-w-[1100px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -751,7 +752,7 @@ export default function CarFormComponent({
         </div>
       </main>
 
-      {/* ACTIONS */}
+      {/* ACTION BUTTONS */}
       <div
         className="shrink-0 border-t border-zinc-800 bg-zinc-950"
         style={{
@@ -760,13 +761,15 @@ export default function CarFormComponent({
         }}
       >
 
-        <div className="mx-auto flex w-full max-w-[1100px] items-center justify-end gap-3 px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[420px] flex-col items-center gap-2.5 px-4 py-3 sm:px-6">
 
+          {/* OTKAŽI */}
           <button
             type="button"
             onClick={onCancel}
             className="
               h-11
+              w-full
               rounded-xl
               border border-zinc-700
               bg-zinc-900
@@ -784,28 +787,30 @@ export default function CarFormComponent({
             Otkaži
           </button>
 
+          {/* OBJAVI OGLAS */}
           <button
             type="button"
             onClick={handleSave}
             disabled={!isValid}
-            className={`
+            className="
               h-11
+              w-full
               rounded-xl
+              bg-orange-500
               px-6
               text-sm
               font-bold
+              text-zinc-950
               transition-all
+              hover:bg-orange-400
               active:scale-[0.98]
-              ${
-                isValid
-                  ? 'bg-orange-500 text-zinc-950 shadow-lg shadow-orange-500/10 hover:bg-orange-400'
-                  : 'cursor-not-allowed bg-zinc-800 text-zinc-600'
-              }
-            `}
+              disabled:cursor-not-allowed
+              disabled:opacity-40
+            "
           >
             {editingCar
               ? 'Sačuvaj izmene'
-              : 'Dodaj oglas'}
+              : 'Objavi oglas'}
           </button>
 
         </div>
