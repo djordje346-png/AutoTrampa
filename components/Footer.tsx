@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
+import { Chrome as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Početna', icon: Home },
@@ -16,20 +16,21 @@ export default function Footer() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800">
-      <div className="max-w-md mx-auto flex items-center justify-around px-1 py-1.5">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 safe-bottom">
+      <div className="mx-auto flex w-full max-w-md items-center justify-around px-1 py-2 md:max-w-2xl lg:max-w-5xl">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
           return (
             <Link
               key={href}
               href={href}
-              className={`relative flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-all duration-200 ${
+              className={`relative flex min-w-[44px] flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 transition-all duration-200 ${
                 active ? 'text-amber-400' : 'text-slate-500 hover:text-slate-300'
               }`}
+              aria-label={label}
             >
               <Icon
-                size={20}
+                size={22}
                 strokeWidth={active ? 2.5 : 1.8}
                 className={`transition-transform duration-200 ${active ? 'scale-110' : ''}`}
               />

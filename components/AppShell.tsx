@@ -8,12 +8,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { isLoggedIn, mounted } = useAuth();
 
   if (!mounted) {
-    return <main className="max-w-md mx-auto min-h-screen bg-slate-950" />;
+    return <main className="mx-auto min-h-screen w-full max-w-md bg-slate-950 md:max-w-2xl lg:max-w-5xl" />;
   }
 
   if (!isLoggedIn) {
     return (
-      <main className="max-w-md mx-auto min-h-screen">
+      <main className="mx-auto min-h-screen w-full max-w-md md:max-w-2xl lg:max-w-5xl">
         <AuthScreen />
       </main>
     );
@@ -21,7 +21,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <main className="max-w-md mx-auto min-h-screen pb-24">{children}</main>
+      <main className="mx-auto min-h-screen w-full max-w-md pb-28 md:max-w-2xl md:pb-24 lg:max-w-5xl">
+        {children}
+      </main>
       <Footer />
     </>
   );

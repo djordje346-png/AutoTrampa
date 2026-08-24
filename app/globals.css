@@ -32,10 +32,26 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-slate-950 text-slate-100 antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Safe area insets for iPhone notch / home indicator */
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .safe-left {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+  .safe-right {
+    padding-right: env(safe-area-inset-right, 0px);
   }
 }
 
@@ -50,9 +66,19 @@
   .glass {
     @apply bg-slate-800/60 backdrop-blur-md border border-slate-700/50;
   }
+  /* Prevent text selection on UI controls */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }
 
 ::selection {
   background-color: rgb(251 191 36 / 0.3);
   color: #fbbf24;
+}
+
+/* Smooth tap highlight removal */
+button, a {
+  -webkit-tap-highlight-color: transparent;
 }

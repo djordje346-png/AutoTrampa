@@ -6,13 +6,13 @@ import AppShell from '@/components/AppShell';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'AutoTrampa — Car Trading Platform',
-  description: 'Trade, find, and track your perfect European car.',
+  title: 'AutoTrampa — Platforma za zamenu automobila',
+  description: 'Pronađi sledeću zamenu. Trampi, pronađi i prati svoj idealan evropski auto.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="sr" className="dark">
       <body className={`${inter.variable} font-sans bg-slate-950 text-slate-100 min-h-screen`}>
         <AppShell>{children}</AppShell>
       </body>
