@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%; /* #0a0a0a */
+    --background: 0 0% 4%;
     --foreground: 0 0% 96%;
-    --card: 0 0% 7%; /* Tamna kartica */
+    --card: 0 0% 9%;
     --card-foreground: 0 0% 96%;
-    --popover: 0 0% 7%;
+    --popover: 0 0% 9%;
     --popover-foreground: 0 0% 96%;
     --primary: 24 95% 53%;
     --primary-foreground: 0 0% 4%;
@@ -26,28 +26,6 @@
     --radius: 0.75rem;
   }
 
-  html.light {
-    --background: 210 20% 96%; /* Čista, prijatna svetla siva/biserna (umesto apsolutno bele) */
-    --foreground: 0 0% 10%;
-    --card: 0 0% 100%; /* Čisto bela kartica za svetlu temu */
-    --card-foreground: 0 0% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-    --primary: 24 95% 53%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 92%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 92%;
-    --muted-foreground: 0 0% 42%;
-    --accent: 24 95% 53%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 85%; /* Vidljivije svetle ivice */
-    --input: 0 0% 85%;
-    --ring: 24 95% 53%;
-  }
-
   * {
     @apply border-border;
   }
@@ -58,9 +36,7 @@
   }
 
   body {
-    @apply antialiased;
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    @apply bg-zinc-950 text-zinc-100 antialiased;
     overflow-x: hidden;
   }
 
@@ -87,7 +63,7 @@
     display: none;
   }
   .glass {
-    @apply backdrop-blur-md;
+    @apply bg-zinc-800/60 backdrop-blur-md border border-zinc-700/50;
   }
   .no-select {
     -webkit-user-select: none;
