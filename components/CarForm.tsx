@@ -69,9 +69,13 @@ function carToForm(car: MyGarageCar): CarFormType {
     image: car.image,
     engine: car.specs.engine === '-' ? '' : car.specs.engine,
     displacement:
-      car.specs.displacement === '-' ? '' : car.specs.displacement,
-    power: car.specs.power === '-' ? '' : car.specs.power,
-    torque: car.specs.torque === '-' ? '' : car.specs.torque,
+      car.specs.displacement === '-'
+        ? ''
+        : car.specs.displacement,
+    power:
+      car.specs.power === '-' ? '' : car.specs.power,
+    torque:
+      car.specs.torque === '-' ? '' : car.specs.torque,
     fuelType: car.specs.fuelType,
     transmission: car.specs.transmission,
   };
@@ -100,6 +104,7 @@ export function formToMyGarageCar(
     city: form.city || '-',
     country: 'Serbia',
     image: mainImage,
+
     specs: {
       engine: form.engine || '-',
       displacement: form.displacement || '-',
@@ -112,13 +117,16 @@ export function formToMyGarageCar(
       topSpeed: '-',
       acceleration: '-',
     },
+
     owner: {
       name: 'Nikola V.',
       phone: '+381 64 123 4567',
       city: form.city || '-',
       rating: 4.9,
     },
+
     description: `${form.brand} ${form.model} ${form.generation} — ${form.color}, ${form.year}. ${form.power} ${form.fuelType}.`,
+
     modifications: [],
     securityFeatures: [],
     buildNotes: [],
@@ -169,12 +177,13 @@ function CarFormFields({
   return (
     <div className="space-y-7">
 
-      {/* OSNOVNI PODACI */}
+      {/* BASIC INFORMATION */}
       <section>
         <div className="mb-4">
           <h2 className="text-base font-semibold text-white">
             Osnovni podaci
           </h2>
+
           <p className="mt-1 text-xs text-zinc-500">
             Unesite osnovne informacije o vozilu.
           </p>
@@ -189,7 +198,9 @@ function CarFormFields({
 
             <select
               value={form.brand}
-              onChange={(e) => updateBrand(e.target.value)}
+              onChange={(e) =>
+                updateBrand(e.target.value)
+              }
               className={selectClass}
             >
               <option value="">
@@ -197,7 +208,10 @@ function CarFormFields({
               </option>
 
               {BRAND_NAMES.map((brand) => (
-                <option key={brand} value={brand}>
+                <option
+                  key={brand}
+                  value={brand}
+                >
                   {brand}
                 </option>
               ))}
@@ -224,11 +238,16 @@ function CarFormFields({
               </option>
 
               {form.brand &&
-                CAR_BRANDS[form.brand]?.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))}
+                CAR_BRANDS[form.brand]?.map(
+                  (model) => (
+                    <option
+                      key={model}
+                      value={model}
+                    >
+                      {model}
+                    </option>
+                  ),
+                )}
             </select>
           </div>
 
@@ -240,7 +259,10 @@ function CarFormFields({
             <input
               value={form.generation}
               onChange={(e) =>
-                update('generation', e.target.value)
+                update(
+                  'generation',
+                  e.target.value,
+                )
               }
               placeholder="npr. E60"
               className={inputClass}
@@ -271,7 +293,7 @@ function CarFormFields({
         </div>
       </section>
 
-      {/* CENA I LOKACIJA */}
+      {/* PRICE AND LOCATION */}
       <section className="border-t border-zinc-800/80 pt-7">
 
         <div className="mb-4">
@@ -297,7 +319,10 @@ function CarFormFields({
                 onChange={(e) =>
                   update(
                     'price',
-                    e.target.value.replace(/\D/g, ''),
+                    e.target.value.replace(
+                      /\D/g,
+                      '',
+                    ),
                   )
                 }
                 placeholder="6 500"
@@ -322,7 +347,10 @@ function CarFormFields({
                 onChange={(e) =>
                   update(
                     'mileage',
-                    e.target.value.replace(/\D/g, ''),
+                    e.target.value.replace(
+                      /\D/g,
+                      '',
+                    ),
                   )
                 }
                 placeholder="198 000"
@@ -344,7 +372,10 @@ function CarFormFields({
             <input
               value={form.color}
               onChange={(e) =>
-                update('color', e.target.value)
+                update(
+                  'color',
+                  e.target.value,
+                )
               }
               placeholder="npr. Sapphire Black"
               className={inputClass}
@@ -359,7 +390,10 @@ function CarFormFields({
             <input
               value={form.city}
               onChange={(e) =>
-                update('city', e.target.value)
+                update(
+                  'city',
+                  e.target.value,
+                )
               }
               placeholder="npr. Kosovska Mitrovica"
               className={inputClass}
@@ -369,7 +403,7 @@ function CarFormFields({
         </div>
       </section>
 
-      {/* KAROSERIJA */}
+      {/* BODY TYPE */}
       <section className="border-t border-zinc-800/80 pt-7">
 
         <div className="mb-4">
@@ -378,7 +412,7 @@ function CarFormFields({
           </h2>
 
           <p className="mt-1 text-xs text-zinc-500">
-            Izaberite tip karoserije vozila.
+            Izaberite tip karoserije.
           </p>
         </div>
 
@@ -393,11 +427,14 @@ function CarFormFields({
                 key={type}
                 type="button"
                 onClick={() =>
-                  update('bodyType', type)
+                  update(
+                    'bodyType',
+                    type,
+                  )
                 }
                 className={`
-                  min-h-10 rounded-xl border px-3 py-2
-                  text-xs font-medium
+                  min-h-10 rounded-xl border
+                  px-3 py-2 text-xs font-medium
                   transition-all duration-200
                   ${
                     active
@@ -414,7 +451,7 @@ function CarFormFields({
         </div>
       </section>
 
-      {/* MOTOR */}
+      {/* ENGINE */}
       <section className="border-t border-zinc-800/80 pt-7">
 
         <div className="mb-4">
@@ -437,7 +474,10 @@ function CarFormFields({
             <input
               value={form.engine}
               onChange={(e) =>
-                update('engine', e.target.value)
+                update(
+                  'engine',
+                  e.target.value,
+                )
               }
               placeholder="npr. M57D25"
               className={inputClass}
@@ -471,7 +511,10 @@ function CarFormFields({
               <input
                 value={form.power}
                 onChange={(e) =>
-                  update('power', e.target.value)
+                  update(
+                    'power',
+                    e.target.value,
+                  )
                 }
                 placeholder="npr. 177"
                 className={`${inputClass} pr-14`}
@@ -492,7 +535,10 @@ function CarFormFields({
               <input
                 value={form.torque}
                 onChange={(e) =>
-                  update('torque', e.target.value)
+                  update(
+                    'torque',
+                    e.target.value,
+                  )
                 }
                 placeholder="npr. 410"
                 className={`${inputClass} pr-14`}
@@ -520,7 +566,10 @@ function CarFormFields({
               className={selectClass}
             >
               {FUEL_TYPES.map((fuel) => (
-                <option key={fuel} value={fuel}>
+                <option
+                  key={fuel}
+                  value={fuel}
+                >
                   {fuel}
                 </option>
               ))}
@@ -542,21 +591,23 @@ function CarFormFields({
               }
               className={selectClass}
             >
-              {TRANSMISSIONS.map((transmission) => (
-                <option
-                  key={transmission}
-                  value={transmission}
-                >
-                  {transmission}
-                </option>
-              ))}
+              {TRANSMISSIONS.map(
+                (transmission) => (
+                  <option
+                    key={transmission}
+                    value={transmission}
+                  >
+                    {transmission}
+                  </option>
+                ),
+              )}
             </select>
           </div>
 
         </div>
       </section>
 
-      {/* FOTOGRAFIJE */}
+      {/* IMAGES */}
       <section className="border-t border-zinc-800/80 pt-7">
 
         <div className="mb-4">
@@ -565,8 +616,8 @@ function CarFormFields({
           </h2>
 
           <p className="mt-1 text-xs text-zinc-500">
-            Dodajte do 5 fotografija. Prva fotografija
-            biće glavna fotografija oglasa.
+            Dodajte do 5 fotografija.
+            Prva fotografija biće glavna fotografija oglasa.
           </p>
         </div>
 
@@ -644,87 +695,119 @@ export default function CarFormComponent({
     Boolean(form.price.trim());
 
   return (
-    <div className="w-full pb-28">
+    /*
+     * FULL SCREEN MODAL
+     *
+     * Ovo je namerno fixed i z-50.
+     * Ceo CarForm se nalazi iznad Footer-a,
+     * BottomNav-a i ostatka aplikacije.
+     */
+    <div className="fixed inset-0 z-[9999] flex h-[100dvh] w-full flex-col bg-zinc-950">
 
       {/* HEADER */}
-      <div className="mb-7">
+      <header className="shrink-0 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-xl">
 
-        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-          {editingCar
-            ? 'Izmeni automobil'
-            : 'Dodaj automobil'}
-        </h1>
+        <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8">
 
-        <p className="mt-1.5 max-w-xl text-sm leading-5 text-zinc-500">
-          {editingCar
-            ? 'Ažurirajte informacije o vašem automobilu.'
-            : 'Unesite informacije o automobilu koji želite da dodate u garažu.'}
-        </p>
+          <div>
+            <h1 className="text-base font-bold text-white sm:text-lg">
+              {editingCar
+                ? 'Izmeni automobil'
+                : 'Dodaj oglas'}
+            </h1>
 
-        <div className="mt-5 h-px bg-zinc-800" />
-      </div>
+            <p className="hidden text-xs text-zinc-500 sm:block">
+              Unesite informacije o vozilu
+            </p>
+          </div>
 
-      {/* FORM */}
-      <CarFormFields
-        form={form}
-        setForm={setForm}
-        images={images}
-        setImages={setImages}
-      />
+          <button
+            type="button"
+            onClick={onCancel}
+            aria-label="Zatvori"
+            className="
+              flex h-10 w-10 items-center justify-center
+              rounded-xl border border-zinc-800
+              bg-zinc-900 text-zinc-400
+              transition-colors
+              hover:border-zinc-700
+              hover:bg-zinc-800
+              hover:text-white
+            "
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
 
-      {/* FIXED ACTION BAR */}
-      <div
-        className="
-          fixed
-          bottom-0
-          left-0
-          right-0
-          z-50
-          border-t
-          border-zinc-800
-          bg-zinc-950/95
-          px-4
-          py-3
-          backdrop-blur-xl
-          sm:px-6
-        "
-      >
+        </div>
+      </header>
 
-        <div
-          className="
-            mx-auto
-            flex
-            w-full
-            max-w-[1600px]
-            flex-col-reverse
-            gap-2
-            sm:flex-row
-            sm:justify-end
-            sm:gap-3
-          "
-        >
+      {/* SCROLLABLE CONTENT */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+
+        <div className="mx-auto w-full max-w-[1100px] px-4 py-6 pb-32 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+
+          {/* FORM INTRO */}
+          <div className="mb-8">
+
+            <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+              {editingCar
+                ? 'Izmeni detalje vozila'
+                : 'Dodaj svoj automobil'}
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
+              Popunite podatke o automobilu kako bi
+              vaš oglas bio što potpuniji i korisniji
+              kupcima.
+            </p>
+
+          </div>
+
+          {/* FORM CARD */}
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 shadow-2xl shadow-black/20 sm:p-6 lg:p-8">
+
+            <CarFormFields
+              form={form}
+              setForm={setForm}
+              images={images}
+              setImages={setImages}
+            />
+
+          </div>
+
+        </div>
+      </main>
+
+      {/* FIXED ACTIONS INSIDE MODAL */}
+      <footer className="shrink-0 border-t border-zinc-800 bg-zinc-950/95 backdrop-blur-xl">
+
+        <div className="mx-auto flex w-full max-w-[1100px] items-center justify-end gap-3 px-4 py-3 sm:px-6 lg:px-8">
 
           <button
             type="button"
             onClick={onCancel}
             className="
-              h-11
-              w-full
-              rounded-xl
-              border
-              border-zinc-700
-              bg-zinc-900
-              px-6
-              text-sm
-              font-semibold
+              h-11 rounded-xl border
+              border-zinc-700 bg-zinc-900
+              px-5 text-sm font-semibold
               text-zinc-300
               transition-all
-              duration-200
               hover:border-zinc-600
               hover:bg-zinc-800
               hover:text-white
               active:scale-[0.98]
-              sm:w-auto
             "
           >
             Otkaži
@@ -735,16 +818,10 @@ export default function CarFormComponent({
             onClick={handleSave}
             disabled={!isValid}
             className={`
-              h-11
-              w-full
-              rounded-xl
-              px-6
-              text-sm
-              font-bold
-              transition-all
-              duration-200
+              h-11 rounded-xl px-6
+              text-sm font-bold
+              transition-all duration-200
               active:scale-[0.98]
-              sm:w-auto
               ${
                 isValid
                   ? 'bg-orange-500 text-zinc-950 shadow-lg shadow-orange-500/10 hover:bg-orange-400'
@@ -758,7 +835,7 @@ export default function CarFormComponent({
           </button>
 
         </div>
-      </div>
+      </footer>
 
     </div>
   );
