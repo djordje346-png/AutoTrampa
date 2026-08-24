@@ -8,7 +8,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { isLoggedIn, mounted } = useAuth();
 
   if (!mounted) {
-    return <main className="mx-auto min-h-screen w-full max-w-md bg-slate-950 md:max-w-2xl lg:max-w-5xl" />;
+    return <main className="mx-auto min-h-screen w-full max-w-md bg-zinc-950 md:max-w-2xl lg:max-w-5xl" />;
   }
 
   if (!isLoggedIn) {

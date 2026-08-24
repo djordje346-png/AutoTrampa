@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 222 47% 5%;
-    --foreground: 210 40% 96%;
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 96%;
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 96%;
-    --primary: 38 92% 50%;
-    --primary-foreground: 222 47% 5%;
-    --secondary: 222 47% 12%;
-    --secondary-foreground: 210 40% 96%;
-    --muted: 222 47% 12%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 38 92% 50%;
-    --accent-foreground: 222 47% 5%;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 52%;
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 4%;
     --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 96%;
-    --border: 222 47% 14%;
-    --input: 222 47% 14%;
-    --ring: 38 92% 50%;
+    --destructive-foreground: 0 0% 96%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 24 95% 53%;
     --radius: 0.75rem;
   }
 
@@ -36,11 +36,10 @@
   }
 
   body {
-    @apply bg-slate-950 text-slate-100 antialiased;
+    @apply bg-zinc-950 text-zinc-100 antialiased;
     overflow-x: hidden;
   }
 
-  /* Safe area insets for iPhone notch / home indicator */
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
   }
@@ -64,9 +63,8 @@
     display: none;
   }
   .glass {
-    @apply bg-slate-800/60 backdrop-blur-md border border-slate-700/50;
+    @apply bg-zinc-800/60 backdrop-blur-md border border-zinc-700/50;
   }
-  /* Prevent text selection on UI controls */
   .no-select {
     -webkit-user-select: none;
     user-select: none;
@@ -74,11 +72,10 @@
 }
 
 ::selection {
-  background-color: rgb(251 191 36 / 0.3);
-  color: #fbbf24;
+  background-color: rgb(249 115 22 / 0.3);
+  color: #f97316;
 }
 
-/* Smooth tap highlight removal */
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
