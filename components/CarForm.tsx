@@ -1,15 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { BodyType, CarForm, FuelType, MyGarageCar, Transmission } from '@/types';
+import { useEffect, useState } from 'react';
+import type {
+  BodyType,
+  CarForm as CarFormType,
+  FuelType,
+  MyGarageCar,
+  Transmission,
+} from '@/types';
 import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
 import { ImageUpload } from '@/components/image-upload';
 
-const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV', 'Coupe', 'Convertible'];
-const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'Hybrid', 'Electric'];
-const TRANSMISSIONS: Transmission[] = ['Manual', 'Automatic', 'Semi-Auto'];
+const BODY_TYPES: BodyType[] = [
+  'Sedan',
+  'Caravan',
+  'Hatchback',
+  'SUV',
+  'Coupe',
+  'Convertible',
+];
 
-const EMPTY_FORM: CarForm = {
+const FUEL_TYPES: FuelType[] = [
+  'Diesel',
+  'Petrol',
+  'Hybrid',
+  'Electric',
+];
+
+const TRANSMISSIONS: Transmission[] = [
+  'Manual',
+  'Automatic',
+  'Semi-Auto',
+];
+
+const EMPTY_FORM: CarFormType = {
   brand: '',
   model: '',
   generation: '',
@@ -31,40 +55,47 @@ const EMPTY_FORM: CarForm = {
 const DEFAULT_IMAGE =
   'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
 
-function carToForm(car: MyGarageCar): CarForm {
+function carToForm(car: MyGarageCar): CarFormType {
   return {
     brand: car.brand,
     model: car.model,
-    generation: car.generation,
+    generation: car.generation === '-' ? '' : car.generation,
     year: String(car.year),
     bodyType: car.bodyType,
-    color: car.color,
+    color: car.color === '-' ? '' : car.color,
     mileage: String(car.mileage),
     price: String(car.price),
-    city: car.city,
+    city: car.city === '-' ? '' : car.city,
     image: car.image,
-    engine: car.specs.engine,
-    displacement: car.specs.displacement,
-    power: car.specs.power,
-    torque: car.specs.torque,
+    engine: car.specs.engine === '-' ? '' : car.specs.engine,
+    displacement: car.specs.displacement === '-' ? '' : car.specs.displacement,
+    power: car.specs.power === '-' ? '' : car.specs.power,
+    torque: car.specs.torque === '-' ? '' : car.specs.torque,
     fuelType: car.specs.fuelType,
     transmission: car.specs.transmission,
   };
 }
 
-export function formToMyGarageCar(form: CarForm, id: string, imagesList?: string[]): MyGarageCar {
-  const mainImage = imagesList && imagesList.length > 0 ? imagesList[0] : (form.image || DEFAULT_IMAGE);
+export function formToMyGarageCar(
+  form: CarFormType,
+  id: string,
+  imagesList?: string[],
+): MyGarageCar {
+  const mainImage =
+    imagesList && imagesList.length > 0
+      ? imagesList[0]
+      : form.image || DEFAULT_IMAGE;
 
   return {
     id,
     brand: form.brand,
     model: form.model,
     generation: form.generation || '-',
-    year: parseInt(form.year) || 2000,
+    year: parseInt(form.year, 10) || 2000,
     bodyType: form.bodyType,
     color: form.color || '-',
-    mileage: parseInt(form.mileage) || 0,
-    price: parseInt(form.price) || 0,
+    mileage: parseInt(form.mileage, 10) || 0,
+    price: parseInt(form.price, 10) || 0,
     city: form.city || '-',
     country: 'Serbia',
     image: mainImage,
@@ -90,219 +121,381 @@ export function formToMyGarageCar(form: CarForm, id: string, imagesList?: string
     modifications: [],
     securityFeatures: [],
     buildNotes: [],
-    estimatedValue: parseInt(form.price) || 0,
+    estimatedValue: parseInt(form.price, 10) || 0,
   };
 }
 
 interface CarFormFieldsProps {
-  form: CarForm;
-  setForm: (f: CarForm) => void;
+  form: CarFormType;
+  setForm: (form: CarFormType) => void;
   images: string[];
-  setImages: (imgs: string[]) => void;
+  setImages: (images: string[]) => void;
 }
 
-function CarFormFields({ form, setForm, images, setImages }: CarFormFieldsProps) {
-  function update<K extends keyof CarForm>(key: K, value: CarForm[K]) {
-    setForm({ ...form, [key]: value });
+function CarFormFields({
+  form,
+  setForm,
+  images,
+  setImages,
+}: CarFormFieldsProps) {
+  function update<K extends keyof CarFormType>(
+    key: K,
+    value: CarFormType[K],
+  ) {
+    setForm({
+      ...form,
+      [key]: value,
+    });
   }
 
+  function updateBrand(brand: string) {
+    setForm({
+      ...form,
+      brand,
+      model: '',
+    });
+  }
+
+  const inputClass =
+    'w-full h-11 rounded-xl border border-zinc-700/80 bg-zinc-900 px-3.5 text-sm text-zinc-100 outline-none transition-all placeholder:text-zinc-600 hover:border-zinc-600 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10';
+
+  const selectClass =
+    'w-full h-11 rounded-xl border border-zinc-700/80 bg-zinc-900 px-3.5 text-sm text-zinc-100 outline-none transition-all hover:border-zinc-600 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 disabled:cursor-not-allowed disabled:opacity-50';
+
+  const labelClass =
+    'mb-2 block text-xs font-medium text-zinc-400';
+
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Marka</label>
-          <select
-            value={form.brand}
-            onChange={e => {
-              update('brand', e.target.value);
-              update('model', '');
-            }}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-orange-500 transition-colors"
-          >
-            <option value="">Izaberi marku...</option>
-            {BRAND_NAMES.map(b => (
-              <option key={b} value={b}>{b}</option>
-            ))}
-          </select>
+    <div className="space-y-7">
+      {/* BASIC INFORMATION */}
+      <section>
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-white">
+            Osnovni podaci
+          </h2>
+          <p className="mt-1 text-xs text-zinc-500">
+            Unesite osnovne informacije o vozilu.
+          </p>
         </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Model</label>
-          <select
-            value={form.model}
-            onChange={e => update('model', e.target.value)}
-            disabled={!form.brand}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <option value="">{form.brand ? 'Izaberi model...' : 'Prvo izaberi marku'}</option>
-            {form.brand && CAR_BRANDS[form.brand]?.map(m => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Generacija</label>
-          <input
-            value={form.generation}
-            onChange={e => update('generation', e.target.value)}
-            placeholder="E60"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Godina</label>
-          <input
-            value={form.year}
-            onChange={e => update('year', e.target.value)}
-            placeholder="2005"
-            inputMode="numeric"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-      </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Marka *</label>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Cena (EUR)</label>
-          <input
-            value={form.price}
-            onChange={e => update('price', e.target.value)}
-            placeholder="6500"
-            inputMode="numeric"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Kilometraža (km)</label>
-          <input
-            value={form.mileage}
-            onChange={e => update('mileage', e.target.value)}
-            placeholder="198000"
-            inputMode="numeric"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Boja</label>
-          <input
-            value={form.color}
-            onChange={e => update('color', e.target.value)}
-            placeholder="Sapphire Black"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Grad</label>
-          <input
-            value={form.city}
-            onChange={e => update('city', e.target.value)}
-            placeholder="Kosovska Mitrovica"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Tip karoserije</label>
-        <div className="flex flex-wrap gap-1.5">
-          {BODY_TYPES.map(t => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => update('bodyType', t)}
-              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all ${
-                form.bodyType === t
-                  ? 'bg-orange-500 border-orange-500 text-zinc-950'
-                  : 'bg-zinc-800 border-zinc-700 text-zinc-400'
-              }`}
+            <select
+              value={form.brand}
+              onChange={(e) => updateBrand(e.target.value)}
+              className={selectClass}
             >
-              {t}
-            </button>
-          ))}
+              <option value="">Izaberi marku...</option>
+
+              {BRAND_NAMES.map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Model *</label>
+
+            <select
+              value={form.model}
+              onChange={(e) => update('model', e.target.value)}
+              disabled={!form.brand}
+              className={selectClass}
+            >
+              <option value="">
+                {form.brand
+                  ? 'Izaberi model...'
+                  : 'Prvo izaberi marku'}
+              </option>
+
+              {form.brand &&
+                CAR_BRANDS[form.brand]?.map((model) => (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Generacija</label>
+
+            <input
+              value={form.generation}
+              onChange={(e) => update('generation', e.target.value)}
+              placeholder="npr. E60"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Godina</label>
+
+            <input
+              value={form.year}
+              onChange={(e) =>
+                update('year', e.target.value.replace(/\D/g, '').slice(0, 4))
+              }
+              placeholder="npr. 2005"
+              inputMode="numeric"
+              className={inputClass}
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="pt-2 border-t border-zinc-800">
-        <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Specifikacije motora</p>
-      </div>
+      {/* PRICE & LOCATION */}
+      <section className="border-t border-zinc-800/80 pt-7">
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-white">
+            Cena i lokacija
+          </h2>
+          <p className="mt-1 text-xs text-zinc-500">
+            Informacije koje kupac prvo vidi.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Motor</label>
-          <input
-            value={form.engine}
-            onChange={e => update('engine', e.target.value)}
-            placeholder="M57D25"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Cena (EUR) *</label>
+
+            <div className="relative">
+              <input
+                value={form.price}
+                onChange={(e) =>
+                  update('price', e.target.value.replace(/\D/g, ''))
+                }
+                placeholder="6 500"
+                inputMode="numeric"
+                className={`${inputClass} pr-14`}
+              />
+
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-500">
+                EUR
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Kilometraža</label>
+
+            <div className="relative">
+              <input
+                value={form.mileage}
+                onChange={(e) =>
+                  update('mileage', e.target.value.replace(/\D/g, ''))
+                }
+                placeholder="198 000"
+                inputMode="numeric"
+                className={`${inputClass} pr-14`}
+              />
+
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-500">
+                KM
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Boja</label>
+
+            <input
+              value={form.color}
+              onChange={(e) => update('color', e.target.value)}
+              placeholder="npr. Sapphire Black"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Grad</label>
+
+            <input
+              value={form.city}
+              onChange={(e) => update('city', e.target.value)}
+              placeholder="npr. Kosovska Mitrovica"
+              className={inputClass}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* BODY TYPE */}
+      <section className="border-t border-zinc-800/80 pt-7">
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-white">
+            Karoserija
+          </h2>
+          <p className="mt-1 text-xs text-zinc-500">
+            Izaberite tip karoserije vozila.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          {BODY_TYPES.map((type) => {
+            const active = form.bodyType === type;
+
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => update('bodyType', type)}
+                className={`
+                  min-h-10 rounded-xl border px-3 py-2 text-xs font-medium
+                  transition-all duration-200
+                  ${
+                    active
+                      ? 'border-orange-500 bg-orange-500 text-zinc-950 shadow-lg shadow-orange-500/10'
+                      : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-800 hover:text-zinc-200'
+                  }
+                `}
+              >
+                {type}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ENGINE */}
+      <section className="border-t border-zinc-800/80 pt-7">
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-white">
+            Specifikacije motora
+          </h2>
+          <p className="mt-1 text-xs text-zinc-500">
+            Dodajte detalje motora i performansi.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Motor</label>
+
+            <input
+              value={form.engine}
+              onChange={(e) => update('engine', e.target.value)}
+              placeholder="npr. M57D25"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Zapremina</label>
+
+            <input
+              value={form.displacement}
+              onChange={(e) =>
+                update('displacement', e.target.value)
+              }
+              placeholder="npr. 2.5L"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Snaga</label>
+
+            <div className="relative">
+              <input
+                value={form.power}
+                onChange={(e) => update('power', e.target.value)}
+                placeholder="npr. 177"
+                className={`${inputClass} pr-14`}
+              />
+
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-500">
+                HP
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Obrtni moment</label>
+
+            <div className="relative">
+              <input
+                value={form.torque}
+                onChange={(e) => update('torque', e.target.value)}
+                placeholder="npr. 410"
+                className={`${inputClass} pr-14`}
+              />
+
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-500">
+                Nm
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Gorivo</label>
+
+            <select
+              value={form.fuelType}
+              onChange={(e) =>
+                update('fuelType', e.target.value as FuelType)
+              }
+              className={selectClass}
+            >
+              {FUEL_TYPES.map((fuel) => (
+                <option key={fuel} value={fuel}>
+                  {fuel}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Menjač</label>
+
+            <select
+              value={form.transmission}
+              onChange={(e) =>
+                update(
+                  'transmission',
+                  e.target.value as Transmission,
+                )
+              }
+              className={selectClass}
+            >
+              {TRANSMISSIONS.map((transmission) => (
+                <option
+                  key={transmission}
+                  value={transmission}
+                >
+                  {transmission}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {/* IMAGES */}
+      <section className="border-t border-zinc-800/80 pt-7">
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-white">
+            Fotografije
+          </h2>
+
+          <p className="mt-1 text-xs text-zinc-500">
+            Dodajte do 5 fotografija. Prva fotografija biće
+            glavna fotografija oglasa.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-3 sm:p-4">
+          <ImageUpload
+            images={images}
+            onChange={setImages}
+            maxImages={5}
           />
         </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Zapremina</label>
-          <input
-            value={form.displacement}
-            onChange={e => update('displacement', e.target.value)}
-            placeholder="2.5L"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Snaga</label>
-          <input
-            value={form.power}
-            onChange={e => update('power', e.target.value)}
-            placeholder="197 hp"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Obrtni moment</label>
-          <input
-            value={form.torque}
-            onChange={e => update('torque', e.target.value)}
-            placeholder="410 Nm"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Gorivo</label>
-          <select
-            value={form.fuelType}
-            onChange={e => update('fuelType', e.target.value as FuelType)}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-orange-500 transition-colors"
-          >
-            {FUEL_TYPES.map(f => (
-              <option key={f} value={f}>{f}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Menjač</label>
-          <select
-            value={form.transmission}
-            onChange={e => update('transmission', e.target.value as Transmission)}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-orange-500 transition-colors"
-          >
-            {TRANSMISSIONS.map(t => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="pt-2">
-        <ImageUpload images={images} onChange={setImages} maxImages={5} />
-      </div>
+      </section>
     </div>
   );
 }
@@ -313,16 +506,23 @@ interface AddCarFormProps {
   editingCar?: MyGarageCar | null;
 }
 
-export default function CarFormComponent({ onSave, onCancel, editingCar }: AddCarFormProps) {
-  const [form, setForm] = useState<CarForm>(EMPTY_FORM);
+export default function CarFormComponent({
+  onSave,
+  onCancel,
+  editingCar,
+}: AddCarFormProps) {
+  const [form, setForm] = useState<CarFormType>(EMPTY_FORM);
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (editingCar) {
       setForm(carToForm(editingCar));
-      if (editingCar.image) {
-        setImages([editingCar.image]);
-      }
+
+      setImages(
+        editingCar.image && editingCar.image !== DEFAULT_IMAGE
+          ? [editingCar.image]
+          : [],
+      );
     } else {
       setForm(EMPTY_FORM);
       setImages([]);
@@ -330,30 +530,101 @@ export default function CarFormComponent({ onSave, onCancel, editingCar }: AddCa
   }, [editingCar]);
 
   function handleSave() {
-    if (!form.brand.trim() || !form.model.trim() || !form.price.trim()) return;
-    const id = editingCar?.id || `garage-${Date.now()}`;
+    if (
+      !form.brand.trim() ||
+      !form.model.trim() ||
+      !form.price.trim()
+    ) {
+      return;
+    }
+
+    const id =
+      editingCar?.id || `garage-${Date.now()}`;
+
     onSave(formToMyGarageCar(form, id, images));
   }
 
-  const isValid = form.brand.trim() && form.model.trim() && form.price.trim();
+  const isValid =
+    Boolean(form.brand.trim()) &&
+    Boolean(form.model.trim()) &&
+    Boolean(form.price.trim());
 
   return (
-    <div>
-      <CarFormFields form={form} setForm={setForm} images={images} setImages={setImages} />
-      <div className="flex gap-2 mt-5">
-        <button
-          onClick={onCancel}
-          className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold py-3 rounded-xl text-sm transition-colors"
-        >
-          Otkaži
-        </button>
-        <button
-          onClick={handleSave}
-          disabled={!isValid}
-          className="flex-1 bg-orange-500 hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 font-bold py-3 rounded-xl text-sm transition-all duration-200 active:scale-95"
-        >
-          {editingCar ? 'Sačuvaj izmene' : 'Dodaj u garažu'}
-        </button>
+    <div className="w-full">
+      {/* FORM HEADER */}
+      <div className="mb-7">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+              {editingCar
+                ? 'Izmeni automobil'
+                : 'Dodaj automobil'}
+            </h1>
+
+            <p className="mt-1.5 max-w-xl text-sm leading-5 text-zinc-500">
+              {editingCar
+                ? 'Ažurirajte informacije o vašem automobilu.'
+                : 'Unesite informacije o automobilu koji želite da dodate u garažu.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 h-px bg-zinc-800" />
+      </div>
+
+      {/* FORM */}
+      <CarFormFields
+        form={form}
+        setForm={setForm}
+        images={images}
+        setImages={setImages}
+      />
+
+      {/* ACTIONS */}
+      <div className="mt-8 border-t border-zinc-800/80 pt-6">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="
+              h-11 w-full rounded-xl border border-zinc-700
+              bg-zinc-900 px-6 text-sm font-semibold text-zinc-300
+              transition-all duration-200
+              hover:border-zinc-600 hover:bg-zinc-800 hover:text-white
+              active:scale-[0.98]
+              sm:w-auto
+            "
+          >
+            Otkaži
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!isValid}
+            className="
+              h-11 w-full rounded-xl px-6 text-sm font-bold
+              transition-all duration-200
+              active:scale-[0.98]
+              sm:w-auto
+              ${
+                isValid
+                  ? 'bg-orange-500 text-zinc-950 shadow-lg shadow-orange-500/10 hover:bg-orange-400'
+                  : 'cursor-not-allowed bg-zinc-800 text-zinc-600'
+              }
+            "
+          >
+            {editingCar
+              ? 'Sačuvaj izmene'
+              : 'Dodaj u garažu'}
+          </button>
+        </div>
+
+        {!isValid && (
+          <p className="mt-3 text-right text-xs text-zinc-600">
+            Marka, model i cena su obavezni.
+          </p>
+        )}
       </div>
     </div>
   );
