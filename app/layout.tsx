@@ -20,11 +20,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               var t = localStorage.getItem('autotrampa_theme');
               if (t === 'light') {
                 document.documentElement.classList.remove('dark');
-                document.documentElement.classList.add('light');
+              } else if (t === 'dark') {
+                document.documentElement.classList.add('dark');
               }
             } catch(e) {}
-          }}` }} 
-        />
+          })();
+        ` }} />
       </head>
       <body className={`${inter.variable} font-sans min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200`}>
         <AppShell>{children}</AppShell>
