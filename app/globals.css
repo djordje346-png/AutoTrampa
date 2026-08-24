@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
+    --background: 0 0% 4%; /* #0a0a0a */
     --foreground: 0 0% 96%;
-    --card: 0 0% 7%;
+    --card: 0 0% 7%; /* Tamna kartica */
     --card-foreground: 0 0% 96%;
     --popover: 0 0% 7%;
     --popover-foreground: 0 0% 96%;
@@ -27,9 +27,9 @@
   }
 
   html.light {
-    --background: 0 0% 98%;
+    --background: 210 20% 96%; /* Čista, prijatna svetla siva/biserna (umesto apsolutno bele) */
     --foreground: 0 0% 10%;
-    --card: 0 0% 100%;
+    --card: 0 0% 100%; /* Čisto bela kartica za svetlu temu */
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
@@ -43,7 +43,7 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 85%;
+    --border: 0 0% 85%; /* Vidljivije svetle ivice */
     --input: 0 0% 85%;
     --ring: 24 95% 53%;
   }
@@ -59,13 +59,9 @@
 
   body {
     @apply antialiased;
-    background-color: #0a0a0a;
+    background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     overflow-x: hidden;
-  }
-
-  html.light body {
-    background-color: hsl(var(--background));
   }
 
   .safe-top {
