@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, X, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useGarage } from '@/hooks/use-garage';
 import { formatEuro } from '@/lib/cars';
@@ -15,6 +15,31 @@ export default function ProfilePage() {
   const [bodyPrefs, setBodyPrefs] = useState<string[]>(['Limuzina', 'Karavan']);
   const [phoneAfterMatch, setPhoneAfterMatch] = useState(true);
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('autotrampa_theme') as 'dark' | 'light' | null;
+      if (stored === 'light') {
+        setTheme('light');
+      }
+    } catch {}
+  }, []);
+
+  function toggleTheme() {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    try {
+      localStorage.setItem('autotrampa_theme', next);
+    } catch {}
+    if (next === 'light') {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+    }
+  }
 
   const garageLimit = 3;
   const garageFull = cars.length >= garageLimit;
@@ -249,6 +274,27 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      <div className="px-4 mb-4">
+        <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            {theme === 'dark' ? <Moon size={16} className="text-orange-400" /> : <Sun size={16} className="text-orange-400" />}
+            <p className="text-sm font-bold text-white">Izgled</p>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-white">Tamna tema</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Prebaci između tamne i svetle teme</p>
+            </div>
+            <button
+              onClick={toggleTheme}
+              className="relative w-12 h-6 rounded-full flex-shrink-0 transition-colors duration-200 bg-zinc-700"
+            >
+              <span className={`absolute top-0.5 w-5 h-5 rounded-full transition-transform duration-200 ${theme === 'light' ? 'translate-x-6 bg-orange-500' : 'translate-x-0.5 bg-white'}`} />
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="px-4 mb-6">
         <button
           onClick={logout}
@@ -262,8 +308,8 @@ export default function ProfilePage() {
       <p className="text-center text-[10px] text-zinc-700 pb-2">AutoTrampa v1.0</p>
 
       {activeModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-lg max-h-[85vh] rounded-t-3xl sm:rounded-2xl flex flex-col overflow-hidden shadow-2xl safe-bottom">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-lg max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl safe-bottom">
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
               <h3 className="text-sm font-bold text-white">
                 {activeModal === 'faq' && 'Često postavljana pitanja'}

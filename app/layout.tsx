@@ -12,8 +12,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sr" className="dark">
-      <body className={`${inter.variable} font-sans bg-slate-950 text-slate-100 min-h-screen`}>
+    <html lang="sr" className="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              var t = localStorage.getItem('autotrampa_theme');
+              if (t === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+              }
+            } catch(e) {}
+        `}} />
+      </head>
+      <body className={`${inter.variable} font-sans min-h-screen`}>
         <AppShell>{children}</AppShell>
       </body>
     </html>

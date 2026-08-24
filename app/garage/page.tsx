@@ -265,9 +265,9 @@ export default function GaragePage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
-          <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditingCar(null); }} />
-          <div className="relative w-full max-w-md bg-zinc-900 rounded-t-3xl border-t border-zinc-700 p-6 max-h-[85vh] overflow-y-auto safe-bottom">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditingCar(null); }} />
+          <div className="relative w-full max-w-md bg-zinc-900 rounded-2xl border border-zinc-700 p-6 max-h-[90vh] overflow-y-auto safe-bottom">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-white">
                 {editingCar ? 'Uredi auto' : 'Dodaj novo vozilo'}
