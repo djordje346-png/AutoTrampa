@@ -23,9 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 document.documentElement.classList.add('light');
               }
             } catch(e) {}
-        `}} />
+          }}` }} 
+        />
       </head>
-      <body className={`${inter.variable} font-sans min-h-screen`}>
+      <body className={`${inter.variable} font-sans min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200`}>
         <AppShell>{children}</AppShell>
       </body>
     </html>
