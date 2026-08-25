@@ -16,7 +16,7 @@ export default function Footer() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800 safe-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-app border-t border-surface safe-bottom">
       <div className="mx-auto flex w-full max-w-md items-center justify-around px-1 py-2 md:max-w-2xl lg:max-w-5xl">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
@@ -25,7 +25,7 @@ export default function Footer() {
               key={href}
               href={href}
               className={`relative flex min-w-[44px] flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 transition-all duration-200 ${
-                active ? 'text-orange-400' : 'text-zinc-500 hover:text-zinc-300'
+                active ? 'text-orange-400' : 'text-app-muted hover:text-app-secondary'
               }`}
               aria-label={label}
             >

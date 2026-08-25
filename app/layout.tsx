@@ -10,10 +10,29 @@ export const metadata: Metadata = {
   description: 'Pronađi sledeću zamenu. Trampi, pronađi i prati svoj idealan evropski auto.',
 };
 
+const themeInitScript = `
+(function() {
+  try {
+    var stored = localStorage.getItem('autotrampa_theme');
+    var theme = stored || 'dark';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  } catch (e) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sr" className="dark">
-      <body className={`${inter.variable} font-sans bg-slate-950 text-slate-100 min-h-screen`}>
+    <html lang="sr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className={`${inter.variable} font-sans bg-background text-foreground min-h-screen antialiased`}>
         <AppShell>{children}</AppShell>
       </body>
     </html>

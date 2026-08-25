@@ -47,13 +47,13 @@ export default function MessagesPage() {
   if (!mounted) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 px-4 py-4">
-          <h1 className="text-xl font-bold tracking-tight text-white">Poruke</h1>
+        <header className="sticky top-0 z-40 bg-app/90 backdrop-blur-md border-b border-surface px-4 py-4">
+          <h1 className="text-xl font-bold tracking-tight text-app-primary">Poruke</h1>
         </header>
         <div className="px-4 pt-6 space-y-3">
-          <div className="h-20 bg-zinc-900 rounded-2xl animate-pulse" />
-          <div className="h-20 bg-zinc-900 rounded-2xl animate-pulse" />
-          <div className="h-20 bg-zinc-900 rounded-2xl animate-pulse" />
+          <div className="h-20 bg-card-surface rounded-2xl animate-pulse" />
+          <div className="h-20 bg-card-surface rounded-2xl animate-pulse" />
+          <div className="h-20 bg-card-surface rounded-2xl animate-pulse" />
         </div>
       </div>
     );
@@ -62,23 +62,23 @@ export default function MessagesPage() {
   if (activeConv) {
     return (
       <div className="flex flex-col h-screen">
-        <header className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800 px-4 py-3 flex items-center gap-3 safe-top">
+        <header className="sticky top-0 z-40 bg-app/95 backdrop-blur-md border-b border-surface px-4 py-3 flex items-center gap-3 safe-top">
           <button
             onClick={() => setActiveId(null)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors"
           >
             <ArrowLeft size={18} />
           </button>
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 bg-zinc-800">
+          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 bg-elevated">
             <img src={activeConv.carImage} alt={activeConv.carTitle} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-white truncate">{activeConv.ownerName}</p>
-            <p className="text-xs text-zinc-500 truncate">{activeConv.carTitle}</p>
+            <p className="text-sm font-bold text-app-primary truncate">{activeConv.ownerName}</p>
+            <p className="text-xs text-app-muted truncate">{activeConv.carTitle}</p>
           </div>
           <a
             href="tel:+381631234567"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-orange-400 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-orange-400 transition-colors"
           >
             <Phone size={16} />
           </a>
@@ -86,17 +86,17 @@ export default function MessagesPage() {
 
         <div className="mx-4 mt-3 rounded-xl bg-orange-500/10 border border-orange-500/30 px-3 py-2 flex items-center justify-between">
           <span className="text-xs font-semibold text-orange-400">{activeConv.tradeSummary}</span>
-          <span className="text-[10px] text-zinc-500">Uslovi zamene</span>
+          <span className="text-[10px] text-app-muted">Uslovi zamene</span>
         </div>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
           {activeConv.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center mb-3">
-                <MessageCircle size={26} className="text-zinc-600" />
+              <div className="w-14 h-14 rounded-full bg-elevated flex items-center justify-center mb-3">
+                <MessageCircle size={26} className="text-app-muted" />
               </div>
-              <p className="text-zinc-400 text-sm font-medium">Još nema poruka</p>
-              <p className="text-zinc-600 text-xs mt-1">Pošalji prvu poruku ispod</p>
+              <p className="text-app-secondary text-sm font-medium">Još nema poruka</p>
+              <p className="text-app-muted text-xs mt-1">Pošalji prvu poruku ispod</p>
             </div>
           ) : (
             activeConv.messages.map(msg => (
@@ -107,14 +107,14 @@ export default function MessagesPage() {
                 <div
                   className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
                     msg.sender === 'me'
-                      ? 'bg-orange-500 text-zinc-950 rounded-br-md'
-                      : 'bg-zinc-800 text-zinc-100 rounded-bl-md'
+                      ? 'bg-orange-500 text-white rounded-br-md'
+                      : 'bg-elevated text-app-primary rounded-bl-md'
                   }`}
                 >
                   <p className="text-sm leading-snug">{msg.text}</p>
-                  <div className={`flex items-center gap-1 mt-1 ${msg.sender === 'me' ? 'text-zinc-800/70' : 'text-zinc-500'}`}>
+                  <div className={`flex items-center gap-1 mt-1 ${msg.sender === 'me' ? 'text-white/70' : 'text-app-muted'}`}>
                     <span className="text-[9px]">{formatMessageTime(msg.timestamp)}</span>
-                    {msg.sender === 'me' && <CheckCheck size={11} className="text-zinc-700" />}
+                    {msg.sender === 'me' && <CheckCheck size={11} className="text-white/80" />}
                   </div>
                 </div>
               </div>
@@ -122,18 +122,18 @@ export default function MessagesPage() {
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-zinc-950/95 backdrop-blur-md border-t border-zinc-800 px-4 py-3 flex items-center gap-2 safe-bottom">
+        <div className="sticky bottom-0 bg-app/95 backdrop-blur-md border-t border-surface px-4 py-3 flex items-center gap-2 safe-bottom">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
             placeholder="Napiši poruku..."
-            className="flex-1 bg-zinc-800 border border-zinc-700 rounded-full px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
+            className="flex-1 bg-elevated border border-surface rounded-full px-4 py-2.5 text-sm text-app-primary placeholder:text-app-muted focus:outline-none focus:border-orange-500 transition-colors"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim()}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-orange-500 hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 transition-all duration-200 active:scale-90 flex-shrink-0"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-orange-500 hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-all duration-200 active:scale-90 flex-shrink-0"
           >
             <Send size={17} />
           </button>
@@ -144,11 +144,11 @@ export default function MessagesPage() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 px-4 py-4">
+      <header className="sticky top-0 z-40 bg-app/90 backdrop-blur-md border-b border-surface px-4 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Poruke</h1>
-            <p className="text-xs text-zinc-500 mt-0.5">Razgovori o zameni</p>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary">Poruke</h1>
+            <p className="text-xs text-app-muted mt-0.5">Razgovori o zameni</p>
           </div>
           {totalUnread > 0 && (
             <div className="w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center">
@@ -161,11 +161,11 @@ export default function MessagesPage() {
       <div className="px-4 pt-4 pb-4 space-y-2">
         {conversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-20 h-20 rounded-full bg-zinc-800/60 flex items-center justify-center mb-5">
-              <MessageCircle size={36} className="text-zinc-600" />
+            <div className="w-20 h-20 rounded-full bg-elevated/60 flex items-center justify-center mb-5">
+              <MessageCircle size={36} className="text-app-muted" />
             </div>
-            <p className="text-zinc-300 font-semibold text-base">Nema razgovora</p>
-            <p className="text-zinc-500 text-sm mt-2 max-w-xs leading-relaxed">
+            <p className="text-app-secondary font-semibold text-base">Nema razgovora</p>
+            <p className="text-app-muted text-sm mt-2 max-w-xs leading-relaxed">
               Pošalji ponudu za trampu sa Početne da započneš razgovor sa drugim vlasnicima.
             </p>
           </div>
@@ -179,12 +179,12 @@ export default function MessagesPage() {
                 <button
                   key={conv.id}
                   onClick={() => openConversation(conv)}
-                  className="w-full flex items-center gap-3 bg-zinc-900 hover:bg-zinc-800/80 border border-zinc-800 rounded-2xl p-3 text-left transition-all duration-200"
+                  className="w-full flex items-center gap-3 bg-card-surface hover:bg-hover-surface border border-surface rounded-2xl p-3 text-left transition-all duration-200"
                 >
-                  <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-zinc-800 relative">
+                  <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-elevated relative">
                     <img src={conv.carImage} alt={conv.carTitle} className="w-full h-full object-cover" />
                     {conv.unread > 0 && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center border-2 border-zinc-900">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center border-2 bg-card-surface">
                         <span className="text-[9px] font-bold text-white">{conv.unread}</span>
                       </div>
                     )}
@@ -192,12 +192,12 @@ export default function MessagesPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <p className="text-sm font-bold text-white truncate">{conv.ownerName}</p>
-                      <span className="text-[10px] text-zinc-600 flex-shrink-0">{formatTime(conv.lastUpdated)}</span>
+                      <p className="text-sm font-bold text-app-primary truncate">{conv.ownerName}</p>
+                      <span className="text-[10px] text-app-muted flex-shrink-0">{formatTime(conv.lastUpdated)}</span>
                     </div>
-                    <p className="text-xs text-zinc-500 truncate mb-1">{conv.carTitle}</p>
+                    <p className="text-xs text-app-muted truncate mb-1">{conv.carTitle}</p>
                     <div className="flex items-center justify-between gap-2">
-                      <p className={`text-xs truncate ${conv.unread > 0 ? 'text-zinc-200 font-medium' : 'text-zinc-500'}`}>
+                      <p className={`text-xs truncate ${conv.unread > 0 ? 'text-app-primary font-medium' : 'text-app-muted'}`}>
                         {lastMsg ? (lastMsg.sender === 'me' ? 'Ti: ' : '') + lastMsg.text : 'Još nema poruka'}
                       </p>
                       <span className="text-[10px] text-orange-400 font-semibold flex-shrink-0 bg-orange-500/10 px-2 py-0.5 rounded-full">

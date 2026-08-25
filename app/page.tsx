@@ -131,6 +131,11 @@ export default function FeedPage() {
     touchStart.current = null;
   }
 
+  function exitSwipeMode() {
+    setViewMode('grid');
+    setSwipeIndex(0);
+  }
+
   const trade = modal.car ? getTradeLabel(selectedCar, modal.car) : null;
   const swipeCar = filteredCars[swipeIndex] || filteredCars[0];
   const swipeTl = swipeCar ? getTradeLabel(selectedCar, swipeCar) : null;
@@ -138,20 +143,20 @@ export default function FeedPage() {
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 px-4 py-3 safe-top">
+      <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-3 safe-top">
         <div className="flex items-center justify-between gap-3">
           <div className="flex-shrink-0">
-            <h1 className="text-xl font-bold tracking-tight text-white">AutoTrampa</h1>
-            <p className="text-[11px] text-zinc-500 mt-0.5">Pronađi sledeću zamenu</p>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary">AutoTrampa</h1>
+            <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
           </div>
 
           <div className="flex items-center gap-2">
             {/* View mode toggle */}
-            <div className="flex bg-zinc-800 rounded-lg p-0.5 border border-zinc-700">
+            <div className="flex bg-elevated rounded-lg p-0.5 border border-surface">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                  viewMode === 'grid' ? 'bg-orange-500 text-zinc-950' : 'text-zinc-500 hover:text-zinc-300'
+                  viewMode === 'grid' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
                 }`}
                 aria-label="Prikaz mreže"
               >
@@ -160,7 +165,7 @@ export default function FeedPage() {
               <button
                 onClick={() => setViewMode('swipe')}
                 className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                  viewMode === 'swipe' ? 'bg-orange-500 text-zinc-950' : 'text-zinc-500 hover:text-zinc-300'
+                  viewMode === 'swipe' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
                 }`}
                 aria-label="Svajp režim"
               >
@@ -172,37 +177,37 @@ export default function FeedPage() {
             <div className="relative flex-shrink-0" ref={selectorRef}>
               <button
                 onClick={() => setSelectorOpen(p => !p)}
-                className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-zinc-700"
+                className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface"
                 aria-label="Izaberi vozilo"
               >
                 {mounted ? (
                   <>
-                    <div className="w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-700">
+                    <div className="w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
                       {selectedCar.image && (
                         <img src={selectedCar.image} alt={selectedCar.model} className="w-full h-full object-cover" />
                       )}
                     </div>
                     <div className="text-left min-w-0 max-w-[80px]">
-                      <p className="text-[8px] text-zinc-500 font-medium uppercase tracking-widest leading-none mb-0.5">Moj auto</p>
-                      <p className="text-[11px] font-bold text-white truncate leading-tight">
+                      <p className="text-[8px] text-app-muted font-medium uppercase tracking-widest leading-none mb-0.5">Moj auto</p>
+                      <p className="text-[11px] font-bold text-app-primary truncate leading-tight">
                         {selectedCar.brand} {selectedCar.model}
                       </p>
                     </div>
-                    <ChevronDown size={14} className={`text-zinc-500 transition-transform duration-200 ${selectorOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={14} className={`text-app-muted transition-transform duration-200 ${selectorOpen ? 'rotate-180' : ''}`} />
                   </>
                 ) : (
                   <>
-                    <div className="w-7 h-7 rounded-lg bg-zinc-700 animate-pulse" />
-                    <div className="h-3 w-14 bg-zinc-700 rounded animate-pulse" />
+                    <div className="w-7 h-7 rounded-lg bg-hover-surface animate-pulse" />
+                    <div className="h-3 w-14 bg-hover-surface rounded animate-pulse" />
                   </>
                 )}
               </button>
 
               {selectorOpen && mounted && (
-                <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
-                  <div className="px-4 py-3 border-b border-zinc-800">
-                    <p className="text-xs font-bold text-white">Moja vozila</p>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">Izaberi vozilo za trampu</p>
+                <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface border border-surface rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-surface">
+                    <p className="text-xs font-bold text-app-primary">Moja vozila</p>
+                    <p className="text-[10px] text-app-muted mt-0.5">Izaberi vozilo za trampu</p>
                   </div>
                   <div className="max-h-64 overflow-y-auto p-2 space-y-1">
                     {cars.map(car => {
@@ -212,29 +217,29 @@ export default function FeedPage() {
                           key={car.id}
                           onClick={() => { selectCar(car.id); setSelectorOpen(false); }}
                           className={`w-full flex items-center gap-2.5 rounded-xl p-2 transition-all duration-150 text-left ${
-                            isActive ? 'bg-orange-500/10' : 'hover:bg-zinc-800'
+                            isActive ? 'bg-orange-500/10' : 'hover:bg-hover-surface'
                           }`}
                         >
-                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-700">
+                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
                             {car.image && <img src={car.image} alt={car.model} className="w-full h-full object-cover" />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-white truncate">{car.brand} {car.model} {car.generation}</p>
-                            <p className="text-[10px] text-zinc-500">{car.year} · {formatEuro(car.price)}</p>
+                            <p className="text-xs font-bold text-app-primary truncate">{car.brand} {car.model} {car.generation}</p>
+                            <p className="text-[10px] text-app-muted">{car.year} · {formatEuro(car.price)}</p>
                           </div>
                           {isActive && (
                             <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
-                              <Check size={12} className="text-zinc-950" strokeWidth={3} />
+                              <Check size={12} className="text-white" strokeWidth={3} />
                             </div>
                           )}
                         </button>
                       );
                     })}
                   </div>
-                  <div className="border-t border-zinc-800 p-2">
+                  <div className="border-t border-surface p-2">
                     <button
                       onClick={() => { setSelectorOpen(false); setShowAddForm(true); }}
-                      className="w-full flex items-center justify-center gap-2 text-orange-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-zinc-600 hover:bg-zinc-800 transition-all"
+                      className="w-full flex items-center justify-center gap-2 text-orange-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface hover:bg-hover-surface transition-all"
                     >
                       <Plus size={15} />
                       Dodaj vozilo
@@ -248,7 +253,7 @@ export default function FeedPage() {
       </header>
 
       {/* Trade filter bar */}
-      <div className="sticky top-[57px] z-30 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/50">
+      <div className="sticky top-[57px] z-30 bg-app border-b border-surface/50">
         <div className="flex items-center gap-1.5 px-4 py-2 overflow-x-auto scrollbar-hide">
           {TRADE_FILTERS.map(({ key, label }) => (
             <button
@@ -256,8 +261,8 @@ export default function FeedPage() {
               onClick={() => { setTradeFilter(key); setSwipeIndex(0); }}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                 tradeFilter === key
-                  ? 'bg-orange-500 text-zinc-950'
-                  : 'bg-zinc-800/70 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
               }`}
             >
               {label}
@@ -265,7 +270,7 @@ export default function FeedPage() {
           ))}
           <button
             onClick={() => setShowMoreFilters(true)}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-zinc-800/70 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 transition-all duration-150"
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150"
             aria-label="Više filtera"
           >
             <SlidersHorizontal size={11} />
@@ -276,10 +281,10 @@ export default function FeedPage() {
       {/* No results */}
       {filteredCars.length === 0 && (
         <div className="px-4 pt-8 flex flex-col items-center text-center">
-          <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center mb-3">
-            <SlidersHorizontal size={24} className="text-zinc-600" />
+          <div className="w-14 h-14 rounded-full bg-elevated flex items-center justify-center mb-3">
+            <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
-          <p className="text-zinc-400 font-semibold text-sm">Nema vozila po ovom filteru</p>
+          <p className="text-app-secondary font-semibold text-sm">Nema vozila po ovom filteru</p>
           <button onClick={() => { setTradeFilter('all'); setSwipeIndex(0); }} className="mt-2 text-orange-400 text-xs font-semibold">Poništi filtere</button>
         </div>
       )}
@@ -287,118 +292,136 @@ export default function FeedPage() {
       {/* More Filters bottom-sheet */}
       {showMoreFilters && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
-          <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm" onClick={() => setShowMoreFilters(false)} />
-          <div className="relative w-full max-w-md bg-zinc-900 rounded-t-3xl border-t border-zinc-700 p-6 pb-8 max-h-[85vh] overflow-y-auto safe-bottom">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowMoreFilters(false)} />
+          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 pb-8 max-h-[85vh] overflow-y-auto safe-bottom">
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-lg font-bold text-white">Više filtera</h3>
-              <button onClick={() => setShowMoreFilters(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition-colors" aria-label="Zatvori">
+              <h3 className="text-lg font-bold text-app-primary">Više filtera</h3>
+              <button onClick={() => setShowMoreFilters(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors" aria-label="Zatvori">
                 <X size={16} />
               </button>
             </div>
-            <p className="text-xs text-zinc-500 mb-5">Napredne opcije filtera uskoro dolaze.</p>
+            <p className="text-xs text-app-muted mb-5">Napredne opcije filtera uskoro dolaze.</p>
             <div className="space-y-2">
               {COMING_SOON_FILTERS.map(label => (
-                <div key={label} className="flex items-center justify-between rounded-xl bg-zinc-800/50 border border-zinc-800 px-4 py-3 cursor-not-allowed">
-                  <span className="text-sm font-medium text-zinc-400">{label}</span>
+                <div key={label} className="flex items-center justify-between rounded-xl bg-elevated/50 border border-surface px-4 py-3 cursor-not-allowed">
+                  <span className="text-sm font-medium text-app-secondary">{label}</span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400/80 bg-orange-500/10 px-2 py-1 rounded-md">Uskoro</span>
                 </div>
               ))}
             </div>
-            <button onClick={() => setShowMoreFilters(false)} className="w-full mt-6 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3 rounded-xl text-sm transition-colors">
+            <button onClick={() => setShowMoreFilters(false)} className="w-full mt-6 bg-elevated hover:bg-hover-surface text-app-primary font-semibold py-3 rounded-xl text-sm transition-colors">
               Gotovo
             </button>
           </div>
         </div>
       )}
 
-      {/* SWIPE MODE */}
+      {/* SWIPE MODE — FULLSCREEN */}
       {viewMode === 'swipe' && swipeCar && filteredCars.length > 0 && (
-        <div className="flex flex-col items-center px-4 mt-4 pb-4">
-          <div className="flex gap-1.5 mb-3 flex-wrap justify-center">
-            {filteredCars.map((_, i) => (
-              <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === swipeIndex ? 'w-6 bg-orange-400' : 'w-1.5 bg-zinc-700'}`} />
-            ))}
+        <div className="fixed inset-0 z-[60] bg-app flex flex-col safe-top safe-bottom">
+          {/* Swipe header with exit button */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-surface">
+            <div className="flex items-center gap-2">
+              <Flame size={18} className="text-orange-400" />
+              <span className="text-sm font-bold text-app-primary">Svajp režim</span>
+            </div>
+            <button
+              onClick={exitSwipeMode}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary hover:text-app-primary transition-all duration-200"
+              aria-label="Izađi iz svajp režima"
+            >
+              <X size={18} />
+            </button>
           </div>
 
-          <div className="w-full max-w-sm bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 shadow-xl" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <Link href={`/car/${swipeCar.id}`} className="block">
-              <div className="relative h-72 sm:h-80">
-                <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/10 to-transparent" />
-                <button
-                  onClick={(e) => { e.preventDefault(); toggleSave(swipeCar.id); }}
-                  className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                    saved.includes(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-zinc-900/60 text-zinc-400 hover:text-rose-400'
-                  }`}
-                  aria-label="Sačuvaj"
-                >
-                  <Heart size={18} fill={saved.includes(swipeCar.id) ? 'currentColor' : 'none'} />
-                </button>
-                {swipeTl && (
-                  <div className={`absolute bottom-3 left-3 px-3 py-1.5 rounded-full border text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
-                    {swipeTl.label}
-                  </div>
-                )}
-              </div>
-            </Link>
+          {/* Swipe content */}
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-y-auto">
+            <div className="flex gap-1.5 mb-4 flex-wrap justify-center">
+              {filteredCars.map((_, i) => (
+                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === swipeIndex ? 'w-6 bg-orange-400' : 'w-1.5 bg-elevated'}`} />
+              ))}
+            </div>
 
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-2 gap-2">
-                <div className="min-w-0">
-                  <h2 className="text-lg font-black text-white tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
-                  <p className="text-xs text-zinc-500 mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
+            <div className="w-full max-w-sm bg-card-surface rounded-3xl overflow-hidden border border-surface shadow-xl" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+              <Link href={`/car/${swipeCar.id}`} className="block">
+                <div className="relative h-72 sm:h-80">
+                  <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+                  <button
+                    onClick={(e) => { e.preventDefault(); toggleSave(swipeCar.id); }}
+                    className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
+                      saved.includes(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
+                    }`}
+                    aria-label="Sačuvaj"
+                  >
+                    <Heart size={18} fill={saved.includes(swipeCar.id) ? 'currentColor' : 'none'} />
+                  </button>
+                  {swipeTl && (
+                    <div className={`absolute bottom-3 left-3 px-3 py-1.5 rounded-full border text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
+                      {swipeTl.label}
+                    </div>
+                  )}
                 </div>
-                <p className="text-orange-400 font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
-              </div>
+              </Link>
 
-              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                <div className="flex items-center gap-1.5 text-[11px] text-zinc-400"><Gauge size={12} className="text-zinc-500" />{swipeCar.mileage.toLocaleString()} km</div>
-                <div className="flex items-center gap-1.5 text-[11px] text-zinc-400"><Fuel size={12} className="text-zinc-500" />{swipeCar.specs.fuelType}</div>
-                <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 ml-auto"><MapPin size={12} className="text-zinc-500" />{swipeCar.city}</div>
-              </div>
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-2 gap-2">
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-black text-app-primary tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
+                    <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
+                  </div>
+                  <p className="text-orange-400 font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
+                </div>
 
-              <p className="text-xs text-zinc-400 mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
+                <div className="flex items-center gap-2 mt-3 flex-wrap">
+                  <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Gauge size={12} className="text-app-muted" />{swipeCar.mileage.toLocaleString()} km</div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Fuel size={12} className="text-app-muted" />{swipeCar.specs.fuelType}</div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-app-secondary ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
+                </div>
 
-              <div className="flex items-center gap-2 mt-4 pt-3 border-t border-zinc-800">
-                <button onClick={() => openOffer(swipeCar)} className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-zinc-950 text-sm font-bold rounded-xl py-2.5 transition-all duration-200 active:scale-95">
-                  <ArrowLeftRight size={15} /> Pošalji ponudu
-                </button>
-                <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-semibold rounded-xl py-2.5 transition-all">
-                  Detalji
-                </Link>
+                <p className="text-xs text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
+
+                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface">
+                  <button onClick={() => openOffer(swipeCar)} className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-2.5 transition-all duration-200 active:scale-95">
+                    <ArrowLeftRight size={15} /> Pošalji ponudu
+                  </button>
+                  <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
+                    Detalji
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-4 mt-4">
-            <button onClick={() => { if (swipeIndex > 0) setSwipeIndex(i => i - 1); }} disabled={swipeIndex === 0} className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" aria-label="Prethodno">
-              <ArrowLeft size={18} />
-            </button>
-            <span className="text-xs text-zinc-500 font-medium">{swipeIndex + 1} / {filteredCars.length}</span>
-            <button onClick={() => { if (swipeIndex < filteredCars.length - 1) setSwipeIndex(i => i + 1); }} disabled={swipeIndex === filteredCars.length - 1} className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" aria-label="Sledeće">
-              <ArrowRight size={18} />
-            </button>
+            <div className="flex items-center gap-4 mt-4">
+              <button onClick={() => { if (swipeIndex > 0) setSwipeIndex(i => i - 1); }} disabled={swipeIndex === 0} className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center text-app-secondary hover:text-app-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all" aria-label="Prethodno">
+                <ArrowLeft size={18} />
+              </button>
+              <span className="text-xs text-app-muted font-medium">{swipeIndex + 1} / {filteredCars.length}</span>
+              <button onClick={() => { if (swipeIndex < filteredCars.length - 1) setSwipeIndex(i => i + 1); }} disabled={swipeIndex === filteredCars.length - 1} className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center text-app-secondary hover:text-app-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all" aria-label="Sledeće">
+                <ArrowRight size={18} />
+              </button>
+            </div>
+            <p className="text-[10px] text-app-muted mt-2 opacity-70">Prevuci levo/desno za pregled · Klikni X za izlaz</p>
           </div>
-          <p className="text-[10px] text-zinc-600 mt-2">Prevuci levo/desno za pregled</p>
         </div>
       )}
 
-      {/* GRID/LIST MODE — vertical list on all screens, horizontal layout on md+ */}
+      {/* GRID/LIST MODE */}
       {viewMode === 'grid' && (
         <div className="px-4 mt-3 space-y-3 pb-4 md:px-6 lg:px-8">
           {filteredCars.map(car => {
             const tl = getTradeLabel(selectedCar, car);
             const isSaved = saved.includes(car.id);
             return (
-              <article key={car.id} className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-zinc-700 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
+              <article key={car.id} className="bg-card-surface rounded-2xl overflow-hidden border border-surface hover:border-orange-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
                 {/* Image */}
                 <Link href={`/car/${car.id}`} className="block relative h-44 sm:h-48 md:w-72 md:h-auto md:flex-shrink-0">
                   <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent md:bg-gradient-to-r" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent md:bg-gradient-to-r" />
                   <button
                     onClick={(e) => { e.preventDefault(); toggleSave(car.id); }}
                     className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                      isSaved ? 'bg-rose-500 text-white' : 'bg-zinc-900/60 text-zinc-400 hover:text-rose-400'
+                      isSaved ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
                     }`}
                     aria-label={isSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
                   >
@@ -411,20 +434,20 @@ export default function FeedPage() {
                   {/* Left: title + specs */}
                   <div className="md:flex-1 md:min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="font-bold text-white text-base leading-tight hover:text-orange-400 transition-colors">
+                      <h2 className="font-bold text-app-primary text-base leading-tight hover:text-orange-400 transition-colors">
                         {car.year} {car.brand} {car.model}
                       </h2>
                     </Link>
-                    <p className="text-xs text-zinc-500 mt-0.5">{car.generation} · {car.color}</p>
+                    <p className="text-xs text-app-muted mt-0.5">{car.generation} · {car.color}</p>
 
-                    <div className="flex items-center gap-3 mt-2 text-xs text-zinc-400 flex-wrap">
-                      <span className="flex items-center gap-1"><Gauge size={13} className="text-zinc-500" />{car.mileage.toLocaleString()} km</span>
-                      <span className="flex items-center gap-1"><Fuel size={13} className="text-zinc-500" />{car.specs.fuelType}</span>
-                      <span className="flex items-center gap-1"><Settings2 size={13} className="text-zinc-500" />{car.specs.transmission}</span>
-                      <span className="flex items-center gap-1"><MapPin size={13} className="text-zinc-500" />{car.city}</span>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-app-secondary flex-wrap">
+                      <span className="flex items-center gap-1"><Gauge size={13} className="text-app-muted" />{car.mileage.toLocaleString()} km</span>
+                      <span className="flex items-center gap-1"><Fuel size={13} className="text-app-muted" />{car.specs.fuelType}</span>
+                      <span className="flex items-center gap-1"><Settings2 size={13} className="text-app-muted" />{car.specs.transmission}</span>
+                      <span className="flex items-center gap-1"><MapPin size={13} className="text-app-muted" />{car.city}</span>
                     </div>
 
-                    <p className="text-xs text-zinc-400 mt-2 line-clamp-1 leading-relaxed hidden md:block">{car.description}</p>
+                    <p className="text-xs text-app-secondary mt-2 line-clamp-1 leading-relaxed hidden md:block">{car.description}</p>
                   </div>
 
                   {/* Right: price + match + CTA */}
@@ -439,15 +462,15 @@ export default function FeedPage() {
                     <div className="flex gap-2 mt-2 md:mt-3 md:w-full">
                       <button
                         onClick={() => openOffer(car)}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-zinc-950 text-xs font-bold rounded-lg py-2 md:py-2.5 transition-all duration-200 active:scale-95 whitespace-nowrap"
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold rounded-lg py-2 md:py-2.5 transition-all duration-200 active:scale-95 whitespace-nowrap"
                       >
                         <ArrowLeftRight size={14} />
                         Pošalji ponudu
                       </button>
-                      <Link href={`/car/${car.id}`} className="px-3 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap">
+                      <Link href={`/car/${car.id}`} className="px-3 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap">
                         Detalji
                       </Link>
-                      <a href={`tel:${car.owner.phone}`} className="w-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-all duration-200" aria-label="Pozovi vlasnika">
+                      <a href={`tel:${car.owner.phone}`} className="w-9 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-lg transition-all duration-200" aria-label="Pozovi vlasnika">
                         <Phone size={15} />
                       </a>
                     </div>
@@ -462,11 +485,11 @@ export default function FeedPage() {
       {/* Add New Car Modal */}
       {showAddForm && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
-          <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm" onClick={() => setShowAddForm(false)} />
-          <div className="relative w-full max-w-md bg-zinc-900 rounded-t-3xl border-t border-zinc-700 p-6 max-h-[85vh] overflow-y-auto safe-bottom">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowAddForm(false)} />
+          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-bold text-white">Dodaj novo vozilo</h3>
-              <button onClick={() => setShowAddForm(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition-colors" aria-label="Zatvori">
+              <h3 className="text-lg font-bold text-app-primary">Dodaj novo vozilo</h3>
+              <button onClick={() => setShowAddForm(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors" aria-label="Zatvori">
                 <X size={16} />
               </button>
             </div>
@@ -478,26 +501,26 @@ export default function FeedPage() {
       {/* Trade Offer Modal */}
       {modal.state !== 'closed' && modal.car && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
-          <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm" onClick={closeModal} />
-          <div className="relative w-full max-w-md bg-zinc-900 rounded-t-3xl border-t border-zinc-700 p-6 max-h-[85vh] overflow-y-auto safe-bottom">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={closeModal} />
+          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
             {modal.state === 'offer' ? (
               <>
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-lg font-bold text-white">Ponuda za trampu</h3>
-                  <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition-colors" aria-label="Zatvori">
+                  <h3 className="text-lg font-bold text-app-primary">Ponuda za trampu</h3>
+                  <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors" aria-label="Zatvori">
                     <X size={16} />
                   </button>
                 </div>
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="flex-1 rounded-xl bg-zinc-800 p-3 text-center min-w-0">
-                    <p className="text-xs text-zinc-500 mb-1">Tvoj auto</p>
-                    <p className="text-sm font-semibold text-white truncate">{selectedCar.brand} {selectedCar.model}</p>
+                  <div className="flex-1 rounded-xl bg-elevated p-3 text-center min-w-0">
+                    <p className="text-xs text-app-muted mb-1">Tvoj auto</p>
+                    <p className="text-sm font-semibold text-app-primary truncate">{selectedCar.brand} {selectedCar.model}</p>
                     <p className="text-orange-400 font-bold text-sm">{formatEuro(selectedCar.price)}</p>
                   </div>
-                  <ArrowLeftRight size={20} className="text-zinc-500 flex-shrink-0" />
-                  <div className="flex-1 rounded-xl bg-zinc-800 p-3 text-center min-w-0">
-                    <p className="text-xs text-zinc-500 mb-1">Njegov auto</p>
-                    <p className="text-sm font-semibold text-white truncate">{modal.car.brand} {modal.car.model}</p>
+                  <ArrowLeftRight size={20} className="text-app-muted flex-shrink-0" />
+                  <div className="flex-1 rounded-xl bg-elevated p-3 text-center min-w-0">
+                    <p className="text-xs text-app-muted mb-1">Njegov auto</p>
+                    <p className="text-sm font-semibold text-app-primary truncate">{modal.car.brand} {modal.car.model}</p>
                     <p className="text-orange-400 font-bold text-sm">{formatEuro(modal.car.price)}</p>
                   </div>
                 </div>
@@ -510,9 +533,9 @@ export default function FeedPage() {
                   value={message}
                   onChange={e => setMessage(e.target.value)}
                   placeholder="Dodaj poruku uz ponudu... (opciono)"
-                  className="w-full h-24 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none focus:border-orange-500 transition-colors"
+                  className="w-full h-24 bg-elevated border border-surface rounded-xl px-4 py-3 text-sm text-app-primary placeholder:text-app-muted resize-none focus:outline-none focus:border-orange-500 transition-colors"
                 />
-                <button onClick={sendOffer} className="w-full mt-4 bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold py-3 rounded-xl text-sm transition-all duration-200 active:scale-95">
+                <button onClick={sendOffer} className="w-full mt-4 bg-orange-500 hover:bg-orange-400 text-white font-bold py-3 rounded-xl text-sm transition-all duration-200 active:scale-95">
                   Pošalji ponudu
                 </button>
               </>
@@ -521,12 +544,12 @@ export default function FeedPage() {
                 <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
                   <CheckCircle size={36} className="text-emerald-400" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Ponuda poslata!</h3>
-                <p className="text-sm text-zinc-400 text-center mb-1">
-                  Tvoja ponuda za <span className="text-white font-medium">{modal.car.brand} {modal.car.model}</span> je poslata korisniku {modal.car.owner.name}.
+                <h3 className="text-lg font-bold text-app-primary mb-2">Ponuda poslata!</h3>
+                <p className="text-sm text-app-secondary text-center mb-1">
+                  Tvoja ponuda za <span className="text-app-primary font-medium">{modal.car.brand} {modal.car.model}</span> je poslata korisniku {modal.car.owner.name}.
                 </p>
-                <p className="text-xs text-zinc-500 mb-6">Otvori Poruke da nastaviš razgovor.</p>
-                <button onClick={closeModal} className="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3 rounded-xl text-sm transition-colors">
+                <p className="text-xs text-app-muted mb-6">Otvori Poruke da nastaviš razgovor.</p>
+                <button onClick={closeModal} className="w-full bg-elevated hover:bg-hover-surface text-app-primary font-semibold py-3 rounded-xl text-sm transition-colors">
                   Zatvori
                 </button>
               </div>

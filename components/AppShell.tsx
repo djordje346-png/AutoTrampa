@@ -10,7 +10,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   // Loading state
   if (!mounted) {
     return (
-      <main className="min-h-screen w-full bg-zinc-950 text-zinc-100">
+      <main className="min-h-screen w-full bg-app text-app-primary">
         <div className="mx-auto min-h-screen w-full max-w-[1600px]" />
       </main>
     );
@@ -19,7 +19,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   // Authentication screen
   if (!isLoggedIn) {
     return (
-      <main className="min-h-screen w-full bg-zinc-950 text-zinc-100">
+      <main className="min-h-screen w-full bg-app text-app-primary">
         <div className="mx-auto min-h-screen w-full max-w-[1600px]">
           <AuthScreen />
         </div>
@@ -29,7 +29,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   // Main application
   return (
-    <div className="min-h-screen w-full bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen w-full bg-app text-app-primary">
       <main
         className="
           mx-auto

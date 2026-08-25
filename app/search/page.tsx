@@ -57,13 +57,13 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 px-4 pt-4 pb-3 safe-top">
+      <header className="sticky top-0 z-40 bg-app/90 backdrop-blur-md border-b border-surface px-4 pt-4 pb-3 safe-top">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold tracking-tight text-white">Pretraga</h1>
+          <h1 className="text-xl font-bold tracking-tight text-app-primary">Pretraga</h1>
           {mounted && (
             <Link
               href="/garage"
-              className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-orange-400 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-app-muted hover:text-orange-400 transition-colors"
             >
               <TrendingUp size={13} className="text-orange-400" />
               {selectedCar.brand} {selectedCar.model}
@@ -72,17 +72,17 @@ export default function SearchPage() {
         </div>
 
         <div className="relative">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Marka, model, grad..."
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-9 pr-9 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-elevated border border-surface rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary placeholder:text-app-muted focus:outline-none focus:border-orange-500 transition-colors"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-app-muted hover:text-app-secondary transition-colors"
             >
               <X size={15} />
             </button>
@@ -94,8 +94,8 @@ export default function SearchPage() {
             onClick={() => setActiveType(null)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
               !activeType
-                ? 'bg-orange-500 border-orange-500 text-zinc-950'
-                : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                ? 'bg-orange-500 border-orange-500 text-white'
+                : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
             }`}
           >
             <SlidersHorizontal size={11} />
@@ -107,8 +107,8 @@ export default function SearchPage() {
               onClick={() => setActiveType(prev => (prev === type ? null : type))}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                 activeType === type
-                  ? 'bg-orange-500 border-orange-500 text-zinc-950'
-                  : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                  ? 'bg-orange-500 border-orange-500 text-white'
+                  : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
               }`}
             >
               {type}
@@ -117,7 +117,7 @@ export default function SearchPage() {
         </div>
 
         <div className="flex items-center gap-2 mt-2.5">
-          <span className="text-[10px] text-zinc-600 font-medium uppercase tracking-wider flex-shrink-0">Sortiraj:</span>
+          <span className="text-[10px] text-app-muted font-medium uppercase tracking-wider flex-shrink-0">Sortiraj:</span>
           {([
             { key: 'trade', label: 'Najbolja zamena' },
             { key: 'price-asc', label: 'Cena ↑' },
@@ -128,7 +128,7 @@ export default function SearchPage() {
               key={key}
               onClick={() => setSortBy(key)}
               className={`text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
-                sortBy === key ? 'text-orange-400 bg-orange-500/10' : 'text-zinc-500 hover:text-zinc-300'
+                sortBy === key ? 'text-orange-400 bg-orange-500/10' : 'text-app-muted hover:text-app-secondary'
               }`}
             >
               {label}
@@ -138,7 +138,7 @@ export default function SearchPage() {
       </header>
 
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-app-muted">
           {results.length === 0 ? 'Nema rezultata' : `${results.length} rezultata`}
         </p>
         {hasFilters && (
@@ -155,11 +155,11 @@ export default function SearchPage() {
       <div className="px-4 space-y-3 pb-4">
         {results.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mb-4">
-              <Search size={28} className="text-zinc-600" />
+            <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
+              <Search size={28} className="text-app-muted" />
             </div>
-            <p className="text-zinc-400 font-medium">Nema pronađenih vozila</p>
-            <p className="text-zinc-600 text-sm mt-1">Pokušaj sa drugim terminom</p>
+            <p className="text-app-secondary font-medium">Nema pronađenih vozila</p>
+            <p className="text-app-muted text-sm mt-1">Pokušaj sa drugim terminom</p>
           </div>
         ) : (
           results.map(car => {
@@ -168,7 +168,7 @@ export default function SearchPage() {
               <Link
                 key={car.id}
                 href={`/car/${car.id}`}
-                className="block bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-zinc-700 transition-all duration-200"
+                className="block bg-card-surface rounded-2xl overflow-hidden border border-surface hover:border-orange-500/30 transition-all duration-200"
               >
                 <div className="flex">
                   <div className="w-28 flex-shrink-0 relative">
@@ -181,33 +181,33 @@ export default function SearchPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="text-[10px] text-orange-400 font-bold uppercase tracking-widest">{car.bodyType}</p>
-                        <h3 className="text-sm font-bold text-white leading-tight truncate">
+                        <h3 className="text-sm font-bold text-app-primary leading-tight truncate">
                           {car.year} {car.brand} {car.model}
                         </h3>
-                        <p className="text-xs text-zinc-500">{car.generation}</p>
+                        <p className="text-xs text-app-muted">{car.generation}</p>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="text-orange-400 font-bold text-sm">{formatEuro(car.price)}</p>
-                        <ArrowRight size={12} className="text-zinc-600 ml-auto mt-1" />
+                        <ArrowRight size={12} className="text-app-muted ml-auto mt-1" />
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2.5 mt-2 flex-wrap">
-                      <span className="flex items-center gap-1 text-[11px] text-zinc-400">
-                        <Gauge size={11} className="text-zinc-600" />
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary">
+                        <Gauge size={11} className="text-app-muted" />
                         {car.mileage.toLocaleString()} km
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-zinc-400">
-                        <Fuel size={11} className="text-zinc-600" />
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary">
+                        <Fuel size={11} className="text-app-muted" />
                         {car.specs.displacement} {car.specs.fuelType}
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-zinc-400">
-                        <MapPin size={11} className="text-zinc-600" />
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary">
+                        <MapPin size={11} className="text-app-muted" />
                         {car.city}
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-zinc-500 mt-1.5 line-clamp-1">{car.description}</p>
+                    <p className="text-[11px] text-app-muted mt-1.5 line-clamp-1">{car.description}</p>
                   </div>
                 </div>
               </Link>
