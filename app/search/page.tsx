@@ -57,7 +57,7 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 bg-app/90 backdrop-blur-md border-b border-surface px-4 pt-4 pb-3 safe-top">
+      <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 pt-4 pb-3 safe-top">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold tracking-tight text-app-primary">Pretraga</h1>
           {mounted && (

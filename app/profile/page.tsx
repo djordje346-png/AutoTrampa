@@ -136,11 +136,11 @@ export default function ProfilePage() {
             </div>
             <button
               onClick={toggleTheme}
-              className="relative w-11 h-6 rounded-full flex-shrink-0 transition-colors duration-200 bg-elevated border border-surface"
+              className="relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 bg-elevated border border-surface"
               aria-label="Promeni temu"
             >
-              <span className={`absolute top-0.5 w-5 h-5 rounded-full transition-transform duration-200 flex items-center justify-center ${
-                theme === 'dark' ? 'translate-x-5 bg-orange-500' : 'translate-x-0.5 bg-white'
+              <span className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-transform duration-200 flex items-center justify-center ${
+                theme === 'dark' ? 'translate-x-5 bg-orange-500' : 'translate-x-0 bg-white'
               }`}>
                 {theme === 'dark' ? (
                   <Moon size={10} className="text-white" />
@@ -211,12 +211,12 @@ export default function ProfilePage() {
             </div>
             <button
               onClick={() => setPhoneAfterMatch(!phoneAfterMatch)}
-              className={`relative w-11 h-6 rounded-full flex-shrink-0 transition-colors duration-200 ${
+              className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
                 phoneAfterMatch ? 'bg-orange-500' : 'bg-elevated'
               }`}
             >
-              <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
-                phoneAfterMatch ? 'translate-x-5' : 'translate-x-0.5'
+              <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                phoneAfterMatch ? 'translate-x-5' : 'translate-x-0'
               }`} />
             </button>
           </div>
@@ -295,7 +295,7 @@ export default function ProfilePage() {
       <p className="text-center text-[10px] text-app-muted opacity-50 pb-2">AutoTrampa v1.0</p>
 
       {activeModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-card-surface border border-surface w-full max-w-lg max-h-[85vh] rounded-t-3xl sm:rounded-2xl flex flex-col overflow-hidden shadow-2xl safe-bottom">
             <div className="flex items-center justify-between px-5 py-4 border-b border-surface">
               <h3 className="text-sm font-bold text-app-primary">

@@ -47,7 +47,7 @@ export default function MessagesPage() {
   if (!mounted) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 bg-app/90 backdrop-blur-md border-b border-surface px-4 py-4">
+        <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-4">
           <h1 className="text-xl font-bold tracking-tight text-app-primary">Poruke</h1>
         </header>
         <div className="px-4 pt-6 space-y-3">
@@ -62,7 +62,7 @@ export default function MessagesPage() {
   if (activeConv) {
     return (
       <div className="flex flex-col h-screen">
-        <header className="sticky top-0 z-40 bg-app/95 backdrop-blur-md border-b border-surface px-4 py-3 flex items-center gap-3 safe-top">
+        <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-3 flex items-center gap-3 safe-top">
           <button
             onClick={() => setActiveId(null)}
             className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors"
@@ -122,7 +122,7 @@ export default function MessagesPage() {
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-app/95 backdrop-blur-md border-t border-surface px-4 py-3 flex items-center gap-2 safe-bottom">
+        <div className="sticky bottom-0 bg-app border-t border-surface px-4 py-3 flex items-center gap-2 safe-bottom">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -144,7 +144,7 @@ export default function MessagesPage() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 bg-app/90 backdrop-blur-md border-b border-surface px-4 py-4">
+      <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-app-primary">Poruke</h1>

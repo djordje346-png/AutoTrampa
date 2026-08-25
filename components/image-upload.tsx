@@ -36,8 +36,8 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-zinc-400">Fotografije vozila</label>
-        <span className="text-xs text-zinc-500">
+        <label className="text-xs font-medium text-app-muted">Fotografije vozila</label>
+        <span className="text-xs text-app-muted">
           {images.length}/{maxImages} dodato
         </span>
       </div>
@@ -46,7 +46,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
         {images.map((imgUrl, index) => (
           <div
             key={index}
-            className="relative aspect-square rounded-xl overflow-hidden bg-zinc-800 border border-zinc-700 group"
+            className="relative aspect-square rounded-xl overflow-hidden bg-elevated border border-surface group"
           >
             <img
               src={imgUrl}
@@ -54,14 +54,14 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
               className="w-full h-full object-cover"
             />
             {index === 0 && (
-              <span className="absolute bottom-1.5 left-1.5 bg-orange-500 text-black font-extrabold text-[9px] px-1.5 py-0.5 rounded shadow">
+              <span className="absolute bottom-1.5 left-1.5 bg-orange-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded shadow">
                 GLAVNA
               </span>
             )}
             <button
               type="button"
               onClick={() => removeImage(index)}
-              className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 text-zinc-300 hover:text-white flex items-center justify-center backdrop-blur-sm transition"
+              className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 text-white hover:text-rose-400 flex items-center justify-center backdrop-blur-sm transition"
             >
               <X size={14} />
             </button>
@@ -69,7 +69,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
         ))}
 
         {images.length < maxImages && (
-          <label className="aspect-square rounded-xl border border-dashed border-zinc-700 hover:border-orange-500/50 bg-zinc-800 hover:bg-orange-500/5 transition cursor-pointer flex flex-col items-center justify-center p-2 text-center group">
+          <label className="aspect-square rounded-xl border border-dashed border-surface hover:border-orange-500/50 bg-elevated hover:bg-orange-500/5 transition cursor-pointer flex flex-col items-center justify-center p-2 text-center group">
             <input
               type="file"
               accept="image/*"
@@ -77,13 +77,13 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
               onChange={handleFileChange}
               className="hidden"
             />
-            <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-400 group-hover:text-orange-400 transition mb-1">
+            <div className="w-8 h-8 rounded-full bg-hover-surface flex items-center justify-center text-app-muted group-hover:text-orange-400 transition mb-1">
               <UploadCloud size={16} />
             </div>
-            <span className="text-[11px] font-semibold text-zinc-300 group-hover:text-orange-400 transition">
+            <span className="text-[11px] font-semibold text-app-secondary group-hover:text-orange-400 transition">
               Dodaj sliku
             </span>
-            <span className="text-[9px] text-zinc-500 mt-0.5">PNG, JPG do 5MB</span>
+            <span className="text-[9px] text-app-muted mt-0.5">PNG, JPG do 5MB</span>
           </label>
         )}
       </div>

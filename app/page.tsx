@@ -338,7 +338,7 @@ export default function FeedPage() {
 
       {/* More Filters bottom-sheet */}
       {showMoreFilters && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end justify-center">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowMoreFilters(false)} />
           <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 pb-8 max-h-[85vh] overflow-y-auto safe-bottom">
             <div className="flex items-center justify-between mb-1">
@@ -630,7 +630,7 @@ export default function FeedPage() {
 
       {/* Add New Car Modal */}
       {showAddForm && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end justify-center">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowAddForm(false)} />
           <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
             <div className="flex items-center justify-between mb-5">
@@ -646,7 +646,7 @@ export default function FeedPage() {
 
       {/* Trade Offer Modal */}
       {modal.state !== 'closed' && modal.car && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end justify-center">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={closeModal} />
           <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
             {modal.state === 'offer' ? (

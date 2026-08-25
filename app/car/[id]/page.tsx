@@ -225,7 +225,7 @@ export default function CarDetailPage() {
         )}
       </div>
 
-      <div className="sticky bottom-0 bg-app/95 backdrop-blur-md border-t border-surface px-4 py-3 flex gap-2 safe-bottom">
+      <div className="sticky bottom-0 bg-app border-t border-surface px-4 py-3 flex gap-2 safe-bottom">
         <button
           onClick={openOffer}
           className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"
@@ -242,7 +242,7 @@ export default function CarDetailPage() {
       </div>
 
       {modal !== 'closed' && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end justify-center">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setModal('closed')} />
           <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 safe-bottom">
             {modal === 'offer' ? (

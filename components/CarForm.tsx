@@ -167,13 +167,13 @@ function CarFormFields({
   }
 
   const inputClass =
-    'h-11 w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 text-sm text-zinc-100 outline-none transition-all placeholder:text-zinc-600 hover:border-zinc-600 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10';
+    'h-11 w-full rounded-xl border border-surface bg-elevated px-3.5 text-sm text-app-primary outline-none transition-all placeholder:text-app-muted hover:border-orange-500/40 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10';
 
   const selectClass =
-    'h-11 w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 text-sm text-zinc-100 outline-none transition-all hover:border-zinc-600 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 disabled:cursor-not-allowed disabled:opacity-50';
+    'h-11 w-full rounded-xl border border-surface bg-elevated px-3.5 text-sm text-app-primary outline-none transition-all hover:border-orange-500/40 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 disabled:cursor-not-allowed disabled:opacity-50';
 
   const labelClass =
-    'mb-2 block text-xs font-medium text-zinc-400';
+    'mb-2 block text-xs font-medium text-app-muted';
 
   return (
     <div className="space-y-8">
@@ -181,11 +181,11 @@ function CarFormFields({
       {/* OSNOVNI PODACI */}
       <section>
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-white">
+          <h2 className="text-base font-semibold text-app-primary">
             Osnovni podaci
           </h2>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-app-muted">
             Unesite osnovne informacije o vozilu.
           </p>
         </div>
@@ -284,14 +284,14 @@ function CarFormFields({
       </section>
 
       {/* CENA I LOKACIJA */}
-      <section className="border-t border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-8">
 
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-white">
+          <h2 className="text-base font-semibold text-app-primary">
             Cena i lokacija
           </h2>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-app-muted">
             Informacije koje kupac prvo vidi.
           </p>
         </div>
@@ -317,7 +317,7 @@ function CarFormFields({
                 className={`${inputClass} pr-14`}
               />
 
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-muted">
                 EUR
               </span>
             </div>
@@ -342,7 +342,7 @@ function CarFormFields({
                 className={`${inputClass} pr-14`}
               />
 
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-muted">
                 KM
               </span>
             </div>
@@ -382,14 +382,14 @@ function CarFormFields({
       </section>
 
       {/* KAROSERIJA */}
-      <section className="border-t border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-8">
 
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-white">
+          <h2 className="text-base font-semibold text-app-primary">
             Tip karoserije
           </h2>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-app-muted">
             Izaberite tip karoserije vozila.
           </p>
         </div>
@@ -411,8 +411,8 @@ function CarFormFields({
                   text-xs font-medium transition-all
                   ${
                     active
-                      ? 'border-orange-500 bg-orange-500 text-zinc-950'
-                      : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-800 hover:text-white'
+                      ? 'border-orange-500 bg-orange-500 text-white'
+                      : 'border-surface bg-elevated text-app-secondary hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary'
                   }
                 `}
               >
@@ -425,14 +425,14 @@ function CarFormFields({
       </section>
 
       {/* MOTOR */}
-      <section className="border-t border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-8">
 
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-white">
+          <h2 className="text-base font-semibold text-app-primary">
             Specifikacije motora
           </h2>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-app-muted">
             Dodajte detalje motora i performansi.
           </p>
         </div>
@@ -555,19 +555,19 @@ function CarFormFields({
       </section>
 
       {/* FOTOGRAFIJE */}
-      <section className="border-t border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-8">
 
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-white">
+          <h2 className="text-base font-semibold text-app-primary">
             Fotografije
           </h2>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-app-muted">
             Dodajte do 5 fotografija.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+        <div className="rounded-2xl border border-surface bg-app p-4">
           <ImageUpload
             images={images}
             onChange={setImages}
@@ -654,7 +654,7 @@ export default function CarFormComponent({
 
   return createPortal(
     <div
-      className="fixed inset-0 flex h-[100dvh] w-screen flex-col overflow-hidden bg-zinc-950"
+      className="fixed inset-0 flex h-[100dvh] w-screen flex-col overflow-hidden bg-app"
       style={{
         position: 'fixed',
         inset: 0,
@@ -665,18 +665,18 @@ export default function CarFormComponent({
     >
 
       {/* HEADER */}
-      <header className="shrink-0 border-b border-zinc-800 bg-zinc-950">
+      <header className="shrink-0 border-b border-surface bg-app safe-top">
 
         <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
 
           <div>
-            <h1 className="text-base font-bold text-white sm:text-lg">
+            <h1 className="text-base font-bold text-app-primary sm:text-lg">
               {editingCar
                 ? 'Izmeni automobil'
                 : 'Dodaj oglas'}
             </h1>
 
-            <p className="hidden text-xs text-zinc-500 sm:block">
+            <p className="hidden text-xs text-app-muted sm:block">
               Unesite podatke o vozilu
             </p>
           </div>
@@ -685,18 +685,7 @@ export default function CarFormComponent({
             type="button"
             onClick={onCancel}
             aria-label="Zatvori"
-            className="
-              flex h-10 w-10
-              items-center justify-center
-              rounded-xl
-              border border-zinc-700
-              bg-zinc-900
-              text-zinc-400
-              transition-all
-              hover:border-zinc-600
-              hover:bg-zinc-800
-              hover:text-white
-            "
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary transition-all hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary"
           >
             <svg
               width="18"
@@ -723,20 +712,20 @@ export default function CarFormComponent({
 
           <div className="mb-7">
 
-            <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-app-primary sm:text-2xl">
               {editingCar
                 ? 'Izmeni detalje vozila'
                 : 'Dodaj svoj automobil'}
             </h2>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-app-muted">
               Popunite informacije o automobilu kako bi
               vaš oglas bio što potpuniji.
             </p>
 
           </div>
 
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 sm:p-6 lg:p-8">
+          <div className="rounded-2xl border border-surface bg-card-surface p-4 sm:p-6 lg:p-8">
 
             <CarFormFields
               form={form}
@@ -754,7 +743,7 @@ export default function CarFormComponent({
 
       {/* ACTION BUTTONS */}
       <div
-        className="shrink-0 border-t border-zinc-800 bg-zinc-950"
+        className="shrink-0 border-t border-surface bg-app safe-bottom"
         style={{
           position: 'relative',
           zIndex: 2147483647,
@@ -767,22 +756,7 @@ export default function CarFormComponent({
           <button
             type="button"
             onClick={onCancel}
-            className="
-              h-11
-              w-full
-              rounded-xl
-              border border-zinc-700
-              bg-zinc-900
-              px-6
-              text-sm
-              font-semibold
-              text-zinc-300
-              transition-all
-              hover:border-zinc-600
-              hover:bg-zinc-800
-              hover:text-white
-              active:scale-[0.98]
-            "
+            className="h-11 w-full rounded-xl border border-surface bg-elevated px-6 text-sm font-semibold text-app-secondary transition-all hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98]"
           >
             Otkaži
           </button>
@@ -792,21 +766,7 @@ export default function CarFormComponent({
             type="button"
             onClick={handleSave}
             disabled={!isValid}
-            className="
-              h-11
-              w-full
-              rounded-xl
-              bg-orange-500
-              px-6
-              text-sm
-              font-bold
-              text-zinc-950
-              transition-all
-              hover:bg-orange-400
-              active:scale-[0.98]
-              disabled:cursor-not-allowed
-              disabled:opacity-40
-            "
+            className="h-11 w-full rounded-xl bg-orange-500 px-6 text-sm font-bold text-white transition-all hover:bg-orange-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {editingCar
               ? 'Sačuvaj izmene'
