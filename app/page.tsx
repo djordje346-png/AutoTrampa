@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, ArrowLeft, ArrowRight, SlidersHorizontal } from 'lucide-react';
+import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
@@ -41,8 +41,11 @@ export default function FeedPage() {
   const [swipeIndex, setSwipeIndex] = useState(0);
   const [tradeFilter, setTradeFilter] = useState<TradeFilter>('all');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [dragX, setDragX] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
   const selectorRef = useRef<HTMLDivElement>(null);
-  const touchStart = useRef<number | null>(null);
+  const dragStart = useRef<{ x: number } | null>(null);
 
   useEffect(() => {
     try {
@@ -73,8 +76,14 @@ export default function FeedPage() {
   }), [tradeFilter, selectedCar]);
 
   useEffect(() => {
-    if (swipeIndex >= filteredCars.length) setSwipeIndex(0);
-  }, [swipeIndex, filteredCars.length]);
+    if (viewMode === 'swipe') {
+      setShowSwipeHint(true);
+      const t = setTimeout(() => setShowSwipeHint(false), 2800);
+      return () => clearTimeout(t);
+    } else {
+      setShowSwipeHint(false);
+    }
+  }, [viewMode]);
 
   function toggleSave(id: string) {
     setSaved(prev => {
@@ -114,30 +123,68 @@ export default function FeedPage() {
     setShowAddForm(false);
   }
 
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStart.current = e.touches[0].clientX;
+  function saveCar(id: string) {
+    setSaved(prev => {
+      if (prev.includes(id)) return prev;
+      const next = [...prev, id];
+      localStorage.setItem('autotrampa_saved', JSON.stringify(next));
+      return next;
+    });
   }
 
-  function handleTouchEnd(e: React.TouchEvent) {
-    if (touchStart.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStart.current;
-    if (Math.abs(delta) > 60) {
-      if (delta < 0 && swipeIndex < filteredCars.length - 1) {
-        setSwipeIndex(i => i + 1);
-      } else if (delta > 0 && swipeIndex > 0) {
-        setSwipeIndex(i => i - 1);
-      }
+  function flyAway(dir: 'left' | 'right') {
+    setIsAnimating(true);
+    setDragX(dir === 'right' ? 500 : -500);
+    setTimeout(() => {
+      setSwipeIndex(i => i + 1);
+      setDragX(0);
+      setIsAnimating(false);
+    }, 300);
+  }
+
+  function handleSwipeLike() {
+    if (swipeCar) saveCar(swipeCar.id);
+    flyAway('right');
+  }
+
+  function handleSwipeSkip() {
+    flyAway('left');
+  }
+
+  function handlePointerDown(e: React.PointerEvent) {
+    if (isAnimating) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a')) return;
+    dragStart.current = { x: e.clientX };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!dragStart.current || isAnimating) return;
+    setDragX(e.clientX - dragStart.current.x);
+  }
+
+  function handlePointerUp(e: React.PointerEvent) {
+    if (!dragStart.current || isAnimating) return;
+    const dx = e.clientX - dragStart.current.x;
+    dragStart.current = null;
+    if (dx > 100) {
+      handleSwipeLike();
+    } else if (dx < -100) {
+      handleSwipeSkip();
+    } else {
+      setDragX(0);
     }
-    touchStart.current = null;
   }
 
   function exitSwipeMode() {
     setViewMode('grid');
     setSwipeIndex(0);
+    setDragX(0);
   }
 
   const trade = modal.car ? getTradeLabel(selectedCar, modal.car) : null;
-  const swipeCar = filteredCars[swipeIndex] || filteredCars[0];
+  const swipeCar = filteredCars[swipeIndex];
   const swipeTl = swipeCar ? getTradeLabel(selectedCar, swipeCar) : null;
 
   return (
@@ -317,9 +364,9 @@ export default function FeedPage() {
       )}
 
       {/* SWIPE MODE — FULLSCREEN */}
-      {viewMode === 'swipe' && swipeCar && filteredCars.length > 0 && (
+      {viewMode === 'swipe' && filteredCars.length > 0 && (
         <div className="fixed inset-0 z-[60] bg-app flex flex-col safe-top safe-bottom">
-          {/* Swipe header with exit button */}
+          {/* Swipe header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-surface">
             <div className="flex items-center gap-2">
               <Flame size={18} className="text-orange-400" />
@@ -335,74 +382,173 @@ export default function FeedPage() {
           </div>
 
           {/* Swipe content */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-y-auto">
-            <div className="flex gap-1.5 mb-4 flex-wrap justify-center">
-              {filteredCars.map((_, i) => (
-                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === swipeIndex ? 'w-6 bg-orange-400' : 'w-1.5 bg-elevated'}`} />
-              ))}
-            </div>
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden">
+            {swipeIndex < filteredCars.length && swipeCar ? (
+              <>
+                {/* Progress dots */}
+                <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm">
+                  {filteredCars.map((_, i) => (
+                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
+                      i === swipeIndex ? 'w-6 bg-orange-400' : i < swipeIndex ? 'w-1.5 bg-orange-400/40' : 'w-1.5 bg-elevated'
+                    }`} />
+                  ))}
+                </div>
 
-            <div className="w-full max-w-sm bg-card-surface rounded-3xl overflow-hidden border border-surface shadow-xl" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-              <Link href={`/car/${swipeCar.id}`} className="block">
-                <div className="relative h-72 sm:h-80">
-                  <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
-                  <button
-                    onClick={(e) => { e.preventDefault(); toggleSave(swipeCar.id); }}
-                    className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                      saved.includes(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
-                    }`}
-                    aria-label="Sačuvaj"
-                  >
-                    <Heart size={18} fill={saved.includes(swipeCar.id) ? 'currentColor' : 'none'} />
-                  </button>
-                  {swipeTl && (
-                    <div className={`absolute bottom-3 left-3 px-3 py-1.5 rounded-full border text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
-                      {swipeTl.label}
+                {/* Card stack */}
+                <div className="relative w-full max-w-sm">
+                  {/* Next card peeking behind */}
+                  {filteredCars[swipeIndex + 1] && (
+                    <div className="absolute inset-0 bg-card-surface rounded-3xl overflow-hidden border border-surface shadow-lg" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
+                      <div className="relative h-72 sm:h-80">
+                        <img src={filteredCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
+                      </div>
                     </div>
                   )}
-                </div>
-              </Link>
 
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-2 gap-2">
-                  <div className="min-w-0">
-                    <h2 className="text-lg font-black text-app-primary tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
-                    <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
+                  {/* Active card */}
+                  <div
+                    className="relative bg-card-surface rounded-3xl overflow-hidden border border-surface shadow-xl select-none touch-none"
+                    style={{
+                      transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
+                      transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
+                      opacity: isAnimating ? 0 : 1,
+                      zIndex: 10,
+                    }}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerUp}
+                  >
+                    {/* Image */}
+                    <div className="relative h-72 sm:h-80">
+                      <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover pointer-events-none" draggable={false} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent pointer-events-none" />
+
+                      {/* LIKE badge */}
+                      <div
+                        className="absolute top-8 left-6 -rotate-12 border-4 border-emerald-400 text-emerald-400 font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
+                        style={{ opacity: Math.max(0, Math.min(1, dragX / 100)) }}
+                      >
+                        LIKE
+                      </div>
+
+                      {/* SKIP badge */}
+                      <div
+                        className="absolute top-8 right-6 rotate-12 border-4 border-rose-500 text-rose-500 font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
+                        style={{ opacity: Math.max(0, Math.min(1, -dragX / 100)) }}
+                      >
+                        PRESKOK
+                      </div>
+
+                      {/* Save button */}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleSave(swipeCar.id); }}
+                        className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
+                          saved.includes(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
+                        }`}
+                        aria-label="Sačuvaj"
+                      >
+                        <Heart size={18} fill={saved.includes(swipeCar.id) ? 'currentColor' : 'none'} />
+                      </button>
+
+                      {/* Trade label */}
+                      {swipeTl && (
+                        <div className={`absolute bottom-3 left-3 px-3 py-1.5 rounded-full border text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
+                          {swipeTl.label}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-2 gap-2">
+                        <div className="min-w-0">
+                          <h2 className="text-lg font-black text-app-primary tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
+                          <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
+                        </div>
+                        <p className="text-orange-400 font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-3 flex-wrap">
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Gauge size={12} className="text-app-muted" />{swipeCar.mileage.toLocaleString()} km</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Fuel size={12} className="text-app-muted" />{swipeCar.specs.fuelType}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
+                      </div>
+
+                      <p className="text-xs text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
+
+                      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface">
+                        <button onClick={() => openOffer(swipeCar)} className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-2.5 transition-all duration-200 active:scale-95">
+                          <ArrowLeftRight size={15} /> Pošalji ponudu
+                        </button>
+                        <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
+                          Detalji
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-orange-400 font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
                 </div>
 
-                <div className="flex items-center gap-2 mt-3 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Gauge size={12} className="text-app-muted" />{swipeCar.mileage.toLocaleString()} km</div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Fuel size={12} className="text-app-muted" />{swipeCar.specs.fuelType}</div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-app-secondary ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
-                </div>
-
-                <p className="text-xs text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
-
-                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface">
-                  <button onClick={() => openOffer(swipeCar)} className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-2.5 transition-all duration-200 active:scale-95">
-                    <ArrowLeftRight size={15} /> Pošalji ponudu
+                {/* Action buttons */}
+                <div className="flex items-center gap-5 mt-6">
+                  <button
+                    onClick={handleSwipeSkip}
+                    className="w-14 h-14 rounded-full bg-rose-500/10 border-2 border-rose-500/30 flex items-center justify-center text-rose-500 hover:bg-rose-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+                    aria-label="Preskoči"
+                  >
+                    <X size={28} strokeWidth={3} />
                   </button>
-                  <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
-                    Detalji
-                  </Link>
+                  <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {filteredCars.length}</span>
+                  <button
+                    onClick={handleSwipeLike}
+                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+                    aria-label="Sviđa mi se"
+                  >
+                    <Heart size={28} strokeWidth={3} fill={saved.includes(swipeCar.id) ? 'currentColor' : 'none'} />
+                  </button>
+                </div>
+                <p className="text-[10px] text-app-muted mt-3 opacity-70">Prevuci desno = LIKE · levo = PRESKOK</p>
+              </>
+            ) : (
+              /* All done screen */
+              <div className="flex flex-col items-center text-center py-8">
+                <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
+                  <CheckCircle size={40} className="text-emerald-400" />
+                </div>
+                <h2 className="text-xl font-bold text-app-primary mb-2">Sve pregledano!</h2>
+                <p className="text-sm text-app-secondary mb-1">Pregledao si sve oglase.</p>
+                <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
+                <div className="flex gap-3">
+                  <button onClick={() => setSwipeIndex(0)} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
+                    <RotateCcw size={15} /> Ispočetka
+                  </button>
+                  <button onClick={exitSwipeMode} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all">
+                    Nazad na feed
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Swipe hint overlay */}
+          {showSwipeHint && swipeIndex < filteredCars.length && (
+            <div className="absolute inset-0 z-[70] flex items-center justify-center pointer-events-none">
+              <div className="flex items-center gap-10">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center animate-pulse">
+                    <X size={32} className="text-rose-500" strokeWidth={3} />
+                  </div>
+                  <p className="text-xs font-bold text-rose-400 uppercase tracking-wider">← Preskoči</p>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center animate-pulse">
+                    <Heart size={32} className="text-emerald-400" fill="currentColor" />
+                  </div>
+                  <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Like →</p>
                 </div>
               </div>
             </div>
-
-            <div className="flex items-center gap-4 mt-4">
-              <button onClick={() => { if (swipeIndex > 0) setSwipeIndex(i => i - 1); }} disabled={swipeIndex === 0} className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center text-app-secondary hover:text-app-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all" aria-label="Prethodno">
-                <ArrowLeft size={18} />
-              </button>
-              <span className="text-xs text-app-muted font-medium">{swipeIndex + 1} / {filteredCars.length}</span>
-              <button onClick={() => { if (swipeIndex < filteredCars.length - 1) setSwipeIndex(i => i + 1); }} disabled={swipeIndex === filteredCars.length - 1} className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center text-app-secondary hover:text-app-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all" aria-label="Sledeće">
-                <ArrowRight size={18} />
-              </button>
-            </div>
-            <p className="text-[10px] text-app-muted mt-2 opacity-70">Prevuci levo/desno za pregled · Klikni X za izlaz</p>
-          </div>
+          )}
         </div>
       )}
 
