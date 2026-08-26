@@ -55,6 +55,7 @@ export const MY_CAR: MyGarageCar = {
     'Bilstein B6 shocks',
     'M-Sport front lip',
   ],
+  equipment: ['abs', 'esp', 'airbags', 'alarm', 'central_lock', 'zeder', 'isofix', 'heated_seats', 'auto_climate', 'cruise_control', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'led_xenon', 'fog_lights', 'navigation', 'bluetooth', 'trip_computer'],
   securityFeatures: ['Zeder steering lock', 'Alarm system', 'GPS tracker'],
   buildNotes: [
     'Timing chain replaced at 170k km',
@@ -109,6 +110,7 @@ export const DEFAULT_GARAGE_CARS: MyGarageCar[] = [
     description:
       'Daily driver Audi A6 C6 2.0 TDI. Clean body, S-Line interior, original 17" alloys. Headliner recently redone.',
     modifications: ['S-Line front grille', 'Black optic package'],
+    equipment: ['abs', 'esp', 'airbags', 'central_lock', 'isofix', 'leather_seats', 'manual_climate', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'fog_lights', 'bluetooth', 'trip_computer'],
     securityFeatures: ['OEM alarm', 'Steering lock'],
     buildNotes: ['DPF removed', 'Clutch replaced at 190k km'],
     estimatedValue: 4500,
@@ -155,6 +157,7 @@ export const MARKETPLACE_CARS: Car[] = [
     },
     description:
       'Reliable Audi A4 Avant 1.9 TDI in excellent condition. Loaded with original Audi Navigation Plus. Quattro-style rims, full service history.',
+    equipment: ['abs', 'esp', 'airbags', 'central_lock', 'isofix', 'auto_climate', 'cruise_control', 'electric_windows', 'alloy_wheels', 'led_xenon', 'panorama', 'fog_lights', 'navigation', 'parking_sensors', 'trip_computer'],
   },
   {
     id: 'vw-golf-5-gti',
@@ -200,6 +203,7 @@ export const MARKETPLACE_CARS: Car[] = [
       'Milltek non-resonated catback',
       'Forge DVR blow-off valve',
     ],
+    equipment: ['abs', 'esp', 'airbags', 'alarm', 'central_lock', 'isofix', 'heated_seats', 'auto_climate', 'cruise_control', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'led_xenon', 'fog_lights', 'navigation', 'bluetooth', 'reverse_camera', 'parking_sensors', 'trip_computer'],
   },
   {
     id: 'alfa-romeo-159',
@@ -239,6 +243,7 @@ export const MARKETPLACE_CARS: Car[] = [
     },
     description:
       'Italian beauty with soul. Alfa 159 1.9 JTDm, fresh timing belt, new brakes all round. Minor paint imperfections on driver door. Drives perfectly.',
+    equipment: ['abs', 'esp', 'airbags', 'central_lock', 'isofix', 'leather_seats', 'manual_climate', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'fog_lights', 'bluetooth', 'trip_computer'],
   },
   {
     id: 'bmw-320d-e90',
@@ -280,5 +285,6 @@ export const MARKETPLACE_CARS: Car[] = [
     description:
       'Facelift E90 320d with M-Sport package. Full electric seats, xenon headlights, iDrive navigation. Serviced at BMW dealer until 120k km.',
     modifications: ['M-Sport bumpers and side skirts', 'BMW Performance exhaust tips'],
+    equipment: ['abs', 'esp', 'airbags', 'alarm', 'central_lock', 'isofix', 'leather_seats', 'heated_seats', 'auto_climate', 'cruise_control', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'led_xenon', 'panorama', 'fog_lights', 'navigation', 'bluetooth', 'reverse_camera', 'parking_sensors', 'trip_computer'],
   },
 ];

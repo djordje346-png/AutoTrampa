@@ -10,6 +10,7 @@ import type {
   Transmission,
 } from '@/types';
 import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
+import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
 
 const BODY_TYPES: BodyType[] = [
@@ -51,6 +52,7 @@ const EMPTY_FORM: CarFormType = {
   torque: '',
   fuelType: 'Diesel',
   transmission: 'Manual',
+  equipment: [],
 };
 
 const DEFAULT_IMAGE =
@@ -79,6 +81,7 @@ function carToForm(car: MyGarageCar): CarFormType {
       car.specs.torque === '-' ? '' : car.specs.torque,
     fuelType: car.specs.fuelType,
     transmission: car.specs.transmission,
+    equipment: car.equipment || [],
   };
 }
 
@@ -133,6 +136,7 @@ export function formToMyGarageCar(
     securityFeatures: [],
     buildNotes: [],
     estimatedValue: parseInt(form.price, 10) || 0,
+    equipment: form.equipment,
   };
 }
 
@@ -165,6 +169,13 @@ function CarFormFields({
       brand,
       model: '',
     });
+  }
+
+  function toggleEquipment(id: string) {
+    const next = form.equipment.includes(id)
+      ? form.equipment.filter((e) => e !== id)
+      : [...form.equipment, id];
+    update('equipment', next);
   }
 
   const inputClass =
@@ -564,7 +575,7 @@ function CarFormFields({
           </h2>
 
           <p className="mt-1 text-xs text-app-muted">
-            Dodajte do 5 fotografija.
+            Dodajte do 20 fotografija.
           </p>
         </div>
 
@@ -572,10 +583,69 @@ function CarFormFields({
           <ImageUpload
             images={images}
             onChange={setImages}
-            maxImages={5}
+            maxImages={20}
           />
         </div>
 
+      </section>
+
+      {/* OPREMA */}
+      <section className="border-t border-surface pt-8">
+
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-app-primary">
+            Oprema vozila
+          </h2>
+
+          <p className="mt-1 text-xs text-app-muted">
+            Štiklirajte opremu koju vaše vozilo poseduje.
+          </p>
+        </div>
+
+        <div className="space-y-5">
+          {EQUIPMENT_CATEGORIES.map((category) => {
+            const CatIcon = category.icon;
+            return (
+              <div key={category.id}>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-7 h-7 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                    <CatIcon size={14} className="text-orange-400" />
+                  </div>
+                  <p className="text-xs font-bold text-app-primary">{category.label}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {category.items.map((item) => {
+                    const active = form.equipment.includes(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => toggleEquipment(item.id)}
+                        className={`
+                          flex items-center gap-1.5 rounded-xl border px-3 py-2
+                          text-xs font-medium transition-all
+                          ${
+                            active
+                              ? 'border-orange-500 bg-orange-500 text-white'
+                              : 'border-surface bg-elevated text-app-secondary hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary'
+                          }
+                        `}
+                      >
+                        {active && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        )}
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
 
     </div>
@@ -757,7 +827,7 @@ export default function CarFormComponent({
           <button
             type="button"
             onClick={onCancel}
-            className="h-11 w-full rounded-xl border border-surface bg-elevated px-6 text-sm font-semibold text-app-secondary transition-all hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98]"
+            className="h-11 w-full rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98]"
           >
             Otkaži
           </button>
@@ -767,7 +837,7 @@ export default function CarFormComponent({
             type="button"
             onClick={handleSave}
             disabled={!isValid}
-            className="h-11 w-full rounded-xl bg-orange-500 px-6 text-sm font-bold text-white transition-all hover:bg-orange-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+            className="h-11 w-full rounded-xl bg-orange-500 px-4 text-sm font-bold text-white transition-all hover:bg-orange-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {editingCar
               ? 'Sačuvaj izmene'

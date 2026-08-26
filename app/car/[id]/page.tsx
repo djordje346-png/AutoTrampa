@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, CircleCheck as CheckCircle, X, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, CircleCheck as CheckCircle, X, Share2, Check } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
 import { Car, MyGarageCar, getCarImages } from '@/types';
+import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import { useMessages } from '@/hooks/use-messages';
+import { ImageLightbox } from '@/components/ImageLightbox';
 
 function getTradeLabel(myCar: MyGarageCar, other: Car) {
   const diff = other.price - myCar.price;
@@ -28,6 +30,7 @@ export default function CarDetailPage() {
   const [modal, setModal] = useState<ModalState>('closed');
   const [message, setMessage] = useState('');
   const [activeImage, setActiveImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const car = MARKETPLACE_CARS.find(c => c.id === carId);
 
@@ -99,7 +102,10 @@ export default function CarDetailPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="relative h-72">
-        <div className="relative w-full h-full overflow-hidden">
+        <div
+          className="relative w-full h-full overflow-hidden cursor-pointer"
+          onClick={() => setLightboxOpen(true)}
+        >
           <div
             className="flex h-full transition-transform duration-300 ease-out"
             style={{ transform: `translateX(-${activeImage * 100}%)` }}
@@ -111,19 +117,10 @@ export default function CarDetailPage() {
 
           {carImages.length > 1 && (
             <>
-              <button
-                onClick={() => setActiveImage(prev => (prev === 0 ? carImages.length - 1 : prev - 1))}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
+              <div
+                className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"
+                onClick={(e) => e.stopPropagation()}
               >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                onClick={() => setActiveImage(prev => (prev === carImages.length - 1 ? 0 : prev + 1))}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
-              >
-                <ChevronRight size={18} />
-              </button>
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                 {carImages.map((_, i) => (
                   <button
                     key={i}
@@ -228,6 +225,35 @@ export default function CarDetailPage() {
           </div>
         </div>
 
+        {car.equipment && car.equipment.length > 0 && (
+          <div className="bg-card-surface rounded-2xl border border-surface p-4">
+            <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-3">Oprema vozila</p>
+            <div className="space-y-3">
+              {EQUIPMENT_CATEGORIES.map((category) => {
+                const items = category.items.filter((item) => car.equipment!.includes(item.id));
+                if (items.length === 0) return null;
+                const CatIcon = category.icon;
+                return (
+                  <div key={category.id}>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <CatIcon size={12} className="text-orange-400" />
+                      <p className="text-[10px] font-bold text-app-secondary uppercase tracking-wider">{category.label}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {items.map((item) => (
+                        <span key={item.id} className="inline-flex items-center gap-1 bg-elevated border border-surface rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-app-secondary">
+                          <Check size={11} className="text-emerald-400" />
+                          {item.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {car.modifications && car.modifications.length > 0 && (
           <div className="bg-card-surface rounded-2xl border border-surface p-4">
             <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-3">Modifikacije</p>
@@ -268,18 +294,28 @@ export default function CarDetailPage() {
       <div className="sticky bottom-0 bg-app border-t border-surface px-4 py-3 flex gap-2 safe-bottom">
         <button
           onClick={openOffer}
-          className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"
+          className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"
         >
-          <ArrowLeftRight size={16} />
-          Pošalji ponudu za zamenu
+          <ArrowLeftRight size={16} className="flex-shrink-0" />
+          <span className="truncate">Pošalji ponudu za zamenu</span>
         </button>
         <a
           href={`tel:${car.owner.phone}`}
-          className="w-12 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-xl transition-all duration-200"
+          className="w-12 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-xl transition-all duration-200 flex-shrink-0"
         >
           <Phone size={17} />
         </a>
       </div>
+
+      {lightboxOpen && (
+        <ImageLightbox
+          images={carImages}
+          index={activeImage}
+          onIndexChange={setActiveImage}
+          onClose={() => setLightboxOpen(false)}
+          altPrefix={`${car.brand} ${car.model}`}
+        />
+      )}
 
       {modal !== 'closed' && (
         <div className="fixed inset-0 z-[70] flex items-end justify-center">

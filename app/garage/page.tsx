@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, ChevronLeft, ChevronRight, Fuel } from 'lucide-react';
+import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel } from 'lucide-react';
 import { formatEuro } from '@/lib/cars';
 import { MyGarageCar, getCarImages } from '@/types';
+import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import CarForm from '@/components/CarForm';
+import { ImageLightbox } from '@/components/ImageLightbox';
 
 export default function GaragePage() {
   const { cars, selectedId, selectCar, addCar, updateCar, removeCar, mounted } = useGarage();
@@ -14,6 +16,7 @@ export default function GaragePage() {
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
   const [previewCar, setPreviewCar] = useState<MyGarageCar | null>(null);
   const [previewImage, setPreviewImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   function openAddForm() {
     setEditingCar(null);
@@ -71,10 +74,10 @@ export default function GaragePage() {
           </div>
           <button
             onClick={openAddForm}
-            className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold rounded-full px-3 py-2 transition-all duration-200 active:scale-95"
+            className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold rounded-full px-3 py-2 transition-all duration-200 active:scale-95 flex-shrink-0"
           >
-            <Plus size={14} strokeWidth={2.5} />
-            Dodaj auto
+            <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
+            <span className="whitespace-nowrap">Dodaj auto</span>
           </button>
         </div>
       </header>
@@ -276,7 +279,7 @@ export default function GaragePage() {
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPreviewCar(null)} />
           <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface max-h-[90vh] overflow-y-auto safe-bottom">
             <div className="relative h-56">
-              <div className="relative w-full h-full overflow-hidden">
+              <div className="relative w-full h-full overflow-hidden cursor-pointer" onClick={() => setLightboxOpen(true)}>
                 <div
                   className="flex h-full transition-transform duration-300 ease-out"
                   style={{ transform: `translateX(-${previewImage * 100}%)` }}
@@ -286,29 +289,15 @@ export default function GaragePage() {
                   ))}
                 </div>
                 {getCarImages(previewCar).length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setPreviewImage(prev => (prev === 0 ? getCarImages(previewCar).length - 1 : prev - 1))}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      onClick={() => setPreviewImage(prev => (prev === getCarImages(previewCar).length - 1 ? 0 : prev + 1))}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                      {getCarImages(previewCar).map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setPreviewImage(i)}
-                          className={`h-1.5 rounded-full transition-all ${i === previewImage ? 'w-5 bg-orange-500' : 'w-1.5 bg-white/60'}`}
-                        />
-                      ))}
-                    </div>
-                  </>
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" onClick={(e) => e.stopPropagation()}>
+                    {getCarImages(previewCar).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setPreviewImage(i)}
+                        className={`h-1.5 rounded-full transition-all ${i === previewImage ? 'w-5 bg-orange-500' : 'w-1.5 bg-white/60'}`}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
@@ -384,6 +373,20 @@ export default function GaragePage() {
                 <p className="text-sm text-app-secondary leading-relaxed">{previewCar.description}</p>
               </div>
 
+              {previewCar.equipment && previewCar.equipment.length > 0 && (
+                <div>
+                  <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-2">Oprema</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {EQUIPMENT_CATEGORIES.flatMap((cat) => cat.items).filter((item) => previewCar.equipment!.includes(item.id)).map((item) => (
+                      <span key={item.id} className="inline-flex items-center gap-1 bg-elevated border border-surface rounded-lg px-2 py-1 text-[10px] font-medium text-app-secondary">
+                        <Check size={10} className="text-emerald-400" />
+                        {item.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {previewCar.modifications && previewCar.modifications.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -404,14 +407,14 @@ export default function GaragePage() {
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => { openEditForm(previewCar); setPreviewCar(null); }}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-elevated hover:bg-hover-surface text-app-secondary text-sm font-semibold rounded-xl py-3 transition-all"
+                  className="flex-1 flex items-center justify-center gap-1.5 bg-elevated hover:bg-hover-surface text-app-secondary text-xs sm:text-sm font-semibold rounded-xl py-3 transition-all"
                 >
-                  <Edit3 size={15} />
+                  <Edit3 size={15} className="flex-shrink-0" />
                   Uredi
                 </button>
                 <button
                   onClick={() => setPreviewCar(null)}
-                  className="flex-1 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-3 transition-all"
+                  className="flex-1 bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold rounded-xl py-3 transition-all"
                 >
                   Zatvori
                 </button>
@@ -419,6 +422,16 @@ export default function GaragePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {lightboxOpen && previewCar && (
+        <ImageLightbox
+          images={getCarImages(previewCar)}
+          index={previewImage}
+          onIndexChange={setPreviewImage}
+          onClose={() => setLightboxOpen(false)}
+          altPrefix={`${previewCar.brand} ${previewCar.model}`}
+        />
       )}
 
       {showForm && (

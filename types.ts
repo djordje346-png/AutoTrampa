@@ -40,6 +40,7 @@ export interface Car {
   owner: Owner;
   description: string;
   modifications?: string[];
+  equipment?: string[];
 }
 
 export interface MyGarageCar extends Car {
@@ -70,4 +71,5 @@ export interface CarForm {
   torque: string;
   fuelType: FuelType;
   transmission: Transmission;
+  equipment: string[];
 }
