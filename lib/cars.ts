@@ -21,6 +21,12 @@ export const MY_CAR: MyGarageCar = {
   city: 'Kosovska Mitrovica',
   country: 'Serbia',
   image: 'https://images.pexels.com/photos/11501007/pexels-photo-11501007.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+  images: [
+    'https://images.pexels.com/photos/11501007/pexels-photo-11501007.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    'https://images.pexels.com/photos/16439513/pexels-photo-16439513.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    'https://images.pexels.com/photos/13058789/pexels-photo-13058789.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    'https://images.pexels.com/photos/12681046/pexels-photo-12681046.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+  ],
   specs: {
     engine: 'BMW M57D25',
     displacement: '2.5L',
@@ -76,6 +82,12 @@ export const DEFAULT_GARAGE_CARS: MyGarageCar[] = [
     city: 'Kosovska Mitrovica',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/16439513/pexels-photo-16439513.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    images: [
+      'https://images.pexels.com/photos/16439513/pexels-photo-16439513.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/8020807/pexels-photo-8020807.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/17888846/pexels-photo-17888846.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/24742667/pexels-photo-24742667.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    ],
     specs: {
       engine: 'Audi 2.0 TDI BPW',
       displacement: '2.0L',
@@ -117,6 +129,12 @@ export const MARKETPLACE_CARS: Car[] = [
     city: 'Belgrade',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/37472548/pexels-photo-37472548.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    images: [
+      'https://images.pexels.com/photos/37472548/pexels-photo-37472548.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/5998732/pexels-photo-5998732.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/14541951/pexels-photo-14541951.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/11213779/pexels-photo-11213779.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    ],
     specs: {
       engine: 'VW BLS / PD 105',
       displacement: '1.9L',
@@ -151,6 +169,12 @@ export const MARKETPLACE_CARS: Car[] = [
     city: 'Novi Sad',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/20809165/pexels-photo-20809165.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    images: [
+      'https://images.pexels.com/photos/20809165/pexels-photo-20809165.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/28447302/pexels-photo-28447302.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/28447308/pexels-photo-28447308.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/28447331/pexels-photo-28447331.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    ],
     specs: {
       engine: 'VW BPY 2.0 TFSI',
       displacement: '2.0L',
@@ -190,6 +214,11 @@ export const MARKETPLACE_CARS: Car[] = [
     city: 'Nis',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/15515159/pexels-photo-15515159.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    images: [
+      'https://images.pexels.com/photos/15515159/pexels-photo-15515159.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/15515192/pexels-photo-15515192.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/17720058/pexels-photo-17720058.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    ],
     specs: {
       engine: 'Alfa 939 A5.000',
       displacement: '1.9L',
@@ -224,6 +253,12 @@ export const MARKETPLACE_CARS: Car[] = [
     city: 'Subotica',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/31983216/pexels-photo-31983216.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    images: [
+      'https://images.pexels.com/photos/31983216/pexels-photo-31983216.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/28522339/pexels-photo-28522339.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/28522338/pexels-photo-28522338.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+      'https://images.pexels.com/photos/18542812/pexels-photo-18542812.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    ],
     specs: {
       engine: 'BMW N47D20',
       displacement: '2.0L',

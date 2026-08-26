@@ -6,21 +6,30 @@ import { useAuth } from '@/hooks/use-auth';
 import { useGarage } from '@/hooks/use-garage';
 import { useTheme } from '@/hooks/use-theme';
 import { formatEuro } from '@/lib/cars';
+import { MyGarageCar } from '@/types';
+import CarForm from '@/components/CarForm';
 
 const BODY_TYPE_PREFS = ['Limuzina', 'SUV', 'Karavan', 'Coupe'];
 
 export default function ProfilePage() {
   const { logout } = useAuth();
-  const { cars, mounted } = useGarage();
+  const { cars, addCar, selectCar, mounted } = useGarage();
   const { theme, toggleTheme } = useTheme();
   const [radius, setRadius] = useState(50);
   const [bodyPrefs, setBodyPrefs] = useState<string[]>(['Limuzina', 'Karavan']);
   const [phoneAfterMatch, setPhoneAfterMatch] = useState(true);
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const garageLimit = 3;
   const garageFull = cars.length >= garageLimit;
   const activeCar = cars[0];
+
+  function handleAddCar(car: MyGarageCar) {
+    addCar(car);
+    selectCar(car.id);
+    setShowAddForm(false);
+  }
 
   if (!mounted) {
     return (
@@ -114,7 +123,10 @@ export default function ProfilePage() {
               <p className="text-xs text-orange-400 font-medium">Dostignut besplatni limit od 3 vozila</p>
             </div>
           ) : (
-            <button className="w-full flex items-center justify-center gap-2 border border-dashed border-surface hover:border-orange-500/50 hover:bg-orange-500/5 text-orange-400 text-sm font-semibold rounded-xl py-3 transition-all duration-200">
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="w-full flex items-center justify-center gap-2 border border-dashed border-surface hover:border-orange-500/50 hover:bg-orange-500/5 text-orange-400 text-sm font-semibold rounded-xl py-3 transition-all duration-200"
+            >
               <Plus size={16} strokeWidth={2.5} />
               Dodaj auto u garažu
             </button>
@@ -293,6 +305,24 @@ export default function ProfilePage() {
       </div>
 
       <p className="text-center text-[10px] text-app-muted opacity-50 pb-2">AutoTrampa v1.0</p>
+
+      {showAddForm && (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowAddForm(false)} />
+          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-lg font-bold text-app-primary">Dodaj novo vozilo</h3>
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
+          </div>
+        </div>
+      )}
 
       {activeModal && (
         <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">

@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, CircleCheck as CheckCircle, X, Share2 } from 'lucide-react';
+import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, CircleCheck as CheckCircle, X, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
-import { Car, MyGarageCar } from '@/types';
+import { Car, MyGarageCar, getCarImages } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import { useMessages } from '@/hooks/use-messages';
 
@@ -27,6 +27,7 @@ export default function CarDetailPage() {
   const [saved, setSaved] = useState<string[]>([]);
   const [modal, setModal] = useState<ModalState>('closed');
   const [message, setMessage] = useState('');
+  const [activeImage, setActiveImage] = useState(0);
 
   const car = MARKETPLACE_CARS.find(c => c.id === carId);
 
@@ -48,6 +49,7 @@ export default function CarDetailPage() {
 
   const tl = getTradeLabel(selectedCar, car);
   const isSaved = saved.includes(car.id);
+  const carImages = getCarImages(car);
 
   function toggleSave() {
     setSaved(prev => {
@@ -97,8 +99,46 @@ export default function CarDetailPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="relative h-72">
-        <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/40" />
+        <div className="relative w-full h-full overflow-hidden">
+          <div
+            className="flex h-full transition-transform duration-300 ease-out"
+            style={{ transform: `translateX(-${activeImage * 100}%)` }}
+          >
+            {carImages.map((img, i) => (
+              <img key={i} src={img} alt={`${car.brand} ${car.model} - slika ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+            ))}
+          </div>
+
+          {carImages.length > 1 && (
+            <>
+              <button
+                onClick={() => setActiveImage(prev => (prev === 0 ? carImages.length - 1 : prev - 1))}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={() => setActiveImage(prev => (prev === carImages.length - 1 ? 0 : prev + 1))}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
+              >
+                <ChevronRight size={18} />
+              </button>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                {carImages.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImage(i)}
+                    className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-orange-500' : 'w-1.5 bg-white/60'}`}
+                  />
+                ))}
+              </div>
+              <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1 z-10">
+                <span className="text-[10px] font-bold text-white">{activeImage + 1} / {carImages.length}</span>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/40 pointer-events-none" />
 
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 z-10 safe-top">
           <button

@@ -35,6 +35,7 @@ export interface Car {
   city: string;
   country: string;
   image: string;
+  images?: string[];
   specs: CarSpec;
   owner: Owner;
   description: string;
@@ -45,6 +46,11 @@ export interface MyGarageCar extends Car {
   securityFeatures: string[];
   buildNotes: string[];
   estimatedValue: number;
+}
+
+export function getCarImages(car: Car): string[] {
+  if (car.images && car.images.length > 0) return car.images;
+  return [car.image];
 }
 
 export interface CarForm {

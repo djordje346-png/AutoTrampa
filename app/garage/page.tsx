@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check } from 'lucide-react';
+import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, ChevronLeft, ChevronRight, Fuel } from 'lucide-react';
 import { formatEuro } from '@/lib/cars';
-import { MyGarageCar } from '@/types';
+import { MyGarageCar, getCarImages } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import CarForm from '@/components/CarForm';
 
@@ -12,6 +12,8 @@ export default function GaragePage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
+  const [previewCar, setPreviewCar] = useState<MyGarageCar | null>(null);
+  const [previewImage, setPreviewImage] = useState(0);
 
   function openAddForm() {
     setEditingCar(null);
@@ -96,9 +98,14 @@ export default function GaragePage() {
 
           return (
             <div key={car.id} className="bg-card-surface rounded-2xl overflow-hidden border border-surface">
-              <div className="relative h-44">
+              <div className="relative h-44 cursor-pointer" onClick={() => { setPreviewCar(car); setPreviewImage(0); }}>
                 <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                {getCarImages(car).length > 1 && (
+                  <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-2 py-0.5">
+                    <span className="text-[10px] font-bold text-white">{getCarImages(car).length} slika</span>
+                  </div>
+                )}
                 {isSelected && (
                   <div className="absolute top-3 right-3 flex items-center gap-1 bg-orange-500 rounded-full px-2.5 py-1">
                     <Check size={11} className="text-white" strokeWidth={3} />
@@ -264,10 +271,160 @@ export default function GaragePage() {
         })}
       </div>
 
+      {previewCar && (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPreviewCar(null)} />
+          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface max-h-[90vh] overflow-y-auto safe-bottom">
+            <div className="relative h-56">
+              <div className="relative w-full h-full overflow-hidden">
+                <div
+                  className="flex h-full transition-transform duration-300 ease-out"
+                  style={{ transform: `translateX(-${previewImage * 100}%)` }}
+                >
+                  {getCarImages(previewCar).map((img, i) => (
+                    <img key={i} src={img} alt={`${previewCar.brand} ${previewCar.model} - slika ${i + 1}`} className="w-full h-full object-cover flex-shrink-0" />
+                  ))}
+                </div>
+                {getCarImages(previewCar).length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setPreviewImage(prev => (prev === 0 ? getCarImages(previewCar).length - 1 : prev - 1))}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button
+                      onClick={() => setPreviewImage(prev => (prev === getCarImages(previewCar).length - 1 ? 0 : prev + 1))}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                      {getCarImages(previewCar).map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setPreviewImage(i)}
+                          className={`h-1.5 rounded-full transition-all ${i === previewImage ? 'w-5 bg-orange-500' : 'w-1.5 bg-white/60'}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <p className="text-orange-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
+                  {previewCar.year} · {previewCar.bodyType}
+                </p>
+                <h2 className="text-xl font-black text-white tracking-tight">
+                  {previewCar.brand} {previewCar.model} {previewCar.generation}
+                </h2>
+                <p className="text-white/80 text-xs">{previewCar.color} · {previewCar.city}</p>
+              </div>
+              <button
+                onClick={() => setPreviewCar(null)}
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-black/70 text-white hover:bg-black/80 transition-colors z-10"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-orange-400 font-bold text-xl">{formatEuro(previewCar.price)}</p>
+                {previewCar.id !== selectedId && (
+                  <button
+                    onClick={() => { selectCar(previewCar.id); setPreviewCar(null); }}
+                    className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold rounded-lg px-3 py-2 transition-all"
+                  >
+                    <Check size={13} />
+                    Postavi kao aktivno
+                  </button>
+                )}
+                {previewCar.id === selectedId && (
+                  <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 rounded-lg px-3 py-2">
+                    <span className="text-[10px] font-bold text-orange-400 uppercase">Aktivno</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-px bg-surface rounded-xl overflow-hidden">
+                <div className="bg-card-surface p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Activity size={13} className="text-sky-400" />
+                    <p className="text-[10px] text-app-muted font-medium">Kilometraža</p>
+                  </div>
+                  <p className="text-sm font-black text-app-primary">{previewCar.mileage.toLocaleString()} km</p>
+                </div>
+                <div className="bg-card-surface p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Zap size={13} className="text-violet-400" />
+                    <p className="text-[10px] text-app-muted font-medium">Snaga</p>
+                  </div>
+                  <p className="text-sm font-black text-app-primary">{previewCar.specs.power}</p>
+                </div>
+                <div className="bg-card-surface p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Fuel size={13} className="text-orange-400" />
+                    <p className="text-[10px] text-app-muted font-medium">Gorivo</p>
+                  </div>
+                  <p className="text-sm font-black text-app-primary">{previewCar.specs.fuelType}</p>
+                </div>
+                <div className="bg-card-surface p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Settings size={13} className="text-emerald-400" />
+                    <p className="text-[10px] text-app-muted font-medium">Menjač</p>
+                  </div>
+                  <p className="text-sm font-black text-app-primary">{previewCar.specs.transmission}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-2">Opis</p>
+                <p className="text-sm text-app-secondary leading-relaxed">{previewCar.description}</p>
+              </div>
+
+              {previewCar.modifications && previewCar.modifications.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Wrench size={13} className="text-violet-400" />
+                    <p className="text-xs font-bold text-app-primary">Modifikacije</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    {previewCar.modifications.map(mod => (
+                      <div key={mod} className="flex items-center gap-2">
+                        <div className="w-1 h-1 rounded-full bg-orange-400 flex-shrink-0" />
+                        <p className="text-[11px] text-app-secondary">{mod}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => { openEditForm(previewCar); setPreviewCar(null); }}
+                  className="flex-1 flex items-center justify-center gap-1.5 bg-elevated hover:bg-hover-surface text-app-secondary text-sm font-semibold rounded-xl py-3 transition-all"
+                >
+                  <Edit3 size={15} />
+                  Uredi
+                </button>
+                <button
+                  onClick={() => setPreviewCar(null)}
+                  className="flex-1 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-3 transition-all"
+                >
+                  Zatvori
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showForm && (
         <div className="fixed inset-0 z-[70] flex items-end justify-center">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => { setShowForm(false); setEditingCar(null); }} />
-n          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
+          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-app-primary">
                 {editingCar ? 'Uredi auto' : 'Dodaj novo vozilo'}

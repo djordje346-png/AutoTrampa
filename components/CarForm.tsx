@@ -105,6 +105,7 @@ export function formToMyGarageCar(
     city: form.city || '-',
     country: 'Serbia',
     image: mainImage,
+    images: imagesList && imagesList.length > 0 ? imagesList : [mainImage],
 
     specs: {
       engine: form.engine || '-',
