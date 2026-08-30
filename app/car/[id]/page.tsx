@@ -159,12 +159,14 @@ export default function CarDetailPage() {
           </div>
         </div>
 
-        <div className={`absolute bottom-4 left-4 px-3 py-1.5 rounded-full border text-xs font-bold ${tl.bg} ${tl.color}`}>
-          {tl.label}
-        </div>
       </div>
 
       <div className="px-4 -mt-4 relative z-10 space-y-4 pb-4">
+        <div className="flex justify-center">
+          <div className={`inline-flex items-center px-4 py-2 rounded-full border text-xs font-bold ${tl.bg} ${tl.color}`}>
+            {tl.label}
+          </div>
+        </div>
         <div className="bg-card-surface rounded-2xl border border-surface p-4">
           <div className="flex items-start justify-between mb-2">
             <div>
