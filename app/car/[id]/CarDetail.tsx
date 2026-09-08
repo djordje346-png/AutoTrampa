@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, CircleCheck as CheckCircle, X, Share2, Check } from 'lucide-react';
-import { formatEuro } from '@/lib/cars';
+import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
+import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { getCarImages, type Car } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
@@ -47,9 +48,9 @@ export default function CarDetail({ car }: { car: Car }) {
   const carImages = getCarImages(car);
 
   const specs = [
-    { icon: Gauge, label: 'Kilometraža', value: `${car.mileage.toLocaleString()} km` },
-    { icon: Fuel, label: 'Gorivo', value: car.specs.fuelType },
-    { icon: Settings2, label: 'Menjač', value: car.specs.transmission },
+    { icon: Gauge, label: 'Kilometraža', value: formatKm(car.mileage) },
+    { icon: Fuel, label: 'Gorivo', value: fuelLabel(car.specs.fuelType) },
+    { icon: Settings2, label: 'Menjač', value: transmissionLabel(car.specs.transmission) },
     { icon: Calendar, label: 'Godina', value: String(car.year) },
     { icon: Zap, label: 'Snaga', value: car.specs.power },
     { icon: Eye, label: 'Pogon', value: car.specs.drivetrain },

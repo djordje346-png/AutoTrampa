@@ -3,18 +3,19 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
-import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
+import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel, TRADE_TOLERANCE } from '@/lib/trade';
+import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
+import { usePreferences, type TradeFilter } from '@/hooks/use-preferences';
 import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 
 type ViewMode = 'grid' | 'swipe';
-type TradeFilter = 'all' | 'similar' | 'cheaper' | 'expensive';
 
 const TRADE_FILTERS: { key: TradeFilter; label: string }[] = [
   { key: 'all', label: 'Sve' },
@@ -33,7 +34,8 @@ export default function FeedPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [swipeIndex, setSwipeIndex] = useState(0);
-  const [tradeFilter, setTradeFilter] = useState<TradeFilter>('all');
+  const { preferences, update: updatePreferences } = usePreferences();
+  const tradeFilter = preferences.tradeFilter;
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [dragX, setDragX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -263,7 +265,7 @@ export default function FeedPage() {
           {TRADE_FILTERS.map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => { setTradeFilter(key); setSwipeIndex(0); }}
+              onClick={() => { updatePreferences({ tradeFilter: key }); setSwipeIndex(0); }}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                 tradeFilter === key
                   ? 'bg-orange-500 text-white'
@@ -290,7 +292,7 @@ export default function FeedPage() {
             <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
           <p className="text-app-secondary font-semibold text-sm">Nema vozila po ovom filteru</p>
-          <button onClick={() => { setTradeFilter('all'); setSwipeIndex(0); }} className="mt-2 text-orange-400 text-xs font-semibold">Poništi filtere</button>
+          <button onClick={() => { updatePreferences({ tradeFilter: 'all' }); setSwipeIndex(0); }} className="mt-2 text-orange-400 text-xs font-semibold">Poništi filtere</button>
         </div>
       )}
 
@@ -428,8 +430,8 @@ export default function FeedPage() {
                       </div>
 
                       <div className="flex items-center gap-2 mt-3 flex-wrap">
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Gauge size={12} className="text-app-muted" />{swipeCar.mileage.toLocaleString()} km</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Fuel size={12} className="text-app-muted" />{swipeCar.specs.fuelType}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Gauge size={12} className="text-app-muted" />{formatKm(swipeCar.mileage)}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Fuel size={12} className="text-app-muted" />{fuelLabel(swipeCar.specs.fuelType)}</div>
                         <div className="flex items-center gap-1.5 text-[11px] text-app-secondary ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
                       </div>
 
@@ -545,9 +547,9 @@ export default function FeedPage() {
                     <p className="text-xs text-app-muted mt-0.5">{car.generation} · {car.color}</p>
 
                     <div className="flex items-center gap-3 mt-2 text-xs text-app-secondary flex-wrap">
-                      <span className="flex items-center gap-1"><Gauge size={13} className="text-app-muted" />{car.mileage.toLocaleString()} km</span>
-                      <span className="flex items-center gap-1"><Fuel size={13} className="text-app-muted" />{car.specs.fuelType}</span>
-                      <span className="flex items-center gap-1"><Settings2 size={13} className="text-app-muted" />{car.specs.transmission}</span>
+                      <span className="flex items-center gap-1"><Gauge size={13} className="text-app-muted" />{formatKm(car.mileage)}</span>
+                      <span className="flex items-center gap-1"><Fuel size={13} className="text-app-muted" />{fuelLabel(car.specs.fuelType)}</span>
+                      <span className="flex items-center gap-1"><Settings2 size={13} className="text-app-muted" />{transmissionLabel(car.specs.transmission)}</span>
                       <span className="flex items-center gap-1"><MapPin size={13} className="text-app-muted" />{car.city}</span>
                     </div>
 

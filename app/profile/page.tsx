@@ -8,13 +8,14 @@ import { useGarage } from '@/hooks/use-garage';
 import { useTheme } from '@/hooks/use-theme';
 import { useUser, initials } from '@/hooks/use-user';
 import { usePreferences } from '@/hooks/use-preferences';
-import { formatEuro } from '@/lib/cars';
+import { formatEuro, formatKm } from '@/lib/cars';
 import { estimateUsageBytes } from '@/lib/storage';
-import { MyGarageCar } from '@/types';
+import { BodyType, MyGarageCar } from '@/types';
+import { bodyLabel } from '@/lib/labels';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 
-const BODY_TYPE_PREFS = ['Limuzina', 'SUV', 'Karavan', 'Coupe'];
+const BODY_TYPE_PREFS: BodyType[] = ['Sedan', 'SUV', 'Caravan', 'Coupe'];
 
 /** Browsers give roughly 5 MB per origin to localStorage. */
 const STORAGE_BUDGET_BYTES = 5 * 1024 * 1024;
@@ -129,7 +130,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-app-primary truncate">{activeCar.brand} {activeCar.model} {activeCar.generation}</p>
-                <p className="text-xs text-app-muted">{activeCar.year} · {activeCar.mileage.toLocaleString()} km</p>
+                <p className="text-xs text-app-muted">{activeCar.year} · {formatKm(activeCar.mileage)}</p>
                 <p className="text-orange-400 text-xs font-bold mt-0.5">{formatEuro(activeCar.price)}</p>
               </div>
               <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 rounded-full px-2 py-0.5">
@@ -222,7 +223,7 @@ export default function ProfilePage() {
                       active ? 'bg-orange-500 border-orange-500 text-white' : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
                     }`}
                   >
-                    {type}
+                    {bodyLabel(type)}
                   </button>
                 );
               })}

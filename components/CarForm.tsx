@@ -11,6 +11,7 @@ import type {
 } from '@/types';
 import { getCarImages } from '@/types';
 import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
+import { bodyLabel, fuelLabel, transmissionLabel } from '@/lib/labels';
 import { userStore, shortName } from '@/hooks/use-user';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
@@ -497,7 +498,7 @@ function CarFormFields({
                   }
                 `}
               >
-                {type}
+                {bodyLabel(type)}
               </button>
             );
           })}
@@ -563,7 +564,7 @@ function CarFormFields({
               onChange={(e) =>
                 update('power', e.target.value)
               }
-              placeholder="177 HP"
+              placeholder="177 KS"
               className={inputClass}
             />
           </div>
@@ -600,7 +601,7 @@ function CarFormFields({
             >
               {FUEL_TYPES.map((fuel) => (
                 <option key={fuel} value={fuel}>
-                  {fuel}
+                  {fuelLabel(fuel)}
                 </option>
               ))}
             </select>
@@ -626,7 +627,7 @@ function CarFormFields({
                   key={transmission}
                   value={transmission}
                 >
-                  {transmission}
+                  {transmissionLabel(transmission)}
                 </option>
               ))}
             </select>

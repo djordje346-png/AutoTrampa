@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatEuro } from '@/lib/cars';
+import { formatEuro, formatKm } from '@/lib/cars';
+import { fuelLabel, transmissionLabel, bodyLabel } from '@/lib/labels';
 import { MyGarageCar, getCarImages } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
@@ -124,8 +125,8 @@ export default function GaragePage() {
             { label: 'Zapremina', value: car.specs.displacement },
             { label: 'Snaga', value: car.specs.power },
             { label: 'Obrtni moment', value: car.specs.torque },
-            { label: 'Gorivo', value: car.specs.fuelType },
-            { label: 'Menjač', value: car.specs.transmission },
+            { label: 'Gorivo', value: fuelLabel(car.specs.fuelType) },
+            { label: 'Menjač', value: transmissionLabel(car.specs.transmission) },
             { label: 'Pogon', value: car.specs.drivetrain },
             { label: 'Maks. brzina', value: car.specs.topSpeed },
             { label: '0–100 km/h', value: car.specs.acceleration },
@@ -149,7 +150,7 @@ export default function GaragePage() {
                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <p className="text-orange-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
-                    {car.year} · {car.bodyType}
+                    {car.year} · {bodyLabel(car.bodyType)}
                   </p>
                   <h2 className="text-xl font-black text-white tracking-tight">
                     {car.brand} {car.model} {car.generation}
@@ -200,7 +201,7 @@ export default function GaragePage() {
                     <Activity size={13} className="text-sky-400" />
                     <p className="text-[10px] text-app-muted font-medium">Kilometraža</p>
                   </div>
-                  <p className="text-sm font-black text-app-primary">{car.mileage.toLocaleString()} km</p>
+                  <p className="text-sm font-black text-app-primary">{formatKm(car.mileage)}</p>
                 </div>
                 <div className="bg-card-surface p-3">
                   <div className="flex items-center gap-1.5 mb-1">
@@ -335,7 +336,7 @@ export default function GaragePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <p className="text-orange-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
-                  {previewCar.year} · {previewCar.bodyType}
+                  {previewCar.year} · {bodyLabel(previewCar.bodyType)}
                 </p>
                 <h2 className="text-xl font-black text-white tracking-tight">
                   {previewCar.brand} {previewCar.model} {previewCar.generation}
@@ -375,7 +376,7 @@ export default function GaragePage() {
                     <Activity size={13} className="text-sky-400" />
                     <p className="text-[10px] text-app-muted font-medium">Kilometraža</p>
                   </div>
-                  <p className="text-sm font-black text-app-primary">{previewCar.mileage.toLocaleString()} km</p>
+                  <p className="text-sm font-black text-app-primary">{formatKm(previewCar.mileage)}</p>
                 </div>
                 <div className="bg-card-surface p-3">
                   <div className="flex items-center gap-1.5 mb-1">
@@ -389,14 +390,14 @@ export default function GaragePage() {
                     <Fuel size={13} className="text-orange-400" />
                     <p className="text-[10px] text-app-muted font-medium">Gorivo</p>
                   </div>
-                  <p className="text-sm font-black text-app-primary">{previewCar.specs.fuelType}</p>
+                  <p className="text-sm font-black text-app-primary">{fuelLabel(previewCar.specs.fuelType)}</p>
                 </div>
                 <div className="bg-card-surface p-3">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Settings size={13} className="text-emerald-400" />
                     <p className="text-[10px] text-app-muted font-medium">Menjač</p>
                   </div>
-                  <p className="text-sm font-black text-app-primary">{previewCar.specs.transmission}</p>
+                  <p className="text-sm font-black text-app-primary">{transmissionLabel(previewCar.specs.transmission)}</p>
                 </div>
               </div>
 

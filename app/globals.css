@@ -146,6 +146,24 @@
   }
 }
 
+/* Accessibility baseline: several components set `focus:outline-none` for the
+   mouse case, which would otherwise leave keyboard users with no focus cue. */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring)) !important;
+  outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 ::selection {
   background-color: rgb(249 115 22 / 0.3);
   color: #f97316;

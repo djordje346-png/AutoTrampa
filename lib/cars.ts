@@ -1,11 +1,20 @@
 import { Car, MyGarageCar } from '@/types';
 
 export function formatEuro(amount: number): string {
-  return new Intl.NumberFormat('de-DE', {
+  return new Intl.NumberFormat('sr-RS', {
     style: 'currency',
     currency: 'EUR',
     maximumFractionDigits: 0,
   }).format(amount);
+}
+
+/**
+ * Always formatted with an explicit locale: a bare toLocaleString() resolves
+ * differently on the Node server than in a Serbian browser, which shows up as
+ * a hydration mismatch on every mileage figure.
+ */
+export function formatKm(km: number): string {
+  return `${new Intl.NumberFormat('sr-RS').format(km)} km`;
 }
 
 export const MY_CAR: MyGarageCar = {
@@ -31,7 +40,7 @@ export const MY_CAR: MyGarageCar = {
     engine: 'BMW M57D25',
     displacement: '2.5L',
     cylinders: 6,
-    power: '197 hp (145 kW)',
+    power: '197 KS (145 kW)',
     torque: '410 Nm',
     fuelType: 'Diesel',
     transmission: 'Manual',
@@ -46,24 +55,24 @@ export const MY_CAR: MyGarageCar = {
     rating: 4.9,
   },
   description:
-    'Well-maintained BMW 525d E60 with straight-six diesel. Stage 1 remap raises output to ~215 hp. DPF deleted for long-term reliability. Zeder steering lock installed.',
+    'Odlično održavan BMW 525d E60 sa rednim šestocilindričnim dizelom. Stage 1 remap podiže snagu na ~215 KS. DPF uklonjen radi dugoročne pouzdanosti. Ugrađena Zeder brava na volanu.',
   modifications: [
-    'Stage 1 ECU remap (+18 hp / +60 Nm)',
-    'DPF delete + straight pipe',
-    'Zeder steering security lock',
-    'H&R lowering springs',
-    'Bilstein B6 shocks',
-    'M-Sport front lip',
+    'Stage 1 ECU remap (+18 KS / +60 Nm)',
+    'DPF uklonjen + prava cev',
+    'Zeder sigurnosna brava volana',
+    'H&R spuštene opruge',
+    'Bilstein B6 amortizeri',
+    'M-Sport prednji spojler',
   ],
   equipment: ['abs', 'esp', 'airbags', 'alarm', 'central_lock', 'zeder', 'isofix', 'heated_seats', 'auto_climate', 'cruise_control', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'led_xenon', 'fog_lights', 'navigation', 'bluetooth', 'trip_computer'],
-  securityFeatures: ['Zeder steering lock', 'Alarm system', 'GPS tracker'],
+  securityFeatures: ['Zeder brava volana', 'Alarmni sistem', 'GPS lokator'],
   buildNotes: [
-    'Timing chain replaced at 170k km',
-    'All fluids flushed at last service',
-    'New Michelin Pilot Sport 4 tyres (all four)',
-    'Swirl flap delete kit installed',
-    'EGR cooler cleaned',
-    'New battery (AGM 90Ah)',
+    'Lanac razvoda zamenjen na 170.000 km',
+    'Sve tečnosti zamenjene na poslednjem servisu',
+    'Nove Michelin Pilot Sport 4 gume (sve četiri)',
+    'Ugrađen swirl flap delete kit',
+    'EGR hladnjak očišćen',
+    'Nov akumulator (AGM 90Ah)',
   ],
   estimatedValue: 7200,
 };
@@ -93,7 +102,7 @@ export const DEFAULT_GARAGE_CARS: MyGarageCar[] = [
       engine: 'Audi 2.0 TDI BPW',
       displacement: '2.0L',
       cylinders: 4,
-      power: '140 hp (103 kW)',
+      power: '140 KS (103 kW)',
       torque: '320 Nm',
       fuelType: 'Diesel',
       transmission: 'Manual',
@@ -108,11 +117,11 @@ export const DEFAULT_GARAGE_CARS: MyGarageCar[] = [
       rating: 4.9,
     },
     description:
-      'Daily driver Audi A6 C6 2.0 TDI. Clean body, S-Line interior, original 17" alloys. Headliner recently redone.',
-    modifications: ['S-Line front grille', 'Black optic package'],
+      'Audi A6 C6 2.0 TDI za svakodnevnu vožnju. Čist lim, S-Line enterijer, originalne 17" alu felne. Plafon skoro presvučen.',
+    modifications: ['S-Line prednja maska', 'Black optic paket'],
     equipment: ['abs', 'esp', 'airbags', 'central_lock', 'isofix', 'leather_seats', 'manual_climate', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'fog_lights', 'bluetooth', 'trip_computer'],
-    securityFeatures: ['OEM alarm', 'Steering lock'],
-    buildNotes: ['DPF removed', 'Clutch replaced at 190k km'],
+    securityFeatures: ['Fabrički alarm', 'Brava volana'],
+    buildNotes: ['DPF uklonjen', 'Kvačilo zamenjeno na 190.000 km'],
     estimatedValue: 4500,
   },
 ];
@@ -141,7 +150,7 @@ export const MARKETPLACE_CARS: Car[] = [
       engine: 'VW BLS / PD 105',
       displacement: '1.9L',
       cylinders: 4,
-      power: '105 hp (77 kW)',
+      power: '105 KS (77 kW)',
       torque: '250 Nm',
       fuelType: 'Diesel',
       transmission: 'Manual',
@@ -156,7 +165,7 @@ export const MARKETPLACE_CARS: Car[] = [
       rating: 4.7,
     },
     description:
-      'Reliable Audi A4 Avant 1.9 TDI in excellent condition. Loaded with original Audi Navigation Plus. Quattro-style rims, full service history.',
+      'Pouzdan Audi A4 Avant 1.9 TDI u odličnom stanju. Originalna Audi Navigation Plus. Quattro-style felne, kompletna servisna istorija.',
     equipment: ['abs', 'esp', 'airbags', 'central_lock', 'isofix', 'auto_climate', 'cruise_control', 'electric_windows', 'alloy_wheels', 'led_xenon', 'panorama', 'fog_lights', 'navigation', 'parking_sensors', 'trip_computer'],
   },
   {
@@ -182,7 +191,7 @@ export const MARKETPLACE_CARS: Car[] = [
       engine: 'VW BPY 2.0 TFSI',
       displacement: '2.0L',
       cylinders: 4,
-      power: '200 hp (147 kW)',
+      power: '200 KS (147 kW)',
       torque: '280 Nm',
       fuelType: 'Petrol',
       transmission: 'Manual',
@@ -197,11 +206,11 @@ export const MARKETPLACE_CARS: Car[] = [
       rating: 4.5,
     },
     description:
-      'Clean Mk5 Golf GTI with no rust. Recaro Sport seats, aftermarket exhaust, APR Stage 1 software. Regular oil changes with 5W-40 fully synthetic.',
+      'Čist Mk5 Golf GTI bez rđe. Recaro Sport sedišta, sportski auspuh, APR Stage 1 softver. Redovna zamena ulja 5W-40 potpuno sintetičkim.',
     modifications: [
-      'APR Stage 1 tune (+30 hp)',
-      'Milltek non-resonated catback',
-      'Forge DVR blow-off valve',
+      'APR Stage 1 čip (+30 KS)',
+      'Milltek non-resonated catback izduv',
+      'Forge DVR blow-off ventil',
     ],
     equipment: ['abs', 'esp', 'airbags', 'alarm', 'central_lock', 'isofix', 'heated_seats', 'auto_climate', 'cruise_control', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'led_xenon', 'fog_lights', 'navigation', 'bluetooth', 'reverse_camera', 'parking_sensors', 'trip_computer'],
   },
@@ -227,7 +236,7 @@ export const MARKETPLACE_CARS: Car[] = [
       engine: 'Alfa 939 A5.000',
       displacement: '1.9L',
       cylinders: 4,
-      power: '150 hp (110 kW)',
+      power: '150 KS (110 kW)',
       torque: '305 Nm',
       fuelType: 'Diesel',
       transmission: 'Manual',
@@ -242,7 +251,7 @@ export const MARKETPLACE_CARS: Car[] = [
       rating: 4.3,
     },
     description:
-      'Italian beauty with soul. Alfa 159 1.9 JTDm, fresh timing belt, new brakes all round. Minor paint imperfections on driver door. Drives perfectly.',
+      'Italijanska lepotica sa dušom. Alfa 159 1.9 JTDm, nov kaiš razvoda, nove kočnice svuda. Sitne nepravilnosti u laku na vozačevim vratima. Vozi besprekorno.',
     equipment: ['abs', 'esp', 'airbags', 'central_lock', 'isofix', 'leather_seats', 'manual_climate', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'fog_lights', 'bluetooth', 'trip_computer'],
   },
   {
@@ -268,7 +277,7 @@ export const MARKETPLACE_CARS: Car[] = [
       engine: 'BMW N47D20',
       displacement: '2.0L',
       cylinders: 4,
-      power: '163 hp (120 kW)',
+      power: '163 KS (120 kW)',
       torque: '340 Nm',
       fuelType: 'Diesel',
       transmission: 'Manual',
@@ -283,8 +292,8 @@ export const MARKETPLACE_CARS: Car[] = [
       rating: 4.8,
     },
     description:
-      'Facelift E90 320d with M-Sport package. Full electric seats, xenon headlights, iDrive navigation. Serviced at BMW dealer until 120k km.',
-    modifications: ['M-Sport bumpers and side skirts', 'BMW Performance exhaust tips'],
+      'Facelift E90 320d sa M-Sport paketom. Potpuno električna sedišta, ksenon svetla, iDrive navigacija. Servisiran kod ovlašćenog BMW servisa do 120.000 km.',
+    modifications: ['M-Sport branici i bočni pragovi', 'BMW Performance nastavci auspuha'],
     equipment: ['abs', 'esp', 'airbags', 'alarm', 'central_lock', 'isofix', 'leather_seats', 'heated_seats', 'auto_climate', 'cruise_control', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'led_xenon', 'panorama', 'fog_lights', 'navigation', 'bluetooth', 'reverse_camera', 'parking_sensors', 'trip_computer'],
   },
 ];

@@ -3,19 +3,24 @@
 import { useCallback } from 'react';
 import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
 
+export type TradeFilter = 'all' | 'similar' | 'cheaper' | 'expensive';
+
 export interface Preferences {
   /** Search radius in km. */
   radius: number;
-  /** Preferred body types, in Serbian as shown in Profil. */
+  /** Preferred body types, stored as BodyType keys and displayed via labels. */
   bodyPrefs: string[];
   /** Hide phone number until both sides accept a swap. */
   phoneAfterMatch: boolean;
+  /** Trade filter on the feed — kept so it survives opening a listing. */
+  tradeFilter: TradeFilter;
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
   radius: 50,
-  bodyPrefs: ['Limuzina', 'Karavan'],
+  bodyPrefs: ['Sedan', 'Caravan'],
   phoneAfterMatch: true,
+  tradeFilter: 'all',
 };
 
 const preferencesStore = createPersistentStore<Preferences>(

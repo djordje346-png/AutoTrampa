@@ -2,8 +2,9 @@
 
 import { Heart, X, MapPin, Gauge, Fuel, Phone, BookmarkX, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
+import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
 import { useSaved } from '@/hooks/use-saved';
+import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { Car } from '@/types';
 import { toast } from 'sonner';
 
@@ -68,7 +69,7 @@ export default function SavedPage() {
                     <X size={15} />
                   </button>
                   <div className="absolute bottom-3 left-3">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400">{car.bodyType}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400">{bodyLabel(car.bodyType)}</p>
                     <h3 className="text-base font-bold text-white">
                       {car.year} {car.brand} {car.model}
                     </h3>
@@ -80,11 +81,11 @@ export default function SavedPage() {
                     <div className="flex items-center gap-3 text-xs text-app-secondary">
                       <span className="flex items-center gap-1">
                         <Gauge size={12} className="text-app-muted" />
-                        {car.mileage.toLocaleString()} km
+                        {formatKm(car.mileage)}
                       </span>
                       <span className="flex items-center gap-1">
                         <Fuel size={12} className="text-app-muted" />
-                        {car.specs.fuelType}
+                        {fuelLabel(car.specs.fuelType)}
                       </span>
                       <span className="flex items-center gap-1">
                         <MapPin size={12} className="text-app-muted" />

@@ -3,8 +3,9 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, Heart, ArrowLeftRight, TrendingUp } from 'lucide-react';
-import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
+import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
+import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useSearchPrefs } from '@/hooks/use-search-prefs';
@@ -113,7 +114,7 @@ export default function SearchPage() {
                   : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
               }`}
             >
-              {type}
+              {bodyLabel(type)}
             </button>
           ))}
         </div>
@@ -194,7 +195,7 @@ export default function SearchPage() {
                     <div className="flex items-start justify-between gap-2">
                       <Link href={`/car/${car.id}`} className="min-w-0">
                         <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
-                          {car.bodyType}
+                          {bodyLabel(car.bodyType)}
                         </p>
                         <h3 className="truncate text-sm font-bold leading-tight text-app-primary transition-colors hover:text-orange-400">
                           {car.year} {car.brand} {car.model}
@@ -220,11 +221,11 @@ export default function SearchPage() {
                     <div className="mt-2 flex flex-wrap items-center gap-2.5">
                       <span className="flex items-center gap-1 text-[11px] text-app-secondary">
                         <Gauge size={11} className="text-app-muted" />
-                        {car.mileage.toLocaleString()} km
+                        {formatKm(car.mileage)}
                       </span>
                       <span className="flex items-center gap-1 text-[11px] text-app-secondary">
                         <Fuel size={11} className="text-app-muted" />
-                        {car.specs.displacement} {car.specs.fuelType}
+                        {car.specs.displacement} {fuelLabel(car.specs.fuelType)}
                       </span>
                       <span className="flex items-center gap-1 text-[11px] text-app-secondary">
                         <MapPin size={11} className="text-app-muted" />
