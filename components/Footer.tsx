@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Chrome as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
 import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
+import { useAuth } from '@/hooks/use-auth';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Početna', icon: Home },
@@ -27,9 +28,12 @@ export default function Footer() {
   const pathname = usePathname();
   const { totalUnread, mounted: messagesReady } = useMessages();
   const { count: savedCount, mounted: savedReady } = useSaved();
+  const { isLoggedIn, mounted: authReady } = useAuth();
 
   function badgeFor(href: string): number {
-    if (href === '/messages') return messagesReady ? totalUnread : 0;
+    // Unread messages sit behind sign-in; badging them for a visitor who would
+    // only hit the sign-in prompt is noise.
+    if (href === '/messages') return messagesReady && authReady && isLoggedIn ? totalUnread : 0;
     if (href === '/saved') return savedReady ? savedCount : 0;
     return 0;
   }
