@@ -2,19 +2,27 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, TrendingUp } from 'lucide-react';
+import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, Heart, ArrowLeftRight, TrendingUp } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { useGarage } from '@/hooks/use-garage';
-import { BodyType } from '@/types';
+import { useSaved } from '@/hooks/use-saved';
+import { useSearchPrefs } from '@/hooks/use-search-prefs';
+import { TradeOfferSheet } from '@/components/TradeOfferSheet';
+import { BodyType, Car } from '@/types';
 
 const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV'];
 
 export default function SearchPage() {
   const { selectedCar, mounted } = useGarage();
+  const { isSaved, toggleSave } = useSaved();
+  const { prefs, update } = useSearchPrefs();
   const [query, setQuery] = useState('');
-  const [activeType, setActiveType] = useState<BodyType | null>(null);
-  const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'year-desc' | 'trade'>('trade');
+  const [offerCar, setOfferCar] = useState<Car | null>(null);
+
+  const { bodyType: activeType, sortBy } = prefs;
+  const setActiveType = (next: BodyType | null) => update({ bodyType: next });
+  const setSortBy = (next: typeof prefs.sortBy) => update({ sortBy: next });
 
   const results = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -98,7 +106,7 @@ export default function SearchPage() {
           {BODY_TYPES.map(type => (
             <button
               key={type}
-              onClick={() => setActiveType(prev => (prev === type ? null : type))}
+              onClick={() => setActiveType(activeType === type ? null : type)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                 activeType === type
                   ? 'bg-orange-500 border-orange-500 text-white'
@@ -158,35 +166,58 @@ export default function SearchPage() {
         ) : (
           results.map(car => {
             const tl = getTradeLabel(selectedCar, car);
+            const saved = isSaved(car.id);
             return (
-              <Link
+              <article
                 key={car.id}
-                href={`/car/${car.id}`}
-                className="block bg-card-surface rounded-2xl overflow-hidden border border-surface hover:border-orange-500/30 transition-all duration-200"
+                className="overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-orange-500/30"
               >
                 <div className="flex">
-                  <div className="w-28 flex-shrink-0 relative">
-                    <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
-                    <div className={`absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full border text-[9px] font-bold ${tl.bg} ${tl.color}`}>
-                      {tl.label}
-                    </div>
-                  </div>
-                  <div className="flex-1 p-3 min-w-0">
+                  <Link
+                    href={`/car/${car.id}`}
+                    className="relative w-28 flex-shrink-0"
+                    aria-label={`Detalji: ${car.year} ${car.brand} ${car.model}`}
+                  >
+                    <img
+                      src={car.image}
+                      alt={`${car.brand} ${car.model}`}
+                      className="h-full w-full object-cover"
+                    />
+                    <span
+                      className={`absolute bottom-1 left-1 rounded-full border px-1.5 py-0.5 text-[9px] font-bold ${tl.bg} ${tl.color}`}
+                    >
+                      {tl.short}
+                    </span>
+                  </Link>
+
+                  <div className="min-w-0 flex-1 p-3">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="text-[10px] text-orange-400 font-bold uppercase tracking-widest">{car.bodyType}</p>
-                        <h3 className="text-sm font-bold text-app-primary leading-tight truncate">
+                      <Link href={`/car/${car.id}`} className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
+                          {car.bodyType}
+                        </p>
+                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary transition-colors hover:text-orange-400">
                           {car.year} {car.brand} {car.model}
                         </h3>
                         <p className="text-xs text-app-muted">{car.generation}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-orange-400 font-bold text-sm">{formatEuro(car.price)}</p>
-                        <ArrowRight size={12} className="text-app-muted ml-auto mt-1" />
+                      </Link>
+                      <div className="flex flex-shrink-0 items-start gap-2">
+                        <p className="text-sm font-bold text-orange-400">{formatEuro(car.price)}</p>
+                        <button
+                          onClick={() => toggleSave(car.id)}
+                          aria-label={saved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
+                          className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                            saved
+                              ? 'bg-rose-500/10 text-rose-400'
+                              : 'text-app-muted hover:bg-hover-surface hover:text-rose-400'
+                          }`}
+                        >
+                          <Heart size={14} fill={saved ? 'currentColor' : 'none'} />
+                        </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 mt-2 flex-wrap">
+                    <div className="mt-2 flex flex-wrap items-center gap-2.5">
                       <span className="flex items-center gap-1 text-[11px] text-app-secondary">
                         <Gauge size={11} className="text-app-muted" />
                         {car.mileage.toLocaleString()} km
@@ -201,14 +232,31 @@ export default function SearchPage() {
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-app-muted mt-1.5 line-clamp-1">{car.description}</p>
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <button
+                        onClick={() => setOfferCar(car)}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-orange-500 py-2 text-[11px] font-bold text-white transition-all duration-200 hover:bg-orange-400 active:scale-95"
+                      >
+                        <ArrowLeftRight size={12} />
+                        Pošalji ponudu
+                      </button>
+                      <Link
+                        href={`/car/${car.id}`}
+                        className="flex items-center justify-center gap-1 rounded-lg bg-elevated px-3 py-2 text-[11px] font-semibold text-app-secondary transition-all hover:bg-hover-surface"
+                      >
+                        Detalji
+                        <ArrowRight size={11} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </Link>
+              </article>
             );
           })
         )}
       </div>
+
+      <TradeOfferSheet car={offerCar} myCar={selectedCar} onClose={() => setOfferCar(null)} />
     </div>
   );
 }

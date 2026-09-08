@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, X, Sun, Moon, Database } from 'lucide-react';
+import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { useGarage } from '@/hooks/use-garage';
@@ -12,6 +12,7 @@ import { formatEuro } from '@/lib/cars';
 import { estimateUsageBytes } from '@/lib/storage';
 import { MyGarageCar } from '@/types';
 import CarForm from '@/components/CarForm';
+import { BottomSheet } from '@/components/BottomSheet';
 
 const BODY_TYPE_PREFS = ['Limuzina', 'SUV', 'Karavan', 'Coupe'];
 
@@ -356,78 +357,75 @@ export default function ProfilePage() {
       <p className="text-center text-[10px] text-app-muted opacity-50 pb-2">AutoTrampa v1.0</p>
 
       {showAddForm && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowAddForm(false)} />
-          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-bold text-app-primary">Dodaj novo vozilo</h3>
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors"
-              >
-                <X size={16} />
-              </button>
-            </div>
-            <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
-          </div>
-        </div>
+        <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
       )}
 
-      {activeModal && (
-        <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-card-surface border border-surface w-full max-w-lg max-h-[85vh] rounded-t-3xl sm:rounded-2xl flex flex-col overflow-hidden shadow-2xl safe-bottom">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-surface">
-              <h3 className="text-sm font-bold text-app-primary">
-                {activeModal === 'faq' && 'Često postavljana pitanja'}
-                {activeModal === 'terms' && 'Uslovi korišćenja'}
-                {activeModal === 'privacy' && 'Politika privatnosti'}
-              </h3>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="w-8 h-8 rounded-full bg-elevated flex items-center justify-center text-app-secondary hover:text-app-primary transition"
-              >
-                <X size={16} />
-              </button>
+      <BottomSheet
+        open={activeModal !== null}
+        onClose={() => setActiveModal(null)}
+        title={
+          activeModal === 'faq'
+            ? 'Često postavljana pitanja'
+            : activeModal === 'terms'
+              ? 'Uslovi korišćenja'
+              : 'Politika privatnosti'
+        }
+        className="sm:max-w-lg"
+      >
+        <div className="space-y-4 text-xs leading-relaxed text-app-secondary">
+          {activeModal === 'faq' && (
+            <>
+              <div className="space-y-1.5">
+                <p className="font-bold text-orange-400">1. Kako funkcioniše zamena automobila?</p>
+                <p className="text-app-muted">
+                  Kada pronađete vozilo u feed-u i pošaljete zahtev, ukoliko i drugi vlasnik
+                  prihvati (match), otvara vam se direktan kontakt za dogovor o pregledu i razlici
+                  u ceni.
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <p className="font-bold text-orange-400">2. Da li je AutoTrampa posrednik?</p>
+                <p className="text-app-muted">
+                  Ne. AutoTrampa samo spaja vozače. Svi dogovori i overa ugovora vrše se lično
+                  između korisnika.
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <p className="font-bold text-orange-400">3. Gde se čuvaju moji podaci?</p>
+                <p className="text-app-muted">
+                  Trenutno lokalno, u vašem pregledaču. Brisanjem podataka pregledača briše se i
+                  vaša garaža, sačuvani oglasi i poruke.
+                </p>
+              </div>
+            </>
+          )}
+          {activeModal === 'terms' && (
+            <div className="space-y-1.5">
+              <p className="font-bold text-orange-400">Pravila platforme</p>
+              <p className="text-app-muted">
+                Svi oglasi moraju predstavljati realno stanje vozila u vašem vlasništvu. Zabranjeno
+                je unošenje lažnih podataka.
+              </p>
             </div>
-
-            <div className="p-5 overflow-y-auto space-y-4 text-xs text-app-secondary leading-relaxed">
-              {activeModal === 'faq' && (
-                <>
-                  <div className="space-y-1.5">
-                    <p className="font-bold text-orange-400">1. Kako funkcioniše zamena automobila?</p>
-                    <p className="text-app-muted">Kada pronađete vozilo u feed-u i pošaljete zahtev, ukoliko i drugi vlasnik prihvati (match), otvara vam se direktan kontakt za dogovor o pregledu i razlici u ceni.</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <p className="font-bold text-orange-400">2. Da li je AutoTrampa posrednik?</p>
-                    <p className="text-app-muted">Ne. AutoTrampa samo spaja vozače. Svi dogovori i overa ugovora vrše se lično između korisnika.</p>
-                  </div>
-                </>
-              )}
-              {activeModal === 'terms' && (
-                <div className="space-y-1.5">
-                  <p className="font-bold text-orange-400">Pravila platforme</p>
-                  <p className="text-app-muted">Svi oglasi moraju predstavljati realno stanje vozila u vašem vlasništvu. Zabranjeno je unošenje lažnih podataka.</p>
-                </div>
-              )}
-              {activeModal === 'privacy' && (
-                <div className="space-y-1.5">
-                  <p className="font-bold text-orange-400">Zaštita podataka</p>
-                  <p className="text-app-muted">Vaš broj telefona je sakriven sve dok se ne ostvari obostrani match sa drugim vozačem.</p>
-                </div>
-              )}
+          )}
+          {activeModal === 'privacy' && (
+            <div className="space-y-1.5">
+              <p className="font-bold text-orange-400">Zaštita podataka</p>
+              <p className="text-app-muted">
+                Vaš broj telefona je sakriven sve dok se ne ostvari obostrani match sa drugim
+                vozačem.
+              </p>
             </div>
-
-            <div className="p-4 border-t border-surface bg-app/50 flex justify-end">
-              <button
-                onClick={() => setActiveModal(null)}
-                className="w-full bg-elevated hover:bg-hover-surface text-app-primary font-semibold py-2.5 rounded-xl text-xs transition"
-              >
-                Zatvori
-              </button>
-            </div>
-          </div>
+          )}
         </div>
-      )}
+
+        <button
+          onClick={() => setActiveModal(null)}
+          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+        >
+          Zatvori
+        </button>
+      </BottomSheet>
     </div>
   );
 }

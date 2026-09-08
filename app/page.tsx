@@ -7,12 +7,12 @@ import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
 import { getTradeLabel, TRADE_TOLERANCE } from '@/lib/trade';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
-import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
 import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
+import { BottomSheet } from '@/components/BottomSheet';
+import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 
-type ModalState = 'closed' | 'offer' | 'success';
 type ViewMode = 'grid' | 'swipe';
 type TradeFilter = 'all' | 'similar' | 'cheaper' | 'expensive';
 
@@ -27,10 +27,8 @@ const COMING_SOON_FILTERS = ['Gorivo', 'Marka', 'Godište', 'Kilometraža', 'Men
 
 export default function FeedPage() {
   const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
-  const { createConversation } = useMessages();
   const { saved, isSaved, toggleSave, save: saveCar } = useSaved();
-  const [modal, setModal] = useState<{ state: ModalState; car: Car | null }>({ state: 'closed', car: null });
-  const [message, setMessage] = useState('');
+  const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -75,31 +73,7 @@ export default function FeedPage() {
   }, [viewMode]);
 
   function openOffer(car: Car) {
-    setMessage('');
-    setModal({ state: 'offer', car });
-  }
-
-  function sendOffer() {
-    if (modal.car) {
-      const tl = getTradeLabel(selectedCar, modal.car);
-      createConversation(
-        {
-          id: `conv-${modal.car.id}-${Date.now()}`,
-          carId: modal.car.id,
-          carTitle: `${modal.car.year} ${modal.car.brand} ${modal.car.model} ${modal.car.generation}`,
-          carImage: modal.car.image,
-          ownerName: modal.car.owner.name,
-          ownerPhone: modal.car.owner.phone,
-          tradeSummary: tl.label,
-        },
-        message,
-      );
-    }
-    setModal(prev => ({ ...prev, state: 'success' }));
-  }
-
-  function closeModal() {
-    setModal({ state: 'closed', car: null });
+    setOfferCar(car);
   }
 
   function handleAddCar(form: MyGarageCar) {
@@ -168,7 +142,6 @@ export default function FeedPage() {
     setDragX(0);
   }
 
-  const trade = modal.car ? getTradeLabel(selectedCar, modal.car) : null;
   const swipeCar = filteredCars[swipeIndex];
   const swipeTl = swipeCar ? getTradeLabel(selectedCar, swipeCar) : null;
 
@@ -321,32 +294,32 @@ export default function FeedPage() {
         </div>
       )}
 
-      {/* More Filters bottom-sheet */}
-      {showMoreFilters && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowMoreFilters(false)} />
-          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 pb-8 max-h-[85vh] overflow-y-auto safe-bottom">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-lg font-bold text-app-primary">Više filtera</h3>
-              <button onClick={() => setShowMoreFilters(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors" aria-label="Zatvori">
-                <X size={16} />
-              </button>
+      <BottomSheet
+        open={showMoreFilters}
+        onClose={() => setShowMoreFilters(false)}
+        title="Više filtera"
+      >
+        <p className="-mt-3 mb-5 text-xs text-app-muted">Napredne opcije filtera uskoro dolaze.</p>
+        <div className="space-y-2">
+          {COMING_SOON_FILTERS.map(label => (
+            <div
+              key={label}
+              className="flex cursor-not-allowed items-center justify-between rounded-xl border border-surface bg-elevated/50 px-4 py-3"
+            >
+              <span className="text-sm font-medium text-app-secondary">{label}</span>
+              <span className="rounded-md bg-orange-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-orange-400/80">
+                Uskoro
+              </span>
             </div>
-            <p className="text-xs text-app-muted mb-5">Napredne opcije filtera uskoro dolaze.</p>
-            <div className="space-y-2">
-              {COMING_SOON_FILTERS.map(label => (
-                <div key={label} className="flex items-center justify-between rounded-xl bg-elevated/50 border border-surface px-4 py-3 cursor-not-allowed">
-                  <span className="text-sm font-medium text-app-secondary">{label}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400/80 bg-orange-500/10 px-2 py-1 rounded-md">Uskoro</span>
-                </div>
-              ))}
-            </div>
-            <button onClick={() => setShowMoreFilters(false)} className="w-full mt-6 bg-elevated hover:bg-hover-surface text-app-primary font-semibold py-3 rounded-xl text-sm transition-colors">
-              Gotovo
-            </button>
-          </div>
+          ))}
         </div>
-      )}
+        <button
+          onClick={() => setShowMoreFilters(false)}
+          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+        >
+          Gotovo
+        </button>
+      </BottomSheet>
 
       {/* SWIPE MODE — FULLSCREEN */}
       {viewMode === 'swipe' && filteredCars.length > 0 && (
@@ -613,81 +586,12 @@ export default function FeedPage() {
         </div>
       )}
 
-      {/* Add New Car Modal */}
+      {/* CarForm renders its own full-screen portal — no sheet wrapper. */}
       {showAddForm && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowAddForm(false)} />
-          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-bold text-app-primary">Dodaj novo vozilo</h3>
-              <button onClick={() => setShowAddForm(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors" aria-label="Zatvori">
-                <X size={16} />
-              </button>
-            </div>
-            <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
-          </div>
-        </div>
+        <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
       )}
 
-      {/* Trade Offer Modal */}
-      {modal.state !== 'closed' && modal.car && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={closeModal} />
-          <div className="relative w-full max-w-md bg-card-surface rounded-t-3xl border-t border-surface p-6 max-h-[85vh] overflow-y-auto safe-bottom">
-            {modal.state === 'offer' ? (
-              <>
-                <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-lg font-bold text-app-primary">Ponuda za trampu</h3>
-                  <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-elevated text-app-secondary hover:text-app-primary transition-colors" aria-label="Zatvori">
-                    <X size={16} />
-                  </button>
-                </div>
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="flex-1 rounded-xl bg-elevated p-3 text-center min-w-0">
-                    <p className="text-xs text-app-muted mb-1">Tvoj auto</p>
-                    <p className="text-sm font-semibold text-app-primary truncate">{selectedCar.brand} {selectedCar.model}</p>
-                    <p className="text-orange-400 font-bold text-sm">{formatEuro(selectedCar.price)}</p>
-                  </div>
-                  <ArrowLeftRight size={20} className="text-app-muted flex-shrink-0" />
-                  <div className="flex-1 rounded-xl bg-elevated p-3 text-center min-w-0">
-                    <p className="text-xs text-app-muted mb-1">Njegov auto</p>
-                    <p className="text-sm font-semibold text-app-primary truncate">{modal.car.brand} {modal.car.model}</p>
-                    <p className="text-orange-400 font-bold text-sm">{formatEuro(modal.car.price)}</p>
-                  </div>
-                </div>
-                {trade && (
-                  <div className={`rounded-xl border px-4 py-2.5 text-center text-sm font-semibold mb-5 ${trade.bg} ${trade.color}`}>
-                    {trade.label}
-                  </div>
-                )}
-                <textarea
-                  value={message}
-                  onChange={e => setMessage(e.target.value)}
-                  placeholder="Dodaj poruku uz ponudu... (opciono)"
-                  className="w-full h-24 bg-elevated border border-surface rounded-xl px-4 py-3 text-sm text-app-primary placeholder:text-app-muted resize-none focus:outline-none focus:border-orange-500 transition-colors"
-                />
-                <button onClick={sendOffer} className="w-full mt-4 bg-orange-500 hover:bg-orange-400 text-white font-bold py-3 rounded-xl text-sm transition-all duration-200 active:scale-95">
-                  Pošalji ponudu
-                </button>
-              </>
-            ) : (
-              <div className="flex flex-col items-center py-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
-                  <CheckCircle size={36} className="text-emerald-400" />
-                </div>
-                <h3 className="text-lg font-bold text-app-primary mb-2">Ponuda poslata!</h3>
-                <p className="text-sm text-app-secondary text-center mb-1">
-                  Tvoja ponuda za <span className="text-app-primary font-medium">{modal.car.brand} {modal.car.model}</span> je poslata korisniku {modal.car.owner.name}.
-                </p>
-                <p className="text-xs text-app-muted mb-6">Otvori Poruke da nastaviš razgovor.</p>
-                <button onClick={closeModal} className="w-full bg-elevated hover:bg-hover-surface text-app-primary font-semibold py-3 rounded-xl text-sm transition-colors">
-                  Zatvori
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <TradeOfferSheet car={offerCar} myCar={selectedCar} onClose={() => setOfferCar(null)} />
     </div>
   );
 }
