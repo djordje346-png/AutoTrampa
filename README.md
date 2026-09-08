@@ -30,6 +30,12 @@ npm run dev      # http://localhost:3000
 - **Poruke** — razgovori po oglasu, sa simuliranim odgovorom druge strane
 - **Profil** — identitet, preferencije zamene, tamna/svetla tema, pregled zauzeća memorije
 
+## Nalog
+
+Pregled oglasa je javan — feed, pretraga i stranice oglasa rade bez prijave i mogu se deliti i
+indeksirati. Prijava se traži tek kada je potrebna: za garažu, poruke, profil i slanje ponude.
+Oznaka doplate i filteri po vrednosti zamene pojavljuju se tek kada imaš auto u garaži.
+
 ## Podaci
 
 Aplikacija trenutno radi **potpuno lokalno**. Nema servera ni baze — garaža, sačuvani oglasi,

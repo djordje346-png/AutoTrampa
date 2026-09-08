@@ -10,7 +10,12 @@ type Field = 'name' | 'email' | 'password';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^\+?[\d\s/-]{6,}$/;
 
-export default function AuthScreen() {
+interface AuthScreenProps {
+  /** Shrinks the hero when the overlay already explains why we are asking. */
+  compact?: boolean;
+}
+
+export default function AuthScreen({ compact = false }: AuthScreenProps) {
   const { login } = useAuth();
   const [tab, setTab] = useState<Tab>('login');
   const [email, setEmail] = useState('');
@@ -71,11 +76,25 @@ export default function AuthScreen() {
 
   return (
     <div className="flex min-h-screen flex-col px-6">
-      <div className="flex flex-1 flex-col items-center justify-center pb-8 pt-12">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500 shadow-lg shadow-orange-500/20">
-          <ArrowLeftRight size={30} className="text-white" strokeWidth={2.5} />
+      <div
+        className={`flex flex-col items-center justify-center ${
+          compact ? 'pb-6 pt-8' : 'flex-1 pb-8 pt-12'
+        }`}
+      >
+        <div
+          className={`mb-4 flex items-center justify-center rounded-2xl bg-orange-500 shadow-lg shadow-orange-500/20 ${
+            compact ? 'h-12 w-12' : 'h-16 w-16'
+          }`}
+        >
+          <ArrowLeftRight size={compact ? 22 : 30} className="text-white" strokeWidth={2.5} />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-app-primary">AutoTrampa</h1>
+        <h1
+          className={`font-bold tracking-tight text-app-primary ${
+            compact ? 'text-xl' : 'text-2xl'
+          }`}
+        >
+          AutoTrampa
+        </h1>
         <p className="mt-1 text-sm text-app-muted">Pronađi sledeću zamenu</p>
       </div>
 

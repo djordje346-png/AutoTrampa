@@ -8,11 +8,14 @@ import { fuelLabel, transmissionLabel, bodyLabel } from '@/lib/labels';
 import { MyGarageCar, getCarImages } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
+import { useAuth } from '@/hooks/use-auth';
+import { SignedOutPage } from '@/components/SignedOut';
 import CarForm from '@/components/CarForm';
 import { ImageLightbox } from '@/components/ImageLightbox';
 
 export default function GaragePage() {
   const { cars, selectedId, selectCar, addCar, updateCar, removeCar, canAddCar, limit, mounted } = useGarage();
+  const { isLoggedIn, mounted: authReady } = useAuth();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
@@ -79,7 +82,18 @@ export default function GaragePage() {
     setExpandedId(prev => (prev === id ? null : id));
   }
 
-  if (!mounted) {
+  if (authReady && !isLoggedIn) {
+    return (
+      <SignedOutPage
+        heading="Garaža"
+        title="Garaža je vezana za nalog"
+        description="Prijavi se da dodaš svoja vozila i vidiš koliko je doplata na svakom oglasu."
+        reason="Prijavi se da otvoriš svoju garažu"
+      />
+    );
+  }
+
+  if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
         <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-4">

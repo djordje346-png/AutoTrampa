@@ -1,43 +1,17 @@
 'use client';
 
-import { ArrowLeftRight } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import AuthScreen from '@/components/AuthScreen';
+import AuthOverlay from '@/components/AuthOverlay';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/sonner';
 
-/** Shown for the one frame before localStorage tells us who is logged in. */
-function Splash() {
-  return (
-    <main className="flex min-h-screen w-full items-center justify-center bg-app">
-      <div className="flex flex-col items-center gap-3">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 shadow-lg shadow-orange-500/20">
-          <ArrowLeftRight size={26} className="text-white" strokeWidth={2.5} />
-        </div>
-        <p className="text-sm font-bold tracking-tight text-app-primary">AutoTrampa</p>
-        <span className="sr-only">Učitavanje…</span>
-      </div>
-    </main>
-  );
-}
-
+/**
+ * Browsing is public: listings render on the server so they can be shared and
+ * indexed. Sign-in is asked for at the moment an action needs an identity —
+ * see `requireAuth` in use-auth — not as a wall in front of the app.
+ */
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, mounted } = useAuth();
-
-  if (!mounted) {
-    return <Splash />;
-  }
-
-  if (!isLoggedIn) {
-    return (
-      <main className="min-h-screen w-full bg-app text-app-primary">
-        <div className="mx-auto min-h-screen w-full max-w-[1600px]">
-          <AuthScreen />
-        </div>
-        <Toaster />
-      </main>
-    );
-  }
+  const { promptOpen } = useAuth();
 
   return (
     <div className="min-h-screen w-full bg-app text-app-primary">
@@ -68,6 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       <Footer />
+      {promptOpen && <AuthOverlay />}
       <Toaster />
     </div>
   );

@@ -10,6 +10,7 @@ import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { usePreferences, type TradeFilter } from '@/hooks/use-preferences';
+import { useAuth } from '@/hooks/use-auth';
 import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
@@ -29,6 +30,7 @@ const COMING_SOON_FILTERS = ['Gorivo', 'Marka', 'Godište', 'Kilometraža', 'Men
 export default function FeedPage() {
   const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
   const { saved, isSaved, toggleSave, save: saveCar } = useSaved();
+  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -55,14 +57,17 @@ export default function FeedPage() {
     }
   }, [selectorOpen]);
 
+  const tradeAware = authReady && isLoggedIn;
+
   const filteredCars = useMemo(() => MARKETPLACE_CARS.filter(car => {
-    if (tradeFilter === 'all') return true;
+    // Without a garage car the trade filter has no meaning — show everything.
+    if (!tradeAware || tradeFilter === 'all') return true;
     const diff = car.price - selectedCar.price;
     if (tradeFilter === 'similar') return Math.abs(diff) < TRADE_TOLERANCE;
     if (tradeFilter === 'cheaper') return diff > TRADE_TOLERANCE;
     if (tradeFilter === 'expensive') return diff < -TRADE_TOLERANCE;
     return true;
-  }), [tradeFilter, selectedCar]);
+  }), [tradeFilter, selectedCar, tradeAware]);
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -75,6 +80,7 @@ export default function FeedPage() {
   }, [viewMode]);
 
   function openOffer(car: Car) {
+    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu')) return;
     setOfferCar(car);
   }
 
@@ -144,8 +150,9 @@ export default function FeedPage() {
     setDragX(0);
   }
 
+  const showTrade = tradeAware;
   const swipeCar = filteredCars[swipeIndex];
-  const swipeTl = swipeCar ? getTradeLabel(selectedCar, swipeCar) : null;
+  const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
 
   return (
     <div className="flex flex-col">
@@ -181,6 +188,7 @@ export default function FeedPage() {
             </div>
 
             {/* Tvoje Vozilo dropdown */}
+            {showTrade && (
             <div className="relative flex-shrink-0" ref={selectorRef}>
               <button
                 onClick={() => setSelectorOpen(p => !p)}
@@ -255,11 +263,30 @@ export default function FeedPage() {
                 </div>
               )}
             </div>
+            )}
           </div>
         </div>
       </header>
 
+      {authReady && !isLoggedIn && (
+        <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-bold text-orange-400">Koliko je doplata za tebe?</p>
+            <p className="mt-0.5 text-xs text-app-secondary">
+              Dodaj svoj auto u garažu i svaki oglas ti pokazuje razliku u ceni.
+            </p>
+          </div>
+          <button
+            onClick={() => requireAuth('Prijavi se i dodaj svoj auto')}
+            className="flex-shrink-0 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-orange-400"
+          >
+            Prijavi se
+          </button>
+        </div>
+      )}
+
       {/* Trade filter bar */}
+      {showTrade && (
       <div className="sticky top-[57px] z-30 bg-app border-b border-surface/50">
         <div className="flex items-center gap-1.5 px-4 py-2 overflow-x-auto scrollbar-hide">
           {TRADE_FILTERS.map(({ key, label }) => (
@@ -284,6 +311,7 @@ export default function FeedPage() {
           </button>
         </div>
       </div>
+      )}
 
       {/* No results */}
       {filteredCars.length === 0 && (
@@ -516,7 +544,7 @@ export default function FeedPage() {
       {viewMode === 'grid' && (
         <div className="px-4 mt-3 space-y-3 pb-4 md:px-6 lg:px-8">
           {filteredCars.map(car => {
-            const tl = getTradeLabel(selectedCar, car);
+            const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const carSaved = isSaved(car.id);
             return (
               <article key={car.id} className="bg-card-surface rounded-2xl overflow-hidden border border-surface hover:border-orange-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
@@ -560,9 +588,11 @@ export default function FeedPage() {
                   <div className="mt-3 md:mt-0 md:flex md:flex-col md:items-end md:justify-center md:gap-2 md:flex-shrink-0 md:min-w-[200px]">
                     <div className="flex items-center justify-between gap-2 md:block md:text-right">
                       <p className="text-orange-400 font-bold text-lg md:text-xl">{formatEuro(car.price)}</p>
-                      <div className={`md:mt-1 inline-block px-2.5 py-1 rounded-full border text-xs font-semibold ${tl.bg} ${tl.color}`}>
-                        {tl.label}
-                      </div>
+                      {tl && (
+                        <div className={`md:mt-1 inline-block px-2.5 py-1 rounded-full border text-xs font-semibold ${tl.bg} ${tl.color}`}>
+                          {tl.label}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex gap-2 mt-2 md:mt-3 md:w-full">

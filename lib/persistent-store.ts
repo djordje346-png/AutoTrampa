@@ -79,6 +79,40 @@ export function createPersistentStore<T>(
 }
 
 /**
+ * Same shared-subscription behaviour, but nothing is written to storage — for
+ * UI state that several components must agree on within a session and that
+ * would be wrong to restore on reload (an open dialog, for instance).
+ */
+export function createMemoryStore<T>(initial: T): PersistentStore<T> {
+  let value = initial;
+  const listeners = new Set<(value: T) => void>();
+
+  return {
+    key: '',
+    get: () => value,
+    set(next) {
+      const resolved =
+        typeof next === 'function' ? (next as (prev: T) => T)(value) : next;
+      if (Object.is(resolved, value)) return { ok: true };
+      value = resolved;
+      listeners.forEach((listener) => listener(value));
+      return { ok: true };
+    },
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    hydrate() {},
+    reset() {
+      value = initial;
+      listeners.forEach((listener) => listener(value));
+    },
+  };
+}
+
+/**
  * Subscribe a component to a store.
  * `ready` is false during the first render pass so callers can hold back
  * localStorage-dependent UI until hydration finishes.

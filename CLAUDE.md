@@ -12,6 +12,24 @@ There is **no server and no database**. `@supabase/supabase-js` is in `package.j
 imported nowhere — Supabase is planned as the last step, deliberately. Until then every write
 goes through `lib/persistent-store.ts` into `localStorage`; see "Swapping in a backend" below.
 
+## Public vs. signed-in
+
+Browsing is public and server-rendered: the feed, Pretraga, Sačuvano and every `/car/[id]` render
+real HTML so listings can be shared and indexed (`app/sitemap.ts`, `app/robots.ts`).
+
+Sign-in is asked for at the moment an action needs an identity, never as a wall. `useAuth()`
+exposes `requireAuth(reason)`: it returns true when the caller may proceed, otherwise it opens
+`AuthOverlay` with that reason and returns false. Garaža, Poruke and Profil render `SignedOutPage`
+instead of their content; each has a `layout.tsx` marking it `noindex`.
+
+Trade maths (the doplata label, the trade filters, the "best trade" sort) only appear when signed
+in — without a car in the garage there is nothing to compare against. Signed-out visitors get a
+CTA explaining what they are missing. Note these are gated on `authReady && isLoggedIn`, so the
+server render is always the public variant.
+
+A fresh account still inherits `DEFAULT_GARAGE_CARS`. That is deliberate for the demo — the trade
+feature needs a reference car — and is one of the things a real backend replaces.
+
 ## Stack
 
 Next.js 13.5.1 App Router · React 18 · TypeScript strict · Tailwind + shadcn/ui (47 primitives in
@@ -33,7 +51,7 @@ localStorage-dependent UI on the `ready`/`mounted` flag.
 
 | Hook | Key(s) | Holds |
 |---|---|---|
-| `use-auth` | `autotrampa_auth` | session flag (there is no real auth) |
+| `use-auth` | `autotrampa_auth` | session flag (there is no real auth); the sign-in prompt itself uses `createMemoryStore` so it never survives a reload |
 | `use-user` | `autotrampa_user` | profile: name, email, phone, city, rating |
 | `use-garage` | `autotrampa_garage`, `autotrampa_selected_car` | own cars + the one used for comparisons |
 | `use-saved` | `autotrampa_saved` | saved listing ids |
@@ -57,7 +75,9 @@ Invariants worth keeping:
 
 ```
 app/layout.tsx            metadata, manifest, pre-paint theme script
-components/AppShell.tsx   splash → AuthScreen (logged out) → children + Footer + Toaster
+components/AppShell.tsx   children + Footer + Toaster + on-demand AuthOverlay
+components/AuthOverlay.tsx  sign-in as an interruption, opened by requireAuth
+components/SignedOut.tsx    placeholder for the personal screens
 app/page.tsx              feed: grid + Tinder-style swipe, trade filters
 app/search/page.tsx       search with save + offer parity with the feed
 app/saved/page.tsx        saved listings
@@ -73,8 +93,9 @@ components/TradeOfferSheet.tsx  the offer flow, shared by feed/search/detail
 lib/cars.ts | car-brands.ts | equipment.ts | labels.ts   seed and reference data
 ```
 
-Pages are `'use client'` apart from the `/car/[id]` shell. All six listings are statically
-generated; `dynamicParams = false` makes an unknown id a real 404.
+Pages are `'use client'` apart from the `/car/[id]` shell and the per-route `layout.tsx` files
+that carry titles and `robots`. Every listing is statically generated; `dynamicParams = false`
+makes an unknown id a real 404.
 
 ## Conventions
 

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { MessageCircle, Send, ArrowLeft, CheckCheck, Phone, Trash2, TriangleAlert, ArrowLeftRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMessages, Conversation } from '@/hooks/use-messages';
+import { useAuth } from '@/hooks/use-auth';
+import { SignedOutPage } from '@/components/SignedOut';
 
 /** Delay the fake counterpart uses before answering — mirrors use-messages. */
 const REPLY_DELAY = 1500;
@@ -39,6 +41,7 @@ function formatDayLabel(ts: number): string {
 export default function MessagesPage() {
   const { conversations, sendMessage, markRead, deleteConversation, totalUnread, mounted } =
     useMessages();
+  const { isLoggedIn, mounted: authReady } = useAuth();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
@@ -138,7 +141,18 @@ export default function MessagesPage() {
     </div>
   );
 
-  if (!mounted) {
+  if (authReady && !isLoggedIn) {
+    return (
+      <SignedOutPage
+        heading="Poruke"
+        title="Poruke traže nalog"
+        description="Prijavi se da vidiš razgovore o zameni i nastaviš dogovor sa vlasnicima."
+        reason="Prijavi se da otvoriš poruke"
+      />
+    );
+  }
+
+  if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
         <header className="sticky top-0 z-40 border-b border-surface bg-app px-4 py-4 safe-top">

@@ -8,6 +8,7 @@ import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
+import { useAuth } from '@/hooks/use-auth';
 import { useSearchPrefs } from '@/hooks/use-search-prefs';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { BodyType, Car } from '@/types';
@@ -17,6 +18,8 @@ const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV'];
 export default function SearchPage() {
   const { selectedCar, mounted } = useGarage();
   const { isSaved, toggleSave } = useSaved();
+  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const showTrade = authReady && isLoggedIn;
   const { prefs, update } = useSearchPrefs();
   const [query, setQuery] = useState('');
   const [offerCar, setOfferCar] = useState<Car | null>(null);
@@ -38,8 +41,11 @@ export default function SearchPage() {
       return matchesQuery && matchesType;
     });
 
+    // A stored "best trade" sort must not survive signing out.
+    const effectiveSort = sortBy === 'trade' && !showTrade ? 'price-asc' : sortBy;
+
     const sorted = [...filtered];
-    switch (sortBy) {
+    switch (effectiveSort) {
       case 'price-asc':
         sorted.sort((a, b) => a.price - b.price);
         break;
@@ -54,7 +60,7 @@ export default function SearchPage() {
         break;
     }
     return sorted;
-  }, [query, activeType, sortBy, selectedCar]);
+  }, [query, activeType, sortBy, selectedCar, showTrade]);
 
   const hasFilters = query || activeType;
 
@@ -63,7 +69,7 @@ export default function SearchPage() {
       <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 pt-4 pb-3 safe-top">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold tracking-tight text-app-primary">Pretraga</h1>
-          {mounted && (
+          {mounted && showTrade && (
             <Link
               href="/garage"
               className="flex items-center gap-1.5 text-xs text-app-muted hover:text-orange-400 transition-colors"
@@ -122,7 +128,7 @@ export default function SearchPage() {
         <div className="flex items-center gap-2 mt-2.5">
           <span className="text-[10px] text-app-muted font-medium uppercase tracking-wider flex-shrink-0">Sortiraj:</span>
           {([
-            { key: 'trade', label: 'Najbolja zamena' },
+            ...(showTrade ? [{ key: 'trade', label: 'Najbolja zamena' }] as const : []),
             { key: 'price-asc', label: 'Cena ↑' },
             { key: 'price-desc', label: 'Cena ↓' },
             { key: 'year-desc', label: 'Najnovije' },
@@ -131,7 +137,9 @@ export default function SearchPage() {
               key={key}
               onClick={() => setSortBy(key)}
               className={`text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
-                sortBy === key ? 'text-orange-400 bg-orange-500/10' : 'text-app-muted hover:text-app-secondary'
+                (sortBy === key || (sortBy === 'trade' && !showTrade && key === 'price-asc'))
+                  ? 'text-orange-400 bg-orange-500/10'
+                  : 'text-app-muted hover:text-app-secondary'
               }`}
             >
               {label}
@@ -166,7 +174,7 @@ export default function SearchPage() {
           </div>
         ) : (
           results.map(car => {
-            const tl = getTradeLabel(selectedCar, car);
+            const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const saved = isSaved(car.id);
             return (
               <article
@@ -184,11 +192,13 @@ export default function SearchPage() {
                       alt={`${car.brand} ${car.model}`}
                       className="h-full w-full object-cover"
                     />
-                    <span
-                      className={`absolute bottom-1 left-1 rounded-full border px-1.5 py-0.5 text-[9px] font-bold ${tl.bg} ${tl.color}`}
-                    >
-                      {tl.short}
-                    </span>
+                    {tl && (
+                      <span
+                        className={`absolute bottom-1 left-1 rounded-full border px-1.5 py-0.5 text-[9px] font-bold ${tl.bg} ${tl.color}`}
+                      >
+                        {tl.short}
+                      </span>
+                    )}
                   </Link>
 
                   <div className="min-w-0 flex-1 p-3">
@@ -235,7 +245,10 @@ export default function SearchPage() {
 
                     <div className="mt-2.5 flex items-center gap-2">
                       <button
-                        onClick={() => setOfferCar(car)}
+                        onClick={() => {
+                          if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu')) return;
+                          setOfferCar(car);
+                        }}
                         className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-orange-500 py-2 text-[11px] font-bold text-white transition-all duration-200 hover:bg-orange-400 active:scale-95"
                       >
                         <ArrowLeftRight size={12} />

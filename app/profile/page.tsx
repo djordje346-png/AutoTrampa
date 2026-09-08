@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
+import { SignedOutPage } from '@/components/SignedOut';
 import { useGarage } from '@/hooks/use-garage';
 import { useTheme } from '@/hooks/use-theme';
 import { useUser, initials } from '@/hooks/use-user';
@@ -21,7 +22,7 @@ const BODY_TYPE_PREFS: BodyType[] = ['Sedan', 'SUV', 'Caravan', 'Coupe'];
 const STORAGE_BUDGET_BYTES = 5 * 1024 * 1024;
 
 export default function ProfilePage() {
-  const { logout } = useAuth();
+  const { logout, isLoggedIn, mounted: authReady } = useAuth();
   const { cars, selectedCar, addCar, selectCar, canAddCar, limit: garageLimit, mounted } = useGarage();
   const { theme, toggleTheme } = useTheme();
   const { user } = useUser();
@@ -50,7 +51,18 @@ export default function ProfilePage() {
     toast.success('Vozilo dodato u garažu.');
   }
 
-  if (!mounted) {
+  if (authReady && !isLoggedIn) {
+    return (
+      <SignedOutPage
+        heading="Profil"
+        title="Nemaš aktivan nalog"
+        description="Prijavi se da podesiš profil, preferencije zamene i privatnost."
+        reason="Prijavi se da otvoriš profil"
+      />
+    );
+  }
+
+  if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
         <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-4">

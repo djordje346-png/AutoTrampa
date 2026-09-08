@@ -10,6 +10,7 @@ import { getCarImages, type Car } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
+import { useAuth } from '@/hooks/use-auth';
 import { ImageLightbox } from '@/components/ImageLightbox';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { toast } from 'sonner';
@@ -18,6 +19,8 @@ export default function CarDetail({ car }: { car: Car }) {
   const router = useRouter();
   const { selectedCar, mounted: garageMounted } = useGarage();
   const { isSaved: isCarSaved, toggleSave } = useSaved();
+  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const showTrade = authReady && isLoggedIn;
   const [offerOpen, setOfferOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -132,11 +135,13 @@ export default function CarDetail({ car }: { car: Car }) {
       </div>
 
       <div className="px-4 -mt-4 relative z-10 space-y-4 pb-4">
-        <div className="flex justify-center">
-          <div className={`inline-flex items-center px-4 py-2 rounded-full border text-xs font-bold ${tl.bg} ${tl.color}`}>
-            {tl.label}
+        {showTrade && (
+          <div className="flex justify-center">
+            <div className={`inline-flex items-center px-4 py-2 rounded-full border text-xs font-bold ${tl.bg} ${tl.color}`}>
+              {tl.label}
+            </div>
           </div>
-        </div>
+        )}
         <div className="bg-card-surface rounded-2xl border border-surface p-4">
           <div className="flex items-start justify-between mb-2">
             <div>
@@ -240,7 +245,7 @@ export default function CarDetail({ car }: { car: Car }) {
           </div>
         )}
 
-        {garageMounted && (
+        {garageMounted && showTrade && (
           <div className="bg-card-surface rounded-2xl border border-surface p-4">
             <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-3">Poređenje zamene</p>
             <div className="flex items-center gap-3">
@@ -265,7 +270,10 @@ export default function CarDetail({ car }: { car: Car }) {
 
       <div className="sticky bottom-0 bg-app border-t border-surface px-4 py-3 flex gap-2 safe-bottom">
         <button
-          onClick={() => setOfferOpen(true)}
+          onClick={() => {
+            if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu')) return;
+            setOfferOpen(true);
+          }}
           className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"
         >
           <ArrowLeftRight size={16} className="flex-shrink-0" />
