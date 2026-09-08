@@ -79,13 +79,10 @@ components/AppShell.tsx   children + Footer + Toaster + on-demand AuthOverlay
 components/AuthOverlay.tsx  sign-in as an interruption, opened by requireAuth
 components/SignedOut.tsx    placeholder for the personal screens
 app/page.tsx              feed: grid + Tinder-style swipe, trade filters
-app/search/page.tsx       search with save + offer parity with the feed
-app/saved/page.tsx        saved listings
-app/garage/page.tsx       own cars: add/edit/delete, specs, equipment, lightbox
+app/<route>/page.tsx      server shell: metadata + robots, renders the client view
+app/<route>/*Client.tsx   the client view (SearchClient, GarageClient, …)
 app/car/[id]/page.tsx     server shell: generateStaticParams + per-listing metadata
 app/car/[id]/CarDetail.tsx  the client view
-app/messages/page.tsx     inbox + full-screen chat
-app/profile/page.tsx      identity, preferences, theme, storage usage
 components/CarForm.tsx    add/edit form — renders its own full-screen portal,
                           so never wrap it in a sheet
 components/BottomSheet.tsx    Escape, backdrop, scroll lock, focus
@@ -93,9 +90,11 @@ components/TradeOfferSheet.tsx  the offer flow, shared by feed/search/detail
 lib/cars.ts | car-brands.ts | equipment.ts | labels.ts   seed and reference data
 ```
 
-Pages are `'use client'` apart from the `/car/[id]` shell and the per-route `layout.tsx` files
-that carry titles and `robots`. Every listing is statically generated; `dynamicParams = false`
-makes an unknown id a real 404.
+Every route is a small server `page.tsx` (metadata + `robots`) rendering a `'use client'` view.
+Do **not** add a pass-through nested `layout.tsx` for this — on Next 13.5 a layout that merely
+returns `children` breaks the RSC client manifest and the route fails to prerender, which is why
+the metadata lives on the page shells. Every listing is statically generated; `dynamicParams =
+false` makes an unknown id a real 404.
 
 ## Conventions
 

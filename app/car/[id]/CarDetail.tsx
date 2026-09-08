@@ -271,7 +271,11 @@ export default function CarDetail({ car }: { car: Car }) {
       <div className="sticky bottom-0 bg-app border-t border-surface px-4 py-3 flex gap-2 safe-bottom">
         <button
           onClick={() => {
-            if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu')) return;
+            if (
+              !requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferOpen(true))
+            ) {
+              return;
+            }
             setOfferOpen(true);
           }}
           className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"

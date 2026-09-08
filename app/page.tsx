@@ -80,7 +80,7 @@ export default function FeedPage() {
   }, [viewMode]);
 
   function openOffer(car: Car) {
-    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu')) return;
+    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferCar(car))) return;
     setOfferCar(car);
   }
 
@@ -157,116 +157,146 @@ export default function FeedPage() {
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-3 safe-top">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex-shrink-0">
-            <h1 className="text-xl font-bold tracking-tight text-app-primary">AutoTrampa</h1>
-            <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* View mode toggle */}
-            <div className="flex bg-elevated rounded-lg p-0.5 border border-surface">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                  viewMode === 'grid' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
-                }`}
-                aria-label="Prikaz mreže"
-              >
-                <LayoutGrid size={14} />
-              </button>
-              <button
-                onClick={() => setViewMode('swipe')}
-                className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                  viewMode === 'swipe' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
-                }`}
-                aria-label="Svajp režim"
-              >
-                <Flame size={14} />
-              </button>
+      <div className="sticky top-0 z-40 border-b border-surface bg-app safe-top">
+        <header className="px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-shrink-0">
+              <h1 className="text-xl font-bold tracking-tight text-app-primary">AutoTrampa</h1>
+              <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
             </div>
 
-            {/* Tvoje Vozilo dropdown */}
-            {showTrade && (
-            <div className="relative flex-shrink-0" ref={selectorRef}>
-              <button
-                onClick={() => setSelectorOpen(p => !p)}
-                className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface"
-                aria-label="Izaberi vozilo"
-              >
-                {mounted ? (
-                  <>
-                    <div className="w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
-                      {selectedCar.image && (
-                        <img src={selectedCar.image} alt={selectedCar.model} className="w-full h-full object-cover" />
-                      )}
-                    </div>
-                    <div className="text-left min-w-0 max-w-[80px]">
-                      <p className="text-[8px] text-app-muted font-medium uppercase tracking-widest leading-none mb-0.5">Moj auto</p>
-                      <p className="text-[11px] font-bold text-app-primary truncate leading-tight">
-                        {selectedCar.brand} {selectedCar.model}
-                      </p>
-                    </div>
-                    <ChevronDown size={14} className={`text-app-muted transition-transform duration-200 ${selectorOpen ? 'rotate-180' : ''}`} />
-                  </>
-                ) : (
-                  <>
-                    <div className="w-7 h-7 rounded-lg bg-hover-surface animate-pulse" />
-                    <div className="h-3 w-14 bg-hover-surface rounded animate-pulse" />
-                  </>
-                )}
-              </button>
+            <div className="flex items-center gap-2">
+              {/* View mode toggle */}
+              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
+                    viewMode === 'grid' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
+                  }`}
+                  aria-label="Prikaz mreže"
+                >
+                  <LayoutGrid size={14} />
+                </button>
+                <button
+                  onClick={() => setViewMode('swipe')}
+                  className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
+                    viewMode === 'swipe' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
+                  }`}
+                  aria-label="Svajp režim"
+                >
+                  <Flame size={14} />
+                </button>
+              </div>
 
-              {selectorOpen && mounted && (
-                <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface border border-surface rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
-                  <div className="px-4 py-3 border-b border-surface">
-                    <p className="text-xs font-bold text-app-primary">Moja vozila</p>
-                    <p className="text-[10px] text-app-muted mt-0.5">Izaberi vozilo za trampu</p>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto p-2 space-y-1">
-                    {cars.map(car => {
-                      const isActive = car.id === selectedId;
-                      return (
-                        <button
-                          key={car.id}
-                          onClick={() => { selectCar(car.id); setSelectorOpen(false); }}
-                          className={`w-full flex items-center gap-2.5 rounded-xl p-2 transition-all duration-150 text-left ${
-                            isActive ? 'bg-orange-500/10' : 'hover:bg-hover-surface'
-                          }`}
-                        >
-                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
-                            {car.image && <img src={car.image} alt={car.model} className="w-full h-full object-cover" />}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-app-primary truncate">{car.brand} {car.model} {car.generation}</p>
-                            <p className="text-[10px] text-app-muted">{car.year} · {formatEuro(car.price)}</p>
-                          </div>
-                          {isActive && (
-                            <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
-                              <Check size={12} className="text-white" strokeWidth={3} />
+              {/* Tvoje Vozilo dropdown */}
+              {showTrade && (
+              <div className="relative flex-shrink-0" ref={selectorRef}>
+                <button
+                  onClick={() => setSelectorOpen(p => !p)}
+                  className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface"
+                  aria-label="Izaberi vozilo"
+                >
+                  {mounted ? (
+                    <>
+                      <div className="w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
+                        {selectedCar.image && (
+                          <img src={selectedCar.image} alt={selectedCar.model} className="w-full h-full object-cover" />
+                        )}
+                      </div>
+                      <div className="text-left min-w-0 max-w-[80px]">
+                        <p className="text-[8px] text-app-muted font-medium uppercase tracking-widest leading-none mb-0.5">Moj auto</p>
+                        <p className="text-[11px] font-bold text-app-primary truncate leading-tight">
+                          {selectedCar.brand} {selectedCar.model}
+                        </p>
+                      </div>
+                      <ChevronDown size={14} className={`text-app-muted transition-transform duration-200 ${selectorOpen ? 'rotate-180' : ''}`} />
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-7 h-7 rounded-lg bg-hover-surface animate-pulse" />
+                      <div className="h-3 w-14 bg-hover-surface rounded animate-pulse" />
+                    </>
+                  )}
+                </button>
+
+                {selectorOpen && mounted && (
+                  <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface border border-surface rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-surface">
+                      <p className="text-xs font-bold text-app-primary">Moja vozila</p>
+                      <p className="text-[10px] text-app-muted mt-0.5">Izaberi vozilo za trampu</p>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto p-2 space-y-1">
+                      {cars.map(car => {
+                        const isActive = car.id === selectedId;
+                        return (
+                          <button
+                            key={car.id}
+                            onClick={() => { selectCar(car.id); setSelectorOpen(false); }}
+                            className={`w-full flex items-center gap-2.5 rounded-xl p-2 transition-all duration-150 text-left ${
+                              isActive ? 'bg-orange-500/10' : 'hover:bg-hover-surface'
+                            }`}
+                          >
+                            <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
+                              {car.image && <img src={car.image} alt={car.model} className="w-full h-full object-cover" />}
                             </div>
-                          )}
-                        </button>
-                      );
-                    })}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-app-primary truncate">{car.brand} {car.model} {car.generation}</p>
+                              <p className="text-[10px] text-app-muted">{car.year} · {formatEuro(car.price)}</p>
+                            </div>
+                            {isActive && (
+                              <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
+                                <Check size={12} className="text-white" strokeWidth={3} />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="border-t border-surface p-2">
+                      <button
+                        onClick={() => { setSelectorOpen(false); setShowAddForm(true); }}
+                        className="w-full flex items-center justify-center gap-2 text-orange-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface hover:bg-hover-surface transition-all"
+                      >
+                        <Plus size={15} />
+                        Dodaj vozilo
+                      </button>
+                    </div>
                   </div>
-                  <div className="border-t border-surface p-2">
-                    <button
-                      onClick={() => { setSelectorOpen(false); setShowAddForm(true); }}
-                      className="w-full flex items-center justify-center gap-2 text-orange-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface hover:bg-hover-surface transition-all"
-                    >
-                      <Plus size={15} />
-                      Dodaj vozilo
-                    </button>
-                  </div>
-                </div>
+                )}
+              </div>
               )}
             </div>
-            )}
+          </div>
+        </header>
+
+        {/* Trade filter bar */}
+        {showTrade && (
+        <div className="border-t border-surface/50">
+          <div className="flex items-center gap-1.5 px-4 py-2 overflow-x-auto scrollbar-hide">
+            {TRADE_FILTERS.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => { updatePreferences({ tradeFilter: key }); setSwipeIndex(0); }}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
+                  tradeFilter === key
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+            <button
+              onClick={() => setShowMoreFilters(true)}
+              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150"
+              aria-label="Više filtera"
+            >
+              <SlidersHorizontal size={11} />
+            </button>
           </div>
         </div>
-      </header>
+        )}
+      </div>
 
       {authReady && !isLoggedIn && (
         <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -283,34 +313,6 @@ export default function FeedPage() {
             Prijavi se
           </button>
         </div>
-      )}
-
-      {/* Trade filter bar */}
-      {showTrade && (
-      <div className="sticky top-[57px] z-30 bg-app border-b border-surface/50">
-        <div className="flex items-center gap-1.5 px-4 py-2 overflow-x-auto scrollbar-hide">
-          {TRADE_FILTERS.map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => { updatePreferences({ tradeFilter: key }); setSwipeIndex(0); }}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
-                tradeFilter === key
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-          <button
-            onClick={() => setShowMoreFilters(true)}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150"
-            aria-label="Više filtera"
-          >
-            <SlidersHorizontal size={11} />
-          </button>
-        </div>
-      </div>
       )}
 
       {/* No results */}
