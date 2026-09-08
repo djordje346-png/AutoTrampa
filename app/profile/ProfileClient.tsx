@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database } from 'lucide-react';
+import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { SignedOutPage } from '@/components/SignedOut';
@@ -15,6 +15,7 @@ import { BodyType, MyGarageCar } from '@/types';
 import { bodyLabel } from '@/lib/labels';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
+import { ProfileEditSheet } from '@/components/ProfileEditSheet';
 
 const BODY_TYPE_PREFS: BodyType[] = ['Sedan', 'SUV', 'Caravan', 'Coupe'];
 
@@ -29,6 +30,7 @@ export default function ProfileClient() {
   const { preferences, update: updatePreferences, toggleBodyPref } = usePreferences();
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   const { radius, bodyPrefs, phoneAfterMatch } = preferences;
   const garageFull = !canAddCar;
@@ -102,6 +104,14 @@ export default function ProfileClient() {
                 </div>
               )}
             </div>
+
+            <button
+              onClick={() => setShowEditProfile(true)}
+              aria-label="Uredi profil"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary transition-colors hover:bg-hover-surface hover:text-orange-400"
+            >
+              <Pencil size={15} />
+            </button>
           </div>
 
           <div className="flex items-center gap-3 mt-4 pt-4 border-t border-surface">
@@ -372,6 +382,8 @@ export default function ProfileClient() {
       {showAddForm && (
         <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
       )}
+
+      <ProfileEditSheet open={showEditProfile} onClose={() => setShowEditProfile(false)} />
 
       <BottomSheet
         open={activeModal !== null}

@@ -69,6 +69,8 @@ Invariants worth keeping:
 - The garage is never empty (`removeCar` refuses the last car) — every screen compares against
   `selectedCar`.
 - `GARAGE_LIMIT` is enforced in `use-garage`, not by hiding a button.
+- Garage cars copy the owner's name/phone/city onto their listing, so editing the profile
+  re-stamps every car — see `ProfileEditSheet`.
 - Mutations return a result (`GarageResult`, `StorageResult`); callers show a toast on failure.
 
 ## Layout
@@ -86,7 +88,8 @@ app/car/[id]/CarDetail.tsx  the client view
 components/CarForm.tsx    add/edit form — renders its own full-screen portal,
                           so never wrap it in a sheet
 components/BottomSheet.tsx    Escape, backdrop, scroll lock, focus
-components/TradeOfferSheet.tsx  the offer flow, shared by feed/search/detail
+components/TradeOfferSheet.tsx  the offer flow, shared by feed/search/saved/detail
+components/ProfileEditSheet.tsx  edits the profile and re-stamps garage listings
 lib/cars.ts | car-brands.ts | equipment.ts | labels.ts   seed and reference data
 ```
 
