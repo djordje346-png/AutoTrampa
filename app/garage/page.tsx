@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel } from 'lucide-react';
+import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel, TriangleAlert } from 'lucide-react';
+import { toast } from 'sonner';
 import { formatEuro } from '@/lib/cars';
 import { MyGarageCar, getCarImages } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
@@ -10,15 +11,22 @@ import CarForm from '@/components/CarForm';
 import { ImageLightbox } from '@/components/ImageLightbox';
 
 export default function GaragePage() {
-  const { cars, selectedId, selectCar, addCar, updateCar, removeCar, mounted } = useGarage();
+  const { cars, selectedId, selectCar, addCar, updateCar, removeCar, canAddCar, limit, mounted } = useGarage();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
   const [previewCar, setPreviewCar] = useState<MyGarageCar | null>(null);
   const [previewImage, setPreviewImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<MyGarageCar | null>(null);
 
   function openAddForm() {
+    if (!canAddCar) {
+      toast.error(`Dostignut limit od ${limit} vozila u garaži.`, {
+        description: 'Obriši neko vozilo da bi dodao novo.',
+      });
+      return;
+    }
     setEditingCar(null);
     setShowForm(true);
   }
@@ -29,19 +37,40 @@ export default function GaragePage() {
   }
 
   function handleSave(car: MyGarageCar) {
-    if (editingCar) {
-      updateCar(car);
-    } else {
-      addCar(car);
-      selectCar(car.id);
+    const result = editingCar ? updateCar(car) : addCar(car);
+
+    if (!result.ok) {
+      if (result.error === 'limit') {
+        toast.error(`Dostignut limit od ${limit} vozila u garaži.`);
+      } else if (result.error === 'storage' && result.storage.reason === 'quota') {
+        toast.error('Memorija pregledača je puna.', {
+          description: 'Smanji broj fotografija pa pokušaj ponovo.',
+        });
+      } else {
+        toast.error('Vozilo nije sačuvano.');
+      }
+      return;
     }
+
+    if (!editingCar) selectCar(car.id);
+    toast.success(editingCar ? 'Izmene sačuvane.' : 'Vozilo dodato u garažu.');
     setShowForm(false);
     setEditingCar(null);
   }
 
-  function handleRemove(car: MyGarageCar) {
-    if (cars.length <= 1) return;
-    removeCar(car.id);
+  function confirmRemove() {
+    if (!pendingDelete) return;
+    const result = removeCar(pendingDelete.id);
+    if (!result.ok) {
+      toast.error(
+        result.error === 'last-car'
+          ? 'Garaža ne može ostati prazna.'
+          : 'Vozilo nije obrisano.',
+      );
+    } else {
+      toast.success(`${pendingDelete.brand} ${pendingDelete.model} obrisan iz garaže.`);
+    }
+    setPendingDelete(null);
     setExpandedId(null);
   }
 
@@ -70,11 +99,14 @@ export default function GaragePage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-app-primary">Garaža</h1>
-            <p className="text-xs text-app-muted mt-0.5">{cars.length} vozila u kolekciji</p>
+            <p className="text-xs text-app-muted mt-0.5">{cars.length} / {limit} vozila u garaži</p>
           </div>
           <button
             onClick={openAddForm}
-            className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold rounded-full px-3 py-2 transition-all duration-200 active:scale-95 flex-shrink-0"
+            aria-disabled={!canAddCar}
+            className={`flex items-center gap-1.5 text-white text-xs font-bold rounded-full px-3 py-2 transition-all duration-200 active:scale-95 flex-shrink-0 ${
+              canAddCar ? 'bg-orange-500 hover:bg-orange-400' : 'bg-orange-500/40'
+            }`}
           >
             <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
             <span className="whitespace-nowrap">Dodaj auto</span>
@@ -146,7 +178,7 @@ export default function GaragePage() {
                 </button>
                 {cars.length > 1 && (
                   <button
-                    onClick={() => handleRemove(car)}
+                    onClick={() => setPendingDelete(car)}
                     className="flex items-center justify-center bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg px-2.5 py-1.5 transition-all"
                     aria-label="Ukloni auto"
                   >
@@ -432,6 +464,43 @@ export default function GaragePage() {
           onClose={() => setLightboxOpen(false)}
           altPrefix={`${previewCar.brand} ${previewCar.model}`}
         />
+      )}
+
+      {pendingDelete && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="delete-title"
+        >
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPendingDelete(null)} />
+          <div className="relative w-full max-w-sm rounded-2xl border border-surface bg-card-surface p-6 shadow-2xl">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
+              <TriangleAlert size={22} className="text-rose-400" />
+            </div>
+            <h3 id="delete-title" className="text-center text-base font-bold text-app-primary">
+              Obrisati vozilo?
+            </h3>
+            <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary">
+              {pendingDelete.brand} {pendingDelete.model} {pendingDelete.generation} će biti trajno
+              uklonjen iz garaže, zajedno sa fotografijama.
+            </p>
+            <div className="mt-6 flex gap-2">
+              <button
+                onClick={() => setPendingDelete(null)}
+                className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+              >
+                Odustani
+              </button>
+              <button
+                onClick={confirmRemove}
+                className="flex-1 rounded-xl bg-rose-500 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-400"
+              >
+                Obriši
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showForm && (

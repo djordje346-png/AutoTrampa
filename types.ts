@@ -72,4 +72,5 @@ export interface CarForm {
   fuelType: FuelType;
   transmission: Transmission;
   equipment: string[];
+  description: string;
 }

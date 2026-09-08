@@ -1,22 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, notFound } from 'next/navigation';
 import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, CircleCheck as CheckCircle, X, Share2, Check } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
-import { Car, MyGarageCar, getCarImages } from '@/types';
+import { getTradeLabel } from '@/lib/trade';
+import { getCarImages } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import { useMessages } from '@/hooks/use-messages';
+import { useSaved } from '@/hooks/use-saved';
 import { ImageLightbox } from '@/components/ImageLightbox';
-
-function getTradeLabel(myCar: MyGarageCar, other: Car) {
-  const diff = other.price - myCar.price;
-  if (Math.abs(diff) < 200) return { label: 'Ravna zamena', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30' };
-  if (diff > 0) return { label: `Vlasnik doplaćuje ${formatEuro(diff)}`, color: 'text-sky-400', bg: 'bg-sky-500/10 border-sky-500/30' };
-  return { label: `Tvoja doplata ${formatEuro(Math.abs(diff))}`, color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30' };
-}
+import { toast } from 'sonner';
 
 type ModalState = 'closed' | 'offer' | 'success';
 
@@ -26,7 +21,7 @@ export default function CarDetailPage() {
   const carId = params.id as string;
   const { selectedCar, mounted: garageMounted } = useGarage();
   const { createConversation } = useMessages();
-  const [saved, setSaved] = useState<string[]>([]);
+  const { isSaved: isCarSaved, toggleSave } = useSaved();
   const [modal, setModal] = useState<ModalState>('closed');
   const [message, setMessage] = useState('');
   const [activeImage, setActiveImage] = useState(0);
@@ -34,33 +29,12 @@ export default function CarDetailPage() {
 
   const car = MARKETPLACE_CARS.find(c => c.id === carId);
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('autotrampa_saved');
-      if (stored) setSaved(JSON.parse(stored));
-    } catch {}
-  }, []);
-
-  if (!car) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
-        <p className="text-app-secondary font-semibold mb-2">Vozilo nije pronađeno</p>
-        <Link href="/" className="text-orange-400 text-sm font-semibold">Nazad na Početnu</Link>
-      </div>
-    );
-  }
+  // Renders app/not-found.tsx with a real 404 status.
+  if (!car) notFound();
 
   const tl = getTradeLabel(selectedCar, car);
-  const isSaved = saved.includes(car.id);
+  const isSaved = isCarSaved(car.id);
   const carImages = getCarImages(car);
-
-  function toggleSave() {
-    setSaved(prev => {
-      const next = prev.includes(car!.id) ? prev.filter(x => x !== car!.id) : [...prev, car!.id];
-      localStorage.setItem('autotrampa_saved', JSON.stringify(next));
-      return next;
-    });
-  }
 
   function openOffer() {
     setMessage('');
@@ -69,14 +43,18 @@ export default function CarDetailPage() {
 
   function sendOffer() {
     if (car) {
-      createConversation({
-        id: `conv-${car.id}-${Date.now()}`,
-        carId: car.id,
-        carTitle: `${car.year} ${car.brand} ${car.model} ${car.generation}`,
-        carImage: car.image,
-        ownerName: car.owner.name,
-        tradeSummary: tl.label,
-      });
+      createConversation(
+        {
+          id: `conv-${car.id}-${Date.now()}`,
+          carId: car.id,
+          carTitle: `${car.year} ${car.brand} ${car.model} ${car.generation}`,
+          carImage: car.image,
+          ownerName: car.owner.name,
+          ownerPhone: car.owner.phone,
+          tradeSummary: tl.label,
+        },
+        message,
+      );
     }
     setModal('success');
   }
@@ -149,7 +127,7 @@ export default function CarDetailPage() {
               <Share2 size={16} />
             </button>
             <button
-              onClick={toggleSave}
+              onClick={() => toggleSave(car!.id)}
               className={`w-9 h-9 rounded-full backdrop-blur-sm flex items-center justify-center transition-all duration-200 ${
                 isSaved ? 'bg-rose-500 text-white' : 'bg-black/70 text-white hover:bg-black/80'
               }`}

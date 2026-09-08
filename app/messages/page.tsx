@@ -26,12 +26,13 @@ export default function MessagesPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const activeConv = conversations.find(c => c.id === activeId) || null;
+  const messageCount = activeConv?.messages.length ?? 0;
 
   useEffect(() => {
-    if (activeConv && scrollRef.current) {
+    if (messageCount > 0 && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [activeConv?.messages.length]);
+  }, [messageCount, activeId]);
 
   function openConversation(conv: Conversation) {
     setActiveId(conv.id);

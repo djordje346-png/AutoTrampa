@@ -1,96 +1,82 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { MyGarageCar } from '@/types';
 import { DEFAULT_GARAGE_CARS } from '@/lib/cars';
+import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
+import type { StorageResult, StorageFailure } from '@/lib/storage';
 
-const STORAGE_KEY = 'autotrampa_garage';
-const SELECTED_KEY = 'autotrampa_selected_car';
+/** Free-tier cap. Enforced here, not just in the profile UI. */
+export const GARAGE_LIMIT = 3;
 
-function loadCars(): MyGarageCar[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {}
-  return DEFAULT_GARAGE_CARS;
-}
+/**
+ * Invariant: the garage is never empty. Every screen compares listings against
+ * `selectedCar`, so removing the last car is rejected rather than leaving the
+ * app without a reference vehicle.
+ */
+const garageStore = createPersistentStore<MyGarageCar[]>(
+  'autotrampa_garage',
+  DEFAULT_GARAGE_CARS,
+  (raw) =>
+    Array.isArray(raw) && raw.length > 0 ? (raw as MyGarageCar[]) : null,
+);
 
-function loadSelectedId(): string {
-  try {
-    return localStorage.getItem(SELECTED_KEY) || DEFAULT_GARAGE_CARS[0].id;
-  } catch {
-    return DEFAULT_GARAGE_CARS[0].id;
-  }
+const selectedStore = createPersistentStore<string>(
+  'autotrampa_selected_car',
+  DEFAULT_GARAGE_CARS[0].id,
+  (raw) => (typeof raw === 'string' && raw ? raw : null),
+);
+
+export type GarageError = 'limit' | 'last-car' | 'duplicate';
+
+export type GarageResult =
+  | { ok: true }
+  | { ok: false; error: GarageError }
+  | { ok: false; error: 'storage'; storage: { ok: false; reason: StorageFailure } };
+
+function wrap(result: StorageResult): GarageResult {
+  return result.ok ? { ok: true } : { ok: false, error: 'storage', storage: result };
 }
 
 export function useGarage() {
-  const [cars, setCars] = useState<MyGarageCar[]>(DEFAULT_GARAGE_CARS);
-  const [selectedId, setSelectedId] = useState<string>(DEFAULT_GARAGE_CARS[0].id);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setCars(loadCars());
-    setSelectedId(loadSelectedId());
-    setMounted(true);
-  }, []);
-
-  const persist = useCallback((next: MyGarageCar[]) => {
-    setCars(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {}
-  }, []);
+  const [cars, carsReady] = usePersistentStore(garageStore);
+  const [selectedId, selectedReady] = usePersistentStore(selectedStore);
 
   const selectCar = useCallback((id: string) => {
-    setSelectedId(id);
-    try {
-      localStorage.setItem(SELECTED_KEY, id);
-    } catch {}
+    selectedStore.set(id);
   }, []);
 
-  const addCar = useCallback((car: MyGarageCar) => {
-    setCars(prev => {
-      const next = [...prev, car];
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {}
-      return next;
-    });
+  const addCar = useCallback((car: MyGarageCar): GarageResult => {
+    const current = garageStore.get();
+    if (current.length >= GARAGE_LIMIT) return { ok: false, error: 'limit' };
+    if (current.some((c) => c.id === car.id)) return { ok: false, error: 'duplicate' };
+    return wrap(garageStore.set([...current, car]));
   }, []);
 
-  const updateCar = useCallback((car: MyGarageCar) => {
-    setCars(prev => {
-      const next = prev.map(c => (c.id === car.id ? car : c));
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {}
-      return next;
-    });
+  const updateCar = useCallback((car: MyGarageCar): GarageResult => {
+    return wrap(
+      garageStore.set((prev) => prev.map((c) => (c.id === car.id ? car : c))),
+    );
   }, []);
 
-  const removeCar = useCallback((id: string) => {
-    setCars(prev => {
-      const next = prev.filter(c => c.id !== id);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {}
-      // If removing selected, pick the first remaining
-      setSelectedId(curr => {
-        if (curr !== id) return curr;
-        const newId = next[0]?.id || DEFAULT_GARAGE_CARS[0].id;
-        try {
-          localStorage.setItem(SELECTED_KEY, newId);
-        } catch {}
-        return newId;
-      });
-      return next;
-    });
+  const removeCar = useCallback((id: string): GarageResult => {
+    const current = garageStore.get();
+    if (current.length <= 1) return { ok: false, error: 'last-car' };
+
+    const next = current.filter((c) => c.id !== id);
+    const result = garageStore.set(next);
+
+    if (selectedStore.get() === id) {
+      selectedStore.set(next[0].id);
+    }
+    return wrap(result);
   }, []);
 
-  const selectedCar = cars.find(c => c.id === selectedId) || cars[0] || DEFAULT_GARAGE_CARS[0];
+  const mounted = carsReady && selectedReady;
+
+  // cars is never empty (store revive rejects empty arrays, removeCar keeps one)
+  const selectedCar =
+    cars.find((c) => c.id === selectedId) ?? cars[0] ?? DEFAULT_GARAGE_CARS[0];
 
   return {
     cars,
@@ -100,7 +86,9 @@ export function useGarage() {
     addCar,
     updateCar,
     removeCar,
-    persist,
+    canAddCar: cars.length < GARAGE_LIMIT,
+    remainingSlots: Math.max(0, GARAGE_LIMIT - cars.length),
+    limit: GARAGE_LIMIT,
     mounted,
   };
 }

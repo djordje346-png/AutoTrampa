@@ -9,7 +9,9 @@ import type {
   MyGarageCar,
   Transmission,
 } from '@/types';
+import { getCarImages } from '@/types';
 import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
+import { userStore, shortName } from '@/hooks/use-user';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
 
@@ -53,7 +55,11 @@ const EMPTY_FORM: CarFormType = {
   fuelType: 'Diesel',
   transmission: 'Manual',
   equipment: [],
+  description: '',
 };
+
+const CURRENT_YEAR = new Date().getFullYear();
+const MIN_YEAR = 1950;
 
 const DEFAULT_IMAGE =
   'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
@@ -82,18 +88,58 @@ function carToForm(car: MyGarageCar): CarFormType {
     fuelType: car.specs.fuelType,
     transmission: car.specs.transmission,
     equipment: car.equipment || [],
+    description: car.description || '',
   };
+}
+
+function autoDescription(form: CarFormType): string {
+  const bits = [
+    [form.brand, form.model, form.generation].filter(Boolean).join(' '),
+    form.year && `godište ${form.year}`,
+    form.color && form.color.toLowerCase(),
+    form.mileage && `${Number(form.mileage).toLocaleString('sr-RS')} km`,
+    [form.power, form.fuelType].filter(Boolean).join(' '),
+  ].filter(Boolean);
+  return `${bits.join(' · ')}.`;
+}
+
+export function validateCarForm(form: CarFormType): Partial<Record<keyof CarFormType, string>> {
+  const errors: Partial<Record<keyof CarFormType, string>> = {};
+  if (!form.brand.trim()) errors.brand = 'Izaberi marku vozila.';
+  if (!form.model.trim()) errors.model = 'Izaberi model.';
+
+  const price = parseInt(form.price, 10);
+  if (!form.price.trim()) errors.price = 'Unesi cenu.';
+  else if (!Number.isFinite(price) || price <= 0) errors.price = 'Cena mora biti veća od nule.';
+  else if (price > 1_000_000) errors.price = 'Cena deluje nerealno.';
+
+  if (form.year.trim()) {
+    const year = parseInt(form.year, 10);
+    if (!Number.isFinite(year) || year < MIN_YEAR || year > CURRENT_YEAR + 1) {
+      errors.year = `Godište mora biti između ${MIN_YEAR} i ${CURRENT_YEAR + 1}.`;
+    }
+  }
+
+  if (form.mileage.trim() && parseInt(form.mileage, 10) > 2_000_000) {
+    errors.mileage = 'Kilometraža deluje nerealno.';
+  }
+
+  return errors;
 }
 
 export function formToMyGarageCar(
   form: CarFormType,
   id: string,
   imagesList?: string[],
+  /** Existing car when editing — fields the form does not expose are kept. */
+  base?: MyGarageCar | null,
 ): MyGarageCar {
   const mainImage =
     imagesList && imagesList.length > 0
       ? imagesList[0]
       : form.image || DEFAULT_IMAGE;
+
+  const user = userStore.get();
 
   return {
     id,
@@ -106,35 +152,35 @@ export function formToMyGarageCar(
     mileage: parseInt(form.mileage, 10) || 0,
     price: parseInt(form.price, 10) || 0,
     city: form.city || '-',
-    country: 'Serbia',
+    country: base?.country ?? 'Serbia',
     image: mainImage,
     images: imagesList && imagesList.length > 0 ? imagesList : [mainImage],
 
     specs: {
       engine: form.engine || '-',
       displacement: form.displacement || '-',
-      cylinders: 0,
+      cylinders: base?.specs.cylinders ?? 0,
       power: form.power || '-',
       torque: form.torque || '-',
       fuelType: form.fuelType,
       transmission: form.transmission,
-      drivetrain: 'RWD',
-      topSpeed: '-',
-      acceleration: '-',
+      drivetrain: base?.specs.drivetrain ?? 'RWD',
+      topSpeed: base?.specs.topSpeed ?? '-',
+      acceleration: base?.specs.acceleration ?? '-',
     },
 
     owner: {
-      name: 'Nikola V.',
-      phone: '+381 64 123 4567',
-      city: form.city || '-',
-      rating: 4.9,
+      name: shortName(user.name),
+      phone: user.phone,
+      city: form.city || user.city || '-',
+      rating: user.rating,
     },
 
-    description: `${form.brand} ${form.model} ${form.generation} — ${form.color}, ${form.year}. ${form.power} ${form.fuelType}.`,
+    description: form.description.trim() || autoDescription(form),
 
-    modifications: [],
-    securityFeatures: [],
-    buildNotes: [],
+    modifications: base?.modifications ?? [],
+    securityFeatures: base?.securityFeatures ?? [],
+    buildNotes: base?.buildNotes ?? [],
     estimatedValue: parseInt(form.price, 10) || 0,
     equipment: form.equipment,
   };
@@ -145,6 +191,16 @@ interface CarFormFieldsProps {
   setForm: (form: CarFormType) => void;
   images: string[];
   setImages: (images: string[]) => void;
+  errors: Partial<Record<keyof CarFormType, string>>;
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="mt-1.5 text-xs font-medium text-rose-400">
+      {message}
+    </p>
+  );
 }
 
 function CarFormFields({
@@ -152,6 +208,7 @@ function CarFormFields({
   setForm,
   images,
   setImages,
+  errors,
 }: CarFormFieldsProps) {
   function update<K extends keyof CarFormType>(
     key: K,
@@ -184,6 +241,8 @@ function CarFormFields({
   const selectClass =
     'h-11 w-full rounded-xl border border-surface bg-elevated px-3.5 text-sm text-app-primary outline-none transition-all hover:border-orange-500/40 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 disabled:cursor-not-allowed disabled:opacity-50';
 
+  const errorRing = 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/10';
+
   const labelClass =
     'mb-2 block text-xs font-medium text-app-muted';
 
@@ -214,7 +273,8 @@ function CarFormFields({
               onChange={(e) =>
                 updateBrand(e.target.value)
               }
-              className={selectClass}
+              aria-invalid={Boolean(errors.brand)}
+              className={`${selectClass} ${errors.brand ? errorRing : ''}`}
             >
               <option value="">
                 Izaberi marku...
@@ -226,6 +286,7 @@ function CarFormFields({
                 </option>
               ))}
             </select>
+            <FieldError message={errors.brand} />
           </div>
 
           <div>
@@ -239,7 +300,8 @@ function CarFormFields({
                 update('model', e.target.value)
               }
               disabled={!form.brand}
-              className={selectClass}
+              aria-invalid={Boolean(errors.model)}
+              className={`${selectClass} ${errors.model ? errorRing : ''}`}
             >
               <option value="">
                 {form.brand
@@ -254,6 +316,7 @@ function CarFormFields({
                   </option>
                 ))}
             </select>
+            <FieldError message={errors.model} />
           </div>
 
           <div>
@@ -288,8 +351,10 @@ function CarFormFields({
               }
               placeholder="npr. 2005"
               inputMode="numeric"
-              className={inputClass}
+              aria-invalid={Boolean(errors.year)}
+              className={`${inputClass} ${errors.year ? errorRing : ''}`}
             />
+            <FieldError message={errors.year} />
           </div>
 
         </div>
@@ -326,13 +391,15 @@ function CarFormFields({
                 }
                 placeholder="6500"
                 inputMode="numeric"
-                className={`${inputClass} pr-14`}
+                aria-invalid={Boolean(errors.price)}
+                className={`${inputClass} pr-14 ${errors.price ? errorRing : ''}`}
               />
 
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-muted">
                 EUR
               </span>
             </div>
+            <FieldError message={errors.price} />
           </div>
 
           <div>
@@ -351,13 +418,15 @@ function CarFormFields({
                 }
                 placeholder="198000"
                 inputMode="numeric"
-                className={`${inputClass} pr-14`}
+                aria-invalid={Boolean(errors.mileage)}
+                className={`${inputClass} pr-14 ${errors.mileage ? errorRing : ''}`}
               />
 
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-muted">
                 KM
               </span>
             </div>
+            <FieldError message={errors.mileage} />
           </div>
 
           <div>
@@ -566,6 +635,32 @@ function CarFormFields({
         </div>
       </section>
 
+      {/* OPIS */}
+      <section className="border-t border-surface pt-8">
+
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-app-primary">
+            Opis
+          </h2>
+
+          <p className="mt-1 text-xs text-app-muted">
+            Opišite stanje vozila. Ako ostavite prazno, opis se generiše automatski.
+          </p>
+        </div>
+
+        <textarea
+          value={form.description}
+          onChange={(e) => update('description', e.target.value.slice(0, 600))}
+          rows={4}
+          placeholder="Redovno servisiran, bez ulaganja, prvi vlasnik..."
+          className="w-full resize-y rounded-xl border border-surface bg-elevated px-3.5 py-3 text-sm leading-relaxed text-app-primary outline-none transition-all placeholder:text-app-muted hover:border-orange-500/40 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10"
+        />
+        <p className="mt-1.5 text-right text-[11px] text-app-muted">
+          {form.description.length}/600
+        </p>
+
+      </section>
+
       {/* FOTOGRAFIJE */}
       <section className="border-t border-surface pt-8">
 
@@ -672,32 +767,37 @@ export default function CarFormComponent({
   const [mounted, setMounted] =
     useState(false);
 
+  const [submitted, setSubmitted] =
+    useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
+    setSubmitted(false);
     if (editingCar) {
       setForm(carToForm(editingCar));
-
-      setImages(
-        editingCar.image &&
-          editingCar.image !== DEFAULT_IMAGE
-          ? [editingCar.image]
-          : [],
+      // Keep every photo on the car, not just the cover.
+      const existing = getCarImages(editingCar).filter(
+        (img) => img && img !== DEFAULT_IMAGE,
       );
+      setImages(existing);
     } else {
       setForm(EMPTY_FORM);
       setImages([]);
     }
   }, [editingCar]);
 
+  const errors = validateCarForm(form);
+  const isValid = Object.keys(errors).length === 0;
+  const visibleErrors = submitted ? errors : {};
+
   function handleSave() {
-    if (
-      !form.brand.trim() ||
-      !form.model.trim() ||
-      !form.price.trim()
-    ) {
+    setSubmitted(true);
+    if (!isValid) {
+      const firstInvalid = document.querySelector('[aria-invalid="true"]');
+      firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
@@ -710,14 +810,10 @@ export default function CarFormComponent({
         form,
         id,
         images,
+        editingCar,
       ),
     );
   }
-
-  const isValid =
-    Boolean(form.brand.trim()) &&
-    Boolean(form.model.trim()) &&
-    Boolean(form.price.trim());
 
   if (!mounted) {
     return null;
@@ -803,6 +899,7 @@ export default function CarFormComponent({
               setForm={setForm}
               images={images}
               setImages={setImages}
+              errors={visibleErrors}
             />
 
           </div>
@@ -833,11 +930,21 @@ export default function CarFormComponent({
           </button>
 
           {/* OBJAVI OGLAS */}
+          {submitted && !isValid && (
+            <p role="alert" className="w-full text-center text-xs font-medium text-rose-400">
+              Popuni obavezna polja označena crvenim.
+            </p>
+          )}
+
           <button
             type="button"
             onClick={handleSave}
-            disabled={!isValid}
-            className="h-11 w-full rounded-xl bg-orange-500 px-4 text-sm font-bold text-white transition-all hover:bg-orange-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+            aria-disabled={!isValid}
+            className={`h-11 w-full rounded-xl px-4 text-sm font-bold text-white transition-all active:scale-[0.98] ${
+              isValid
+                ? 'bg-orange-500 hover:bg-orange-400'
+                : 'bg-orange-500/50 hover:bg-orange-500/60'
+            }`}
           >
             {editingCar
               ? 'Sačuvaj izmene'

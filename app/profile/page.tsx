@@ -1,34 +1,51 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, X, Sun, Moon } from 'lucide-react';
+import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, X, Sun, Moon, Database } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { useGarage } from '@/hooks/use-garage';
 import { useTheme } from '@/hooks/use-theme';
+import { useUser, initials } from '@/hooks/use-user';
+import { usePreferences } from '@/hooks/use-preferences';
 import { formatEuro } from '@/lib/cars';
+import { estimateUsageBytes } from '@/lib/storage';
 import { MyGarageCar } from '@/types';
 import CarForm from '@/components/CarForm';
 
 const BODY_TYPE_PREFS = ['Limuzina', 'SUV', 'Karavan', 'Coupe'];
 
+/** Browsers give roughly 5 MB per origin to localStorage. */
+const STORAGE_BUDGET_BYTES = 5 * 1024 * 1024;
+
 export default function ProfilePage() {
   const { logout } = useAuth();
-  const { cars, addCar, selectCar, mounted } = useGarage();
+  const { cars, selectedCar, addCar, selectCar, canAddCar, limit: garageLimit, mounted } = useGarage();
   const { theme, toggleTheme } = useTheme();
-  const [radius, setRadius] = useState(50);
-  const [bodyPrefs, setBodyPrefs] = useState<string[]>(['Limuzina', 'Karavan']);
-  const [phoneAfterMatch, setPhoneAfterMatch] = useState(true);
+  const { user } = useUser();
+  const { preferences, update: updatePreferences, toggleBodyPref } = usePreferences();
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const garageLimit = 3;
-  const garageFull = cars.length >= garageLimit;
-  const activeCar = cars[0];
+  const { radius, bodyPrefs, phoneAfterMatch } = preferences;
+  const garageFull = !canAddCar;
+  const activeCar = selectedCar;
+  const usedBytes = mounted ? estimateUsageBytes() : 0;
+  const usedPercent = Math.min(100, Math.round((usedBytes / STORAGE_BUDGET_BYTES) * 100));
 
   function handleAddCar(car: MyGarageCar) {
-    addCar(car);
+    const result = addCar(car);
+    if (!result.ok) {
+      toast.error(
+        result.error === 'limit'
+          ? `Dostignut limit od ${garageLimit} vozila u garaži.`
+          : 'Vozilo nije sačuvano.',
+      );
+      return;
+    }
     selectCar(car.id);
     setShowAddForm(false);
+    toast.success('Vozilo dodato u garažu.');
   }
 
   if (!mounted) {
@@ -55,24 +72,27 @@ export default function ProfilePage() {
         <div className="bg-card-surface rounded-2xl border border-surface p-5">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/20">
-              <span className="text-2xl font-black text-white">N</span>
+              <span className="text-2xl font-black text-white">{initials(user.name)}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-base font-bold text-app-primary">Nikola Vukovic</h2>
+              <h2 className="text-base font-bold text-app-primary truncate">{user.name}</h2>
+              <p className="text-xs text-app-muted truncate">{user.email || user.phone}</p>
               <div className="flex items-center gap-1 mt-0.5">
                 <MapPin size={11} className="text-app-muted" />
-                <span className="text-xs text-app-muted">Kosovska Mitrovica</span>
+                <span className="text-xs text-app-muted">{user.city}</span>
               </div>
-              <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1">
-                <Shield size={11} className="text-emerald-400" />
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Verifikovan vozač</span>
-              </div>
+              {user.verified && (
+                <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1">
+                  <Shield size={11} className="text-emerald-400" />
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Verifikovan vozač</span>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="flex items-center gap-3 mt-4 pt-4 border-t border-surface">
             <div className="flex-1 text-center">
-              <p className="text-base font-bold text-app-primary">12</p>
+              <p className="text-base font-bold text-app-primary">{user.trades}</p>
               <p className="text-[10px] text-app-muted">Trampi</p>
             </div>
             <div className="w-px h-8 bg-surface" />
@@ -82,7 +102,7 @@ export default function ProfilePage() {
             </div>
             <div className="w-px h-8 bg-surface" />
             <div className="flex-1 text-center">
-              <p className="text-base font-bold text-app-primary">4.9</p>
+              <p className="text-base font-bold text-app-primary">{user.rating}</p>
               <p className="text-[10px] text-app-muted">Ocena</p>
             </div>
           </div>
@@ -183,7 +203,7 @@ export default function ProfilePage() {
               max={200}
               step={10}
               value={radius}
-              onChange={e => setRadius(Number(e.target.value))}
+              onChange={e => updatePreferences({ radius: Number(e.target.value) })}
               className="w-full h-2 bg-elevated rounded-full appearance-none cursor-pointer accent-orange-500"
             />
           </div>
@@ -196,7 +216,7 @@ export default function ProfilePage() {
                 return (
                   <button
                     key={type}
-                    onClick={() => setBodyPrefs(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type])}
+                    onClick={() => toggleBodyPref(type)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                       active ? 'bg-orange-500 border-orange-500 text-white' : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
                     }`}
@@ -222,7 +242,9 @@ export default function ProfilePage() {
               <p className="text-xs text-app-muted mt-0.5">Vaš broj je skriven dok ne prihvatite trampu</p>
             </div>
             <button
-              onClick={() => setPhoneAfterMatch(!phoneAfterMatch)}
+              onClick={() => updatePreferences({ phoneAfterMatch: !phoneAfterMatch })}
+              aria-pressed={phoneAfterMatch}
+              aria-label="Prikaži telefon samo nakon match-a"
               className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
                 phoneAfterMatch ? 'bg-orange-500' : 'bg-elevated'
               }`}
@@ -291,6 +313,33 @@ export default function ProfilePage() {
               <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary transition" />
             </button>
           </div>
+        </div>
+      </div>
+
+      <div className="px-4 mb-4">
+        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Database size={16} className="text-orange-400" />
+            <p className="text-sm font-bold text-app-primary">Lokalni podaci</p>
+          </div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-app-secondary">Zauzeto u pregledaču</p>
+            <p className="text-xs font-bold text-app-primary">
+              {(usedBytes / 1024 / 1024).toFixed(2)} MB / 5 MB
+            </p>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-elevated">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                usedPercent > 85 ? 'bg-rose-500' : usedPercent > 60 ? 'bg-amber-500' : 'bg-emerald-500'
+              }`}
+              style={{ width: `${Math.max(2, usedPercent)}%` }}
+            />
+          </div>
+          <p className="mt-2 text-[11px] leading-relaxed text-app-muted">
+            Fotografije se čuvaju lokalno u pregledaču. Kada se popuni, obriši nekoliko slika
+            ili vozila.
+          </p>
         </div>
       </div>
 

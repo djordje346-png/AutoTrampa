@@ -1,55 +1,29 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
+import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
+import { userStore, type UserProfile } from '@/hooks/use-user';
 
-const AUTH_KEY = 'autotrampa_auth';
+/**
+ * Local-only session flag. There is no server yet — this gates the app shell
+ * between AuthScreen and the real UI, and survives a reload.
+ */
+const authStore = createPersistentStore<boolean>('autotrampa_auth', false, (raw) =>
+  typeof raw === 'boolean' ? raw : raw === 'true',
+);
 
-// 1. Globalne promenljive van komponente (dele ih svi ekrani)
-let globalIsLoggedIn = false;
-if (typeof window !== 'undefined') {
-  globalIsLoggedIn = localStorage.getItem(AUTH_KEY) === 'true';
-}
-
-// Kolekcija funkcija koje slušaju promene
-const listeners = new Set<(state: boolean) => void>();
-
-// Centralna funkcija za promenu stanja
-function setGlobalIsLoggedIn(state: boolean) {
-  globalIsLoggedIn = state;
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(AUTH_KEY, String(state));
-  }
-  // Obavesti sve ekrane koji koriste ovaj hook da se stanje promenilo
-  listeners.forEach((listener) => listener(state));
-}
-
-// 2. Sam Hook
 export function useAuth() {
-  const [isLoggedIn, setIsLoggedIn] = useState(globalIsLoggedIn);
-  const [mounted, setMounted] = useState(false);
+  const [isLoggedIn, mounted] = usePersistentStore(authStore);
 
-  useEffect(() => {
-    setMounted(true);
-    
-    // Prijavi ovu komponentu da sluša promene
-    const listener = (newState: boolean) => {
-      setIsLoggedIn(newState);
-    };
-    
-    listeners.add(listener);
-    
-    // Odjavi je kada se komponenta uništi
-    return () => {
-      listeners.delete(listener);
-    };
-  }, []);
-
-  const login = useCallback(() => {
-    setGlobalIsLoggedIn(true);
+  const login = useCallback((profile?: Partial<UserProfile>) => {
+    if (profile) {
+      userStore.set((prev) => ({ ...prev, ...profile }));
+    }
+    authStore.set(true);
   }, []);
 
   const logout = useCallback(() => {
-    setGlobalIsLoggedIn(false);
+    authStore.set(false);
   }, []);
 
   return { isLoggedIn, mounted, login, logout };

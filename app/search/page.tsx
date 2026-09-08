@@ -4,17 +4,11 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, TrendingUp } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
+import { getTradeLabel } from '@/lib/trade';
 import { useGarage } from '@/hooks/use-garage';
-import { BodyType, Car, MyGarageCar } from '@/types';
+import { BodyType } from '@/types';
 
 const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV'];
-
-function getTradeLabel(myCar: MyGarageCar, other: Car) {
-  const diff = other.price - myCar.price;
-  if (Math.abs(diff) < 200) return { label: 'Ravna zamena', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30' };
-  if (diff > 0) return { label: `Vlasnik doplaćuje ${formatEuro(diff)}`, color: 'text-sky-400', bg: 'bg-sky-500/10 border-sky-500/30' };
-  return { label: `Tvoja doplata ${formatEuro(Math.abs(diff))}`, color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30' };
-}
 
 export default function SearchPage() {
   const { selectedCar, mounted } = useGarage();

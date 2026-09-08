@@ -1,32 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Heart, X, MapPin, Gauge, Fuel, Phone, BookmarkX, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
+import { useSaved } from '@/hooks/use-saved';
 import { Car } from '@/types';
+import { toast } from 'sonner';
 
 export default function SavedPage() {
-  const [savedIds, setSavedIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    try {
-      const stored = localStorage.getItem('autotrampa_saved');
-      if (stored) setSavedIds(JSON.parse(stored));
-    } catch {}
-  }, []);
+  const { saved: savedIds, remove: removeSaved, mounted } = useSaved();
 
   function remove(id: string) {
-    setSavedIds(prev => {
-      const next = prev.filter(x => x !== id);
-      localStorage.setItem('autotrampa_saved', JSON.stringify(next));
-      return next;
+    const car = MARKETPLACE_CARS.find(c => c.id === id);
+    removeSaved(id);
+    toast('Uklonjeno iz sačuvanih', {
+      description: car ? `${car.brand} ${car.model}` : undefined,
     });
   }
 
-  const savedCars: Car[] = MARKETPLACE_CARS.filter(c => savedIds.includes(c.id));
+  // Preserve the order the user saved them in.
+  const savedCars: Car[] = savedIds
+    .map(id => MARKETPLACE_CARS.find(c => c.id === id))
+    .filter((c): c is Car => Boolean(c));
 
   if (!mounted) return null;
 

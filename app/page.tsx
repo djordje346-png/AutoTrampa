@@ -4,17 +4,13 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
+import { getTradeLabel, TRADE_TOLERANCE } from '@/lib/trade';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import { useMessages } from '@/hooks/use-messages';
+import { useSaved } from '@/hooks/use-saved';
+import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
-
-function getTradeLabel(myCar: MyGarageCar, other: Car) {
-  const diff = other.price - myCar.price;
-  if (Math.abs(diff) < 200) return { label: 'Ravna zamena', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30' };
-  if (diff > 0) return { label: `Vlasnik doplaćuje ${formatEuro(diff)}`, color: 'text-sky-400', bg: 'bg-sky-500/10 border-sky-500/30' };
-  return { label: `Tvoja doplata ${formatEuro(Math.abs(diff))}`, color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30' };
-}
 
 type ModalState = 'closed' | 'offer' | 'success';
 type ViewMode = 'grid' | 'swipe';
@@ -30,9 +26,9 @@ const TRADE_FILTERS: { key: TradeFilter; label: string }[] = [
 const COMING_SOON_FILTERS = ['Gorivo', 'Marka', 'Godište', 'Kilometraža', 'Menjač'];
 
 export default function FeedPage() {
-  const { cars, selectedCar, selectedId, selectCar, addCar, mounted } = useGarage();
+  const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
   const { createConversation } = useMessages();
-  const [saved, setSaved] = useState<string[]>([]);
+  const { saved, isSaved, toggleSave, save: saveCar } = useSaved();
   const [modal, setModal] = useState<{ state: ModalState; car: Car | null }>({ state: 'closed', car: null });
   const [message, setMessage] = useState('');
   const [selectorOpen, setSelectorOpen] = useState(false);
@@ -46,13 +42,6 @@ export default function FeedPage() {
   const [showSwipeHint, setShowSwipeHint] = useState(false);
   const selectorRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number } | null>(null);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('autotrampa_saved');
-      if (stored) setSaved(JSON.parse(stored));
-    } catch {}
-  }, []);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -69,9 +58,9 @@ export default function FeedPage() {
   const filteredCars = useMemo(() => MARKETPLACE_CARS.filter(car => {
     if (tradeFilter === 'all') return true;
     const diff = car.price - selectedCar.price;
-    if (tradeFilter === 'similar') return Math.abs(diff) < 200;
-    if (tradeFilter === 'cheaper') return diff > 200;
-    if (tradeFilter === 'expensive') return diff < -200;
+    if (tradeFilter === 'similar') return Math.abs(diff) < TRADE_TOLERANCE;
+    if (tradeFilter === 'cheaper') return diff > TRADE_TOLERANCE;
+    if (tradeFilter === 'expensive') return diff < -TRADE_TOLERANCE;
     return true;
   }), [tradeFilter, selectedCar]);
 
@@ -85,14 +74,6 @@ export default function FeedPage() {
     }
   }, [viewMode]);
 
-  function toggleSave(id: string) {
-    setSaved(prev => {
-      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      localStorage.setItem('autotrampa_saved', JSON.stringify(next));
-      return next;
-    });
-  }
-
   function openOffer(car: Car) {
     setMessage('');
     setModal({ state: 'offer', car });
@@ -101,14 +82,18 @@ export default function FeedPage() {
   function sendOffer() {
     if (modal.car) {
       const tl = getTradeLabel(selectedCar, modal.car);
-      createConversation({
-        id: `conv-${modal.car.id}-${Date.now()}`,
-        carId: modal.car.id,
-        carTitle: `${modal.car.year} ${modal.car.brand} ${modal.car.model} ${modal.car.generation}`,
-        carImage: modal.car.image,
-        ownerName: modal.car.owner.name,
-        tradeSummary: tl.label,
-      });
+      createConversation(
+        {
+          id: `conv-${modal.car.id}-${Date.now()}`,
+          carId: modal.car.id,
+          carTitle: `${modal.car.year} ${modal.car.brand} ${modal.car.model} ${modal.car.generation}`,
+          carImage: modal.car.image,
+          ownerName: modal.car.owner.name,
+          ownerPhone: modal.car.owner.phone,
+          tradeSummary: tl.label,
+        },
+        message,
+      );
     }
     setModal(prev => ({ ...prev, state: 'success' }));
   }
@@ -118,18 +103,18 @@ export default function FeedPage() {
   }
 
   function handleAddCar(form: MyGarageCar) {
-    addCar(form);
+    const result = addCar(form);
+    if (!result.ok) {
+      toast.error(
+        result.error === 'limit'
+          ? `Dostignut limit od ${limit} vozila u garaži.`
+          : 'Vozilo nije sačuvano.',
+      );
+      return;
+    }
     selectCar(form.id);
     setShowAddForm(false);
-  }
-
-  function saveCar(id: string) {
-    setSaved(prev => {
-      if (prev.includes(id)) return prev;
-      const next = [...prev, id];
-      localStorage.setItem('autotrampa_saved', JSON.stringify(next));
-      return next;
-    });
+    toast.success('Vozilo dodato u garažu.');
   }
 
   function flyAway(dir: 'left' | 'right') {
@@ -444,11 +429,11 @@ export default function FeedPage() {
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleSave(swipeCar.id); }}
                         className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                          saved.includes(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
+                          isSaved(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
                         }`}
                         aria-label="Sačuvaj"
                       >
-                        <Heart size={18} fill={saved.includes(swipeCar.id) ? 'currentColor' : 'none'} />
+                        <Heart size={18} fill={isSaved(swipeCar.id) ? 'currentColor' : 'none'} />
                       </button>
 
                       {/* Trade label */}
@@ -504,7 +489,7 @@ export default function FeedPage() {
                     className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
                     aria-label="Sviđa mi se"
                   >
-                    <Heart size={28} strokeWidth={3} fill={saved.includes(swipeCar.id) ? 'currentColor' : 'none'} />
+                    <Heart size={28} strokeWidth={3} fill={isSaved(swipeCar.id) ? 'currentColor' : 'none'} />
                   </button>
                 </div>
                 <p className="text-[10px] text-app-muted mt-3 opacity-70">Prevuci desno = LIKE · levo = PRESKOK</p>
@@ -557,7 +542,7 @@ export default function FeedPage() {
         <div className="px-4 mt-3 space-y-3 pb-4 md:px-6 lg:px-8">
           {filteredCars.map(car => {
             const tl = getTradeLabel(selectedCar, car);
-            const isSaved = saved.includes(car.id);
+            const carSaved = isSaved(car.id);
             return (
               <article key={car.id} className="bg-card-surface rounded-2xl overflow-hidden border border-surface hover:border-orange-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
                 {/* Image */}
@@ -567,11 +552,11 @@ export default function FeedPage() {
                   <button
                     onClick={(e) => { e.preventDefault(); toggleSave(car.id); }}
                     className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                      isSaved ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
+                      carSaved ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
                     }`}
-                    aria-label={isSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
+                    aria-label={carSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
                   >
-                    <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />
+                    <Heart size={16} fill={carSaved ? 'currentColor' : 'none'} />
                   </button>
                 </Link>
 
