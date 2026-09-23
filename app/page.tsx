@@ -72,8 +72,10 @@ export default function FeedPage() {
   const filteredCars = useMemo(() => {
     if (!tradeAware || !preferences.budget || preferences.budget <= 0) return baseFiltered;
     const budget = preferences.budget;
-    const within = baseFiltered.filter(car => car.price - selectedCar.price <= budget);
-    const outside = baseFiltered.filter(car => car.price - selectedCar.price > budget);
+    const myPrice = selectedCar.price;
+    const byDiff = (a: Car, b: Car) => (a.price - myPrice) - (b.price - myPrice);
+    const within = baseFiltered.filter(car => car.price - myPrice <= budget).sort(byDiff);
+    const outside = baseFiltered.filter(car => car.price - myPrice > budget).sort(byDiff);
     return [...within, ...outside];
   }, [baseFiltered, tradeAware, preferences.budget, selectedCar]);
 
