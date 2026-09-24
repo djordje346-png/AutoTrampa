@@ -14,8 +14,6 @@ export interface Preferences {
   phoneAfterMatch: boolean;
   /** Trade filter on the feed — kept so it survives opening a listing. */
   tradeFilter: TradeFilter;
-  /** Max doplata the user is willing to pay, in EUR. 0 = no budget set. */
-  budget: number;
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -23,7 +21,6 @@ export const DEFAULT_PREFERENCES: Preferences = {
   bodyPrefs: ['Sedan', 'Caravan'],
   phoneAfterMatch: true,
   tradeFilter: 'all',
-  budget: 0,
 };
 
 const preferencesStore = createPersistentStore<Preferences>(

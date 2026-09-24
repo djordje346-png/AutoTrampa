@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil, Wallet, Check } from 'lucide-react';
+import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { SignedOutPage } from '@/components/SignedOut';
@@ -31,9 +31,8 @@ export default function ProfileClient() {
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
-  const [budgetInput, setBudgetInput] = useState('');
 
-  const { radius, bodyPrefs, phoneAfterMatch, budget } = preferences;
+  const { radius, bodyPrefs, phoneAfterMatch } = preferences;
   const garageFull = !canAddCar;
   const activeCar = selectedCar;
   const usedBytes = mounted ? estimateUsageBytes() : 0;
@@ -174,69 +173,6 @@ export default function ProfileClient() {
             >
               <Plus size={16} strokeWidth={2.5} />
               Dodaj auto u garažu
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* MOJ BUDZET */}
-      <div className="px-4 mb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Wallet size={16} className="text-orange-400" />
-            <p className="text-sm font-bold text-app-primary">Moj budžet</p>
-          </div>
-          <p className="text-xs text-app-muted mb-3">
-            Koliko si spreman da doplatiš pri zameni. Oglasi u okviru budžeta se prikazuju prvi na feedu.
-          </p>
-          {budget > 0 && (
-            <div className="flex items-center gap-2 mb-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3 py-2">
-              <Check size={14} className="text-emerald-400 flex-shrink-0" />
-              <span className="text-xs text-emerald-400 font-medium">
-                Trenutni budžet: {formatEuro(budget)}
-              </span>
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <input
-                type="number"
-                min={0}
-                step={100}
-                value={budgetInput}
-                onChange={e => setBudgetInput(e.target.value)}
-                placeholder={budget > 0 ? String(budget) : 'npr. 2000'}
-                className="w-full bg-elevated border border-surface rounded-xl pl-3 pr-8 py-2.5 text-sm text-app-primary placeholder:text-app-muted focus:outline-none focus:border-orange-500 transition-colors"
-                aria-label="Budžet za doplatu u evrima"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-muted font-medium">€</span>
-            </div>
-            <button
-              onClick={() => {
-                const val = Number(budgetInput);
-                if (!budgetInput || isNaN(val) || val < 0) {
-                  toast.error('Unesi ispravan iznos u evrima.');
-                  return;
-                }
-                updatePreferences({ budget: val });
-                setBudgetInput('');
-                toast.success(val === 0 ? 'Budžet uklonjen.' : `Budžet postavljen na ${formatEuro(val)}.`);
-              }}
-              className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex-shrink-0"
-            >
-              Sačuvaj
-            </button>
-          </div>
-          {budget > 0 && (
-            <button
-              onClick={() => {
-                updatePreferences({ budget: 0 });
-                setBudgetInput('');
-                toast.success('Budžet uklonjen.');
-              }}
-              className="mt-2 text-xs text-app-muted hover:text-rose-400 transition-colors"
-            >
-              Ukloni budžet
             </button>
           )}
         </div>

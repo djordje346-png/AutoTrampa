@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal, Wallet } from 'lucide-react';
+import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel, TRADE_TOLERANCE } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -69,13 +69,7 @@ export default function FeedPage() {
     return true;
   }), [tradeFilter, selectedCar, tradeAware]);
 
-  const filteredCars = useMemo(() => {
-    if (!tradeAware || !preferences.budget || preferences.budget <= 0) return baseFiltered;
-    const budget = preferences.budget;
-    const within = baseFiltered.filter(car => car.price - selectedCar.price <= budget);
-    const outside = baseFiltered.filter(car => car.price - selectedCar.price > budget);
-    return [...within, ...outside];
-  }, [baseFiltered, tradeAware, preferences.budget, selectedCar]);
+  const filteredCars = baseFiltered;
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -320,15 +314,6 @@ export default function FeedPage() {
           >
             Prijavi se
           </button>
-        </div>
-      )}
-
-      {showTrade && preferences.budget > 0 && (
-        <div className="mx-4 mt-3 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
-          <Wallet size={14} className="text-emerald-400 flex-shrink-0" />
-          <p className="text-xs text-emerald-400 font-medium">
-            Oglasi u okviru budžeta od {formatEuro(preferences.budget)} prikazani su prvi.
-          </p>
         </div>
       )}
 
