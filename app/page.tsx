@@ -589,7 +589,7 @@ export default function FeedPage() {
                   </div>
 
                   {/* Right: price + match + CTA */}
-                  <div className="mt-3 md:mt-0 md:flex md:flex-col md:items-end md:justify-center md:gap-2 md:flex-shrink-0 md:min-w-[200px]">
+                  <div className="mt-3 md:mt-0 md:flex md:flex-col md:items-end md:justify-center md:gap-2 md:flex-shrink-0 md:min-w-[280px]">
                     <div className="flex items-center justify-between gap-2 md:block md:text-right">
                       <p className="text-orange-400 font-bold text-lg md:text-xl">{formatEuro(car.price)}</p>
                       {tl && (
@@ -602,15 +602,15 @@ export default function FeedPage() {
                     <div className="flex gap-2 mt-2 md:mt-3 md:w-full">
                       <button
                         onClick={() => openOffer(car)}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold rounded-lg py-2 md:py-2.5 transition-all duration-200 active:scale-95 whitespace-nowrap"
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs md:text-sm font-bold rounded-lg py-2 md:py-3 transition-all duration-200 active:scale-95 whitespace-nowrap"
                       >
                         <ArrowLeftRight size={14} />
                         Pošalji ponudu
                       </button>
-                      <Link href={`/car/${car.id}`} className="px-3 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap">
+                      <Link href={`/car/${car.id}`} className="px-3 md:px-4 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary text-xs md:text-sm font-semibold rounded-lg py-2 md:py-3 transition-all duration-200 whitespace-nowrap">
                         Detalji
                       </Link>
-                      <a href={`tel:${car.owner.phone}`} className="w-9 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-lg transition-all duration-200" aria-label="Pozovi vlasnika">
+                      <a href={`tel:${car.owner.phone}`} className="w-9 md:w-11 md:flex-shrink-0 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-lg py-2 md:py-3 transition-all duration-200" aria-label="Pozovi vlasnika">
                         <Phone size={15} />
                       </a>
                     </div>
