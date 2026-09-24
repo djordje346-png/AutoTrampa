@@ -73,31 +73,17 @@ export default function FeedPage() {
     if (!tradeAware) return baseFiltered;
 
     const budget = preferences.budget;
+    if (!budget || budget <= 0) return baseFiltered;
 
-    // No budget set: for "Sve", doplata cars first by amount ascending,
-    // then the rest by original order (date added). For other filters, keep
-    // original order — the filter itself already narrows by trade direction.
-    if (!budget || budget <= 0) {
-      if (tradeFilter === 'all') {
-        const youAdd = baseFiltered.filter(c => c.price - selectedCar.price < -TRADE_TOLERANCE);
-        const rest = baseFiltered.filter(c => c.price - selectedCar.price >= -TRADE_TOLERANCE);
-        return [...youAdd, ...rest];
-      }
-      return baseFiltered;
-    }
-
-    // Budget is set: sort doplata cars by closeness to budget, rest by date added.
-    const doplata = baseFiltered.filter(c => c.price - selectedCar.price < -TRADE_TOLERANCE);
-    const rest = baseFiltered.filter(c => c.price - selectedCar.price >= -TRADE_TOLERANCE);
-
-    doplata.sort((a, b) => {
-      const da = getUserDoplata(selectedCar, a);
-      const db = getUserDoplata(selectedCar, b);
-      return Math.abs(da - budget) - Math.abs(db - budget);
-    });
-
-    return [...doplata, ...rest];
-  }, [baseFiltered, tradeAware, preferences.budget, selectedCar, tradeFilter]);
+    // Cars where the user pays a doplata within their budget go on top,
+    // keeping their original (date-added) order. Everything else follows,
+    // also in original order.
+    const withinBudget = baseFiltered.filter(
+      c => getUserDoplata(selectedCar, c) > 0 && getUserDoplata(selectedCar, c) <= budget,
+    );
+    const rest = baseFiltered.filter(c => !withinBudget.includes(c));
+    return [...withinBudget, ...rest];
+  }, [baseFiltered, tradeAware, preferences.budget, selectedCar]);
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -349,7 +335,7 @@ export default function FeedPage() {
         <div className="mx-4 mt-3 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
           <Wallet size={14} className="text-emerald-400 flex-shrink-0" />
           <p className="text-xs text-emerald-400 font-medium">
-            Oglasi sa doplatom najbližom budžetu od {formatEuro(preferences.budget)} prikazani su prvi.
+            Oglasi sa doplatom u okviru budžeta od {formatEuro(preferences.budget)} prikazani su prvi.
           </p>
         </div>
       )}
