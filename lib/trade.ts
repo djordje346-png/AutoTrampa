@@ -22,15 +22,6 @@ interface Priced {
 }
 
 /**
- * How much the user would pay out of pocket for this swap.
- * 0 when the other owner pays or it's an even trade.
- */
-export function getUserDoplata(myCar: Priced, other: Priced): number {
-  const diff = other.price - myCar.price;
-  return diff < -TRADE_TOLERANCE ? Math.abs(diff) : 0;
-}
-
-/**
  * The core of the product: what the swap costs either side.
  * Single source of truth — feed, search and detail all render this.
  */

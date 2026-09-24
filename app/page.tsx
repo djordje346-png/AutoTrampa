@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal, Wallet } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
-import { getTradeLabel, getUserDoplata, TRADE_TOLERANCE } from '@/lib/trade';
+import { getTradeLabel, TRADE_TOLERANCE } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
@@ -70,19 +70,11 @@ export default function FeedPage() {
   }), [tradeFilter, selectedCar, tradeAware]);
 
   const filteredCars = useMemo(() => {
-    if (!tradeAware) return baseFiltered;
-
+    if (!tradeAware || !preferences.budget || preferences.budget <= 0) return baseFiltered;
     const budget = preferences.budget;
-    if (!budget || budget <= 0) return baseFiltered;
-
-    // Cars where the user pays a doplata within their budget go on top,
-    // keeping their original (date-added) order. Everything else follows,
-    // also in original order.
-    const withinBudget = baseFiltered.filter(
-      c => getUserDoplata(selectedCar, c) > 0 && getUserDoplata(selectedCar, c) <= budget,
-    );
-    const rest = baseFiltered.filter(c => !withinBudget.includes(c));
-    return [...withinBudget, ...rest];
+    const within = baseFiltered.filter(car => car.price - selectedCar.price <= budget);
+    const outside = baseFiltered.filter(car => car.price - selectedCar.price > budget);
+    return [...within, ...outside];
   }, [baseFiltered, tradeAware, preferences.budget, selectedCar]);
 
   useEffect(() => {
@@ -335,7 +327,7 @@ export default function FeedPage() {
         <div className="mx-4 mt-3 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
           <Wallet size={14} className="text-emerald-400 flex-shrink-0" />
           <p className="text-xs text-emerald-400 font-medium">
-            Oglasi sa doplatom u okviru budžeta od {formatEuro(preferences.budget)} prikazani su prvi.
+            Oglasi u okviru budžeta od {formatEuro(preferences.budget)} prikazani su prvi.
           </p>
         </div>
       )}
