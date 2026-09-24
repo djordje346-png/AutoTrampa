@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal, Wallet } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
-import { getTradeLabel, TRADE_TOLERANCE } from '@/lib/trade';
+import { getTradeLabel, getUserDoplata, TRADE_TOLERANCE } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
@@ -70,12 +70,34 @@ export default function FeedPage() {
   }), [tradeFilter, selectedCar, tradeAware]);
 
   const filteredCars = useMemo(() => {
-    if (!tradeAware || !preferences.budget || preferences.budget <= 0) return baseFiltered;
+    if (!tradeAware) return baseFiltered;
+
     const budget = preferences.budget;
-    const within = baseFiltered.filter(car => car.price - selectedCar.price <= budget);
-    const outside = baseFiltered.filter(car => car.price - selectedCar.price > budget);
-    return [...within, ...outside];
-  }, [baseFiltered, tradeAware, preferences.budget, selectedCar]);
+
+    // No budget set: for "Sve", doplata cars first by amount ascending,
+    // then the rest by original order (date added). For other filters, keep
+    // original order — the filter itself already narrows by trade direction.
+    if (!budget || budget <= 0) {
+      if (tradeFilter === 'all') {
+        const youAdd = baseFiltered.filter(c => c.price - selectedCar.price < -TRADE_TOLERANCE);
+        const rest = baseFiltered.filter(c => c.price - selectedCar.price >= -TRADE_TOLERANCE);
+        return [...youAdd, ...rest];
+      }
+      return baseFiltered;
+    }
+
+    // Budget is set: sort doplata cars by closeness to budget, rest by date added.
+    const doplata = baseFiltered.filter(c => c.price - selectedCar.price < -TRADE_TOLERANCE);
+    const rest = baseFiltered.filter(c => c.price - selectedCar.price >= -TRADE_TOLERANCE);
+
+    doplata.sort((a, b) => {
+      const da = getUserDoplata(selectedCar, a);
+      const db = getUserDoplata(selectedCar, b);
+      return Math.abs(da - budget) - Math.abs(db - budget);
+    });
+
+    return [...doplata, ...rest];
+  }, [baseFiltered, tradeAware, preferences.budget, selectedCar, tradeFilter]);
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -327,7 +349,7 @@ export default function FeedPage() {
         <div className="mx-4 mt-3 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
           <Wallet size={14} className="text-emerald-400 flex-shrink-0" />
           <p className="text-xs text-emerald-400 font-medium">
-            Oglasi u okviru budžeta od {formatEuro(preferences.budget)} prikazani su prvi.
+            Oglasi sa doplatom najbližom budžetu od {formatEuro(preferences.budget)} prikazani su prvi.
           </p>
         </div>
       )}
