@@ -66,8 +66,8 @@ export default function FeedPage() {
     if (!tradeAware || tradeFilter === 'all') return true;
     const diff = car.price - selectedCar.price;
     if (tradeFilter === 'similar') return Math.abs(diff) < TRADE_TOLERANCE;
-    if (tradeFilter === 'cheaper') return diff > TRADE_TOLERANCE;
-    if (tradeFilter === 'expensive') return diff < -TRADE_TOLERANCE;
+    if (tradeFilter === 'cheaper') return diff < -TRADE_TOLERANCE;
+    if (tradeFilter === 'expensive') return diff > TRADE_TOLERANCE;
     return true;
   }), [tradeFilter, selectedCar, tradeAware]);
 

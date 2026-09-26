@@ -83,21 +83,21 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
 
   if (diff > 0) {
     return {
-      tone: 'they-add',
+      tone: 'you-add',
       diff,
-      label: `Vlasnik doplaćuje ${formatEuro(diff)}`,
+      label: `Tvoja doplata ${formatEuro(diff)}`,
       short: `+${formatEuro(diff)}`,
-      color: 'text-sky-400',
-      bg: 'bg-sky-500/10 border-sky-500/30',
+      color: 'text-orange-400',
+      bg: 'bg-orange-500/10 border-orange-500/30',
     };
   }
 
   return {
-    tone: 'you-add',
+    tone: 'they-add',
     diff,
-    label: `Tvoja doplata ${formatEuro(Math.abs(diff))}`,
+    label: `Vlasnik doplaćuje ${formatEuro(Math.abs(diff))}`,
     short: `−${formatEuro(Math.abs(diff))}`,
-    color: 'text-orange-400',
-    bg: 'bg-orange-500/10 border-orange-500/30',
+    color: 'text-sky-400',
+    bg: 'bg-sky-500/10 border-sky-500/30',
   };
 }
