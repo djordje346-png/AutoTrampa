@@ -14,6 +14,10 @@ export interface Preferences {
   phoneAfterMatch: boolean;
   /** Trade filter on the feed — kept so it survives opening a listing. */
   tradeFilter: TradeFilter;
+  /** Budget for top-up in EUR. null = not set. */
+  budget: number | null;
+  /** If true, user does not want to pay extra — hide cars where they'd add cash. */
+  noTopUp: boolean;
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -21,6 +25,8 @@ export const DEFAULT_PREFERENCES: Preferences = {
   bodyPrefs: ['Sedan', 'Caravan'],
   phoneAfterMatch: true,
   tradeFilter: 'all',
+  budget: null,
+  noTopUp: false,
 };
 
 const preferencesStore = createPersistentStore<Preferences>(

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal, Wallet } from 'lucide-react';
 import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
-import { getTradeLabel, TRADE_TOLERANCE } from '@/lib/trade';
+import { getTradeLabel, TRADE_TOLERANCE, sortByBudget, isWithinBudget } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
@@ -38,6 +38,8 @@ export default function FeedPage() {
   const [swipeIndex, setSwipeIndex] = useState(0);
   const { preferences, update: updatePreferences } = usePreferences();
   const tradeFilter = preferences.tradeFilter;
+  const budget = preferences.budget;
+  const noTopUp = preferences.noTopUp;
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [dragX, setDragX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -69,7 +71,10 @@ export default function FeedPage() {
     return true;
   }), [tradeFilter, selectedCar, tradeAware]);
 
-  const filteredCars = baseFiltered;
+  const filteredCars = useMemo(() => {
+    if (!tradeAware || (!budget && !noTopUp)) return baseFiltered;
+    return sortByBudget(baseFiltered, selectedCar, budget, noTopUp);
+  }, [baseFiltered, tradeAware, selectedCar, budget, noTopUp]);
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -445,8 +450,15 @@ export default function FeedPage() {
 
                       {/* Trade label */}
                       {swipeTl && (
-                        <div className={`absolute bottom-3 left-3 px-3 py-1.5 rounded-full border text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
-                          {swipeTl.label}
+                        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                          <div className={`px-3 py-1.5 rounded-full border text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
+                            {swipeTl.label}
+                          </div>
+                          {tradeAware && budget != null && isWithinBudget(swipeCar, selectedCar, budget) && swipeCar.price > selectedCar.price && (
+                            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2 py-1">
+                              <Wallet size={10} /> U budžetu
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -591,7 +603,14 @@ export default function FeedPage() {
                   {/* Right: price + match + CTA */}
                   <div className="mt-3 md:mt-0 md:flex md:flex-col md:items-end md:justify-center md:gap-2 md:flex-shrink-0 md:min-w-[280px]">
                     <div className="flex items-center justify-between gap-2 md:block md:text-right">
-                      <p className="text-orange-400 font-bold text-lg md:text-xl">{formatEuro(car.price)}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-orange-400 font-bold text-lg md:text-xl">{formatEuro(car.price)}</p>
+                        {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
+                          <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
+                            <Wallet size={9} /> U budžetu
+                          </span>
+                        )}
+                      </div>
                       {tl && (
                         <div className={`md:mt-1 inline-block px-2.5 py-1 rounded-full border text-xs font-semibold ${tl.bg} ${tl.color}`}>
                           {tl.label}

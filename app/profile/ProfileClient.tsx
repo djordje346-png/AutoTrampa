@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil } from 'lucide-react';
+import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { SignedOutPage } from '@/components/SignedOut';
@@ -32,7 +32,7 @@ export default function ProfileClient() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
 
-  const { radius, bodyPrefs, phoneAfterMatch } = preferences;
+  const { radius, bodyPrefs, phoneAfterMatch, budget, noTopUp } = preferences;
   const garageFull = !canAddCar;
   const activeCar = selectedCar;
   const usedBytes = mounted ? estimateUsageBytes() : 0;
@@ -232,8 +232,48 @@ export default function ProfileClient() {
             />
           </div>
 
+          <div className="mb-5">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-medium text-app-secondary">Budžet za doplatu</label>
+              <span className="text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                {noTopUp ? 'Bez doplate' : budget != null ? formatEuro(budget) : 'Nije postavljen'}
+              </span>
+            </div>
+            <input
+              type="number"
+              min={0}
+              max={100000}
+              step={500}
+              value={budget ?? ''}
+              disabled={noTopUp}
+              placeholder="npr. 3000"
+              onChange={e => {
+                const v = e.target.value;
+                updatePreferences({ budget: v === '' ? null : Math.max(0, Number(v)) });
+              }}
+              className={`w-full rounded-xl border border-surface bg-elevated px-3 py-2.5 text-sm text-app-primary placeholder:text-app-muted outline-none transition-colors focus:border-orange-500/50 ${
+                noTopUp ? 'opacity-40 cursor-not-allowed' : ''
+              }`}
+            />
+            <p className="mt-1.5 text-[11px] leading-relaxed text-app-muted">
+              Budžet služi da ti bolje predložimo oglase. Ne filtrira — sva vozila ostaju vidljiva, samo redosled se menja.
+            </p>
+            <button
+              onClick={() => updatePreferences({ noTopUp: !noTopUp, ...(noTopUp ? {} : { budget: null }) })}
+              className="mt-2.5 flex items-center gap-2.5 w-full text-left"
+            >
+              <span className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
+                noTopUp ? 'bg-orange-500' : 'bg-elevated border border-surface'
+              }`}>
+                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                  noTopUp ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </span>
+              <span className="text-xs font-medium text-app-secondary">Ne želim da doplaćujem</span>
+            </button>
+          </div>
+
           <div>
-            <label className="block text-xs font-medium text-app-secondary mb-2">Tip karoserije</label>
             <div className="flex flex-wrap gap-2">
               {BODY_TYPE_PREFS.map(type => {
                 const active = bodyPrefs.includes(type);
