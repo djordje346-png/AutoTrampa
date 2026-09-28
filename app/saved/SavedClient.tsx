@@ -95,7 +95,7 @@ export default function SavedClient() {
             </p>
             <Link
               href="/"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
             >
               Pregledaj oglase
               <ArrowRight size={15} />
@@ -160,7 +160,7 @@ export default function SavedClient() {
                         {car.city}
                       </span>
                     </div>
-                    <p className="flex-shrink-0 font-bold text-orange-400">{formatEuro(car.price)}</p>
+                    <p className="flex-shrink-0 font-bold text-app-primary">{formatEuro(car.price)}</p>
                   </div>
 
                   <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-app-secondary">
@@ -179,7 +179,7 @@ export default function SavedClient() {
                         }
                         setOfferCar(car);
                       }}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-orange-400 active:scale-95"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 py-2.5 text-sm font-bold text-black transition-all duration-200 hover:bg-orange-400 active:scale-95"
                     >
                       <ArrowLeftRight size={14} />
                       Pošalji ponudu

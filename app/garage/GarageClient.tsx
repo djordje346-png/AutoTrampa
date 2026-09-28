@@ -174,7 +174,7 @@ export default function GarageClient() {
               </div>
 
               <div className="flex items-center gap-2 px-4 py-3 border-b border-surface">
-                <p className="text-orange-400 font-bold text-lg mr-auto">{formatEuro(car.price)}</p>
+                <p className="text-app-primary font-bold text-lg mr-auto">{formatEuro(car.price)}</p>
                 {!isSelected && (
                   <button
                     onClick={() => selectCar(car.id)}
@@ -208,7 +208,7 @@ export default function GarageClient() {
                     <TrendingUp size={13} className="text-orange-400" />
                     <p className="text-[10px] text-app-muted font-medium">Procenjena vrednost</p>
                   </div>
-                  <p className="text-sm font-black text-orange-400">{formatEuro(car.estimatedValue)}</p>
+                  <p className="text-sm font-black text-app-primary">{formatEuro(car.estimatedValue)}</p>
                 </div>
                 <div className="bg-card-surface p-3">
                   <div className="flex items-center gap-1.5 mb-1">
@@ -367,11 +367,11 @@ export default function GarageClient() {
 
             <div className="p-4 space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-orange-400 font-bold text-xl">{formatEuro(previewCar.price)}</p>
+                <p className="text-app-primary font-bold text-xl">{formatEuro(previewCar.price)}</p>
                 {previewCar.id !== selectedId && (
                   <button
                     onClick={() => { selectCar(previewCar.id); setPreviewCar(null); }}
-                    className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold rounded-lg px-3 py-2 transition-all"
+                    className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-black text-xs font-bold rounded-lg px-3 py-2 transition-all"
                   >
                     <Check size={13} />
                     Postavi kao aktivno
@@ -461,7 +461,7 @@ export default function GarageClient() {
                 </button>
                 <button
                   onClick={() => setPreviewCar(null)}
-                  className="flex-1 bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold rounded-xl py-3 transition-all"
+                  className="flex-1 bg-orange-500 hover:bg-orange-400 text-black text-xs sm:text-sm font-bold rounded-xl py-3 transition-all"
                 >
                   Zatvori
                 </button>

@@ -286,7 +286,7 @@ export default function FeedPage() {
                 onClick={() => { updatePreferences({ tradeFilter: key }); setSwipeIndex(0); }}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                   tradeFilter === key
-                    ? 'bg-orange-500 text-white'
+                    ? 'bg-orange-500 text-black'
                     : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
                 }`}
               >

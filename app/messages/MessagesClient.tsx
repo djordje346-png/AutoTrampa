@@ -256,7 +256,7 @@ export default function MessagesClient() {
                       <div
                         className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
                           mine
-                            ? 'rounded-br-md bg-orange-500 text-white'
+                            ? 'rounded-br-md bg-orange-500 text-black'
                             : 'rounded-bl-md bg-elevated text-app-primary'
                         }`}
                       >
@@ -313,7 +313,7 @@ export default function MessagesClient() {
               onClick={handleSend}
               disabled={!input.trim()}
               aria-label="Pošalji poruku"
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-white transition-all duration-200 hover:bg-orange-400 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-black transition-all duration-200 hover:bg-orange-400 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Send size={17} />
             </button>
@@ -358,7 +358,7 @@ export default function MessagesClient() {
             </p>
             <Link
               href="/"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
             >
               <ArrowLeftRight size={16} />
               Pronađi zamenu

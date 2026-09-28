@@ -103,7 +103,7 @@ export default function SearchClient() {
             onClick={() => setActiveType(null)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
               !activeType
-                ? 'bg-orange-500 border-orange-500 text-white'
+                ? 'bg-orange-500 border-orange-500 text-black'
                 : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
             }`}
           >
@@ -116,7 +116,7 @@ export default function SearchClient() {
               onClick={() => setActiveType(activeType === type ? null : type)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                 activeType === type
-                  ? 'bg-orange-500 border-orange-500 text-white'
+                  ? 'bg-orange-500 border-orange-500 text-black'
                   : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
               }`}
             >
@@ -213,7 +213,7 @@ export default function SearchClient() {
                         <p className="text-xs text-app-muted">{car.generation}</p>
                       </Link>
                       <div className="flex flex-shrink-0 items-start gap-2">
-                        <p className="text-sm font-bold text-orange-400">{formatEuro(car.price)}</p>
+                        <p className="text-sm font-bold text-app-primary">{formatEuro(car.price)}</p>
                         <button
                           onClick={() => toggleSave(car.id)}
                           aria-label={saved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
@@ -255,7 +255,7 @@ export default function SearchClient() {
                           }
                           setOfferCar(car);
                         }}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-orange-500 py-2 text-[11px] font-bold text-white transition-all duration-200 hover:bg-orange-400 active:scale-95"
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-orange-500 py-2 text-[11px] font-bold text-black transition-all duration-200 hover:bg-orange-400 active:scale-95"
                       >
                         <ArrowLeftRight size={12} />
                         Pošalji ponudu
