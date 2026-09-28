@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-white ring-2 ring-[hsl(var(--surface-base))]">
+    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-black ring-2 ring-[hsl(var(--surface-base))]">
       {count > 9 ? '9+' : count}
     </span>
   );

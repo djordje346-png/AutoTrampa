@@ -178,7 +178,7 @@ export default function FeedPage() {
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
+                    viewMode === 'grid' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary'
                   }`}
                   aria-label="Prikaz mreže"
                 >
@@ -187,7 +187,7 @@ export default function FeedPage() {
                 <button
                   onClick={() => setViewMode('swipe')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'swipe' ? 'bg-orange-500 text-white' : 'text-app-muted hover:text-app-secondary'
+                    viewMode === 'swipe' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary'
                   }`}
                   aria-label="Svajp režim"
                 >
@@ -315,7 +315,7 @@ export default function FeedPage() {
           </div>
           <button
             onClick={() => requireAuth('Prijavi se i dodaj svoj auto')}
-            className="flex-shrink-0 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-orange-400"
+            className="flex-shrink-0 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-black transition-colors hover:bg-orange-400"
           >
             Prijavi se
           </button>
@@ -470,7 +470,7 @@ export default function FeedPage() {
                           <h2 className="text-lg font-black text-app-primary tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
                           <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
                         </div>
-                        <p className="text-orange-400 font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
+                        <p className="text-app-primary font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
                       </div>
 
                       <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -482,7 +482,7 @@ export default function FeedPage() {
                       <p className="text-xs text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
 
                       <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface">
-                        <button onClick={() => openOffer(swipeCar)} className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold rounded-xl py-2.5 transition-all duration-200 active:scale-95">
+                        <button onClick={() => openOffer(swipeCar)} className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-black text-sm font-bold rounded-xl py-2.5 transition-all duration-200 active:scale-95">
                           <ArrowLeftRight size={15} /> Pošalji ponudu
                         </button>
                         <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
@@ -526,7 +526,7 @@ export default function FeedPage() {
                   <button onClick={() => setSwipeIndex(0)} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ispočetka
                   </button>
-                  <button onClick={exitSwipeMode} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all">
+                  <button onClick={exitSwipeMode} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-black font-bold px-4 py-2.5 rounded-xl text-sm transition-all">
                     Nazad na feed
                   </button>
                 </div>
@@ -604,7 +604,7 @@ export default function FeedPage() {
                   <div className="mt-3 md:mt-0 md:flex md:flex-col md:items-end md:justify-center md:gap-2 md:flex-shrink-0 md:min-w-[280px]">
                     <div className="flex items-center justify-between gap-2 md:block md:text-right">
                       <div className="flex items-center gap-2">
-                        <p className="text-orange-400 font-bold text-lg md:text-xl">{formatEuro(car.price)}</p>
+                        <p className="text-app-primary font-bold text-lg md:text-xl">{formatEuro(car.price)}</p>
                         {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
                           <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
                             <Wallet size={9} /> U budžetu
@@ -621,7 +621,7 @@ export default function FeedPage() {
                     <div className="flex gap-2 mt-2 md:mt-3 md:w-full">
                       <button
                         onClick={() => openOffer(car)}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs md:text-sm font-bold rounded-lg py-2 md:py-3 transition-all duration-200 active:scale-95 whitespace-nowrap"
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-black text-xs md:text-sm font-bold rounded-lg py-2 md:py-3 transition-all duration-200 active:scale-95 whitespace-nowrap"
                       >
                         <ArrowLeftRight size={14} />
                         Pošalji ponudu

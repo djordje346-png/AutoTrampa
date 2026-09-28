@@ -132,7 +132,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
           </button>
           <button
             onClick={save}
-            className="flex-1 rounded-xl bg-orange-500 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400"
+            className="flex-1 rounded-xl bg-orange-500 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
           >
             Sačuvaj
           </button>

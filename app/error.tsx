@@ -30,7 +30,7 @@ export default function Error({
       <div className="mt-6 flex gap-2">
         <button
           onClick={reset}
-          className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400"
+          className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
         >
           <RotateCcw size={16} />
           Pokušaj ponovo

@@ -14,7 +14,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
       >
         <ArrowLeft size={16} />
         Nazad na Početnu

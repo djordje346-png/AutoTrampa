@@ -23,7 +23,7 @@ export function SignedOut({ title, description, reason }: SignedOutProps) {
 
       <button
         onClick={() => openAuthPrompt(reason)}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
       >
         Prijavi se
       </button>

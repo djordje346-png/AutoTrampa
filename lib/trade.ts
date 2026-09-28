@@ -87,8 +87,8 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
       diff,
       label: `Tvoja doplata ${formatEuro(diff)}`,
       short: `+${formatEuro(diff)}`,
-      color: 'text-orange-400',
-      bg: 'bg-orange-500/10 border-orange-500/30',
+      color: 'text-rose-400',
+      bg: 'bg-rose-500/10 border-rose-500/30',
     };
   }
 

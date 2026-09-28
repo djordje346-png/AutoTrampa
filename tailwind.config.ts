@@ -60,6 +60,12 @@ const config: Config = {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        orange: {
+          300: '#E4FF1A',
+          400: '#E4FF1A',
+          500: '#E4FF1A',
+          600: '#E4FF1A',
+        },
       },
       keyframes: {
         'accordion-down': {

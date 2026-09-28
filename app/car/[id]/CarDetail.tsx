@@ -150,7 +150,7 @@ export default function CarDetail({ car }: { car: Car }) {
               </h1>
               <p className="text-sm text-app-muted mt-0.5">{car.generation} · {car.color}</p>
             </div>
-            <p className="text-orange-400 font-black text-2xl">{formatEuro(car.price)}</p>
+            <p className="text-app-primary font-black text-2xl">{formatEuro(car.price)}</p>
           </div>
 
           <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface">
@@ -252,13 +252,13 @@ export default function CarDetail({ car }: { car: Car }) {
               <div className="flex-1 rounded-xl bg-elevated p-3 text-center">
                 <p className="text-[10px] text-app-muted mb-1">Tvoj auto</p>
                 <p className="text-sm font-semibold text-app-primary truncate">{selectedCar.brand} {selectedCar.model}</p>
-                <p className="text-orange-400 font-bold text-sm">{formatEuro(selectedCar.price)}</p>
+                <p className="text-app-primary font-bold text-sm">{formatEuro(selectedCar.price)}</p>
               </div>
               <ArrowLeftRight size={18} className="text-app-muted flex-shrink-0" />
               <div className="flex-1 rounded-xl bg-elevated p-3 text-center">
                 <p className="text-[10px] text-app-muted mb-1">Ovaj auto</p>
                 <p className="text-sm font-semibold text-app-primary truncate">{car.brand} {car.model}</p>
-                <p className="text-orange-400 font-bold text-sm">{formatEuro(car.price)}</p>
+                <p className="text-app-primary font-bold text-sm">{formatEuro(car.price)}</p>
               </div>
             </div>
             <div className={`rounded-xl border px-4 py-2 text-center text-sm font-semibold mt-3 ${tl.bg} ${tl.color}`}>
@@ -278,7 +278,7 @@ export default function CarDetail({ car }: { car: Car }) {
             }
             setOfferOpen(true);
           }}
-          className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"
+          className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-black text-xs sm:text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"
         >
           <ArrowLeftRight size={16} className="flex-shrink-0" />
           <span className="truncate">Pošalji ponudu za zamenu</span>
