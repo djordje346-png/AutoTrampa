@@ -38,8 +38,8 @@ export default function ProfileClient() {
   const usedBytes = mounted ? estimateUsageBytes() : 0;
   const usedPercent = Math.min(100, Math.round((usedBytes / STORAGE_BUDGET_BYTES) * 100));
 
-  function handleAddCar(car: MyGarageCar) {
-    const result = addCar(car);
+  async function handleAddCar(car: MyGarageCar) {
+    const result = await addCar(car);
     if (!result.ok) {
       toast.error(
         result.error === 'limit'

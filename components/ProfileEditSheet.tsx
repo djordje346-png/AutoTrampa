@@ -45,7 +45,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
     return next;
   }
 
-  function save() {
+  async function save() {
     const found = validate();
     setErrors(found);
     if (Object.keys(found).length > 0) return;
@@ -65,17 +65,19 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
 
     // Garage cars carry the owner's details onto their listing, so they have to
     // follow the profile rather than keep whatever was true when they were added.
-    cars.forEach((car) => {
-      updateCar({
-        ...car,
-        owner: {
-          ...car.owner,
-          name: shortName(cleaned.name!),
-          phone: cleaned.phone!,
-          city: cleaned.city || car.owner.city,
-        },
-      });
-    });
+    await Promise.all(
+      cars.map((car) =>
+        updateCar({
+          ...car,
+          owner: {
+            ...car.owner,
+            name: shortName(cleaned.name!),
+            phone: cleaned.phone!,
+            city: cleaned.city || car.owner.city,
+          },
+        }),
+      ),
+    );
 
     toast.success('Profil sačuvan.');
     onClose();

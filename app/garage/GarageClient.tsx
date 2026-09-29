@@ -40,16 +40,12 @@ export default function GarageClient() {
     setShowForm(true);
   }
 
-  function handleSave(car: MyGarageCar) {
-    const result = editingCar ? updateCar(car) : addCar(car);
+  async function handleSave(car: MyGarageCar) {
+    const result = editingCar ? await updateCar(car) : await addCar(car);
 
     if (!result.ok) {
       if (result.error === 'limit') {
         toast.error(`Dostignut limit od ${limit} vozila u garaži.`);
-      } else if (result.error === 'storage' && result.storage.reason === 'quota') {
-        toast.error('Memorija pregledača je puna.', {
-          description: 'Smanji broj fotografija pa pokušaj ponovo.',
-        });
       } else {
         toast.error('Vozilo nije sačuvano.');
       }
@@ -62,9 +58,9 @@ export default function GarageClient() {
     setEditingCar(null);
   }
 
-  function confirmRemove() {
+  async function confirmRemove() {
     if (!pendingDelete) return;
-    const result = removeCar(pendingDelete.id);
+    const result = await removeCar(pendingDelete.id);
     if (!result.ok) {
       toast.error(
         result.error === 'last-car'

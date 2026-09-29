@@ -91,8 +91,8 @@ export default function FeedPage() {
     setOfferCar(car);
   }
 
-  function handleAddCar(form: MyGarageCar) {
-    const result = addCar(form);
+  async function handleAddCar(form: MyGarageCar) {
+    const result = await addCar(form);
     if (!result.ok) {
       toast.error(
         result.error === 'limit'
