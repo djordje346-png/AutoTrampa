@@ -52,12 +52,11 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
 
     const cleaned: Partial<UserProfile> = {
       name: draft.name.trim(),
-      email: draft.email.trim(),
       phone: draft.phone.trim(),
       city: draft.city.trim(),
     };
 
-    const result = updateUser(cleaned);
+    const result = await updateUser(cleaned);
     if (!result.ok) {
       toast.error('Profil nije sačuvan.');
       return;
@@ -72,7 +71,6 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
           owner: {
             ...car.owner,
             name: shortName(cleaned.name!),
-            phone: cleaned.phone!,
             city: cleaned.city || car.owner.city,
           },
         }),
@@ -108,6 +106,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
               type={type ?? 'text'}
               value={draft[key]}
               onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
+              readOnly={key === 'email'}
               placeholder={placeholder}
               aria-invalid={Boolean(errors[key])}
               className={`${inputBase} ${errors[key] ? bad : ok}`}
@@ -122,7 +121,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
         ))}
 
         <p className="text-[11px] leading-relaxed text-app-muted">
-          Ime i telefon se prikazuju na tvojim oglasima kao {shortName(draft.name || 'Korisnik')}.
+          Ime i grad se prikazuju na oglasima. Broj telefona ostaje privatan dok aplikacija ne podrži dogovoreni meč.
         </p>
 
         <div className="flex gap-2 pt-1">

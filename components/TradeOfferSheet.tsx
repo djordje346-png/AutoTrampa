@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeftRight, CircleCheck as CheckCircle, MessageCircle } from 'lucide-react';
 import { BottomSheet } from '@/components/BottomSheet';
+import { toast } from 'sonner';
 import { formatEuro } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { useMessages } from '@/hooks/use-messages';
@@ -24,6 +25,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
   const { createConversation } = useMessages();
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     if (car) {
@@ -36,20 +38,25 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
 
   const trade = getTradeLabel(myCar, car);
 
-  function send() {
-    if (!car) return;
-    createConversation(
+  async function send() {
+    if (!car || pending) return;
+    setPending(true);
+    const result = await createConversation(
       {
-        id: `conv-${car.id}-${Date.now()}`,
         carId: car.id,
         carTitle: `${car.year} ${car.brand} ${car.model} ${car.generation}`,
         carImage: car.image,
         ownerName: car.owner.name,
-        ownerPhone: car.owner.phone,
+        ownerId: car.ownerId,
         tradeSummary: trade.label,
       },
       message,
     );
+    setPending(false);
+    if (!result.ok) {
+      toast.error(result.message);
+      return;
+    }
     setSent(true);
   }
 
@@ -129,10 +136,11 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
           />
 
           <button
-            onClick={send}
+            onClick={() => void send()}
+            disabled={pending}
             className="mt-4 w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-orange-400 active:scale-95"
           >
-            Pošalji ponudu
+            {pending ? 'Šaljem…' : 'Pošalji ponudu'}
           </button>
         </>
       )}

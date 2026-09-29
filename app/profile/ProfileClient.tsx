@@ -48,7 +48,7 @@ export default function ProfileClient() {
       );
       return;
     }
-    selectCar(car.id);
+    selectCar(result.id ?? car.id);
     setShowAddForm(false);
     toast.success('Vozilo dodato u garažu.');
   }

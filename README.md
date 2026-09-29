@@ -12,6 +12,10 @@ npm install
 npm run dev      # http://localhost:3000
 ```
 
+Pre razvoja kopiraj `.env.example` u `.env.local` i unesi Supabase Project URL i **publishable**
+ključ. Iste promenljive podesi i u Netlify Site settings → Environment variables. Publishable ključ
+je namenjen browseru; nikada nemoj koristiti `service_role` ili secret ključ u `NEXT_PUBLIC_*`.
+
 | Komanda | Šta radi |
 |---|---|
 | `npm run dev` | razvojni server |
@@ -27,7 +31,7 @@ npm run dev      # http://localhost:3000
   ponude direktno iz rezultata
 - **Sačuvano** — lista želja
 - **Garaža** — do 3 vozila, sa specifikacijama, opremom, galerijom i izborom aktivnog vozila
-- **Poruke** — razgovori po oglasu, sa simuliranim odgovorom druge strane
+- **Poruke** — privatni razgovori po oglasu i poruke sa Supabase sinhronizacijom
 - **Profil** — identitet, preferencije zamene, tamna/svetla tema, pregled zauzeća memorije
 
 ## Nalog
@@ -36,19 +40,21 @@ Pregled oglasa je javan — feed, pretraga i stranice oglasa rade bez prijave i 
 indeksirati. Prijava se traži tek kada je potrebna: za garažu, poruke, profil i slanje ponude.
 Oznaka doplate i filteri po vrednosti zamene pojavljuju se tek kada imaš auto u garaži.
 
-## Podaci
+## Supabase
 
-Aplikacija trenutno radi **potpuno lokalno**. Nema servera ni baze — garaža, sačuvani oglasi,
-poruke i podešavanja žive u `localStorage` pregledača, pod ključevima `autotrampa_*`.
+Email prijava/registracija, profil, korisnička garaža i javni oglasi koriste Supabase. Oglasi se
+ograničavaju vlasniku za izmene kroz RLS, a telefonski brojevi ostaju u privatnoj tabeli profila.
+Fotografije se otpremaju u javni `car-images` Storage bucket; vlasnik može da otprema i briše
+objekte samo u svom UID folderu. Migracija uključuje i serversko ograničenje garaže na tri auta.
 
-Praktične posledice:
+Otvori Supabase Dashboard → Authentication → URL Configuration. Postavi Site URL na domen sajta,
+pa dodaj dozvoljene redirect URL-ove `http://localhost:3000/auth/update-password` i
+`https://TVOJ-DOMEN/auth/update-password`. Uključi email/password provider. Potvrda email adrese
+može ostati uključena; aplikacija prikazuje poruku da proveriš poštu.
 
-- brisanje podataka pregledača briše i garažu, poruke i sačuvane oglase;
-- fotografije se čuvaju kao base64 i troše deo od ~5 MB koje pregledač daje po sajtu, pa se
-  automatski smanjuju na 1600 px pre čuvanja. Profil prikazuje koliko je zauzeto;
-- oglasi na tržištu su fiksni skup podataka u `lib/cars.ts`.
-
-Supabase je već u zavisnostima ali namerno nije povezan — to je poslednji korak.
+Feed sadrži lokalne demo oglase iz `lib/cars.ts` i stvarne oglase iz Supabase-a. Sačuvani stvarni
+oglasi i razgovori/poruke sinhronizuju se po nalogu uz RLS. Demo oglasi i podešavanja feeda ostaju
+lokalni. Razgovori se arhiviraju samo za trenutno prijavljenog korisnika.
 
 ## Deploy
 

@@ -52,7 +52,7 @@ export default function GarageClient() {
       return;
     }
 
-    if (!editingCar) selectCar(car.id);
+    if (!editingCar) selectCar(result.id ?? car.id);
     toast.success(editingCar ? 'Izmene sačuvane.' : 'Vozilo dodato u garažu.');
     setShowForm(false);
     setEditingCar(null);

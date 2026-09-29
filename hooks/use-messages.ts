@@ -1,7 +1,9 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
-import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
+import { useCallback, useEffect, useState } from 'react';
+import { getSupabase } from '@/lib/supabase';
+import { useAuth } from '@/hooks/use-auth';
+import { userStore } from '@/hooks/use-user';
 
 export interface ChatMessage {
   id: string;
@@ -17,227 +19,226 @@ export interface Conversation {
   carImage: string;
   ownerName: string;
   ownerPhone?: string;
-  /** Trade label as it stood when the offer was sent. */
   tradeSummary: string;
   messages: ChatMessage[];
   unread: number;
   lastUpdated: number;
+  isBuyer: boolean;
 }
 
-const MINUTE = 60_000;
-const HOUR = 60 * MINUTE;
-
-/**
- * Seed chats are built on the client at hydration time, not at module load:
- * timestamps are relative to "now" and would otherwise differ between the
- * server render and the browser.
- */
-function createSeedConversations(): Conversation[] {
-  const now = Date.now();
-  return [
-    {
-      id: 'conv-marko',
-      carId: 'audi-a4-b7-avant',
-      carTitle: '2006 Audi A4 Avant B7',
-      carImage:
-        'https://images.pexels.com/photos/37472548/pexels-photo-37472548.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-      ownerName: 'Marko D.',
-      ownerPhone: '+381 63 987 6543',
-      tradeSummary: 'Vlasnik doplaćuje 700 €',
-      unread: 1,
-      lastUpdated: now - HOUR,
-      messages: [
-        { id: 'm1', text: 'Zdravo! Zanima te zamena tvog BMW-a za moj A4 Avant?', sender: 'them', timestamp: now - 2 * HOUR },
-        { id: 'm2', text: 'Ćao Marko, video sam oglas. Kakvo je stanje lima?', sender: 'me', timestamp: now - 116 * MINUTE },
-        { id: 'm3', text: 'Lim je čist, bez rđe. Kompletna servisna knjižica iz Audi servisa.', sender: 'them', timestamp: now - 113 * MINUTE },
-        { id: 'm4', text: 'Zvuči dobro. Trebalo bi 700 € doplate jer je moj E60 vredniji.', sender: 'me', timestamp: now - 110 * MINUTE },
-        { id: 'm5', text: 'To mi odgovara. Kad možemo da se nađemo?', sender: 'them', timestamp: now - HOUR },
-      ],
-    },
-    {
-      id: 'conv-stefan',
-      carId: 'vw-golf-5-gti',
-      carTitle: '2007 VW Golf GTI Mk5',
-      carImage:
-        'https://images.pexels.com/photos/20809165/pexels-photo-20809165.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-      ownerName: 'Stefan J.',
-      ownerPhone: '+381 65 445 1122',
-      tradeSummary: 'Tvoja doplata 700 €',
-      unread: 0,
-      lastUpdated: now - 24 * HOUR,
-      messages: [
-        { id: 'm1', text: 'Ej, video sam tvoj E60 u feed-u. Čist auto!', sender: 'them', timestamp: now - 25 * HOUR },
-        { id: 'm2', text: 'Hvala brate. I tvoj GTI izgleda odlično.', sender: 'me', timestamp: now - 24.5 * HOUR },
-        { id: 'm3', text: 'Bi li doplatio za GTI? Moj je nešto skuplji.', sender: 'them', timestamp: now - 24 * HOUR },
-      ],
-    },
-    {
-      id: 'conv-petar',
-      carId: 'bmw-320d-e90',
-      carTitle: '2009 BMW 320d E90',
-      carImage:
-        'https://images.pexels.com/photos/31983216/pexels-photo-31983216.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-      ownerName: 'Petar K.',
-      ownerPhone: '+381 64 771 2390',
-      tradeSummary: 'Vlasnik doplaćuje 2.400 €',
-      unread: 2,
-      lastUpdated: now - 2 * HOUR,
-      messages: [
-        { id: 'm1', text: 'Zdravo, da li si otvoren za zamenu sa mojim E90?', sender: 'them', timestamp: now - 3 * HOUR },
-        { id: 'm2', text: 'Ćao Petre, moguće. Ali E90 je vredniji od mog E60.', sender: 'me', timestamp: now - 170 * MINUTE },
-        { id: 'm3', text: 'Znam, doplatio bih 2.400 €. M-Sport paket uključen.', sender: 'them', timestamp: now - 2 * HOUR },
-        { id: 'm4', text: 'Pošalji mi još slika enterijera?', sender: 'me', timestamp: now - 118 * MINUTE },
-      ],
-    },
-  ];
+interface MessageRow {
+  id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+  read_at: string | null;
 }
 
-const AUTO_REPLIES = [
-  'Zvuči dobro!',
-  'Daj da razmislim malo.',
-  'Možemo li ovaj vikend da se nađemo?',
-  'Važi, to mi odgovara. Gde si lociran?',
-  'Otvoren sam za to. Pošalji mi broj telefona.',
-  'Hmm, može li malo bolja cena?',
-  'Dogovoreno. Kada hoćeš da se nađemo?',
-  'Hvala na ponudi, javljam se uskoro.',
-];
-
-const conversationsStore = createPersistentStore<Conversation[]>(
-  'autotrampa_messages',
-  [],
-  (raw) => (Array.isArray(raw) ? (raw as Conversation[]) : null),
-);
-
-/** Separate marker so an intentionally emptied inbox is not re-seeded. */
-const seededStore = createPersistentStore<boolean>('autotrampa_messages_seeded', false);
-
-function ensureSeeded() {
-  seededStore.hydrate();
-  conversationsStore.hydrate();
-  if (seededStore.get()) return;
-  seededStore.set(true);
-  if (conversationsStore.get().length === 0) {
-    conversationsStore.set(createSeedConversations());
-  }
+interface ConversationRow {
+  id: string;
+  car_id: string;
+  buyer_id: string;
+  seller_id: string;
+  buyer_name: string;
+  trade_summary: string;
+  updated_at: string;
+  created_at: string;
+  car: {
+    brand: string;
+    model: string;
+    generation: string | null;
+    year: number;
+    image: string | null;
+    owner_name: string | null;
+  } | null;
+  messages: MessageRow[] | null;
 }
 
-function byRecency(conversations: Conversation[]): Conversation[] {
-  return [...conversations].sort((a, b) => b.lastUpdated - a.lastUpdated);
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function mapConversation(row: ConversationRow, userId: string): Conversation | null {
+  if (!row.car) return null;
+  const messages = [...(row.messages ?? [])].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+  );
+  const isBuyer = row.buyer_id === userId;
+  return {
+    id: row.id,
+    carId: row.car_id,
+    carTitle: `${row.car.year} ${row.car.brand} ${row.car.model} ${row.car.generation ?? ''}`.trim(),
+    carImage: row.car.image ?? '',
+    ownerName: isBuyer ? row.car.owner_name ?? 'Korisnik' : row.buyer_name || 'Korisnik',
+    ownerPhone: '',
+    tradeSummary: row.trade_summary,
+    messages: messages.map((message) => ({
+      id: message.id,
+      text: message.body,
+      sender: message.sender_id === userId ? 'me' : 'them',
+      timestamp: new Date(message.created_at).getTime(),
+    })),
+    unread: messages.filter((message) => message.sender_id !== userId && !message.read_at).length,
+    lastUpdated: new Date(row.updated_at ?? row.created_at).getTime(),
+    isBuyer,
+  };
 }
 
 export function useMessages() {
-  const [stored, mounted] = usePersistentStore(conversationsStore);
+  const { userId } = useAuth();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  const refresh = useCallback(async () => {
+    if (!userId) {
+      setConversations([]);
+      setMounted(true);
+      return;
+    }
+    try {
+      const { data, error } = await getSupabase()
+        .from('conversations')
+        .select('id,car_id,buyer_id,seller_id,buyer_name,trade_summary,updated_at,created_at,car:cars!conversations_car_id_fkey(brand,model,generation,year,image,owner_name),messages:messages!messages_conversation_id_fkey(id,sender_id,body,created_at,read_at)')
+        .order('updated_at', { ascending: false });
+      if (error) throw error;
+      const rows = (data ?? []) as unknown as ConversationRow[];
+      setConversations(rows.map((row) => mapConversation(row, userId)).filter((item): item is Conversation => Boolean(item)));
+    } catch {
+      setConversations([]);
+    } finally {
+      setMounted(true);
+    }
+  }, [userId]);
 
   useEffect(() => {
-    ensureSeeded();
-  }, []);
-
-  const sendMessage = useCallback((conversationId: string, text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-
-    const userMsg: ChatMessage = {
-      id: `msg-${Date.now()}`,
-      text: trimmed,
-      sender: 'me',
-      timestamp: Date.now(),
+    let cancelled = false;
+    if (!userId) {
+      setConversations([]);
+      setMounted(true);
+      return;
+    }
+    setMounted(false);
+    const load = async () => {
+      if (cancelled) return;
+      await refresh();
     };
+    void load();
+    const timer = window.setInterval(load, 20_000);
+    window.addEventListener('focus', load);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+      window.removeEventListener('focus', load);
+    };
+  }, [refresh, userId]);
 
-    conversationsStore.set((prev) =>
-      prev.map((c) =>
-        c.id === conversationId
-          ? { ...c, messages: [...c.messages, userMsg], lastUpdated: Date.now(), unread: 0 }
-          : c,
-      ),
-    );
-
-    // Simulated counterpart until there is a backend.
-    setTimeout(() => {
-      const replyMsg: ChatMessage = {
-        id: `msg-${Date.now()}-r`,
-        text: AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)],
-        sender: 'them',
-        timestamp: Date.now(),
-      };
-      conversationsStore.set((prev) =>
-        prev.map((c) =>
-          c.id === conversationId
-            ? { ...c, messages: [...c.messages, replyMsg], lastUpdated: Date.now() }
-            : c,
-        ),
-      );
-    }, 1500);
-  }, []);
-
-  const markRead = useCallback((conversationId: string) => {
-    conversationsStore.set((prev) => {
-      if (!prev.some((c) => c.id === conversationId && c.unread > 0)) return prev;
-      return prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c));
+  const sendMessage = useCallback(async (conversationId: string, text: string) => {
+    const body = text.trim().slice(0, 1000);
+    if (!userId || !body) return false;
+    const { error } = await getSupabase().from('messages').insert({
+      conversation_id: conversationId,
+      sender_id: userId,
+      body,
     });
-  }, []);
+    if (error) return false;
+    await refresh();
+    return true;
+  }, [refresh, userId]);
 
-  const deleteConversation = useCallback((conversationId: string) => {
-    conversationsStore.set((prev) => prev.filter((c) => c.id !== conversationId));
-  }, []);
+  const markRead = useCallback(async (conversationId: string) => {
+    if (!userId) return;
+    const { error } = await getSupabase()
+      .from('messages')
+      .update({ read_at: new Date().toISOString() })
+      .eq('conversation_id', conversationId)
+      .neq('sender_id', userId)
+      .is('read_at', null);
+    if (!error) await refresh();
+  }, [refresh, userId]);
 
-  /**
-   * Opens (or reuses) the thread for a listing and posts the offer as the first
-   * message, so what the user typed in the offer sheet actually lands in chat.
-   */
-  const createConversation = useCallback(
-    (
-      conv: Omit<Conversation, 'messages' | 'lastUpdated' | 'unread'>,
-      firstMessage?: string,
-    ): string => {
-      const existing = conversationsStore.get().find((c) => c.carId === conv.carId);
-      const id = existing?.id ?? conv.id;
-      const now = Date.now();
+  const deleteConversation = useCallback(async (conversationId: string) => {
+    if (!userId) return false;
+    const conversation = conversations.find((item) => item.id === conversationId);
+    if (!conversation) return false;
+    const field = conversation.isBuyer ? 'buyer_archived' : 'seller_archived';
+    const { data, error } = await getSupabase()
+      .from('conversations')
+      .update({ [field]: true })
+      .eq('id', conversationId)
+      .select('id')
+      .maybeSingle();
+    if (error || !data) return false;
+    setConversations((previous) => previous.filter((item) => item.id !== conversationId));
+    return true;
+  }, [conversations, userId]);
 
-      const offerMessage: ChatMessage = {
-        id: `msg-${now}`,
-        text:
-          firstMessage?.trim() ||
-          `Zdravo! Šaljem ponudu za zamenu — ${conv.tradeSummary}.`,
-        sender: 'me',
-        timestamp: now,
-      };
-
-      conversationsStore.set((prev) => {
-        if (existing) {
-          return prev.map((c) =>
-            c.id === id
-              ? {
-                  ...c,
-                  tradeSummary: conv.tradeSummary,
-                  messages: [...c.messages, offerMessage],
-                  lastUpdated: now,
-                  unread: 0,
-                }
-              : c,
-          );
-        }
-        return [
-          { ...conv, id, messages: [offerMessage], unread: 0, lastUpdated: now },
-          ...prev,
-        ];
-      });
-
-      return id;
+  const createConversation = useCallback(async (
+    conv: {
+      carId: string;
+      carTitle: string;
+      carImage: string;
+      ownerName: string;
+      ownerId?: string;
+      tradeSummary: string;
     },
-    [],
-  );
+    firstMessage?: string,
+  ): Promise<{ ok: true; id: string } | { ok: false; message: string }> => {
+    if (!userId) return { ok: false, message: 'Prijavi se da pošalješ ponudu.' };
+    if (!UUID_RE.test(conv.carId) || !conv.ownerId || !UUID_RE.test(conv.ownerId)) {
+      return { ok: false, message: 'Ovo je demo oglas i nema aktivnog vlasnika za razgovor.' };
+    }
+    if (conv.ownerId === userId) return { ok: false, message: 'Ne možeš poslati ponudu za svoj oglas.' };
 
-  const conversations = byRecency(stored);
-  const totalUnread = conversations.reduce((sum, c) => sum + c.unread, 0);
+    const supabase = getSupabase();
+    let conversationId: string | null = null;
+    const { data: existing, error: lookupError } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('car_id', conv.carId)
+      .eq('buyer_id', userId)
+      .eq('seller_id', conv.ownerId)
+      .maybeSingle();
+    if (lookupError) return { ok: false, message: lookupError.message };
+    conversationId = existing?.id ?? null;
 
-  return {
-    conversations,
-    sendMessage,
-    markRead,
-    createConversation,
-    deleteConversation,
-    totalUnread,
-    mounted,
-  };
+    if (!conversationId) {
+      const { data, error } = await supabase
+        .from('conversations')
+        .insert({
+          car_id: conv.carId,
+          buyer_id: userId,
+          seller_id: conv.ownerId,
+          buyer_name: userStore.get().name,
+          trade_summary: conv.tradeSummary,
+        })
+        .select('id')
+        .single();
+      if (error) {
+        // A concurrent offer can win the unique constraint; reuse its thread.
+        if (error.code !== '23505') return { ok: false, message: error.message };
+        const { data: raced } = await supabase
+          .from('conversations')
+          .select('id')
+          .eq('car_id', conv.carId)
+          .eq('buyer_id', userId)
+          .eq('seller_id', conv.ownerId)
+          .maybeSingle();
+        conversationId = raced?.id ?? null;
+      } else {
+        conversationId = data.id;
+      }
+    }
+
+    if (!conversationId) return { ok: false, message: 'Razgovor nije mogao da se otvori.' };
+    const body = firstMessage?.trim() || `Zdravo! Šaljem ponudu za zamenu — ${conv.tradeSummary}.`;
+    const { error: messageError } = await supabase.from('messages').insert({
+      conversation_id: conversationId,
+      sender_id: userId,
+      body: body.slice(0, 1000),
+    });
+    if (messageError) return { ok: false, message: messageError.message };
+    await refresh();
+    return { ok: true, id: conversationId };
+  }, [refresh, userId]);
+
+  const totalUnread = conversations.reduce((sum, conversation) => sum + conversation.unread, 0);
+  return { conversations, sendMessage, markRead, createConversation, deleteConversation, totalUnread, mounted };
 }

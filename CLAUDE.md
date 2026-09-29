@@ -6,11 +6,14 @@ The whole product revolves around the price gap between your car and someone els
 or *Tvoja doplata X* (you add cash). Feed, search and the listing page all filter and label on
 that number, and it comes from one place: `lib/trade.ts`.
 
-## Status: front-end complete, backend not wired yet
+## Status: Supabase core connected
 
-There is **no server and no database**. `@supabase/supabase-js` is in `package.json` but is
-imported nowhere — Supabase is planned as the last step, deliberately. Until then every write
-goes through `lib/persistent-store.ts` into `localStorage`; see "Swapping in a backend" below.
+Supabase Auth (email/password), profiles, user-owned cars, public listings, saved cars,
+conversations/messages and car-image Storage are live integrations. `NEXT_PUBLIC_SUPABASE_URL`
+and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are
+required at runtime; the client is lazy so static pages can still build without them. Never put a
+service-role or secret key in a `NEXT_PUBLIC_*` variable. Demo listing saves and feed preferences
+remain local state.
 
 ## Public vs. signed-in
 
@@ -27,8 +30,9 @@ in — without a car in the garage there is nothing to compare against. Signed-o
 CTA explaining what they are missing. Note these are gated on `authReady && isLoggedIn`, so the
 server render is always the public variant.
 
-A fresh account still inherits `DEFAULT_GARAGE_CARS`. That is deliberate for the demo — the trade
-feature needs a reference car — and is one of the things a real backend replaces.
+New accounts start with an empty Supabase garage. The demo cars in `DEFAULT_GARAGE_CARS` are used
+only as a client-side comparison fallback until the user adds a real car; they are never inserted
+into the shared database.
 
 ## Stack
 
@@ -51,27 +55,27 @@ localStorage-dependent UI on the `ready`/`mounted` flag.
 
 | Hook | Key(s) | Holds |
 |---|---|---|
-| `use-auth` | `autotrampa_auth` | session flag (there is no real auth); the sign-in prompt itself uses `createMemoryStore` so it never survives a reload |
-| `use-user` | `autotrampa_user` | profile: name, email, phone, city, rating |
-| `use-garage` | `autotrampa_garage`, `autotrampa_selected_car` | own cars + the one used for comparisons |
-| `use-saved` | `autotrampa_saved` | saved listing ids |
-| `use-messages` | `autotrampa_messages`, `..._seeded` | conversations; seeds once, client-side |
+| `use-auth` | Supabase Auth | email/password session; sign-in prompt uses `createMemoryStore` |
+| `use-user` | Supabase `profiles` | current account profile; phone is private by RLS |
+| `use-garage` | Supabase `cars`, `autotrampa_selected_car` | own cars + selected car; RLS and a database trigger enforce ownership and the three-car limit |
+| `use-marketplace` | Supabase `cars` + `lib/cars.ts` | public DB listings mixed with demo listings; phone numbers are never selected |
+| `use-saved` | Supabase `saved_cars` + `autotrampa_saved` | authenticated real listings; demo listing ids stay local |
+| `use-messages` | Supabase `conversations`, `messages` | participant-only conversations and messages; per-user archive |
 | `use-preferences` | `autotrampa_preferences` | radius, body prefs, privacy, feed trade filter |
 | `use-search-prefs` | `autotrampa_search_prefs` | body type + sort on Pretraga |
 | `use-theme` | `autotrampa_theme` | light/dark (also set pre-paint by an inline script) |
 
-`lib/storage.ts` wraps localStorage and **reports** failures (`quota` / `unavailable`) rather than
-swallowing them — writes that can fail surface a toast. Photos are downscaled by `lib/image.ts`
-before they are stored, because base64 images against a ~5 MB origin budget was the fastest way to
-break the app; Profil shows a usage meter.
+`lib/storage.ts` wraps localStorage for demo preferences/messages/saves. `lib/image.ts` downsizes
+photos in the browser; `lib/car-images.ts` uploads them into the owner's folder in the public
+`car-images` bucket. The SQL migration grants owners upload/delete access to that folder only.
 
 Invariants worth keeping:
 - The garage is never empty (`removeCar` refuses the last car) — every screen compares against
   `selectedCar`.
 - `GARAGE_LIMIT` is enforced in `use-garage`, not by hiding a button.
-- Garage cars copy the owner's name/phone/city onto their listing, so editing the profile
-  re-stamps every car — see `ProfileEditSheet`.
-- Mutations return a result (`GarageResult`, `StorageResult`); callers show a toast on failure.
+- Garage listings copy only public owner name/city/rating. Phone numbers stay in `profiles` and are
+  not returned to anonymous clients.
+- Garage mutations return a typed result; callers surface failures to the user.
 
 ## Layout
 
@@ -89,7 +93,7 @@ components/CarForm.tsx    add/edit form — renders its own full-screen portal,
                           so never wrap it in a sheet
 components/BottomSheet.tsx    Escape, backdrop, scroll lock, focus
 components/TradeOfferSheet.tsx  the offer flow, shared by feed/search/saved/detail
-components/ProfileEditSheet.tsx  edits the profile and re-stamps garage listings
+components/ProfileEditSheet.tsx  edits private profile fields and refreshes public owner labels
 lib/cars.ts | car-brands.ts | equipment.ts | labels.ts   seed and reference data
 ```
 
@@ -114,10 +118,11 @@ false` makes an unknown id a real 404.
   as a hydration mismatch.
 - **No context providers**: state is module-level stores, by design.
 
-## Swapping in a backend
+## Supabase setup
 
-The seam is deliberate and narrow. `createPersistentStore` is the only thing that touches
-`localStorage`, and every hook already returns typed results for failed writes. Replacing the
-`readJSON`/`writeJSON` calls in `lib/persistent-store.ts` with Supabase reads/writes (plus a real
-session in `use-auth`) moves the whole app over without touching a screen. `MARKETPLACE_CARS` in
-`lib/cars.ts` is the one place listings are read from.
+Copy `.env.example` to `.env.local`, set the Supabase URL and publishable key, and configure Auth
+URL Configuration with the site URL plus the `/auth/update-password` redirect for localhost and
+production. Apply the SQL in `supabase/migrations/` before using the app. The live database schema
+already has `profiles`, `cars`, `saved_cars` and `conversations`; the migration aligns its policies,
+adds car display/image fields and configures Storage. Don't reintroduce public profile reads because
+the profile table contains phone numbers.

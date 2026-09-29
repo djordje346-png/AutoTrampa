@@ -4,17 +4,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { MyGarageCar } from '@/types';
 import { DEFAULT_GARAGE_CARS } from '@/lib/cars';
 import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
-import type { StorageResult, StorageFailure } from '@/lib/storage';
-import { supabase } from '@/lib/supabase';
+import type { StorageFailure } from '@/lib/storage';
+import { getSupabase } from '@/lib/supabase';
+import { storedCarImagePaths, uploadCarImages } from '@/lib/car-images';
+import { useAuth } from '@/hooks/use-auth';
+import { shortName, userStore } from '@/hooks/use-user';
 
-/** Free-tier cap. Enforced here, not just in the profile UI. */
 export const GARAGE_LIMIT = 3;
 
-/**
- * Invariant: the garage is never empty. Every screen compares listings against
- * `selectedCar`, so removing the last car is rejected rather than leaving the
- * app without a reference vehicle.
- */
 const selectedStore = createPersistentStore<string>(
   'autotrampa_selected_car',
   DEFAULT_GARAGE_CARS[0].id,
@@ -22,19 +19,14 @@ const selectedStore = createPersistentStore<string>(
 );
 
 export type GarageError = 'limit' | 'last-car' | 'duplicate' | 'network';
-
 export type GarageResult =
-  | { ok: true }
+  | { ok: true; id?: string }
   | { ok: false; error: GarageError }
   | { ok: false; error: 'storage'; storage: { ok: false; reason: StorageFailure } };
 
-function wrap(result: StorageResult): GarageResult {
-  return result.ok ? { ok: true } : { ok: false, error: 'storage', storage: result };
-}
-
-/** Row shape in the Supabase `cars` table. */
 interface CarRow {
   id: string;
+  user_id: string;
   brand: string;
   model: string;
   generation: string | null;
@@ -42,22 +34,42 @@ interface CarRow {
   body_type: string;
   color: string | null;
   mileage: number;
-  price: number;
+  price: number | string;
   city: string | null;
   country: string | null;
   image: string | null;
   images: string[] | null;
   specs: Record<string, unknown> | null;
-  owner: Record<string, unknown> | null;
-  description: string | null;
-  modifications: string[] | null;
+  features: Record<string, unknown> | null;
   equipment: string[] | null;
+  modifications: string | null;
+  description: string | null;
+  estimated_value: number | string | null;
   security_features: string[] | null;
   build_notes: string[] | null;
-  estimated_value: number;
+  owner_name: string | null;
+  owner_city: string | null;
+  owner_rating: number | string | null;
+}
+
+function parseList(value: string | null): string[] {
+  if (!value) return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (Array.isArray(parsed)) return parsed.filter((item): item is string => typeof item === 'string');
+  } catch {
+    // Older rows used free text, one item per line.
+  }
+  return value.split('\n').map((item) => item.trim()).filter(Boolean);
 }
 
 function rowToCar(row: CarRow): MyGarageCar {
+  const profile = userStore.get();
+  const features = row.features ?? {};
+  const strings = (key: string) => {
+    const value = features[key];
+    return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+  };
   return {
     id: row.id,
     brand: row.brand,
@@ -67,25 +79,31 @@ function rowToCar(row: CarRow): MyGarageCar {
     bodyType: row.body_type as MyGarageCar['bodyType'],
     color: row.color ?? '-',
     mileage: row.mileage,
-    price: row.price,
+    price: Number(row.price ?? 0),
     city: row.city ?? '-',
     country: row.country ?? 'Serbia',
     image: row.image ?? '',
     images: row.images ?? undefined,
     specs: (row.specs ?? {}) as unknown as MyGarageCar['specs'],
-    owner: (row.owner ?? {}) as unknown as MyGarageCar['owner'],
+    owner: {
+      name: row.owner_name ?? profile.name,
+      // The profiles table is private; only put the current user's number in their own garage.
+      phone: profile.id === row.user_id ? profile.phone : '',
+      city: row.owner_city ?? row.city ?? profile.city,
+      rating: Number(row.owner_rating ?? 5),
+    },
     description: row.description ?? '',
-    modifications: row.modifications ?? undefined,
+    modifications: parseList(row.modifications),
     equipment: row.equipment ?? undefined,
-    securityFeatures: row.security_features ?? [],
-    buildNotes: row.build_notes ?? [],
-    estimatedValue: row.estimated_value,
+    securityFeatures: row.security_features ?? strings('securityFeatures'),
+    buildNotes: row.build_notes ?? strings('buildNotes'),
+    estimatedValue: Number(row.estimated_value ?? 0),
   };
 }
 
-function carToRow(car: MyGarageCar): Omit<CarRow, 'created_at'> {
+function carToRow(car: MyGarageCar, userId: string) {
   return {
-    id: car.id,
+    user_id: userId,
     brand: car.brand,
     model: car.model,
     generation: car.generation,
@@ -99,122 +117,163 @@ function carToRow(car: MyGarageCar): Omit<CarRow, 'created_at'> {
     image: car.image,
     images: car.images ?? [car.image],
     specs: car.specs as unknown as Record<string, unknown>,
-    owner: car.owner as unknown as Record<string, unknown>,
-    description: car.description,
-    modifications: car.modifications ?? [],
+    features: {},
     equipment: car.equipment ?? [],
+    modifications: JSON.stringify(car.modifications ?? []),
+    description: car.description,
+    estimated_value: car.estimatedValue,
     security_features: car.securityFeatures ?? [],
     build_notes: car.buildNotes ?? [],
-    estimated_value: car.estimatedValue,
+    owner_name: car.owner.name || shortName(userStore.get().name),
+    owner_city: car.owner.city || userStore.get().city,
+    owner_rating: car.owner.rating || userStore.get().rating,
   };
 }
 
+async function prepareCar(car: MyGarageCar, userId: string) {
+  const { images, uploaded } = await uploadCarImages(userId, car.images ?? [car.image]);
+  const savedCar = { ...car, image: images[0] ?? car.image, images };
+  return { row: carToRow(savedCar, userId), car: savedCar, images, uploaded };
+}
+
 export function useGarage() {
-  const [cars, setCars] = useState<MyGarageCar[]>(DEFAULT_GARAGE_CARS);
+  const { userId } = useAuth();
+  const [cars, setCars] = useState<MyGarageCar[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, selectedReady] = usePersistentStore(selectedStore);
+  const [profile] = usePersistentStore(userStore);
 
-  // Fetch all garage cars from Supabase on mount.
   useEffect(() => {
     let cancelled = false;
-
-    async function fetchCars() {
-      const { data, error } = await supabase
-        .from('cars')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (cancelled) return;
-
-      if (error) {
-        // Keep the default seed cars so the app stays usable offline.
-        setLoading(false);
-        return;
-      }
-
-      const rows = data as CarRow[];
-      if (rows && rows.length > 0) {
-        setCars(rows.map(rowToCar));
-        // If the selected car no longer exists, fall back to the first one.
-        const ids = rows.map((r) => r.id);
-        if (!ids.includes(selectedStore.get())) {
-          selectedStore.set(ids[0]);
-        }
-      }
-      // If the table is empty, seed it with the default garage cars so the
-      // trade feature has a reference vehicle to compare against.
-      else if (rows && rows.length === 0) {
-        await seedDefaults();
-      }
+    if (!userId) {
+      setCars([]);
       setLoading(false);
+      return;
     }
-
-    async function seedDefaults() {
-      const inserts = DEFAULT_GARAGE_CARS.map(carToRow);
-      const { error } = await supabase.from('cars').insert(inserts);
-      if (!error && !cancelled) {
-        setCars(DEFAULT_GARAGE_CARS);
+    setLoading(true);
+    setCars([]);
+    async function fetchCars() {
+      try {
+        const { data, error } = await getSupabase()
+          .from('cars')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: true });
+        if (error) throw error;
+        if (cancelled) return;
+        const rows = (data ?? []) as CarRow[];
+        const next = rows.map(rowToCar);
+        setCars(next);
+        if (next.length > 0 && !next.some((car) => car.id === selectedStore.get())) {
+          selectedStore.set(next[0].id);
+        }
+      } catch {
+        if (!cancelled) setCars([]);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
+    void fetchCars();
+    return () => { cancelled = true; };
+  }, [userId]);
 
-    fetchCars();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const selectCar = useCallback((id: string) => {
-    selectedStore.set(id);
-  }, []);
+  const selectCar = useCallback((id: string) => selectedStore.set(id), []);
 
   const addCar = useCallback(async (car: MyGarageCar): Promise<GarageResult> => {
-    const current = cars;
-    if (current.length >= GARAGE_LIMIT) return { ok: false, error: 'limit' };
-    if (current.some((c) => c.id === car.id)) return { ok: false, error: 'duplicate' };
-
-    const { error } = await supabase.from('cars').insert(carToRow(car));
-    if (error) return { ok: false, error: 'network' };
-
-    setCars((prev) => [...prev, car]);
-    return { ok: true };
-  }, [cars]);
+    if (!userId) return { ok: false, error: 'network' };
+    if (cars.length >= GARAGE_LIMIT) return { ok: false, error: 'limit' };
+    let uploaded: string[] = [];
+    try {
+      const prepared = await prepareCar(car, userId);
+      uploaded = prepared.uploaded;
+      const { data, error } = await getSupabase()
+        .from('cars')
+        .insert(prepared.row)
+        .select('*')
+        .single();
+      if (error || !data) {
+        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        uploaded = [];
+        return { ok: false, error: 'network' };
+      }
+      uploaded = [];
+      const saved = rowToCar(data as CarRow);
+      setCars((previous) => [...previous, saved]);
+      return { ok: true, id: saved.id };
+    } catch {
+      if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+      return { ok: false, error: 'network' };
+    }
+  }, [cars.length, userId]);
 
   const updateCar = useCallback(async (car: MyGarageCar): Promise<GarageResult> => {
-    const { error } = await supabase
-      .from('cars')
-      .update(carToRow(car))
-      .eq('id', car.id);
-    if (error) return { ok: false, error: 'network' };
-
-    setCars((prev) => prev.map((c) => (c.id === car.id ? car : c)));
-    return { ok: true };
-  }, []);
+    if (!userId) return { ok: false, error: 'network' };
+    let uploaded: string[] = [];
+    try {
+      const prepared = await prepareCar(car, userId);
+      uploaded = prepared.uploaded;
+      const { data, error } = await getSupabase()
+        .from('cars')
+        .update(prepared.row)
+        .eq('id', car.id)
+        .eq('user_id', userId)
+        .select('id')
+        .maybeSingle();
+      if (error || !data) {
+        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        uploaded = [];
+        return { ok: false, error: 'network' };
+      }
+      uploaded = [];
+      const oldImages = cars.find((item) => item.id === car.id)?.images ?? [];
+      const preserved = new Set(storedCarImagePaths(prepared.images));
+      const stale = storedCarImagePaths(oldImages).filter((path) => !preserved.has(path));
+      if (stale.length) void getSupabase().storage.from('car-images').remove(stale);
+      setCars((previous) => previous.map((item) => (item.id === car.id ? prepared.car : item)));
+      return { ok: true };
+    } catch {
+      if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+      return { ok: false, error: 'network' };
+    }
+  }, [cars, userId]);
 
   const removeCar = useCallback(async (id: string): Promise<GarageResult> => {
-    const current = cars;
-    if (current.length <= 1) return { ok: false, error: 'last-car' };
-
-    const { error } = await supabase.from('cars').delete().eq('id', id);
-    if (error) return { ok: false, error: 'network' };
-
-    const next = current.filter((c) => c.id !== id);
-    setCars(next);
-
-    if (selectedStore.get() === id) {
-      selectedStore.set(next[0].id);
+    if (!userId) return { ok: false, error: 'network' };
+    if (cars.length <= 1) return { ok: false, error: 'last-car' };
+    try {
+      const { data, error } = await getSupabase()
+        .from('cars')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', userId)
+        .select('id')
+        .maybeSingle();
+      if (error || !data) return { ok: false, error: 'network' };
+      const next = cars.filter((car) => car.id !== id);
+      setCars(next);
+      const removed = cars.find((car) => car.id === id)?.images ?? [];
+      const paths = storedCarImagePaths(removed);
+      if (paths.length) void getSupabase().storage.from('car-images').remove(paths);
+      if (selectedStore.get() === id) selectedStore.set(next[0].id);
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'network' };
     }
-    return { ok: true };
-  }, [cars]);
+  }, [cars, userId]);
 
   const mounted = !loading && selectedReady;
-
-  // cars is never empty (fallback to defaults while loading, removeCar keeps one)
-  const selectedCar =
-    cars.find((c) => c.id === selectedId) ?? cars[0] ?? DEFAULT_GARAGE_CARS[0];
+  const visibleCars = cars.map((car) => ({
+    ...car,
+    owner: {
+      ...car.owner,
+      phone: profile.id === userId ? profile.phone : '',
+      city: profile.id === userId ? profile.city || car.owner.city : car.owner.city,
+    },
+  }));
+  const selectedCar = visibleCars.find((car) => car.id === selectedId) ?? visibleCars[0] ?? DEFAULT_GARAGE_CARS[0];
 
   return {
-    cars,
+    cars: visibleCars,
     selectedCar,
     selectedId,
     selectCar,

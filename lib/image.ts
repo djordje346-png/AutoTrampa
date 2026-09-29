@@ -1,9 +1,8 @@
 /**
  * Client-side image downscaling.
  *
- * Photos are persisted as base64 inside localStorage (~5 MB per origin), so a
- * raw 4 MB phone photo would blow the whole budget on its own. Everything is
- * resized and re-encoded before it ever reaches the store.
+ * Photos are resized and re-encoded in the browser before upload to Supabase
+ * Storage, reducing upload time and the stored size.
  */
 
 export const MAX_IMAGE_DIMENSION = 1600;

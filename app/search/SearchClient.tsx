@@ -3,13 +3,14 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, Heart, ArrowLeftRight, TrendingUp } from 'lucide-react';
-import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
+import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
 import { useSearchPrefs } from '@/hooks/use-search-prefs';
+import { useMarketplace } from '@/hooks/use-marketplace';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { BodyType, Car } from '@/types';
 
@@ -17,6 +18,7 @@ const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV'];
 
 export default function SearchClient() {
   const { selectedCar, mounted } = useGarage();
+  const { cars: marketplaceCars } = useMarketplace();
   const { isSaved, toggleSave } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const showTrade = authReady && isLoggedIn;
@@ -30,7 +32,7 @@ export default function SearchClient() {
 
   const results = useMemo(() => {
     const q = query.toLowerCase().trim();
-    const filtered = MARKETPLACE_CARS.filter(car => {
+    const filtered = marketplaceCars.filter(car => {
       const matchesQuery =
         !q ||
         car.brand.toLowerCase().includes(q) ||
@@ -60,7 +62,7 @@ export default function SearchClient() {
         break;
     }
     return sorted;
-  }, [query, activeType, sortBy, selectedCar, showTrade]);
+  }, [marketplaceCars, query, activeType, sortBy, selectedCar, showTrade]);
 
   const hasFilters = query || activeType;
 
