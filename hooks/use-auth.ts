@@ -1,30 +1,28 @@
 'use client';
 
-import { useCallback } from 'react';
-import {
-  createMemoryStore,
-  createPersistentStore,
-  usePersistentStore,
-} from '@/lib/persistent-store';
-import { userStore, type UserProfile } from '@/hooks/use-user';
+import { useCallback, useEffect } from 'react';
+import type { User } from '@supabase/supabase-js';
+import { createMemoryStore, usePersistentStore } from '@/lib/persistent-store';
+import { getSupabase } from '@/lib/supabase';
 
-/**
- * Local-only session flag. Browsing is public; this only decides whether the
- * personal screens (garage, messages, profile) and the offer flow are usable.
- */
-const authStore = createPersistentStore<boolean>('autotrampa_auth', false, (raw) =>
-  typeof raw === 'boolean' ? raw : raw === 'true',
-);
+interface AuthState {
+  user: User | null;
+  ready: boolean;
+  error: string | null;
+}
 
 interface AuthPrompt {
-  /** Context shown above the form ("Prijavi se da pošalješ ponudu"). */
   reason: string;
-  /** The action that triggered the prompt, replayed once sign-in succeeds. */
   resume?: () => void;
 }
 
-/** null means the overlay is closed. */
+export type AuthResult =
+  | { ok: true; needsEmailConfirmation?: boolean }
+  | { ok: false; message: string };
+
+const authStore = createMemoryStore<AuthState>({ user: null, ready: false, error: null });
 const promptStore = createMemoryStore<AuthPrompt | null>(null);
+let authSubscriptionStarted = false;
 
 export function openAuthPrompt(reason?: string, resume?: () => void) {
   promptStore.set({ reason: reason ?? '', resume });
@@ -34,44 +32,120 @@ export function closeAuthPrompt() {
   promptStore.set(null);
 }
 
+function initializeAuth() {
+  if (authSubscriptionStarted) return;
+  authSubscriptionStarted = true;
+
+  try {
+    const supabase = getSupabase();
+    supabase.auth.onAuthStateChange((_event, session) => {
+      authStore.set({ user: session?.user ?? null, ready: true, error: null });
+      if (!session) return;
+      const pending = promptStore.get();
+      promptStore.set(null);
+      pending?.resume?.();
+    });
+    void supabase.auth.getSession().then(({ data, error }) => {
+      authStore.set({ user: data.session?.user ?? null, ready: true, error: error?.message ?? null });
+    }).catch((error: unknown) => {
+      authStore.set({
+        user: null,
+        ready: true,
+        error: error instanceof Error ? error.message : 'Sesija nije mogla da se proveri.',
+      });
+    });
+  } catch (error) {
+    authStore.set({
+      user: null,
+      ready: true,
+      error: error instanceof Error ? error.message : 'Supabase nije podešen.',
+    });
+  }
+}
+
 export function useAuth() {
-  const [isLoggedIn, mounted] = usePersistentStore(authStore);
+  const [auth, authStoreReady] = usePersistentStore(authStore);
   const [prompt] = usePersistentStore(promptStore);
 
-  const login = useCallback((profile?: Partial<UserProfile>) => {
-    if (profile) {
-      userStore.set((prev) => ({ ...prev, ...profile }));
+  useEffect(() => {
+    initializeAuth();
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    try {
+      const { error } = await getSupabase().auth.signInWithPassword({ email, password });
+      return error ? { ok: false, message: error.message } : { ok: true };
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Prijava nije uspela.' };
     }
-    authStore.set(true);
-
-    // Carry out whatever the visitor was trying to do before we interrupted.
-    const pending = promptStore.get();
-    promptStore.set(null);
-    pending?.resume?.();
   }, []);
 
-  const logout = useCallback(() => {
-    authStore.set(false);
+  const signUp = useCallback(async (
+    email: string,
+    password: string,
+    name: string,
+  ): Promise<AuthResult> => {
+    try {
+      const { data, error } = await getSupabase().auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      });
+      if (error) return { ok: false, message: error.message };
+      return { ok: true, needsEmailConfirmation: !data.session };
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Registracija nije uspela.' };
+    }
   }, []);
 
-  /**
-   * Gate an action behind sign-in. Returns true when the caller may proceed;
-   * otherwise opens the overlay and returns false. Pass `resume` and the action
-   * runs by itself once the visitor signs in, so nothing is lost to the detour.
-   */
+  const resetPassword = useCallback(async (email: string): Promise<AuthResult> => {
+    try {
+      const { error } = await getSupabase().auth.resetPasswordForEmail(email, {
+        redirectTo: typeof window === 'undefined' ? undefined : `${window.location.origin}/auth/update-password`,
+      });
+      return error ? { ok: false, message: error.message } : { ok: true };
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Slanje linka nije uspelo.' };
+    }
+  }, []);
+
+  const updatePassword = useCallback(async (password: string): Promise<AuthResult> => {
+    try {
+      const { error } = await getSupabase().auth.updateUser({ password });
+      return error ? { ok: false, message: error.message } : { ok: true };
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Promena lozinke nije uspela.' };
+    }
+  }, []);
+
+  const logout = useCallback(async (): Promise<AuthResult> => {
+    try {
+      const { error } = await getSupabase().auth.signOut();
+      return error ? { ok: false, message: error.message } : { ok: true };
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Odjava nije uspela.' };
+    }
+  }, []);
+
   const requireAuth = useCallback(
     (reason?: string, resume?: () => void) => {
-      if (isLoggedIn) return true;
+      if (auth.user) return true;
       openAuthPrompt(reason, resume);
       return false;
     },
-    [isLoggedIn],
+    [auth.user],
   );
 
   return {
-    isLoggedIn,
-    mounted,
-    login,
+    user: auth.user,
+    userId: auth.user?.id ?? null,
+    isLoggedIn: Boolean(auth.user),
+    mounted: authStoreReady && auth.ready,
+    error: auth.error,
+    signIn,
+    signUp,
+    resetPassword,
+    updatePassword,
     logout,
     requireAuth,
     promptReason: prompt?.reason ?? null,

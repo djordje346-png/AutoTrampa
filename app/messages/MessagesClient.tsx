@@ -8,9 +8,6 @@ import { useMessages, Conversation } from '@/hooks/use-messages';
 import { useAuth } from '@/hooks/use-auth';
 import { SignedOutPage } from '@/components/SignedOut';
 
-/** Delay the fake counterpart uses before answering — mirrors use-messages. */
-const REPLY_DELAY = 1500;
-
 function formatTime(ts: number): string {
   const diff = Date.now() - ts;
   const days = Math.floor(diff / 86400000);
@@ -44,10 +41,10 @@ export default function MessagesClient() {
   const { isLoggedIn, mounted: authReady } = useAuth();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState('');
-  const [typing, setTyping] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [archiving, setArchiving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Conversation | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeConv = conversations.find(c => c.id === activeId) || null;
   const messageCount = activeConv?.messages.length ?? 0;
@@ -56,7 +53,7 @@ export default function MessagesClient() {
     if (messageCount > 0 && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messageCount, typing, activeId]);
+  }, [messageCount, activeId]);
 
   // The chat view covers the whole screen, so keep the page behind it still.
   useEffect(() => {
@@ -78,30 +75,35 @@ export default function MessagesClient() {
     return () => document.removeEventListener('keydown', onKey);
   }, [activeId, pendingDelete]);
 
-  useEffect(() => () => {
-    if (typingTimer.current) clearTimeout(typingTimer.current);
-  }, []);
-
   function openConversation(conv: Conversation) {
     setActiveId(conv.id);
-    markRead(conv.id);
+    void markRead(conv.id);
   }
 
-  function handleSend() {
+  async function handleSend() {
     const text = input.trim();
-    if (!text || !activeId) return;
-    sendMessage(activeId, text);
+    if (!text || !activeId || sending) return;
+    setSending(true);
+    const ok = await sendMessage(activeId, text);
+    setSending(false);
+    if (!ok) {
+      toast.error('Poruka nije poslata. Proveri vezu i pokušaj ponovo.');
+      return;
+    }
     setInput('');
-    setTyping(true);
-    if (typingTimer.current) clearTimeout(typingTimer.current);
-    typingTimer.current = setTimeout(() => setTyping(false), REPLY_DELAY);
   }
 
-  function confirmDelete() {
-    if (!pendingDelete) return;
-    deleteConversation(pendingDelete.id);
+  async function confirmDelete() {
+    if (!pendingDelete || archiving) return;
+    setArchiving(true);
+    const ok = await deleteConversation(pendingDelete.id);
+    setArchiving(false);
+    if (!ok) {
+      toast.error('Razgovor nije arhiviran. Pokušaj ponovo.');
+      return;
+    }
     if (activeId === pendingDelete.id) setActiveId(null);
-    toast.success(`Razgovor sa ${pendingDelete.ownerName} obrisan.`);
+    toast.success(`Razgovor sa ${pendingDelete.ownerName} arhiviran.`);
     setPendingDelete(null);
   }
 
@@ -118,10 +120,10 @@ export default function MessagesClient() {
           <TriangleAlert size={22} className="text-rose-400" />
         </div>
         <h3 id="delete-conv-title" className="text-center text-base font-bold text-app-primary">
-          Obrisati razgovor?
+          Arhivirati razgovor?
         </h3>
         <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary">
-          Ceo razgovor sa {pendingDelete.ownerName} biće trajno uklonjen.
+          Razgovor sa {pendingDelete.ownerName} biće sakriven samo sa tvog naloga.
         </p>
         <div className="mt-6 flex gap-2">
           <button
@@ -131,10 +133,10 @@ export default function MessagesClient() {
             Odustani
           </button>
           <button
-            onClick={confirmDelete}
+            onClick={() => void confirmDelete()}
             className="flex-1 rounded-xl bg-rose-500 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-400"
           >
-            Obriši
+            {archiving ? 'Arhiviram…' : 'Arhiviraj'}
           </button>
         </div>
       </div>
@@ -209,7 +211,7 @@ export default function MessagesClient() {
             )}
             <button
               onClick={() => setPendingDelete(activeConv)}
-              aria-label="Obriši razgovor"
+              aria-label="Arhiviraj razgovor"
               className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-rose-400"
             >
               <Trash2 size={16} />
@@ -278,20 +280,6 @@ export default function MessagesClient() {
               })
             )}
 
-            {typing && (
-              <div className="flex justify-start" aria-live="polite">
-                <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-elevated px-4 py-3">
-                  <span className="sr-only">{activeConv.ownerName} kuca…</span>
-                  {[0, 150, 300].map(delay => (
-                    <span
-                      key={delay}
-                      className="h-1.5 w-1.5 animate-bounce rounded-full bg-app-muted"
-                      style={{ animationDelay: `${delay}ms` }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-2 border-t border-surface bg-app px-4 py-3 safe-bottom">
@@ -301,7 +289,7 @@ export default function MessagesClient() {
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  handleSend();
+                  void handleSend();
                 }
               }}
               maxLength={1000}
@@ -310,8 +298,8 @@ export default function MessagesClient() {
               className="flex-1 rounded-full border border-surface bg-elevated px-4 py-2.5 text-sm text-app-primary transition-colors placeholder:text-app-muted focus:border-orange-500 focus:outline-none"
             />
             <button
-              onClick={handleSend}
-              disabled={!input.trim()}
+              onClick={() => void handleSend()}
+              disabled={!input.trim() || sending}
               aria-label="Pošalji poruku"
               className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-black transition-all duration-200 hover:bg-orange-400 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
@@ -413,7 +401,7 @@ export default function MessagesClient() {
                   )}
                   <button
                     onClick={() => setPendingDelete(conv)}
-                    aria-label={`Obriši razgovor sa ${conv.ownerName}`}
+                    aria-label={`Arhiviraj razgovor sa ${conv.ownerName}`}
                     className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-rose-500/10 hover:text-rose-400"
                   >
                     <Trash2 size={14} />

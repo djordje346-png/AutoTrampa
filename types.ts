@@ -24,6 +24,8 @@ export interface Owner {
 
 export interface Car {
   id: string;
+  /** Supabase Auth user id for database listings; absent on demo seed cars. */
+  ownerId?: string;
   brand: string;
   model: string;
   generation: string;

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { MARKETPLACE_CARS, formatEuro } from '@/lib/cars';
 import CarDetail from './CarDetail';
 
@@ -12,7 +11,7 @@ export function generateStaticParams() {
   return MARKETPLACE_CARS.map((car) => ({ id: car.id }));
 }
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 interface PageProps {
   params: { id: string };
@@ -20,7 +19,7 @@ interface PageProps {
 
 export function generateMetadata({ params }: PageProps): Metadata {
   const car = MARKETPLACE_CARS.find((c) => c.id === params.id);
-  if (!car) return { title: 'Vozilo nije pronađeno' };
+  if (!car) return { title: 'Oglas za automobil' };
 
   const title = `${car.year} ${car.brand} ${car.model} ${car.generation}`;
   const description = `${title} · ${formatEuro(car.price)} · ${car.mileage.toLocaleString('sr-RS')} km · ${car.specs.fuelType} · ${car.city}. Ponudi zamenu na AutoTrampi.`;
@@ -40,7 +39,5 @@ export function generateMetadata({ params }: PageProps): Metadata {
 
 export default function CarPage({ params }: PageProps) {
   const car = MARKETPLACE_CARS.find((c) => c.id === params.id);
-  if (!car) notFound();
-
-  return <CarDetail car={car} />;
+  return <CarDetail car={car ?? null} carId={params.id} />;
 }

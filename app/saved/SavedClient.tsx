@@ -4,18 +4,20 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Heart, X, MapPin, Gauge, Fuel, Phone, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
+import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { useSaved } from '@/hooks/use-saved';
 import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
+import { useMarketplace } from '@/hooks/use-marketplace';
 import { Car } from '@/types';
 
 export default function SavedClient() {
   const { saved: savedIds, remove: removeSaved, save, clear, mounted } = useSaved();
   const { selectedCar } = useGarage();
+  const { cars: marketplaceCars } = useMarketplace();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
@@ -24,7 +26,7 @@ export default function SavedClient() {
 
   // Keep the order the user saved them in.
   const savedCars: Car[] = savedIds
-    .map(id => MARKETPLACE_CARS.find(c => c.id === id))
+    .map(id => marketplaceCars.find(c => c.id === id))
     .filter((c): c is Car => Boolean(c));
 
   function remove(car: Car) {
@@ -190,13 +192,13 @@ export default function SavedClient() {
                     >
                       Detalji
                     </Link>
-                    <a
+                    {car.owner.phone && <a
                       href={`tel:${car.owner.phone}`}
                       aria-label={`Pozovi ${car.owner.name}`}
                       className="flex w-11 items-center justify-center rounded-xl bg-elevated text-app-secondary transition-all duration-200 hover:bg-hover-surface"
                     >
                       <Phone size={14} />
-                    </a>
+                    </a>}
                   </div>
                 </div>
               </article>

@@ -11,12 +11,15 @@ import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
+import { useMarketplace } from '@/hooks/use-marketplace';
 import { ImageLightbox } from '@/components/ImageLightbox';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { toast } from 'sonner';
 
-export default function CarDetail({ car }: { car: Car }) {
+export default function CarDetail({ car: initialCar, carId }: { car: Car | null; carId: string }) {
   const router = useRouter();
+  const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
+  const car = initialCar ?? marketplaceCars.find((item) => item.id === carId) ?? null;
   const { selectedCar, mounted: garageMounted } = useGarage();
   const { isSaved: isCarSaved, toggleSave } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
@@ -25,13 +28,23 @@ export default function CarDetail({ car }: { car: Car }) {
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
+  if (!car) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
+        <h1 className="text-lg font-bold text-app-primary">{marketplaceReady ? 'Oglas nije pronađen' : 'Učitavam oglas…'}</h1>
+        {marketplaceReady && <button onClick={() => router.push('/')} className="mt-4 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white">Nazad na oglase</button>}
+      </div>
+    );
+  }
+  const currentCar = car;
+
   async function shareCar() {
-    const title = `${car.year} ${car.brand} ${car.model} — ${formatEuro(car.price)}`;
+    const title = `${currentCar.year} ${currentCar.brand} ${currentCar.model} — ${formatEuro(currentCar.price)}`;
     const url = typeof window !== 'undefined' ? window.location.href : '';
 
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title, text: `${title} · ${car.city}`, url });
+        await navigator.share({ title, text: `${title} · ${currentCar.city}`, url });
         return;
       } catch {
         // user dismissed the share sheet — fall through to copying
@@ -164,12 +177,12 @@ export default function CarDetail({ car }: { car: Car }) {
                 <span className="text-xs text-app-muted">{car.owner.rating} · {car.owner.city}</span>
               </div>
             </div>
-            <a
+            {car.owner.phone && <a
               href={`tel:${car.owner.phone}`}
               className="w-9 h-9 flex items-center justify-center rounded-xl bg-elevated text-app-secondary hover:text-orange-400 transition-colors"
             >
               <Phone size={15} />
-            </a>
+            </a>}
           </div>
         </div>
 
@@ -283,12 +296,12 @@ export default function CarDetail({ car }: { car: Car }) {
           <ArrowLeftRight size={16} className="flex-shrink-0" />
           <span className="truncate">Pošalji ponudu za zamenu</span>
         </button>
-        <a
+        {car.owner.phone && <a
           href={`tel:${car.owner.phone}`}
           className="w-12 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-xl transition-all duration-200 flex-shrink-0"
         >
           <Phone size={17} />
-        </a>
+        </a>}
       </div>
 
       {lightboxOpen && (

@@ -8,15 +8,13 @@ type Tab = 'login' | 'register';
 type Field = 'name' | 'email' | 'password';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_RE = /^\+?[\d\s/-]{6,}$/;
-
 interface AuthScreenProps {
   /** Shrinks the hero when the overlay already explains why we are asking. */
   compact?: boolean;
 }
 
 export default function AuthScreen({ compact = false }: AuthScreenProps) {
-  const { login } = useAuth();
+  const { signIn, signUp, resetPassword } = useAuth();
   const [tab, setTab] = useState<Tab>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +22,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [notice, setNotice] = useState('');
 
   function validate(): Partial<Record<Field, string>> {
     const next: Partial<Record<Field, string>> = {};
@@ -34,9 +33,9 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
 
     const identifier = email.trim();
     if (!identifier) {
-      next.email = 'Unesi email ili broj telefona.';
-    } else if (!EMAIL_RE.test(identifier) && !PHONE_RE.test(identifier)) {
-      next.email = 'Format nije ispravan. Npr. nikola@example.com ili +381641234567.';
+      next.email = 'Unesi email adresu.';
+    } else if (!EMAIL_RE.test(identifier)) {
+      next.email = 'Unesi ispravnu email adresu.';
     }
 
     if (password.length < 6) {
@@ -49,20 +48,42 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
   function switchTab(next: Tab) {
     setTab(next);
     setErrors({});
+    setNotice('');
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const found = validate();
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
     setSubmitting(true);
-    const identifier = email.trim();
-    login({
-      ...(tab === 'register' && name.trim() ? { name: name.trim() } : {}),
-      ...(EMAIL_RE.test(identifier) ? { email: identifier } : { phone: identifier }),
-    });
+    setNotice('');
+    const result = tab === 'login'
+      ? await signIn(email.trim(), password)
+      : await signUp(email.trim(), password, name.trim());
+    setSubmitting(false);
+    if (!result.ok) {
+      setErrors({ password: result.message });
+      return;
+    }
+    if (result.needsEmailConfirmation) {
+      setNotice('Poslali smo ti link za potvrdu email adrese. Potvrdi adresu, pa se prijavi.');
+      setPassword('');
+    }
+  }
+
+  async function handlePasswordReset() {
+    const address = email.trim();
+    if (!EMAIL_RE.test(address)) {
+      setErrors({ email: 'Prvo unesi ispravnu email adresu.' });
+      return;
+    }
+    setSubmitting(true);
+    const result = await resetPassword(address);
+    setSubmitting(false);
+    if (!result.ok) setErrors({ email: result.message });
+    else setNotice('Ako nalog postoji, link za promenu lozinke stiže na email.');
   }
 
   const inputBase =
@@ -143,7 +164,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
 
           <div>
             <label htmlFor="auth-email" className="mb-1.5 block text-xs font-medium text-app-secondary">
-              Email ili broj telefona
+              Email adresa
             </label>
             <div className="relative">
               <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
@@ -154,7 +175,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
                 autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="nikola@example.com"
+              placeholder="nikola@example.com"
                 aria-invalid={Boolean(errors.email)}
                 className={fieldClass('email')}
               />
@@ -194,7 +215,8 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
             <div className="flex justify-end">
               <button
                 type="button"
-                onClick={() => setErrors({ email: 'Resetovanje lozinke stiže uz nalog na serveru.' })}
+                onClick={handlePasswordReset}
+                disabled={submitting}
                 className="text-xs text-orange-400 transition-colors hover:text-orange-300"
               >
                 Zaboravili ste lozinku?
@@ -211,6 +233,8 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
             <ArrowRight size={16} strokeWidth={2.5} />
           </button>
         </form>
+
+        {notice && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-400">{notice}</p>}
 
         <p className="text-center text-xs text-app-muted">
           {tab === 'login' ? 'Nemate nalog? ' : 'Već imate nalog? '}
