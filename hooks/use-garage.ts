@@ -72,13 +72,13 @@ function rowToCar(row: CarRow): MyGarageCar {
     country: row.country ?? 'Serbia',
     image: row.image ?? '',
     images: row.images ?? undefined,
-    specs: (row.specs ?? {}) as MyGarageCar['specs'],
-    owner: (row.owner ?? {}) as MyGarageCar['owner'],
+    specs: (row.specs ?? {}) as unknown as MyGarageCar['specs'],
+    owner: (row.owner ?? {}) as unknown as MyGarageCar['owner'],
     description: row.description ?? '',
     modifications: row.modifications ?? undefined,
     equipment: row.equipment ?? undefined,
-    securityFeatures: row.security_features ?? undefined,
-    buildNotes: row.build_notes ?? undefined,
+    securityFeatures: row.security_features ?? [],
+    buildNotes: row.build_notes ?? [],
     estimatedValue: row.estimated_value,
   };
 }
