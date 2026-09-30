@@ -20,8 +20,8 @@ export default function Error({
       <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-rose-500/10">
         <TriangleAlert size={34} className="text-rose-400" />
       </div>
-      <h1 className="text-lg font-bold text-app-primary">Nešto je pošlo naopako</h1>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary">
+      <h1 className="text-lg font-bold text-app-primary dark:text-zinc-100">Nešto je pošlo naopako</h1>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
         Došlo je do neočekivane greške. Pokušaj ponovo ili se vrati na početnu stranu.
       </p>
       {error.digest && (
@@ -30,14 +30,14 @@ export default function Error({
       <div className="mt-6 flex gap-2">
         <button
           onClick={reset}
-          className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
+          className="btn-primary text-sm"
         >
           <RotateCcw size={16} />
           Pokušaj ponovo
         </button>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-elevated px-5 py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+          className="inline-flex items-center gap-2 rounded-xl bg-elevated px-5 py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
         >
           <Home size={16} />
           Početna

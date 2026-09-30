@@ -166,21 +166,21 @@ export default function FeedPage() {
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 z-40 border-b border-surface bg-app safe-top">
+      <div className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 safe-top">
         <header className="px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold tracking-tight text-app-primary">AutoTrampa</h1>
+              <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">AutoTrampa</h1>
               <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
             </div>
 
             <div className="flex items-center gap-2">
               {/* View mode toggle */}
-              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface">
+              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface dark:border-zinc-800">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary'
+                    viewMode === 'grid' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
                   }`}
                   aria-label="Prikaz mreže"
                 >
@@ -189,7 +189,7 @@ export default function FeedPage() {
                 <button
                   onClick={() => setViewMode('swipe')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'swipe' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary'
+                    viewMode === 'swipe' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
                   }`}
                   aria-label="Svajp režim"
                 >
@@ -202,7 +202,7 @@ export default function FeedPage() {
               <div className="relative flex-shrink-0" ref={selectorRef}>
                 <button
                   onClick={() => setSelectorOpen(p => !p)}
-                  className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface"
+                  className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface dark:border-zinc-800"
                   aria-label="Izaberi vozilo"
                 >
                   {mounted ? (
@@ -214,7 +214,7 @@ export default function FeedPage() {
                       </div>
                       <div className="text-left min-w-0 max-w-[80px]">
                         <p className="text-[8px] text-app-muted font-medium uppercase tracking-widest leading-none mb-0.5">Moj auto</p>
-                        <p className="text-[11px] font-bold text-app-primary truncate leading-tight">
+                        <p className="text-[11px] font-bold text-app-primary dark:text-zinc-100 truncate leading-tight">
                           {selectedCar.brand} {selectedCar.model}
                         </p>
                       </div>
@@ -229,9 +229,9 @@ export default function FeedPage() {
                 </button>
 
                 {selectorOpen && mounted && (
-                  <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface border border-surface rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
-                    <div className="px-4 py-3 border-b border-surface">
-                      <p className="text-xs font-bold text-app-primary">Moja vozila</p>
+                  <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface dark:bg-zinc-900 border border-surface dark:border-zinc-800 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-surface dark:border-zinc-800">
+                      <p className="text-xs font-bold text-app-primary dark:text-zinc-100">Moja vozila</p>
                       <p className="text-[10px] text-app-muted mt-0.5">Izaberi vozilo za trampu</p>
                     </div>
                     <div className="max-h-64 overflow-y-auto p-2 space-y-1">
@@ -249,8 +249,8 @@ export default function FeedPage() {
                               {car.image && <img src={car.image} alt={car.model} className="w-full h-full object-cover" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-app-primary truncate">{car.brand} {car.model} {car.generation}</p>
-                              <p className="text-[10px] text-app-muted">{car.year} · {formatEuro(car.price)}</p>
+                              <p className="text-xs font-bold text-app-primary dark:text-zinc-100 truncate">{car.brand} {car.model} {car.generation}</p>
+                              <p className="text-[10px] text-app-muted dark:text-zinc-400">{car.year} · {formatEuro(car.price)}</p>
                             </div>
                             {isActive && (
                               <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
@@ -261,10 +261,10 @@ export default function FeedPage() {
                         );
                       })}
                     </div>
-                    <div className="border-t border-surface p-2">
+                    <div className="border-t border-surface dark:border-zinc-800 p-2">
                       <button
                         onClick={() => { setSelectorOpen(false); setShowAddForm(true); }}
-                        className="w-full flex items-center justify-center gap-2 text-orange-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface hover:bg-hover-surface transition-all"
+                        className="w-full flex items-center justify-center gap-2 text-orange-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-zinc-800 hover:bg-hover-surface transition-all"
                       >
                         <Plus size={15} />
                         Dodaj vozilo
@@ -280,7 +280,7 @@ export default function FeedPage() {
 
         {/* Trade filter bar */}
         {showTrade && (
-        <div className="border-t border-surface/50">
+        <div className="border-t border-surface dark:border-zinc-800/50">
           <div className="flex items-center gap-1.5 px-4 py-2 overflow-x-auto scrollbar-hide">
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
@@ -289,7 +289,7 @@ export default function FeedPage() {
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                   tradeFilter === key
                     ? 'bg-orange-500 text-black'
-                    : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
+                    : 'bg-elevated/70 text-app-secondary dark:text-zinc-400 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
                 }`}
               >
                 {label}
@@ -297,7 +297,7 @@ export default function FeedPage() {
             ))}
             <button
               onClick={() => setShowMoreFilters(true)}
-              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150"
+              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary dark:text-zinc-400 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100 transition-all duration-150"
               aria-label="Više filtera"
             >
               <SlidersHorizontal size={11} />
@@ -311,13 +311,13 @@ export default function FeedPage() {
         <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-orange-400">Koliko je doplata za tebe?</p>
-            <p className="mt-0.5 text-xs text-app-secondary">
+            <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
               Dodaj svoj auto u garažu i svaki oglas ti pokazuje razliku u ceni.
             </p>
           </div>
           <button
             onClick={() => requireAuth('Prijavi se i dodaj svoj auto')}
-            className="flex-shrink-0 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-black transition-colors hover:bg-orange-400"
+            className="btn-primary flex-shrink-0 text-xs"
           >
             Prijavi se
           </button>
@@ -330,7 +330,7 @@ export default function FeedPage() {
           <div className="w-14 h-14 rounded-full bg-elevated flex items-center justify-center mb-3">
             <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
-          <p className="text-app-secondary font-semibold text-sm">Nema vozila po ovom filteru</p>
+          <p className="text-app-secondary dark:text-zinc-400 font-semibold text-sm">Nema vozila po ovom filteru</p>
           <button onClick={() => { updatePreferences({ tradeFilter: 'all' }); setSwipeIndex(0); }} className="mt-2 text-orange-400 text-xs font-semibold">Poništi filtere</button>
         </div>
       )}
@@ -345,9 +345,9 @@ export default function FeedPage() {
           {COMING_SOON_FILTERS.map(label => (
             <div
               key={label}
-              className="flex cursor-not-allowed items-center justify-between rounded-xl border border-surface bg-elevated/50 px-4 py-3"
+              className="flex cursor-not-allowed items-center justify-between rounded-xl border border-surface dark:border-zinc-800 bg-elevated/50 px-4 py-3"
             >
-              <span className="text-sm font-medium text-app-secondary">{label}</span>
+              <span className="text-sm font-medium text-app-secondary dark:text-zinc-400">{label}</span>
               <span className="rounded-md bg-orange-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-orange-400/80">
                 Uskoro
               </span>
@@ -356,7 +356,7 @@ export default function FeedPage() {
         </div>
         <button
           onClick={() => setShowMoreFilters(false)}
-          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
         >
           Gotovo
         </button>
@@ -364,16 +364,16 @@ export default function FeedPage() {
 
       {/* SWIPE MODE — FULLSCREEN */}
       {viewMode === 'swipe' && filteredCars.length > 0 && (
-        <div className="fixed inset-0 z-[60] bg-app flex flex-col safe-top safe-bottom">
+        <div className="fixed inset-0 z-[60] bg-app dark:bg-zinc-950 flex flex-col safe-top safe-bottom">
           {/* Swipe header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-surface">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-surface dark:border-zinc-800">
             <div className="flex items-center gap-2">
               <Flame size={18} className="text-orange-400" />
-              <span className="text-sm font-bold text-app-primary">Svajp režim</span>
+              <span className="text-sm font-bold text-app-primary dark:text-zinc-100">Svajp režim</span>
             </div>
             <button
               onClick={exitSwipeMode}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary hover:text-app-primary transition-all duration-200"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 hover:text-app-primary dark:text-zinc-100 transition-all duration-200"
               aria-label="Izađi iz svajp režima"
             >
               <X size={18} />
@@ -397,7 +397,7 @@ export default function FeedPage() {
                 <div className="relative w-full max-w-sm">
                   {/* Next card peeking behind */}
                   {filteredCars[swipeIndex + 1] && (
-                    <div className="absolute inset-0 bg-card-surface rounded-3xl overflow-hidden border border-surface shadow-lg" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
+                    <div className="absolute inset-0 bg-card-surface dark:bg-zinc-900 rounded-3xl overflow-hidden border border-surface dark:border-zinc-800 shadow-lg" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
                       <div className="relative h-72 sm:h-80">
                         <img src={filteredCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
                       </div>
@@ -406,7 +406,7 @@ export default function FeedPage() {
 
                   {/* Active card */}
                   <div
-                    className="relative bg-card-surface rounded-3xl overflow-hidden border border-surface shadow-xl select-none touch-none"
+                    className="relative bg-card-surface dark:bg-zinc-900 rounded-3xl overflow-hidden border border-surface dark:border-zinc-800 shadow-xl select-none touch-none"
                     style={{
                       transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
                       transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
@@ -469,25 +469,25 @@ export default function FeedPage() {
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-2 gap-2">
                         <div className="min-w-0">
-                          <h2 className="text-lg font-black text-app-primary tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
+                          <h2 className="text-lg font-black text-app-primary dark:text-zinc-100 tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
                           <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
                         </div>
-                        <p className="text-app-primary font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
+                        <p className="text-app-primary dark:text-zinc-100 font-black text-xl flex-shrink-0 dark:text-zinc-400">{formatEuro(swipeCar.price)}</p>
                       </div>
 
                       <div className="flex items-center gap-2 mt-3 flex-wrap">
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Gauge size={12} className="text-app-muted" />{formatKm(swipeCar.mileage)}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary"><Fuel size={12} className="text-app-muted" />{fuelLabel(swipeCar.specs.fuelType)}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-zinc-400"><Gauge size={12} className="text-app-muted" />{formatKm(swipeCar.mileage)}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-zinc-400"><Fuel size={12} className="text-app-muted" />{fuelLabel(swipeCar.specs.fuelType)}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-zinc-400 ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
                       </div>
 
-                      <p className="text-xs text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
+                      <p className="text-xs text-app-secondary dark:text-zinc-400 mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
 
-                      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface">
-                        <button onClick={() => openOffer(swipeCar)} className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-black text-sm font-bold rounded-xl py-2.5 transition-all duration-200 active:scale-95">
+                      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface dark:border-zinc-800">
+                        <button onClick={() => openOffer(swipeCar)} className="btn-primary btn-primary-compact flex-1 text-sm">
                           <ArrowLeftRight size={15} /> Pošalji ponudu
                         </button>
-                        <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
+                        <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 text-sm font-semibold rounded-xl py-2.5 transition-all">
                           Detalji
                         </Link>
                       </div>
@@ -521,14 +521,14 @@ export default function FeedPage() {
                 <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
                   <CheckCircle size={40} className="text-emerald-400" />
                 </div>
-                <h2 className="text-xl font-bold text-app-primary mb-2">Sve pregledano!</h2>
-                <p className="text-sm text-app-secondary mb-1">Pregledao si sve oglase.</p>
+                <h2 className="text-xl font-bold text-app-primary dark:text-zinc-100 mb-2">Sve pregledano!</h2>
+                <p className="text-sm text-app-secondary dark:text-zinc-400 mb-1">Pregledao si sve oglase.</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
-                  <button onClick={() => setSwipeIndex(0)} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
+                  <button onClick={() => setSwipeIndex(0)} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-zinc-100 font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ispočetka
                   </button>
-                  <button onClick={exitSwipeMode} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-black font-bold px-4 py-2.5 rounded-xl text-sm transition-all">
+                  <button onClick={exitSwipeMode} className="btn-primary text-sm">
                     Nazad na feed
                   </button>
                 </div>
@@ -565,7 +565,7 @@ export default function FeedPage() {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const carSaved = isSaved(car.id);
             return (
-              <article key={car.id} className="bg-card-surface rounded-2xl overflow-hidden border border-surface hover:border-orange-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
+              <article key={car.id} className="bg-card-surface dark:bg-zinc-900 rounded-2xl overflow-hidden border border-surface dark:border-zinc-800 hover:border-orange-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
                 {/* Image */}
                 <Link href={`/car/${car.id}`} className="block relative h-44 sm:h-48 md:w-72 md:h-auto md:flex-shrink-0">
                   <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
@@ -586,27 +586,27 @@ export default function FeedPage() {
                   {/* Left: title + specs */}
                   <div className="md:flex-1 md:min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="font-bold text-app-primary text-base leading-tight hover:text-orange-400 transition-colors">
+                      <h2 className="font-bold text-app-primary dark:text-zinc-100 text-base leading-tight hover:text-orange-400 transition-colors">
                         {car.year} {car.brand} {car.model}
                       </h2>
                     </Link>
                     <p className="text-xs text-app-muted mt-0.5">{car.generation} · {car.color}</p>
 
-                    <div className="flex items-center gap-3 mt-2 text-xs text-app-secondary flex-wrap">
+                    <div className="flex items-center gap-3 mt-2 text-xs text-app-secondary dark:text-zinc-400 flex-wrap">
                       <span className="flex items-center gap-1"><Gauge size={13} className="text-app-muted" />{formatKm(car.mileage)}</span>
                       <span className="flex items-center gap-1"><Fuel size={13} className="text-app-muted" />{fuelLabel(car.specs.fuelType)}</span>
                       <span className="flex items-center gap-1"><Settings2 size={13} className="text-app-muted" />{transmissionLabel(car.specs.transmission)}</span>
                       <span className="flex items-center gap-1"><MapPin size={13} className="text-app-muted" />{car.city}</span>
                     </div>
 
-                    <p className="text-xs text-app-secondary mt-2 line-clamp-1 leading-relaxed hidden md:block">{car.description}</p>
+                    <p className="text-xs text-app-secondary dark:text-zinc-400 mt-2 line-clamp-1 leading-relaxed hidden md:block">{car.description}</p>
                   </div>
 
                   {/* Right: price + match + CTA */}
                   <div className="mt-3 md:mt-0 md:flex md:flex-col md:items-end md:justify-center md:gap-2 md:flex-shrink-0 md:min-w-[280px]">
                     <div className="flex items-center justify-between gap-2 md:block md:text-right">
                       <div className="flex items-center gap-2">
-                        <p className="text-app-primary font-bold text-lg md:text-xl">{formatEuro(car.price)}</p>
+                        <p className="text-app-primary dark:text-zinc-100 font-bold text-lg md:text-xl dark:text-zinc-400">{formatEuro(car.price)}</p>
                         {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
                           <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
                             <Wallet size={9} /> U budžetu
@@ -623,15 +623,15 @@ export default function FeedPage() {
                     <div className="flex gap-2 mt-2 md:mt-3 md:w-full">
                       <button
                         onClick={() => openOffer(car)}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-black text-xs md:text-sm font-bold rounded-lg py-2 md:py-3 transition-all duration-200 active:scale-95 whitespace-nowrap"
+                        className="btn-primary btn-primary-compact flex-1 whitespace-nowrap text-xs md:text-sm"
                       >
                         <ArrowLeftRight size={14} />
                         Pošalji ponudu
                       </button>
-                      <Link href={`/car/${car.id}`} className="px-3 md:px-4 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary text-xs md:text-sm font-semibold rounded-lg py-2 md:py-3 transition-all duration-200 whitespace-nowrap">
+                      <Link href={`/car/${car.id}`} className="px-3 md:px-4 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 text-xs md:text-sm font-semibold rounded-lg py-2 md:py-3 transition-all duration-200 whitespace-nowrap">
                         Detalji
                       </Link>
-                      {car.owner.phone && <a href={`tel:${car.owner.phone}`} className="w-9 md:w-11 md:flex-shrink-0 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-lg py-2 md:py-3 transition-all duration-200" aria-label="Pozovi vlasnika">
+                      {car.owner.phone && <a href={`tel:${car.owner.phone}`} className="w-9 md:w-11 md:flex-shrink-0 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 rounded-lg py-2 md:py-3 transition-all duration-200" aria-label="Pozovi vlasnika">
                         <Phone size={15} />
                       </a>}
                     </div>

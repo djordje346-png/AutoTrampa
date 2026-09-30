@@ -72,10 +72,10 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
             <CheckCircle size={36} className="text-emerald-400" />
           </div>
-          <h3 className="mb-2 text-lg font-bold text-app-primary">Ponuda poslata!</h3>
-          <p className="mb-1 text-center text-sm text-app-secondary">
+          <h3 className="mb-2 text-lg font-bold text-app-primary dark:text-zinc-100">Ponuda poslata!</h3>
+          <p className="mb-1 text-center text-sm text-app-secondary dark:text-zinc-400">
             Tvoja ponuda za{' '}
-            <span className="font-medium text-app-primary">
+            <span className="font-medium text-app-primary dark:text-zinc-100">
               {car.brand} {car.model}
             </span>{' '}
             je poslata korisniku {car.owner.name}.
@@ -84,14 +84,14 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
           <div className="flex w-full gap-2">
             <button
               onClick={onClose}
-              className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+              className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
             >
               Zatvori
             </button>
             <Link
               href="/messages"
               onClick={onClose}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400"
+              className="btn-primary flex-1 text-sm"
             >
               <MessageCircle size={15} />
               Otvori poruke
@@ -103,18 +103,18 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
           <div className="mb-5 flex items-center gap-3">
             <div className="min-w-0 flex-1 rounded-xl bg-elevated p-3 text-center">
               <p className="mb-1 text-xs text-app-muted">Tvoj auto</p>
-              <p className="truncate text-sm font-semibold text-app-primary">
+              <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
                 {myCar.brand} {myCar.model}
               </p>
-              <p className="text-sm font-bold text-orange-400">{formatEuro(myCar.price)}</p>
+              <p className="text-sm font-bold text-orange-400 dark:text-zinc-400">{formatEuro(myCar.price)}</p>
             </div>
             <ArrowLeftRight size={20} className="flex-shrink-0 text-app-muted" />
             <div className="min-w-0 flex-1 rounded-xl bg-elevated p-3 text-center">
               <p className="mb-1 text-xs text-app-muted">Njegov auto</p>
-              <p className="truncate text-sm font-semibold text-app-primary">
+              <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
                 {car.brand} {car.model}
               </p>
-              <p className="text-sm font-bold text-orange-400">{formatEuro(car.price)}</p>
+              <p className="text-sm font-bold text-orange-400 dark:text-zinc-400">{formatEuro(car.price)}</p>
             </div>
           </div>
 
@@ -132,13 +132,13 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
             value={message}
             onChange={e => setMessage(e.target.value.slice(0, 500))}
             placeholder="Dodaj poruku uz ponudu... (opciono)"
-            className="h-24 w-full resize-none rounded-xl border border-surface bg-elevated px-4 py-3 text-sm text-app-primary transition-colors placeholder:text-app-muted focus:border-orange-500 focus:outline-none"
+            className="h-24 w-full resize-none rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 py-3 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-orange-500 focus:outline-none"
           />
 
           <button
             onClick={() => void send()}
             disabled={pending}
-            className="mt-4 w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-orange-400 active:scale-95"
+            className="btn-primary mt-4 w-full text-sm"
           >
             {pending ? 'Šaljem…' : 'Pošalji ponudu'}
           </button>

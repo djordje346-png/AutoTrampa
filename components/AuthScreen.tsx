@@ -87,8 +87,8 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
   }
 
   const inputBase =
-    'w-full rounded-xl border bg-elevated py-3 pl-10 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:ring-2 focus:ring-orange-500/10';
-  const inputOk = 'border-surface focus:border-orange-500';
+    'w-full rounded-xl border bg-elevated py-3 pl-10 text-sm text-app-primary dark:text-zinc-100 outline-none transition-colors placeholder:text-app-muted focus:ring-2 focus:ring-orange-500/10';
+  const inputOk = 'border-surface dark:border-zinc-800 focus:border-orange-500';
   const inputBad = 'border-rose-500/70 focus:border-rose-500';
 
   function fieldClass(field: Field, extra = 'pr-4') {
@@ -110,7 +110,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
           <ArrowLeftRight size={compact ? 22 : 30} className="text-white" strokeWidth={2.5} />
         </div>
         <h1
-          className={`font-bold tracking-tight text-app-primary ${
+          className={`font-bold tracking-tight text-app-primary dark:text-zinc-100 ${
             compact ? 'text-xl' : 'text-2xl'
           }`}
         >
@@ -120,7 +120,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
       </div>
 
       <div className="space-y-5 pb-10">
-        <div className="flex rounded-xl border border-surface bg-elevated p-1" role="tablist">
+        <div className="flex rounded-xl border border-surface dark:border-zinc-800 bg-elevated p-1" role="tablist">
           {(['login', 'register'] as const).map((key) => (
             <button
               key={key}
@@ -131,7 +131,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
               className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
                 tab === key
                   ? 'bg-orange-500 text-white'
-                  : 'text-app-secondary hover:text-app-primary'
+                  : 'text-app-secondary dark:text-zinc-400 hover:text-app-primary dark:text-zinc-100'
               }`}
             >
               {key === 'login' ? 'Prijavi se' : 'Registruj se'}
@@ -142,7 +142,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
         <form onSubmit={handleSubmit} noValidate className="space-y-3">
           {tab === 'register' && (
             <div>
-              <label htmlFor="auth-name" className="mb-1.5 block text-xs font-medium text-app-secondary">
+              <label htmlFor="auth-name" className="mb-1.5 block text-xs font-medium text-app-secondary dark:text-zinc-400">
                 Ime i prezime
               </label>
               <div className="relative">
@@ -163,7 +163,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
           )}
 
           <div>
-            <label htmlFor="auth-email" className="mb-1.5 block text-xs font-medium text-app-secondary">
+            <label htmlFor="auth-email" className="mb-1.5 block text-xs font-medium text-app-secondary dark:text-zinc-400">
               Email adresa
             </label>
             <div className="relative">
@@ -184,7 +184,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
           </div>
 
           <div>
-            <label htmlFor="auth-password" className="mb-1.5 block text-xs font-medium text-app-secondary">
+            <label htmlFor="auth-password" className="mb-1.5 block text-xs font-medium text-app-secondary dark:text-zinc-400">
               Lozinka
             </label>
             <div className="relative">
@@ -203,7 +203,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Sakrij lozinku' : 'Prikaži lozinku'}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-app-muted transition-colors hover:text-app-secondary"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-app-muted transition-colors hover:text-app-secondary dark:text-zinc-400"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -227,7 +227,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-orange-400 active:scale-[0.98] disabled:opacity-70"
+            className="btn-primary mt-1 w-full text-sm"
           >
             {tab === 'login' ? 'Prijavi se' : 'Napravi nalog'}
             <ArrowRight size={16} strokeWidth={2.5} />

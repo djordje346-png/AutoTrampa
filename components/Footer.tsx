@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-black ring-2 ring-[hsl(var(--surface-base))]">
+    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-zinc-950 ring-2 ring-zinc-900">
       {count > 9 ? '9+' : count}
     </span>
   );
@@ -41,7 +41,7 @@ export default function Footer() {
   return (
     <nav
       aria-label="Glavna navigacija"
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-surface bg-app safe-bottom"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-900 text-zinc-400 safe-bottom"
     >
       <div className="mx-auto flex w-full max-w-md items-center justify-around px-1 py-2 md:max-w-2xl lg:max-w-5xl">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
@@ -53,7 +53,7 @@ export default function Footer() {
               href={href}
               aria-current={active ? 'page' : undefined}
               className={`relative flex min-w-[44px] flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
-                active ? 'text-orange-400' : 'text-app-muted hover:text-app-secondary'
+                active ? 'text-orange-400' : 'text-zinc-400 hover:text-zinc-100'
               }`}
             >
               <span className="relative">

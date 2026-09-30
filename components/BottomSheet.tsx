@@ -67,15 +67,15 @@ export function BottomSheet({
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className={`relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-t border-surface bg-card-surface p-6 outline-none safe-bottom sm:rounded-3xl sm:border ${className}`}
+        className={`relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-t border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 outline-none safe-bottom sm:rounded-3xl sm:border ${className}`}
       >
         {!bare && (
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-app-primary">{title}</h3>
+            <h3 className="text-lg font-bold text-app-primary dark:text-zinc-100">{title}</h3>
             <button
               onClick={onClose}
               aria-label="Zatvori"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-app-primary"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-app-primary dark:text-zinc-100"
             >
               <X size={16} />
             </button>

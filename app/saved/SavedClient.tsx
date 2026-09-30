@@ -50,12 +50,12 @@ export default function SavedClient() {
   if (!mounted) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 border-b border-surface bg-app px-4 py-4 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary">Sačuvano</h1>
+        <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
         </header>
         <div className="space-y-3 px-4 pt-6">
-          <div className="h-56 animate-pulse rounded-2xl bg-card-surface" />
-          <div className="h-56 animate-pulse rounded-2xl bg-card-surface" />
+          <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
+          <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
         </div>
       </div>
     );
@@ -63,10 +63,10 @@ export default function SavedClient() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-surface bg-app px-4 py-4 safe-top">
+      <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary">Sačuvano</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
             <p className="mt-0.5 text-xs text-app-muted">
               {savedCars.length === 0
                 ? 'Tvoja lista želja'
@@ -90,14 +90,14 @@ export default function SavedClient() {
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated/60">
               <BookmarkX size={36} className="text-app-muted" />
             </div>
-            <p className="text-base font-semibold text-app-secondary">Nema sačuvanih oglasa</p>
+            <p className="text-base font-semibold text-app-secondary dark:text-zinc-400">Nema sačuvanih oglasa</p>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-muted">
               Pritisni <Heart size={13} className="mx-0.5 inline text-rose-400" /> ikonu na bilo kom
               oglasu da ga sačuvaš ovde.
             </p>
             <Link
               href="/"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
+              className="btn-primary mt-6 text-sm"
             >
               Pregledaj oglase
               <ArrowRight size={15} />
@@ -109,7 +109,7 @@ export default function SavedClient() {
             return (
               <article
                 key={car.id}
-                className="overflow-hidden rounded-2xl border border-surface bg-card-surface"
+                className="overflow-hidden rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900"
               >
                 <div className="relative h-40">
                   <Link href={`/car/${car.id}`} className="block h-full">
@@ -148,7 +148,7 @@ export default function SavedClient() {
 
                 <div className="p-4">
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-app-secondary">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-app-secondary dark:text-zinc-400">
                       <span className="flex items-center gap-1">
                         <Gauge size={12} className="text-app-muted" />
                         {formatKm(car.mileage)}
@@ -162,10 +162,10 @@ export default function SavedClient() {
                         {car.city}
                       </span>
                     </div>
-                    <p className="flex-shrink-0 font-bold text-app-primary">{formatEuro(car.price)}</p>
+                    <p className="flex-shrink-0 font-bold text-app-primary dark:text-zinc-400">{formatEuro(car.price)}</p>
                   </div>
 
-                  <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-app-secondary">
+                  <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-app-secondary dark:text-zinc-400">
                     {car.description}
                   </p>
 
@@ -181,21 +181,21 @@ export default function SavedClient() {
                         }
                         setOfferCar(car);
                       }}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 py-2.5 text-sm font-bold text-black transition-all duration-200 hover:bg-orange-400 active:scale-95"
+                      className="btn-primary btn-primary-compact flex-1 text-sm"
                     >
                       <ArrowLeftRight size={14} />
                       Pošalji ponudu
                     </button>
                     <Link
                       href={`/car/${car.id}`}
-                      className="flex items-center justify-center gap-1.5 rounded-xl bg-elevated px-3 py-2.5 text-sm font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface"
+                      className="flex items-center justify-center gap-1.5 rounded-xl bg-elevated px-3 py-2.5 text-sm font-semibold text-app-secondary dark:text-zinc-400 transition-all duration-200 hover:bg-hover-surface"
                     >
                       Detalji
                     </Link>
                     {car.owner.phone && <a
                       href={`tel:${car.owner.phone}`}
                       aria-label={`Pozovi ${car.owner.name}`}
-                      className="flex w-11 items-center justify-center rounded-xl bg-elevated text-app-secondary transition-all duration-200 hover:bg-hover-surface"
+                      className="flex w-11 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 transition-all duration-200 hover:bg-hover-surface"
                     >
                       <Phone size={14} />
                     </a>}
@@ -218,20 +218,20 @@ export default function SavedClient() {
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setConfirmClear(false)}
           />
-          <div className="relative w-full max-w-sm rounded-2xl border border-surface bg-card-surface p-6 shadow-2xl">
+          <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
               <TriangleAlert size={22} className="text-rose-400" />
             </div>
-            <h3 id="clear-title" className="text-center text-base font-bold text-app-primary">
+            <h3 id="clear-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
               Obrisati celu listu?
             </h3>
-            <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary">
+            <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
               {savedCars.length} sačuvanih oglasa biće uklonjeno.
             </p>
             <div className="mt-6 flex gap-2">
               <button
                 onClick={() => setConfirmClear(false)}
-                className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+                className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
               >
                 Odustani
               </button>

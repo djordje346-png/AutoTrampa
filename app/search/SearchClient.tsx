@@ -68,9 +68,9 @@ export default function SearchClient() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 pt-4 pb-3 safe-top">
+      <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 pt-4 pb-3 safe-top">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary">Pretraga</h1>
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Pretraga</h1>
           {mounted && showTrade && (
             <Link
               href="/garage"
@@ -88,12 +88,12 @@ export default function SearchClient() {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Marka, model, grad..."
-            className="w-full bg-elevated border border-surface rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary placeholder:text-app-muted focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-elevated border border-surface dark:border-zinc-800 rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted focus:outline-none focus:border-orange-500 transition-colors"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-app-muted hover:text-app-secondary transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-app-muted hover:text-app-secondary dark:text-zinc-400 transition-colors"
             >
               <X size={15} />
             </button>
@@ -106,7 +106,7 @@ export default function SearchClient() {
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
               !activeType
                 ? 'bg-orange-500 border-orange-500 text-black'
-                : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
+                : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-orange-500/40'
             }`}
           >
             <SlidersHorizontal size={11} />
@@ -119,7 +119,7 @@ export default function SearchClient() {
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                 activeType === type
                   ? 'bg-orange-500 border-orange-500 text-black'
-                  : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
+                  : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-orange-500/40'
               }`}
             >
               {bodyLabel(type)}
@@ -141,7 +141,7 @@ export default function SearchClient() {
               className={`text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
                 (sortBy === key || (sortBy === 'trade' && !showTrade && key === 'price-asc'))
                   ? 'text-orange-400 bg-orange-500/10'
-                  : 'text-app-muted hover:text-app-secondary'
+                  : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
               }`}
             >
               {label}
@@ -171,7 +171,7 @@ export default function SearchClient() {
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
               <Search size={28} className="text-app-muted" />
             </div>
-            <p className="text-app-secondary font-medium">Nema pronađenih vozila</p>
+            <p className="text-app-secondary dark:text-zinc-400 font-medium">Nema pronađenih vozila</p>
             <p className="text-app-muted text-sm mt-1">Pokušaj sa drugim terminom</p>
           </div>
         ) : (
@@ -181,7 +181,7 @@ export default function SearchClient() {
             return (
               <article
                 key={car.id}
-                className="overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-orange-500/30"
+                className="overflow-hidden rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 transition-all duration-200 hover:border-orange-500/30"
               >
                 <div className="flex">
                   <Link
@@ -209,13 +209,13 @@ export default function SearchClient() {
                         <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
                           {bodyLabel(car.bodyType)}
                         </p>
-                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary transition-colors hover:text-orange-400">
+                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary dark:text-zinc-100 transition-colors hover:text-orange-400">
                           {car.year} {car.brand} {car.model}
                         </h3>
                         <p className="text-xs text-app-muted">{car.generation}</p>
                       </Link>
                       <div className="flex flex-shrink-0 items-start gap-2">
-                        <p className="text-sm font-bold text-app-primary">{formatEuro(car.price)}</p>
+                        <p className="text-sm font-bold text-app-primary dark:text-zinc-400">{formatEuro(car.price)}</p>
                         <button
                           onClick={() => toggleSave(car.id)}
                           aria-label={saved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
@@ -231,15 +231,15 @@ export default function SearchClient() {
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-2.5">
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary">
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-zinc-400">
                         <Gauge size={11} className="text-app-muted" />
                         {formatKm(car.mileage)}
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary">
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-zinc-400">
                         <Fuel size={11} className="text-app-muted" />
                         {car.specs.displacement} {fuelLabel(car.specs.fuelType)}
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary">
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-zinc-400">
                         <MapPin size={11} className="text-app-muted" />
                         {car.city}
                       </span>
@@ -257,14 +257,14 @@ export default function SearchClient() {
                           }
                           setOfferCar(car);
                         }}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-orange-500 py-2 text-[11px] font-bold text-black transition-all duration-200 hover:bg-orange-400 active:scale-95"
+                        className="btn-primary btn-primary-compact flex-1 text-[11px]"
                       >
                         <ArrowLeftRight size={12} />
                         Pošalji ponudu
                       </button>
                       <Link
                         href={`/car/${car.id}`}
-                        className="flex items-center justify-center gap-1 rounded-lg bg-elevated px-3 py-2 text-[11px] font-semibold text-app-secondary transition-all hover:bg-hover-surface"
+                        className="flex items-center justify-center gap-1 rounded-lg bg-elevated px-3 py-2 text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition-all hover:bg-hover-surface"
                       >
                         Detalji
                         <ArrowRight size={11} />

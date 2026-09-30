@@ -14,6 +14,10 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-outfit)', 'Outfit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
@@ -61,10 +65,10 @@ const config: Config = {
           '5': 'hsl(var(--chart-5))',
         },
         orange: {
-          300: '#E4FF1A',
-          400: '#E4FF1A',
-          500: '#E4FF1A',
-          600: '#E4FF1A',
+          300: '#FDBA74',
+          400: '#FB923C',
+          500: '#F97316',
+          600: '#EA580C',
         },
       },
       keyframes: {

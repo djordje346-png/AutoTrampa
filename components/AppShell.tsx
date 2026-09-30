@@ -14,7 +14,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { promptOpen } = useAuth();
 
   return (
-    <div className="min-h-screen w-full bg-app text-app-primary">
+    <div className="min-h-screen w-full bg-app dark:bg-zinc-950 text-app-primary dark:text-zinc-100 dark:bg-zinc-950">
       <a
         href="#sadrzaj"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-orange-500 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-black"

@@ -1,11 +1,17 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Outfit } from 'next/font/google';
 import AppShell from '@/components/AppShell';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+const outfit = Outfit({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-outfit',
   display: 'swap',
 });
 
@@ -69,11 +75,11 @@ const themeInitScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sr" suppressHydrationWarning>
+    <html lang="sr" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${inter.variable} font-sans bg-background text-foreground min-h-screen antialiased`}>
+      <body className="dark:bg-zinc-950 min-h-screen bg-background font-sans text-foreground antialiased">
         <AppShell>{children}</AppShell>
       </body>
     </html>

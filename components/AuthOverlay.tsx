@@ -36,12 +36,12 @@ export default function AuthOverlay() {
       aria-modal="true"
       aria-label="Prijava"
       tabIndex={-1}
-      className="fixed inset-0 z-[100] overflow-y-auto bg-app outline-none"
+      className="fixed inset-0 z-[100] overflow-y-auto bg-app dark:bg-zinc-950 outline-none"
     >
       <button
         onClick={closePrompt}
         aria-label="Zatvori prijavu"
-        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary transition-colors hover:text-app-primary safe-top"
+        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-app-primary dark:text-zinc-100 safe-top"
       >
         <X size={18} />
       </button>

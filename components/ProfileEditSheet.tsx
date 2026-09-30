@@ -82,8 +82,8 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
   }
 
   const inputBase =
-    'h-11 w-full rounded-xl border bg-elevated px-3.5 text-sm text-app-primary outline-none transition-all placeholder:text-app-muted focus:ring-2 focus:ring-orange-500/10';
-  const ok = 'border-surface hover:border-orange-500/40 focus:border-orange-500';
+    'h-11 w-full rounded-xl border bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted focus:ring-2 focus:ring-orange-500/10';
+  const ok = 'border-surface dark:border-zinc-800 hover:border-orange-500/40 focus:border-orange-500';
   const bad = 'border-rose-500/70 focus:border-rose-500';
 
   const fields: { key: Field; label: string; placeholder: string; type?: string }[] = [
@@ -127,13 +127,13 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
         <div className="flex gap-2 pt-1">
           <button
             onClick={onClose}
-            className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+            className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
           >
             Otkaži
           </button>
           <button
             onClick={save}
-            className="flex-1 rounded-xl bg-orange-500 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
+            className="btn-primary flex-1 text-sm"
           >
             Sačuvaj
           </button>

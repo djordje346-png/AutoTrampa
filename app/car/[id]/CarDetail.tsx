@@ -31,7 +31,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
   if (!car) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-lg font-bold text-app-primary">{marketplaceReady ? 'Oglas nije pronađen' : 'Učitavam oglas…'}</h1>
+        <h1 className="text-lg font-bold text-app-primary dark:text-zinc-100">{marketplaceReady ? 'Oglas nije pronađen' : 'Učitavam oglas…'}</h1>
         {marketplaceReady && <button onClick={() => router.push('/')} className="mt-4 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white">Nazad na oglase</button>}
       </div>
     );
@@ -155,23 +155,23 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             </div>
           </div>
         )}
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-start justify-between mb-2">
             <div>
-              <h1 className="text-xl font-black text-app-primary tracking-tight">
+              <h1 className="text-xl font-black text-app-primary dark:text-zinc-100 tracking-tight">
                 {car.year} {car.brand} {car.model}
               </h1>
               <p className="text-sm text-app-muted mt-0.5">{car.generation} · {car.color}</p>
             </div>
-            <p className="text-app-primary font-black text-2xl">{formatEuro(car.price)}</p>
+            <p className="text-app-primary dark:text-zinc-100 font-black text-2xl dark:text-zinc-400">{formatEuro(car.price)}</p>
           </div>
 
-          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface">
+          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface dark:border-zinc-800">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center flex-shrink-0">
               <span className="text-sm font-black text-white">{car.owner.name[0]}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-app-primary">{car.owner.name}</p>
+              <p className="text-sm font-semibold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
               <div className="flex items-center gap-1">
                 <Star size={11} className="text-orange-400 fill-orange-400" />
                 <span className="text-xs text-app-muted">{car.owner.rating} · {car.owner.city}</span>
@@ -179,7 +179,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             </div>
             {car.owner.phone && <a
               href={`tel:${car.owner.phone}`}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-elevated text-app-secondary hover:text-orange-400 transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 hover:text-orange-400 transition-colors"
             >
               <Phone size={15} />
             </a>}
@@ -188,35 +188,35 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
 
         <div className="grid grid-cols-3 gap-2">
           {specs.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="bg-card-surface rounded-xl border border-surface p-3 text-center">
+            <div key={label} className="bg-card-surface dark:bg-zinc-900 rounded-xl border border-surface dark:border-zinc-800 p-3 text-center">
               <Icon size={16} className="text-orange-400 mx-auto mb-1.5" />
               <p className="text-[10px] text-app-muted uppercase tracking-wider mb-0.5">{label}</p>
-              <p className="text-xs font-bold text-app-primary leading-tight">{value}</p>
+              <p className="text-xs font-bold text-app-primary dark:text-zinc-100 leading-tight">{value}</p>
             </div>
           ))}
         </div>
 
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-2">Opis</p>
-          <p className="text-sm text-app-secondary leading-relaxed">{car.description}</p>
+          <p className="text-sm text-app-secondary dark:text-zinc-400 leading-relaxed">{car.description}</p>
         </div>
 
-        <div className="bg-card-surface rounded-2xl border border-surface overflow-hidden">
-          <div className="px-4 py-3 border-b border-surface">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 overflow-hidden">
+          <div className="px-4 py-3 border-b border-surface dark:border-zinc-800">
             <p className="text-xs font-bold text-app-muted uppercase tracking-widest">Motor i performanse</p>
           </div>
           <div className="divide-y divide-surface">
             {engineDetails.map(({ label, value }) => (
               <div key={label} className="flex items-center justify-between px-4 py-2.5">
                 <span className="text-xs text-app-muted">{label}</span>
-                <span className="text-xs font-semibold text-app-secondary">{value}</span>
+                <span className="text-xs font-semibold text-app-secondary dark:text-zinc-400">{value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {car.equipment && car.equipment.length > 0 && (
-          <div className="bg-card-surface rounded-2xl border border-surface p-4">
+          <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
             <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-3">Oprema vozila</p>
             <div className="space-y-3">
               {EQUIPMENT_CATEGORIES.map((category) => {
@@ -227,11 +227,11 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                   <div key={category.id}>
                     <div className="flex items-center gap-1.5 mb-2">
                       <CatIcon size={12} className="text-orange-400" />
-                      <p className="text-[10px] font-bold text-app-secondary uppercase tracking-wider">{category.label}</p>
+                      <p className="text-[10px] font-bold text-app-secondary dark:text-zinc-400 uppercase tracking-wider">{category.label}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {items.map((item) => (
-                        <span key={item.id} className="inline-flex items-center gap-1 bg-elevated border border-surface rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-app-secondary">
+                        <span key={item.id} className="inline-flex items-center gap-1 bg-elevated border border-surface dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-app-secondary dark:text-zinc-400">
                           <Check size={11} className="text-emerald-400" />
                           {item.label}
                         </span>
@@ -245,13 +245,13 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
         )}
 
         {car.modifications && car.modifications.length > 0 && (
-          <div className="bg-card-surface rounded-2xl border border-surface p-4">
+          <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
             <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-3">Modifikacije</p>
             <div className="space-y-2">
               {car.modifications.map(mod => (
                 <div key={mod} className="flex items-center gap-2.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
-                  <p className="text-xs text-app-secondary">{mod}</p>
+                  <p className="text-xs text-app-secondary dark:text-zinc-400">{mod}</p>
                 </div>
               ))}
             </div>
@@ -259,19 +259,19 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
         )}
 
         {garageMounted && showTrade && (
-          <div className="bg-card-surface rounded-2xl border border-surface p-4">
+          <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
             <p className="text-xs font-bold text-app-muted uppercase tracking-widest mb-3">Poređenje zamene</p>
             <div className="flex items-center gap-3">
               <div className="flex-1 rounded-xl bg-elevated p-3 text-center">
                 <p className="text-[10px] text-app-muted mb-1">Tvoj auto</p>
-                <p className="text-sm font-semibold text-app-primary truncate">{selectedCar.brand} {selectedCar.model}</p>
-                <p className="text-app-primary font-bold text-sm">{formatEuro(selectedCar.price)}</p>
+                <p className="text-sm font-semibold text-app-primary dark:text-zinc-100 truncate">{selectedCar.brand} {selectedCar.model}</p>
+                <p className="text-app-primary dark:text-zinc-100 font-bold text-sm dark:text-zinc-400">{formatEuro(selectedCar.price)}</p>
               </div>
               <ArrowLeftRight size={18} className="text-app-muted flex-shrink-0" />
               <div className="flex-1 rounded-xl bg-elevated p-3 text-center">
                 <p className="text-[10px] text-app-muted mb-1">Ovaj auto</p>
-                <p className="text-sm font-semibold text-app-primary truncate">{car.brand} {car.model}</p>
-                <p className="text-app-primary font-bold text-sm">{formatEuro(car.price)}</p>
+                <p className="text-sm font-semibold text-app-primary dark:text-zinc-100 truncate">{car.brand} {car.model}</p>
+                <p className="text-app-primary dark:text-zinc-100 font-bold text-sm dark:text-zinc-400">{formatEuro(car.price)}</p>
               </div>
             </div>
             <div className={`rounded-xl border px-4 py-2 text-center text-sm font-semibold mt-3 ${tl.bg} ${tl.color}`}>
@@ -281,7 +281,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
         )}
       </div>
 
-      <div className="sticky bottom-0 bg-app border-t border-surface px-4 py-3 flex gap-2 safe-bottom">
+      <div className="sticky bottom-0 bg-app dark:bg-zinc-950 border-t border-surface dark:border-zinc-800 px-4 py-3 flex gap-2 safe-bottom">
         <button
           onClick={() => {
             if (
@@ -291,14 +291,14 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             }
             setOfferOpen(true);
           }}
-          className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-black text-xs sm:text-sm font-bold rounded-xl py-3 transition-all duration-200 active:scale-95"
+          className="btn-primary flex-1 text-xs sm:text-sm"
         >
           <ArrowLeftRight size={16} className="flex-shrink-0" />
           <span className="truncate">Pošalji ponudu za zamenu</span>
         </button>
         {car.owner.phone && <a
           href={`tel:${car.owner.phone}`}
-          className="w-12 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary rounded-xl transition-all duration-200 flex-shrink-0"
+          className="w-12 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 rounded-xl transition-all duration-200 flex-shrink-0"
         >
           <Phone size={17} />
         </a>}

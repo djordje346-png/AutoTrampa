@@ -115,20 +115,20 @@ export default function MessagesClient() {
       aria-labelledby="delete-conv-title"
     >
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPendingDelete(null)} />
-      <div className="relative w-full max-w-sm rounded-2xl border border-surface bg-card-surface p-6 shadow-2xl">
+      <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
           <TriangleAlert size={22} className="text-rose-400" />
         </div>
-        <h3 id="delete-conv-title" className="text-center text-base font-bold text-app-primary">
+        <h3 id="delete-conv-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
           Arhivirati razgovor?
         </h3>
-        <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary">
+        <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
           Razgovor sa {pendingDelete.ownerName} biće sakriven samo sa tvog naloga.
         </p>
         <div className="mt-6 flex gap-2">
           <button
             onClick={() => setPendingDelete(null)}
-            className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+            className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
           >
             Odustani
           </button>
@@ -157,13 +157,13 @@ export default function MessagesClient() {
   if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 border-b border-surface bg-app px-4 py-4 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary">Poruke</h1>
+        <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
         </header>
         <div className="space-y-3 px-4 pt-6">
-          <div className="h-20 animate-pulse rounded-2xl bg-card-surface" />
-          <div className="h-20 animate-pulse rounded-2xl bg-card-surface" />
-          <div className="h-20 animate-pulse rounded-2xl bg-card-surface" />
+          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
+          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
+          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
         </div>
       </div>
     );
@@ -177,12 +177,12 @@ export default function MessagesClient() {
       <>
         {/* Full-screen overlay: the composer would otherwise sit under the
             fixed bottom navigation. */}
-        <div className="fixed inset-0 z-[60] flex flex-col bg-app">
-          <header className="flex flex-shrink-0 items-center gap-3 border-b border-surface px-4 py-3 safe-top">
+        <div className="fixed inset-0 z-[60] flex flex-col bg-app dark:bg-zinc-950">
+          <header className="flex flex-shrink-0 items-center gap-3 border-b border-surface dark:border-zinc-800 px-4 py-3 safe-top">
             <button
               onClick={() => setActiveId(null)}
               aria-label="Nazad na razgovore"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-app-primary"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-app-primary dark:text-zinc-100"
             >
               <ArrowLeft size={18} />
             </button>
@@ -196,7 +196,7 @@ export default function MessagesClient() {
             </Link>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-app-primary">{activeConv.ownerName}</p>
+              <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{activeConv.ownerName}</p>
               <p className="truncate text-xs text-app-muted">{activeConv.carTitle}</p>
             </div>
 
@@ -204,7 +204,7 @@ export default function MessagesClient() {
               <a
                 href={`tel:${activeConv.ownerPhone}`}
                 aria-label={`Pozovi ${activeConv.ownerName}`}
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-orange-400"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-orange-400"
               >
                 <Phone size={16} />
               </a>
@@ -212,7 +212,7 @@ export default function MessagesClient() {
             <button
               onClick={() => setPendingDelete(activeConv)}
               aria-label="Arhiviraj razgovor"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-rose-400"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-rose-400"
             >
               <Trash2 size={16} />
             </button>
@@ -235,7 +235,7 @@ export default function MessagesClient() {
                 <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-elevated">
                   <MessageCircle size={26} className="text-app-muted" />
                 </div>
-                <p className="text-sm font-medium text-app-secondary">Još nema poruka</p>
+                <p className="text-sm font-medium text-app-secondary dark:text-zinc-400">Još nema poruka</p>
                 <p className="mt-1 text-xs text-app-muted">Pošalji prvu poruku ispod</p>
               </div>
             ) : (
@@ -259,7 +259,7 @@ export default function MessagesClient() {
                         className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
                           mine
                             ? 'rounded-br-md bg-orange-500 text-black'
-                            : 'rounded-bl-md bg-elevated text-app-primary'
+                            : 'rounded-bl-md bg-elevated text-app-primary dark:text-zinc-100'
                         }`}
                       >
                         <p className="whitespace-pre-wrap break-words text-sm leading-snug">
@@ -282,7 +282,7 @@ export default function MessagesClient() {
 
           </div>
 
-          <div className="flex flex-shrink-0 items-center gap-2 border-t border-surface bg-app px-4 py-3 safe-bottom">
+          <div className="flex flex-shrink-0 items-center gap-2 border-t border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-3 safe-bottom">
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -295,13 +295,13 @@ export default function MessagesClient() {
               maxLength={1000}
               placeholder="Napiši poruku..."
               aria-label="Poruka"
-              className="flex-1 rounded-full border border-surface bg-elevated px-4 py-2.5 text-sm text-app-primary transition-colors placeholder:text-app-muted focus:border-orange-500 focus:outline-none"
+              className="flex-1 rounded-full border border-surface dark:border-zinc-800 bg-elevated px-4 py-2.5 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-orange-500 focus:outline-none"
             />
             <button
               onClick={() => void handleSend()}
               disabled={!input.trim() || sending}
               aria-label="Pošalji poruku"
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-black transition-all duration-200 hover:bg-orange-400 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-black transition-all duration-200 hover:bg-orange-600 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Send size={17} />
             </button>
@@ -316,10 +316,10 @@ export default function MessagesClient() {
   /* ------------------------------------------------------------ INBOX */
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-surface bg-app px-4 py-4 safe-top">
+      <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary">Poruke</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
             <p className="mt-0.5 text-xs text-app-muted">
               {conversations.length === 0
                 ? 'Razgovori o zameni'
@@ -340,13 +340,13 @@ export default function MessagesClient() {
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated/60">
               <MessageCircle size={36} className="text-app-muted" />
             </div>
-            <p className="text-base font-semibold text-app-secondary">Nema razgovora</p>
+            <p className="text-base font-semibold text-app-secondary dark:text-zinc-400">Nema razgovora</p>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-muted">
               Pošalji ponudu za trampu sa Početne da započneš razgovor sa drugim vlasnicima.
             </p>
             <Link
               href="/"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
+              className="btn-primary mt-6 text-sm"
             >
               <ArrowLeftRight size={16} />
               Pronađi zamenu
@@ -358,7 +358,7 @@ export default function MessagesClient() {
             return (
               <div
                 key={conv.id}
-                className="group flex items-center gap-3 rounded-2xl border border-surface bg-card-surface p-3 transition-all duration-200 hover:bg-hover-surface"
+                className="group flex items-center gap-3 rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-3 transition-all duration-200 hover:bg-hover-surface"
               >
                 <button
                   onClick={() => openConversation(conv)}
@@ -370,7 +370,7 @@ export default function MessagesClient() {
 
                   <div className="min-w-0 flex-1">
                     <div className="mb-0.5 flex items-center justify-between gap-2">
-                      <p className="truncate text-sm font-bold text-app-primary">{conv.ownerName}</p>
+                      <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{conv.ownerName}</p>
                       <span className="flex-shrink-0 text-[10px] text-app-muted">
                         {formatTime(conv.lastUpdated)}
                       </span>
@@ -379,7 +379,7 @@ export default function MessagesClient() {
                     <div className="flex items-center justify-between gap-2">
                       <p
                         className={`truncate text-xs ${
-                          conv.unread > 0 ? 'font-medium text-app-primary' : 'text-app-muted'
+                          conv.unread > 0 ? 'font-medium text-app-primary dark:text-zinc-100' : 'text-app-muted'
                         }`}
                       >
                         {lastMsg

@@ -8,13 +8,13 @@ export default function NotFound() {
         <Compass size={34} className="text-app-muted" />
       </div>
       <p className="text-4xl font-black tracking-tight text-orange-400">404</p>
-      <h1 className="mt-2 text-lg font-bold text-app-primary">Stranica nije pronađena</h1>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary">
+      <h1 className="mt-2 text-lg font-bold text-app-primary dark:text-zinc-100">Stranica nije pronađena</h1>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
         Oglas je možda uklonjen ili adresa nije ispravna.
       </p>
       <Link
         href="/"
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
+        className="btn-primary mt-6 text-sm"
       >
         <ArrowLeft size={16} />
         Nazad na Početnu

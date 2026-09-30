@@ -86,7 +86,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
         {images.map((imgUrl, index) => (
           <div
             key={`${index}-${imgUrl.slice(-24)}`}
-            className="group relative aspect-square overflow-hidden rounded-xl border border-surface bg-elevated"
+            className="group relative aspect-square overflow-hidden rounded-xl border border-surface dark:border-zinc-800 bg-elevated"
           >
             <img
               src={imgUrl}
@@ -124,7 +124,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
 
         {images.length < maxImages && (
           <label
-            className={`group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-surface bg-elevated p-2 text-center transition hover:border-orange-500/50 hover:bg-orange-500/5 ${
+            className={`group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-surface dark:border-zinc-800 bg-elevated p-2 text-center transition hover:border-orange-500/50 hover:bg-orange-500/5 ${
               busy ? 'pointer-events-none opacity-60' : ''
             }`}
           >
@@ -140,7 +140,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
             <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-hover-surface text-app-muted transition group-hover:text-orange-400">
               {busy ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
             </div>
-            <span className="text-[11px] font-semibold text-app-secondary transition group-hover:text-orange-400">
+            <span className="text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition group-hover:text-orange-400">
               {busy ? 'Obrada…' : 'Dodaj sliku'}
             </span>
             <span className="mt-0.5 text-[9px] text-app-muted">JPG, PNG, WebP</span>

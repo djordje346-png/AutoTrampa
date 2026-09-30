@@ -18,12 +18,12 @@ export function SignedOut({ title, description, reason }: SignedOutProps) {
       <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated">
         <LockKeyhole size={32} className="text-app-muted" />
       </div>
-      <h2 className="text-base font-bold text-app-primary">{title}</h2>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary">{description}</p>
+      <h2 className="text-base font-bold text-app-primary dark:text-zinc-100">{title}</h2>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-zinc-400">{description}</p>
 
       <button
         onClick={() => openAuthPrompt(reason)}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-orange-400"
+        className="btn-primary mt-6 text-sm"
       >
         Prijavi se
       </button>
@@ -46,8 +46,8 @@ export function SignedOutPage({
 }: SignedOutProps & { heading: string }) {
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-surface bg-app px-4 py-4 safe-top">
-        <h1 className="text-xl font-bold tracking-tight text-app-primary">{heading}</h1>
+      <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
+        <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">{heading}</h1>
       </header>
       <SignedOut {...props} />
     </div>

@@ -67,12 +67,12 @@ export default function ProfileClient() {
   if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-4 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary">Profil</h1>
+        <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
         </header>
         <div className="px-4 pt-6 space-y-3">
-          <div className="h-32 bg-card-surface rounded-2xl animate-pulse" />
-          <div className="h-24 bg-card-surface rounded-2xl animate-pulse" />
+          <div className="h-32 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
+          <div className="h-24 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
         </div>
       </div>
     );
@@ -80,18 +80,18 @@ export default function ProfileClient() {
 
   return (
     <div className="flex flex-col pb-6">
-      <header className="sticky top-0 z-40 bg-app border-b border-surface px-4 py-4 safe-top">
-        <h1 className="text-xl font-bold tracking-tight text-app-primary">Profil</h1>
+      <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
+        <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
       </header>
 
       <div className="px-4 pt-5 pb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-5">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-5">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/20">
               <span className="text-2xl font-black text-white">{initials(user.name)}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-base font-bold text-app-primary truncate">{user.name}</h2>
+              <h2 className="text-base font-bold text-app-primary dark:text-zinc-100 truncate">{user.name}</h2>
               <p className="text-xs text-app-muted truncate">{user.email || user.phone}</p>
               <div className="flex items-center gap-1 mt-0.5">
                 <MapPin size={11} className="text-app-muted" />
@@ -108,25 +108,25 @@ export default function ProfileClient() {
             <button
               onClick={() => setShowEditProfile(true)}
               aria-label="Uredi profil"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary transition-colors hover:bg-hover-surface hover:text-orange-400"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:bg-hover-surface hover:text-orange-400"
             >
               <Pencil size={15} />
             </button>
           </div>
 
-          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-surface">
+          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-surface dark:border-zinc-800">
             <div className="flex-1 text-center">
-              <p className="text-base font-bold text-app-primary">{user.trades}</p>
+              <p className="text-base font-bold text-app-primary dark:text-zinc-100">{user.trades}</p>
               <p className="text-[10px] text-app-muted">Trampi</p>
             </div>
             <div className="w-px h-8 bg-surface" />
             <div className="flex-1 text-center">
-              <p className="text-base font-bold text-app-primary">{cars.length}</p>
+              <p className="text-base font-bold text-app-primary dark:text-zinc-100">{cars.length}</p>
               <p className="text-[10px] text-app-muted">Vozila</p>
             </div>
             <div className="w-px h-8 bg-surface" />
             <div className="flex-1 text-center">
-              <p className="text-base font-bold text-app-primary">{user.rating}</p>
+              <p className="text-base font-bold text-app-primary dark:text-zinc-100">{user.rating}</p>
               <p className="text-[10px] text-app-muted">Ocena</p>
             </div>
           </div>
@@ -134,13 +134,13 @@ export default function ProfileClient() {
       </div>
 
       <div className="px-4 mb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Car size={16} className="text-orange-400" />
-              <p className="text-sm font-bold text-app-primary">Moja garaža</p>
+              <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Moja garaža</p>
             </div>
-            <span className="text-xs font-semibold text-app-secondary bg-elevated px-2.5 py-1 rounded-full">
+            <span className="text-xs font-semibold text-app-secondary dark:text-zinc-400 bg-elevated px-2.5 py-1 rounded-full">
               {cars.length}/{garageLimit} popunjeno
             </span>
           </div>
@@ -151,9 +151,9 @@ export default function ProfileClient() {
                 <img src={activeCar.image} alt={`${activeCar.brand} ${activeCar.model}`} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-app-primary truncate">{activeCar.brand} {activeCar.model} {activeCar.generation}</p>
+                <p className="text-sm font-bold text-app-primary dark:text-zinc-100 truncate">{activeCar.brand} {activeCar.model} {activeCar.generation}</p>
                 <p className="text-xs text-app-muted">{activeCar.year} · {formatKm(activeCar.mileage)}</p>
-                <p className="text-orange-400 text-xs font-bold mt-0.5">{formatEuro(activeCar.price)}</p>
+                <p className="text-orange-400 text-xs font-bold mt-0.5 dark:text-zinc-400">{formatEuro(activeCar.price)}</p>
               </div>
               <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 rounded-full px-2 py-0.5">
                 <span className="text-[9px] font-bold text-orange-400 uppercase">Aktivno</span>
@@ -169,7 +169,7 @@ export default function ProfileClient() {
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="w-full flex items-center justify-center gap-2 border border-dashed border-surface hover:border-orange-500/50 hover:bg-orange-500/5 text-orange-400 text-sm font-semibold rounded-xl py-3 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 border border-dashed border-surface dark:border-zinc-800 hover:border-orange-500/50 hover:bg-orange-500/5 text-orange-400 text-sm font-semibold rounded-xl py-3 transition-all duration-200"
             >
               <Plus size={16} strokeWidth={2.5} />
               Dodaj auto u garažu
@@ -180,19 +180,19 @@ export default function ProfileClient() {
 
       {/* THEME TOGGLE */}
       <div className="px-4 mb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             {theme === 'dark' ? <Moon size={16} className="text-orange-400" /> : <Sun size={16} className="text-orange-400" />}
-            <p className="text-sm font-bold text-app-primary">Izgled</p>
+            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Izgled</p>
           </div>
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1">
-              <p className="text-sm font-medium text-app-primary">Tamna tema</p>
+              <p className="text-sm font-medium text-app-primary dark:text-zinc-100">Tamna tema</p>
               <p className="text-xs text-app-muted mt-0.5">Prebaci između tamne i svetle teme</p>
             </div>
             <button
               onClick={toggleTheme}
-              className="relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 bg-elevated border border-surface"
+              className="relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 bg-elevated border border-surface dark:border-zinc-800"
               aria-label="Promeni temu"
             >
               <span className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-transform duration-200 flex items-center justify-center ${
@@ -210,15 +210,15 @@ export default function ProfileClient() {
       </div>
 
       <div className="px-4 mb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-4">
             <SlidersHorizontal size={16} className="text-orange-400" />
-            <p className="text-sm font-bold text-app-primary">Preferencije zamene</p>
+            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Preferencije zamene</p>
           </div>
 
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-app-secondary">Radijus pretrage</label>
+              <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Radijus pretrage</label>
               <span className="text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full">{radius} km</span>
             </div>
             <input
@@ -234,7 +234,7 @@ export default function ProfileClient() {
 
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-app-secondary">Budžet za doplatu</label>
+              <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Budžet za doplatu</label>
               <span className="text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full">
                 {noTopUp ? 'Bez doplate' : budget != null ? formatEuro(budget) : 'Nije postavljen'}
               </span>
@@ -251,7 +251,7 @@ export default function ProfileClient() {
                 const v = e.target.value;
                 updatePreferences({ budget: v === '' ? null : Math.max(0, Number(v)) });
               }}
-              className={`w-full rounded-xl border border-surface bg-elevated px-3 py-2.5 text-sm text-app-primary placeholder:text-app-muted outline-none transition-colors focus:border-orange-500/50 ${
+              className={`w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted outline-none transition-colors focus:border-orange-500/50 ${
                 noTopUp ? 'opacity-40 cursor-not-allowed' : ''
               }`}
             />
@@ -263,13 +263,13 @@ export default function ProfileClient() {
               className="mt-2.5 flex items-center gap-2.5 w-full text-left"
             >
               <span className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                noTopUp ? 'bg-orange-500' : 'bg-elevated border border-surface'
+                noTopUp ? 'bg-orange-500' : 'bg-elevated border border-surface dark:border-zinc-800'
               }`}>
                 <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
                   noTopUp ? 'translate-x-5' : 'translate-x-0'
                 }`} />
               </span>
-              <span className="text-xs font-medium text-app-secondary">Ne želim da doplaćujem</span>
+              <span className="text-xs font-medium text-app-secondary dark:text-zinc-400">Ne želim da doplaćujem</span>
             </button>
           </div>
 
@@ -282,7 +282,7 @@ export default function ProfileClient() {
                     key={type}
                     onClick={() => toggleBodyPref(type)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                      active ? 'bg-orange-500 border-orange-500 text-white' : 'bg-elevated border-surface text-app-secondary hover:border-orange-500/40'
+                      active ? 'bg-orange-500 border-orange-500 text-white' : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-orange-500/40'
                     }`}
                   >
                     {bodyLabel(type)}
@@ -295,14 +295,14 @@ export default function ProfileClient() {
       </div>
 
       <div className="px-4 mb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             <Lock size={16} className="text-orange-400" />
-            <p className="text-sm font-bold text-app-primary">Privatnost</p>
+            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Privatnost</p>
           </div>
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1">
-              <p className="text-sm font-medium text-app-primary">Prikaži telefon samo nakon obostranog match-a</p>
+              <p className="text-sm font-medium text-app-primary dark:text-zinc-100">Prikaži telefon samo nakon obostranog match-a</p>
               <p className="text-xs text-app-muted mt-0.5">Vaš broj je skriven dok ne prihvatite trampu</p>
             </div>
             <button
@@ -322,10 +322,10 @@ export default function ProfileClient() {
       </div>
 
       <div className="px-4 mb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             <HelpCircle size={16} className="text-orange-400" />
-            <p className="text-sm font-bold text-app-primary">Podrška i dokumenti</p>
+            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Podrška i dokumenti</p>
           </div>
 
           <div className="space-y-1">
@@ -334,15 +334,15 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary group-hover:text-orange-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-orange-400 transition">
                   <HelpCircle size={16} />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-app-primary">Često postavljana pitanja (FAQ)</p>
+                  <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Često postavljana pitanja (FAQ)</p>
                   <p className="text-[10px] text-app-muted">Kako funkcioniše trampa i prenos?</p>
                 </div>
               </div>
-              <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary transition" />
+              <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary dark:text-zinc-400 transition" />
             </button>
 
             <button
@@ -350,15 +350,15 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary group-hover:text-orange-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-orange-400 transition">
                   <FileText size={16} />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-app-primary">Uslovi korišćenja</p>
+                  <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Uslovi korišćenja</p>
                   <p className="text-[10px] text-app-muted">Pravila platforme i odgovornost</p>
                 </div>
               </div>
-              <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary transition" />
+              <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary dark:text-zinc-400 transition" />
             </button>
 
             <button
@@ -366,29 +366,29 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary group-hover:text-orange-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-orange-400 transition">
                   <ShieldAlert size={16} />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-app-primary">Politika privatnosti</p>
+                  <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Politika privatnosti</p>
                   <p className="text-[10px] text-app-muted">Zaštita podataka o ličnosti</p>
                 </div>
               </div>
-              <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary transition" />
+              <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary dark:text-zinc-400 transition" />
             </button>
           </div>
         </div>
       </div>
 
       <div className="px-4 mb-4">
-        <div className="bg-card-surface rounded-2xl border border-surface p-4">
+        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             <Database size={16} className="text-orange-400" />
-            <p className="text-sm font-bold text-app-primary">Lokalni podaci</p>
+            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Lokalni podaci</p>
           </div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-app-secondary">Zauzeto u pregledaču</p>
-            <p className="text-xs font-bold text-app-primary">
+            <p className="text-xs text-app-secondary dark:text-zinc-400">Zauzeto u pregledaču</p>
+            <p className="text-xs font-bold text-app-primary dark:text-zinc-100">
               {(usedBytes / 1024 / 1024).toFixed(2)} MB / 5 MB
             </p>
           </div>
@@ -437,7 +437,7 @@ export default function ProfileClient() {
         }
         className="sm:max-w-lg"
       >
-        <div className="space-y-4 text-xs leading-relaxed text-app-secondary">
+        <div className="space-y-4 text-xs leading-relaxed text-app-secondary dark:text-zinc-400">
           {activeModal === 'faq' && (
             <>
               <div className="space-y-1.5">
@@ -486,7 +486,7 @@ export default function ProfileClient() {
 
         <button
           onClick={() => setActiveModal(null)}
-          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary transition-colors hover:bg-hover-surface"
+          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
         >
           Zatvori
         </button>
