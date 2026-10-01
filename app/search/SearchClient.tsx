@@ -183,10 +183,10 @@ export default function SearchClient() {
                 key={car.id}
                 className="overflow-hidden rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 transition-all duration-200 hover:border-orange-500/30"
               >
-                <div className="flex">
+                <div className="flex flex-col sm:flex-row">
                   <Link
                     href={`/car/${car.id}`}
-                    className="relative w-28 flex-shrink-0"
+                    className="relative h-36 w-full flex-shrink-0 sm:h-auto sm:w-28"
                     aria-label={`Detalji: ${car.year} ${car.brand} ${car.model}`}
                   >
                     <img
