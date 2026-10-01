@@ -198,7 +198,16 @@ export default function FeedPage() {
               </div>
 
               {/* Tvoje Vozilo dropdown */}
-              {showTrade && (
+              {showTrade && cars.length === 0 ? (
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="flex flex-shrink-0 items-center gap-2 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-xs font-semibold text-orange-500 transition-all hover:bg-orange-500/15"
+                  aria-label="Dodaj auto u svoju garažu"
+                >
+                  <Plus size={15} />
+                  Dodaj auto
+                </button>
+              ) : showTrade && (
               <div className="relative flex-shrink-0" ref={selectorRef}>
                 <button
                   onClick={() => setSelectorOpen(p => !p)}
