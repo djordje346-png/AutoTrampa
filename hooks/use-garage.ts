@@ -18,7 +18,7 @@ const selectedStore = createPersistentStore<string>(
   (raw) => (typeof raw === 'string' && raw ? raw : null),
 );
 
-export type GarageError = 'limit' | 'last-car' | 'duplicate' | 'network';
+export type GarageError = 'limit' | 'duplicate' | 'network';
 export type GarageResult =
   | { ok: true; id?: string }
   | { ok: false; error: GarageError }
@@ -239,7 +239,6 @@ export function useGarage() {
 
   const removeCar = useCallback(async (id: string): Promise<GarageResult> => {
     if (!userId) return { ok: false, error: 'network' };
-    if (cars.length <= 1) return { ok: false, error: 'last-car' };
     try {
       const { data, error } = await getSupabase()
         .from('cars')
@@ -254,7 +253,7 @@ export function useGarage() {
       const removed = cars.find((car) => car.id === id)?.images ?? [];
       const paths = storedCarImagePaths(removed);
       if (paths.length) void getSupabase().storage.from('car-images').remove(paths);
-      if (selectedStore.get() === id) selectedStore.set(next[0].id);
+      if (selectedStore.get() === id) selectedStore.set(next[0]?.id ?? DEFAULT_GARAGE_CARS[0].id);
       return { ok: true };
     } catch {
       return { ok: false, error: 'network' };

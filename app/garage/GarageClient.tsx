@@ -62,11 +62,7 @@ export default function GarageClient() {
     if (!pendingDelete) return;
     const result = await removeCar(pendingDelete.id);
     if (!result.ok) {
-      toast.error(
-        result.error === 'last-car'
-          ? 'Garaža ne može ostati prazna.'
-          : 'Vozilo nije obrisano.',
-      );
+      toast.error('Vozilo nije obrisano.');
     } else {
       toast.success(`${pendingDelete.brand} ${pendingDelete.model} obrisan iz garaže.`);
     }
@@ -126,6 +122,13 @@ export default function GarageClient() {
       </header>
 
       <div className="px-4 pt-4 space-y-4 pb-4">
+        {cars.length === 0 && (
+          <div className="rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 px-5 py-8 text-center">
+            <h2 className="text-base font-bold text-app-primary dark:text-zinc-100">Garaža je prazna</h2>
+            <p className="mt-1 text-sm text-app-muted">Dodaj auto da bi pratio njegovu vrednost i specifikacije.</p>
+            <button onClick={openAddForm} className="btn-primary mt-5">Dodaj auto</button>
+          </div>
+        )}
         {cars.map(car => {
           const isExpanded = expandedId === car.id;
           const isSelected = car.id === selectedId;
@@ -169,7 +172,7 @@ export default function GarageClient() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-surface dark:border-zinc-800">
+              <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-surface dark:border-zinc-800">
                 <p className="text-app-primary dark:text-zinc-100 font-bold text-lg mr-auto dark:text-zinc-400">{formatEuro(car.price)}</p>
                 {!isSelected && (
                   <button
@@ -187,15 +190,15 @@ export default function GarageClient() {
                   <Edit3 size={13} />
                   Uredi
                 </button>
-                {cars.length > 1 && (
-                  <button
-                    onClick={() => setPendingDelete(car)}
-                    className="flex items-center justify-center bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg px-2.5 py-1.5 transition-all"
-                    aria-label="Ukloni auto"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                )}
+                <button
+                  onClick={() => setPendingDelete(car)}
+                  className="flex shrink-0 items-center justify-center gap-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all"
+                  aria-label={`Obriši ${car.brand} ${car.model} iz garaže`}
+                  title="Obriši auto"
+                >
+                  <Trash2 size={13} />
+                  <span>Obriši</span>
+                </button>
               </div>
 
               <div className="grid grid-cols-2 gap-px bg-surface">
