@@ -42,7 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       <Footer />
       {promptOpen && <AuthOverlay />}
-      <RequiredPhoneModal open={requiresPhone} />
+      <RequiredPhoneModal key={user?.id ?? 'signed-out'} open={requiresPhone} />
       <Toaster />
     </div>
   );
