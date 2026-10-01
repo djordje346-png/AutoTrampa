@@ -29,13 +29,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           min-h-screen
           w-full
           max-w-[1600px]
-          px-4
           pb-28
-          sm:px-5
-          md:px-8
           md:pb-24
-          lg:px-10
-          xl:px-12
         "
       >
         {children}

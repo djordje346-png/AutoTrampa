@@ -92,9 +92,9 @@ export default function GarageClient() {
   if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-zinc-100">Garaža</h1>
-          <p className="text-xs text-zinc-400 mt-0.5">Tvoja kolekcija vozila</p>
+        <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Garaža</h1>
+          <p className="text-xs text-app-muted mt-0.5">Tvoja kolekcija vozila</p>
         </header>
         <div className="px-4 pt-6 space-y-3">
           <div className="h-48 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
@@ -106,11 +106,11 @@ export default function GarageClient() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
+      <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-zinc-100">Garaža</h1>
-            <p className="text-xs text-zinc-400 mt-0.5">{cars.length} / {limit} vozila u garaži</p>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Garaža</h1>
+            <p className="text-xs text-app-muted mt-0.5">{cars.length} / {limit} vozila u garaži</p>
           </div>
           <button
             onClick={openAddForm}

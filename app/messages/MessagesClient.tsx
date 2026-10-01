@@ -157,8 +157,8 @@ export default function MessagesClient() {
   if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-zinc-100">Poruke</h1>
+        <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
         </header>
         <div className="space-y-3 px-4 pt-6">
           <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
@@ -178,11 +178,11 @@ export default function MessagesClient() {
         {/* Full-screen overlay: the composer would otherwise sit under the
             fixed bottom navigation. */}
         <div className="fixed inset-0 z-[60] flex flex-col bg-app dark:bg-zinc-950">
-          <header className="flex flex-shrink-0 items-center gap-3 border-b border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-400 safe-top">
+          <header className="flex flex-shrink-0 items-center gap-3 border-b border-surface dark:border-zinc-800 px-4 py-3 safe-top">
             <button
               onClick={() => setActiveId(null)}
               aria-label="Nazad na razgovore"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-zinc-800 text-zinc-400 transition-colors hover:text-zinc-100"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-app-primary dark:text-zinc-100"
             >
               <ArrowLeft size={18} />
             </button>
@@ -316,11 +316,11 @@ export default function MessagesClient() {
   /* ------------------------------------------------------------ INBOX */
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
+      <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-zinc-100">Poruke</h1>
-            <p className="mt-0.5 text-xs text-zinc-400">
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
+            <p className="mt-0.5 text-xs text-app-muted">
               {conversations.length === 0
                 ? 'Razgovori o zameni'
                 : `${conversations.length} ${conversations.length === 1 ? 'razgovor' : 'razgovora'}`}

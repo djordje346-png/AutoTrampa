@@ -166,12 +166,12 @@ export default function FeedPage() {
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 text-zinc-400 safe-top">
+      <div className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 safe-top">
         <header className="px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold tracking-tight text-zinc-100">AutoTrampa</h1>
-              <p className="text-[11px] text-zinc-400 mt-0.5">Pronađi sledeću zamenu</p>
+              <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">AutoTrampa</h1>
+              <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
             </div>
 
             <div className="flex items-center gap-2">

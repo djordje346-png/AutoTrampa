@@ -68,13 +68,13 @@ export default function SearchClient() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 pt-4 pb-3 text-zinc-400 safe-top">
+      <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 pt-4 pb-3 safe-top">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold tracking-tight text-zinc-100">Pretraga</h1>
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Pretraga</h1>
           {mounted && showTrade && (
             <Link
               href="/garage"
-              className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-orange-400 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-app-muted hover:text-orange-400 transition-colors"
             >
               <TrendingUp size={13} className="text-orange-400" />
               {selectedCar.brand} {selectedCar.model}
@@ -127,8 +127,8 @@ export default function SearchClient() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 mt-2.5">
-          <span className="text-[10px] text-app-muted font-medium uppercase tracking-wider flex-shrink-0">Sortiraj:</span>
+        <div className="mt-2.5 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+          <span className="flex-shrink-0 text-[10px] text-app-muted font-medium uppercase tracking-wider">Sortiraj:</span>
           {([
             ...(showTrade ? [{ key: 'trade', label: 'Najbolja zamena' }] as const : []),
             { key: 'price-asc', label: 'Cena ↑' },
@@ -138,7 +138,7 @@ export default function SearchClient() {
             <button
               key={key}
               onClick={() => setSortBy(key)}
-              className={`text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
+              className={`flex-shrink-0 whitespace-nowrap text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
                 (sortBy === key || (sortBy === 'trade' && !showTrade && key === 'price-asc'))
                   ? 'text-orange-400 bg-orange-500/10'
                   : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
