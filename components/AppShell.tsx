@@ -4,6 +4,8 @@ import { useAuth } from '@/hooks/use-auth';
 import AuthOverlay from '@/components/AuthOverlay';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/sonner';
+import RequiredPhoneModal from '@/components/RequiredPhoneModal';
+import { useUser } from '@/hooks/use-user';
 
 /**
  * Browsing is public: listings render on the server so they can be shared and
@@ -11,7 +13,9 @@ import { Toaster } from '@/components/ui/sonner';
  * see `requireAuth` in use-auth — not as a wall in front of the app.
  */
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { promptOpen } = useAuth();
+  const { promptOpen, user, mounted } = useAuth();
+  const { user: profile, profileReady } = useUser();
+  const requiresPhone = mounted && Boolean(user) && profileReady && !profile.phone.trim();
 
   return (
     <div className="min-h-screen w-full bg-app text-app-primary dark:bg-zinc-950 dark:text-zinc-100">
@@ -38,6 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       <Footer />
       {promptOpen && <AuthOverlay />}
+      <RequiredPhoneModal open={requiresPhone} />
       <Toaster />
     </div>
   );

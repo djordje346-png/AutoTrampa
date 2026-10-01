@@ -98,12 +98,13 @@ export function useAuth() {
     email: string,
     password: string,
     name: string,
+    phone: string,
   ): Promise<AuthResult> => {
     try {
       const { data, error } = await getSupabase().auth.signUp({
         email,
         password,
-        options: { data: { name } },
+        options: { data: { name, phone } },
       });
       if (error) return { ok: false, message: error.message };
       return { ok: true, needsEmailConfirmation: !data.session };

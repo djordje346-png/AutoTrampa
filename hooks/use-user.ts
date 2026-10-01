@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createMemoryStore, usePersistentStore } from '@/lib/persistent-store';
 import { getSupabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/use-auth';
@@ -29,6 +29,7 @@ function profileFromAuth(user: NonNullable<ReturnType<typeof useAuth>['user']>):
     id: user.id,
     name: typeof user.user_metadata?.name === 'string' ? user.user_metadata.name : '',
     email: user.email ?? '',
+    phone: typeof user.user_metadata?.phone === 'string' ? user.user_metadata.phone : '',
   };
 }
 
@@ -49,15 +50,21 @@ export function initials(name: string): string {
 export function useUser() {
   const { user: authUser, mounted: authReady } = useAuth();
   const [user, storeReady] = usePersistentStore(userStore);
+  const [profileReady, setProfileReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    if (!authReady) return;
+    if (!authReady) {
+      setProfileReady(false);
+      return;
+    }
     if (!authUser) {
       userStore.set(EMPTY_USER);
+      setProfileReady(true);
       return;
     }
 
+    setProfileReady(false);
     const activeUser = authUser;
     const fallback = profileFromAuth(activeUser);
     userStore.set(fallback);
@@ -73,12 +80,21 @@ export function useUser() {
         if (error) throw error;
 
         if (data) {
+          if (!data.phone && fallback.phone) {
+            const { error: profileUpdateError } = await supabase.from('profiles').upsert({
+              id: activeUser.id,
+              name: data.name ?? fallback.name,
+              city: data.city ?? '',
+              phone: fallback.phone,
+            });
+            if (profileUpdateError) throw profileUpdateError;
+          }
           if (!cancelled) {
             userStore.set({
               ...fallback,
               name: data.name ?? fallback.name,
               city: data.city ?? '',
-              phone: data.phone ?? '',
+              phone: data.phone || fallback.phone,
               rating: Number(data.rating ?? 5),
               trades: Number(data.trade_count ?? 0),
               verified: Boolean(data.verified),
@@ -92,7 +108,7 @@ export function useUser() {
           id: activeUser.id,
           name: fallback.name,
           city: '',
-          phone: '',
+          phone: fallback.phone,
         });
         if (insertError) throw insertError;
         if (!cancelled) userStore.set(fallback);
@@ -101,7 +117,9 @@ export function useUser() {
       }
     }
 
-    void loadProfile();
+    void loadProfile().finally(() => {
+      if (!cancelled) setProfileReady(true);
+    });
     return () => { cancelled = true; };
   }, [authReady, authUser]);
 
@@ -125,5 +143,5 @@ export function useUser() {
     }
   }, []);
 
-  return { user, updateUser, mounted: storeReady && authReady };
+  return { user, updateUser, mounted: storeReady && authReady, profileReady };
 }

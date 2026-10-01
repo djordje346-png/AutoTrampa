@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
+import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { isValidPhoneNumber } from '@/lib/phone';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 type Tab = 'login' | 'register';
-type Field = 'name' | 'email' | 'password';
+type Field = 'name' | 'email' | 'password' | 'phone';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 interface AuthScreenProps {
@@ -20,6 +21,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -30,6 +32,9 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
 
     if (tab === 'register' && name.trim().length < 3) {
       next.name = 'Unesi ime i prezime.';
+    }
+    if (tab === 'register' && !isValidPhoneNumber(phone)) {
+      next.phone = 'Unesi ispravan broj telefona.';
     }
 
     const identifier = email.trim();
@@ -62,7 +67,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
     setNotice('');
     const result = tab === 'login'
       ? await signIn(email.trim(), password)
-      : await signUp(email.trim(), password, name.trim());
+      : await signUp(email.trim(), password, name.trim(), phone.trim());
     setSubmitting(false);
     if (!result.ok) {
       setErrors({ password: result.message });
@@ -160,6 +165,30 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
                 />
               </div>
               <FieldError message={errors.name} />
+            </div>
+          )}
+
+          {tab === 'register' && (
+            <div>
+              <label htmlFor="auth-phone" className="mb-1.5 block text-xs font-medium text-app-secondary dark:text-zinc-400">
+                Broj telefona <span className="text-orange-400">(obavezno)</span>
+              </label>
+              <div className="relative">
+                <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
+                <input
+                  id="auth-phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+381 64 123 4567"
+                  aria-invalid={Boolean(errors.phone)}
+                  required
+                  className={fieldClass('phone')}
+                />
+              </div>
+              <FieldError message={errors.phone} />
             </div>
           )}
 
