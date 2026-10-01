@@ -3,7 +3,6 @@
 import { useAuth } from '@/hooks/use-auth';
 import AuthOverlay from '@/components/AuthOverlay';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/sonner';
 
 /**
@@ -23,7 +22,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      <Header />
       <main
         id="sadrzaj"
         className="

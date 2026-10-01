@@ -46,8 +46,8 @@ export function SignedOutPage({
 }: SignedOutProps & { heading: string }) {
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
-        <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">{heading}</h1>
+      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
+        <h1 className="text-xl font-bold tracking-tight text-zinc-100">{heading}</h1>
       </header>
       <SignedOut {...props} />
     </div>

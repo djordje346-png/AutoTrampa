@@ -67,8 +67,8 @@ export default function ProfileClient() {
   if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+        <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
+          <h1 className="text-xl font-bold tracking-tight text-zinc-100">Profil</h1>
         </header>
         <div className="px-4 pt-6 space-y-3">
           <div className="h-32 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
@@ -80,8 +80,8 @@ export default function ProfileClient() {
 
   return (
     <div className="flex flex-col pb-6">
-      <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
-        <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
+        <h1 className="text-xl font-bold tracking-tight text-zinc-100">Profil</h1>
       </header>
 
       <div className="px-4 pt-5 pb-4">

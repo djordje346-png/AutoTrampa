@@ -50,8 +50,8 @@ export default function SavedClient() {
   if (!mounted) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
+        <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
+          <h1 className="text-xl font-bold tracking-tight text-zinc-100">Sačuvano</h1>
         </header>
         <div className="space-y-3 px-4 pt-6">
           <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
@@ -63,11 +63,11 @@ export default function SavedClient() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
+      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 px-4 py-4 text-zinc-400 safe-top">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
-            <p className="mt-0.5 text-xs text-app-muted">
+            <h1 className="text-xl font-bold tracking-tight text-zinc-100">Sačuvano</h1>
+            <p className="mt-0.5 text-xs text-zinc-400">
               {savedCars.length === 0
                 ? 'Tvoja lista želja'
                 : `${savedCars.length} ${savedCars.length === 1 ? 'oglas' : 'oglasa'}`}
