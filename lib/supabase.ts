@@ -27,7 +27,9 @@ export function getSupabase(): SupabaseClient {
     browserClient = createClient(url, key, {
       auth: {
         autoRefreshToken: true,
-        detectSessionInUrl: true,
+        // Auth callback pages exchange PKCE codes explicitly so password
+        // recovery and OAuth never race the SDK's automatic URL detection.
+        detectSessionInUrl: false,
         persistSession: true,
       },
     });

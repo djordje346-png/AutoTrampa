@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 type Tab = 'login' | 'register';
 type Field = 'name' | 'email' | 'password';
@@ -233,6 +234,12 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
             <ArrowRight size={16} strokeWidth={2.5} />
           </button>
         </form>
+
+        <div className="relative py-1" aria-hidden="true">
+          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-surface dark:border-zinc-800" /></div>
+          <div className="relative flex justify-center"><span className="bg-app px-3 text-[10px] uppercase tracking-wider text-app-muted dark:bg-zinc-950">ili</span></div>
+        </div>
+        <GoogleSignInButton />
 
         {notice && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-400">{notice}</p>}
 

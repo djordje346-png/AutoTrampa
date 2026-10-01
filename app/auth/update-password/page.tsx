@@ -1,9 +1,10 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { LockKeyhole } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { getSupabase } from '@/lib/supabase';
 
 export default function UpdatePasswordPage() {
   const { updatePassword, mounted, isLoggedIn } = useAuth();
@@ -12,6 +13,31 @@ export default function UpdatePasswordPage() {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [callbackChecked, setCallbackChecked] = useState(false);
+  const exchangeStarted = useRef(false);
+
+  useEffect(() => {
+    if (exchangeStarted.current) return;
+    exchangeStarted.current = true;
+    const code = new URLSearchParams(window.location.search).get('code');
+
+    async function exchangeRecoveryCode() {
+      if (!code) {
+        setCallbackChecked(true);
+        return;
+      }
+      try {
+        const { error } = await getSupabase().auth.exchangeCodeForSession(code);
+        if (error) throw error;
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : 'Link za promenu lozinke nije važeći.');
+      } finally {
+        setCallbackChecked(true);
+      }
+    }
+
+    void exchangeRecoveryCode();
+  }, []);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -39,7 +65,7 @@ export default function UpdatePasswordPage() {
         </div>
         <h1 className="text-xl font-bold text-app-primary dark:text-zinc-100">Promeni lozinku</h1>
 
-        {!mounted ? (
+        {!mounted || !callbackChecked ? (
           <p className="mt-3 text-sm text-app-secondary dark:text-zinc-400">Proveravam link…</p>
         ) : saved ? (
           <div className="mt-4 space-y-4">
@@ -47,7 +73,7 @@ export default function UpdatePasswordPage() {
             <Link href="/profile" className="btn-primary text-sm">Nastavi u profil</Link>
           </div>
         ) : !isLoggedIn ? (
-          <p role="alert" className="mt-3 text-sm text-app-secondary dark:text-zinc-400">Link je istekao ili nije važeći. Zatraži novi link za promenu lozinke.</p>
+          <p role="alert" className="mt-3 text-sm text-app-secondary dark:text-zinc-400">{message || 'Link je istekao ili nije važeći. Zatraži novi link za promenu lozinke.'}</p>
         ) : (
           <form onSubmit={submit} className="mt-4 space-y-3">
             <label className="block text-xs font-medium text-app-secondary dark:text-zinc-400" htmlFor="new-password">Nova lozinka</label>

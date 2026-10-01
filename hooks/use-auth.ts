@@ -80,6 +80,20 @@ export function useAuth() {
     }
   }, []);
 
+  const signInWithGoogle = useCallback(async (): Promise<AuthResult> => {
+    try {
+      const { error } = await getSupabase().auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      return error ? { ok: false, message: error.message } : { ok: true };
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Google prijava nije uspela.' };
+    }
+  }, []);
+
   const signUp = useCallback(async (
     email: string,
     password: string,
@@ -143,6 +157,7 @@ export function useAuth() {
     mounted: authStoreReady && auth.ready,
     error: auth.error,
     signIn,
+    signInWithGoogle,
     signUp,
     resetPassword,
     updatePassword,
