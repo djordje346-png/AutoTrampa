@@ -34,7 +34,7 @@ export default function ProfileClient() {
 
   const { radius, bodyPrefs, phoneAfterMatch, budget, noTopUp } = preferences;
   const garageFull = !canAddCar;
-  const activeCar = selectedCar;
+  const activeCar = cars.length > 0 ? selectedCar : null;
   const usedBytes = mounted ? estimateUsageBytes() : 0;
   const usedPercent = Math.min(100, Math.round((usedBytes / STORAGE_BUDGET_BYTES) * 100));
 
