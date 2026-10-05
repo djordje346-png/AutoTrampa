@@ -1,7 +1,7 @@
 import { createBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-let browserClient: SupabaseClient | null = null;
+let browserClient: SupabaseClient<any, any, any, any, any> | null = null;
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(
@@ -13,7 +13,7 @@ export function isSupabaseConfigured(): boolean {
 
 /** Create the browser client only when a feature needs it, so public pages can
  * still render during static builds that don't have deployment secrets. */
-export function getSupabase(): SupabaseClient {
+export function getSupabase(): SupabaseClient<any, any, any, any, any> {
   if (!isSupabaseConfigured()) {
     throw new Error(
       'Supabase nije podešen. Dodaj NEXT_PUBLIC_SUPABASE_URL i NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
