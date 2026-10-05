@@ -104,7 +104,10 @@ export function useAuth() {
       const { data, error } = await getSupabase().auth.signUp({
         email,
         password,
-        options: { data: { name, phone } },
+        options: {
+          data: { name, phone },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
       if (error) return { ok: false, message: error.message };
       return { ok: true, needsEmailConfirmation: !data.session };

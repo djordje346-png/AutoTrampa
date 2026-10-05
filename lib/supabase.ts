@@ -1,4 +1,5 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 let browserClient: SupabaseClient | null = null;
 
@@ -24,12 +25,13 @@ export function getSupabase(): SupabaseClient {
     const key =
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    browserClient = createClient(url, key, {
+    browserClient = createBrowserClient(url, key, {
       auth: {
         autoRefreshToken: true,
-        // Auth callback pages exchange PKCE codes explicitly so password
-        // recovery and OAuth never race the SDK's automatic URL detection.
+        // Callback handlers exchange PKCE codes explicitly, and @supabase/ssr
+        // persists sessions in cookies shared by browser and server.
         detectSessionInUrl: false,
+        flowType: 'pkce',
         persistSession: true,
       },
     });
