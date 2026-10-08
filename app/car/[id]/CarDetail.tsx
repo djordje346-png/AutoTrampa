@@ -88,10 +88,10 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
 
   return (
     <div className="min-h-screen pb-32 md:pb-10">
-      <main id="sadrzaj" className="mx-auto w-full max-w-7xl px-4 pb-8 pt-4 sm:px-6 sm:pt-6 lg:px-8">
-        <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.9fr)] lg:items-start lg:gap-7">
+      <main id="sadrzaj" className="mx-auto w-full max-w-7xl px-4 pb-10 pt-5 sm:px-6 sm:pb-12 sm:pt-7 lg:px-8 lg:pt-8">
+        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-start lg:gap-8 xl:gap-10">
           <section className="min-w-0">
-            <div className="group relative aspect-[4/3] overflow-hidden rounded-3xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10]">
+            <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] sm:rounded-3xl lg:aspect-[3/2]">
               <div
                 className="flex h-full cursor-zoom-in transition-transform duration-300 ease-out"
                 style={{ transform: `translateX(-${activeImage * 100}%)` }}
@@ -143,14 +143,14 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             </div>
 
             {carImages.length > 1 && (
-              <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
+              <div className="mt-4 grid grid-cols-4 gap-2.5 sm:mt-5 sm:gap-3">
                 {carImages.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveImage(i)}
                     aria-label={`Izaberi sliku ${i + 1}`}
                     aria-pressed={i === activeImage}
-                    className={`aspect-[4/3] overflow-hidden rounded-xl border transition-all ${i === activeImage ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-surface opacity-75 hover:opacity-100 dark:border-zinc-800'}`}
+                    className={`aspect-[3/2] overflow-hidden rounded-xl border transition-all ${i === activeImage ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-surface opacity-75 hover:opacity-100 dark:border-zinc-800'}`}
                   >
                     <img src={img} alt="" className="h-full w-full object-cover" />
                   </button>
@@ -159,7 +159,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             )}
           </section>
 
-          <aside className="min-w-0 rounded-3xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6 lg:p-7">
+          <aside className="min-w-0 rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-7 lg:p-8">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-400">
                 Oglas za zamenu
@@ -171,20 +171,20 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               )}
             </div>
 
-            <div className="mt-4 min-w-0">
-              <h1 className="break-words text-2xl font-black leading-tight tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl">
+            <div className="mt-5 min-w-0 sm:mt-6">
+              <h1 className="break-words text-[1.75rem] font-black leading-[1.08] tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl lg:text-4xl">
                 {car.year} {car.brand} {car.model}
               </h1>
-              <p className="mt-1 text-sm text-app-muted">{car.generation} · {car.color}</p>
-              <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-app-secondary dark:text-zinc-400">
+              <p className="mt-2 text-sm text-app-muted sm:text-base">{car.generation} · {car.color}</p>
+              <p className="mt-3 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
                 <MapPin size={15} className="shrink-0 text-app-muted" />
                 {car.city}, {car.country}
               </p>
             </div>
 
-            <div className="mt-5 grid grid-cols-2 gap-2.5 border-y border-surface py-4 dark:border-zinc-800 sm:gap-3">
+            <div className="mt-6 grid grid-cols-2 gap-3 border-y border-surface py-5 dark:border-zinc-800 sm:gap-3.5">
               {specs.slice(0, 4).map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex min-w-0 items-center gap-2.5 rounded-xl bg-elevated/70 p-2.5 sm:p-3">
+                <div key={label} className="flex min-w-0 items-center gap-3 rounded-xl bg-elevated/70 p-3 sm:p-3.5">
                   <Icon size={16} className="shrink-0 text-brand-400" />
                   <div className="min-w-0">
                     <p className="text-[9px] font-semibold uppercase tracking-wider text-app-muted">{label}</p>
@@ -194,28 +194,29 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               ))}
             </div>
 
-            <div className="mt-5">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena</p>
-              <p className="mt-1 text-3xl font-black tracking-tight text-app-primary dark:text-zinc-100 sm:text-4xl">{formatEuro(car.price)}</p>
+            <div className="mt-6 rounded-2xl bg-elevated/70 px-4 py-4 sm:px-5 sm:py-5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena vozila</p>
+              <p className="mt-1 tabular-nums text-3xl font-black tracking-tight text-app-primary dark:text-zinc-100 sm:text-4xl lg:text-[2.75rem]">{formatEuro(car.price)}</p>
             </div>
 
-            <div className="mt-5 flex flex-col gap-2">
+            <div className="mt-6 flex flex-col gap-3">
               <button onClick={handleOfferClick} className="btn-primary hidden min-h-12 w-full text-sm md:flex">
                 <ArrowLeftRight size={17} className="shrink-0" />
                 Pošalji ponudu
               </button>
-              <div className="flex gap-2">
+              <div className={car.owner.phone ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-1'}>
                 <button
                   onClick={() => toggleSave(car.id)}
                   aria-pressed={isSaved}
-                  className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-200 ${isSaved ? 'border-brand-500/40 bg-brand-500/10 text-brand-400' : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface dark:border-zinc-800 dark:text-zinc-400'}`}
+                  className={`flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-200 ${isSaved ? 'border-brand-500/40 bg-brand-500/10 text-brand-400' : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface dark:border-zinc-800 dark:text-zinc-400'}`}
                 >
                   <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />
                   {isSaved ? 'Sačuvano' : 'Sačuvaj'}
                 </button>
                 {car.owner.phone && (
-                  <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex min-h-11 w-12 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary transition-all duration-200 hover:bg-hover-surface hover:text-brand-400 dark:border-zinc-800 dark:text-zinc-400">
+                  <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface hover:text-brand-400 dark:border-zinc-800 dark:text-zinc-400">
                     <Phone size={17} />
+                    <span>Pozovi</span>
                   </a>
                 )}
               </div>
@@ -223,12 +224,12 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
           </aside>
         </div>
 
-        <section className="mt-6 rounded-3xl border border-surface bg-card-surface p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:mt-8 sm:p-6">
-          <div className="mb-4 sm:mb-5">
+        <section className="mt-8 rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:mt-10 sm:rounded-3xl sm:p-7">
+          <div className="mb-5 sm:mb-6">
             <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Detalji vozila</p>
-            <h2 className="mt-1 text-xl font-bold text-app-primary dark:text-zinc-100 sm:text-2xl">Osnovne informacije</h2>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl">Osnovne informacije</h2>
           </div>
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
             {specs.map(({ icon: Icon, label, value }) => (
               <div key={label} className="min-w-0 rounded-2xl border border-surface bg-elevated/70 p-3 sm:p-4 dark:border-zinc-800">
                 <Icon size={17} className="text-brand-400" />
@@ -239,9 +240,9 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
           </div>
         </section>
 
-        <div className="mt-4 grid min-w-0 grid-cols-1 items-start gap-4 lg:mt-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.8fr)] lg:gap-5">
-          <div className="min-w-0 space-y-4">
-            <section className="rounded-3xl border border-brand-500/25 bg-brand-500/5 p-5 sm:p-6">
+        <div className="mt-6 grid min-w-0 grid-cols-1 items-start gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.8fr)] lg:gap-7">
+          <div className="min-w-0 space-y-5 sm:space-y-6">
+            <section className="rounded-2xl border border-brand-500/25 bg-brand-500/5 p-5 sm:rounded-3xl sm:p-7">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
                   <ArrowLeftRight size={19} />
@@ -256,20 +257,20 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               </div>
             </section>
 
-            <section className="rounded-3xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+            <section className="rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-7">
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Opis oglasa</p>
               <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O automobilu</h2>
-              <p className="mt-3 whitespace-pre-line break-words text-sm leading-7 text-app-secondary dark:text-zinc-400">{car.description}</p>
+              <p className="mt-4 whitespace-pre-line break-words text-sm leading-7 text-app-secondary dark:text-zinc-400 sm:mt-5 sm:text-base">{car.description}</p>
             </section>
 
             <section className="overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-              <div className="border-b border-surface px-5 py-4 dark:border-zinc-800 sm:px-6">
+              <div className="border-b border-surface px-5 py-5 dark:border-zinc-800 sm:px-7 sm:py-6">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Tehnički podaci</p>
                 <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Motor i performanse</h2>
               </div>
               <div className="divide-y divide-surface dark:divide-zinc-800">
                 {engineDetails.map(({ label, value }) => (
-                  <div key={label} className="flex items-center justify-between gap-4 px-5 py-3 sm:px-6">
+                  <div key={label} className="flex items-center justify-between gap-4 px-5 py-3.5 sm:px-7">
                     <span className="text-sm text-app-muted">{label}</span>
                     <span className="text-right text-sm font-semibold text-app-secondary dark:text-zinc-400">{value}</span>
                   </div>
@@ -346,7 +347,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             )}
           </div>
 
-          <aside className="min-w-0 space-y-4">
+          <aside className="min-w-0 space-y-5 sm:space-y-6 lg:sticky lg:top-6">
             <section className="rounded-3xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
               <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O vlasniku</h2>
