@@ -26,17 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      <main
-        id="sadrzaj"
-        className="
-          mx-auto
-          min-h-screen
-          w-full
-          max-w-[1600px]
-          pb-28
-          md:pb-24
-        "
-      >
+      <main id="sadrzaj" className="min-h-screen w-full pb-28 md:pb-24">
         {children}
       </main>
 

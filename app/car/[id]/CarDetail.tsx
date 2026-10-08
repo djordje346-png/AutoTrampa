@@ -115,7 +115,7 @@ export default function CarDetail({ car }: { car: Car }) {
     <div className="min-h-screen pb-28 md:pb-10">
       <section
         id="oglas"
-        className="mx-auto w-full max-w-7xl px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-6 lg:px-8 lg:pt-8"
+        className="app-container pb-10 pt-4 sm:pb-12 sm:pt-6 lg:pt-8"
       >
         {/* Gallery and the summary panel share one row on desktop. */}
         <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-stretch lg:gap-8 xl:gap-10">

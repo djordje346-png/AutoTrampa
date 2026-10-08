@@ -153,6 +153,11 @@ route views must use `<section>`/`<div>` and must not repeat that id.
 - **Numbers**: `formatEuro` and `formatKm` from `lib/cars.ts`. Never call a bare
   `toLocaleString()` — it resolves differently on the Node server than in the browser and shows up
   as a hydration mismatch.
+- **Layout width**: every page header and every page body uses `.app-container` (and sticky headers
+  use `.app-page-header` with the container inside it, so the background stays full-bleed while the
+  title lines up with the content below). Never re-state `max-w-*` or horizontal `px-*` per screen —
+  a divergence there is what makes a header look off-centre against its cards. Vertical padding
+  stays per screen. The grid in `app/page.tsx` is the reference implementation.
 - **No context providers**: state is module-level stores, by design.
 
 ## Supabase setup

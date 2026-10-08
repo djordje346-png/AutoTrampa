@@ -76,7 +76,8 @@ export default function SearchClient() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 pt-4 pb-3 safe-top">
+      <header className="app-page-header safe-top">
+        <div className="app-container pt-4 pb-3">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Pretraga</h1>
           {mounted && showTrade && selectedCar && (
@@ -156,9 +157,10 @@ export default function SearchClient() {
             </button>
           ))}
         </div>
+        </div>
       </header>
 
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+      <div className="app-container pt-4 pb-2 flex items-center justify-between">
         <p className="text-xs text-app-muted">
           {results.length === 0 ? 'Nema rezultata' : `${results.length} rezultata`}
         </p>
@@ -173,7 +175,7 @@ export default function SearchClient() {
         )}
       </div>
 
-      <div className="px-4 space-y-3 pb-4">
+      <div className="app-container space-y-3 pb-4">
         {results.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">

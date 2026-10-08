@@ -172,8 +172,8 @@ export default function FeedPage() {
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 safe-top">
-        <header className="px-4 py-3">
+      <div className="app-page-header safe-top">
+        <header className="app-container py-3">
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <div className="flex-shrink-0">
               <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">AutoTrampa</h1>
@@ -296,7 +296,7 @@ export default function FeedPage() {
         {/* Trade filter bar */}
         {showTrade && (
         <div className="border-t border-surface dark:border-zinc-800/50">
-          <div className="flex items-center gap-1.5 px-4 py-2 overflow-x-auto scrollbar-hide">
+          <div className="app-container flex items-center gap-1.5 py-2 overflow-x-auto scrollbar-hide">
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
                 key={key}
@@ -323,7 +323,7 @@ export default function FeedPage() {
       </div>
 
       {authReady && isLoggedIn && cars.length === 0 && (
-        <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="app-container mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-brand-text">Dodaj svoj auto da vidiš doplatu</p>
             <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
@@ -341,7 +341,7 @@ export default function FeedPage() {
       )}
 
       {authReady && !isLoggedIn && (
-        <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="app-container mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-brand-text">Koliko je doplata za tebe?</p>
             <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
@@ -359,7 +359,7 @@ export default function FeedPage() {
 
       {/* No results */}
       {filteredCars.length === 0 && (
-        <div className="px-4 pt-8 flex flex-col items-center text-center">
+        <div className="app-container pt-8 flex flex-col items-center text-center">
           <div className="w-14 h-14 rounded-full bg-elevated flex items-center justify-center mb-3">
             <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
@@ -593,7 +593,7 @@ export default function FeedPage() {
          * real cards, and it is the exact complement of the block below, so the
          * list is never empty during loading.
          */
-        <div className="mx-auto mt-3 grid w-full max-w-7xl grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2 sm:gap-4 sm:px-5 lg:grid-cols-3 lg:gap-5 lg:px-6">
+        <div className="app-container mt-3 grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
@@ -615,7 +615,7 @@ export default function FeedPage() {
       )}
 
       {viewMode === 'grid' && marketplaceReady && (
-        <div className="mx-auto mt-3 grid w-full max-w-7xl grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2 sm:gap-4 sm:px-5 lg:grid-cols-3 lg:gap-5 lg:px-6">
+        <div className="app-container mt-3 grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const carSaved = isSaved(car.id);

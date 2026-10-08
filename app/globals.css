@@ -219,6 +219,45 @@
   }
 }
 
+/* App-shell layout: one container rule shared by page headers and page content
+   so a title always lines up with the cards below it. Defined as component
+   classes so a plain `className` assignment is enough — no tailwind-merge
+   dependency at call sites. */
+@layer components {
+  .app-container {
+    width: 100%;
+    max-width: 80rem; /* 1280px = max-w-7xl */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  @media (min-width: 640px) {
+    .app-container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .app-container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  /* Sticky page header that scrolls with the content it belongs to. */
+  .app-page-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid hsl(var(--surface-border));
+    background-color: hsl(var(--surface-base));
+  }
+  .dark .app-page-header {
+    border-color: hsl(240 4% 16%);
+    background-color: hsl(240 10% 3.9%);
+  }
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;

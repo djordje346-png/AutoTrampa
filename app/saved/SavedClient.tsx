@@ -52,10 +52,12 @@ export default function SavedClient() {
   if (!mounted) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
+        <header className="app-page-header safe-top">
+          <div className="app-container py-4">
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
+          </div>
         </header>
-        <div className="space-y-3 px-4 pt-6">
+        <div className="app-container space-y-3 pt-6">
           <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
           <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
         </div>
@@ -65,8 +67,8 @@ export default function SavedClient() {
 
   return (
     <div className="flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-4 safe-top">
-        <div className="flex items-center justify-between gap-3">
+      <header className="app-page-header safe-top">
+        <div className="app-container flex items-center justify-between gap-3 py-4">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
             <p className="mt-0.5 text-xs text-app-muted">
@@ -86,7 +88,7 @@ export default function SavedClient() {
         </div>
       </header>
 
-      <div className="space-y-3 px-4 pb-4 pt-4">
+      <div className="app-container space-y-3 pb-4 pt-4">
         {savedCars.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated/60">

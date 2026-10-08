@@ -835,7 +835,7 @@ export default function CarFormComponent({
       {/* HEADER */}
       <header className="shrink-0 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 safe-top">
 
-        <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
+        <div className="app-container flex h-16 items-center justify-between">
 
           <div>
             <h1 className="text-base font-bold text-app-primary dark:text-zinc-100 sm:text-lg">
@@ -876,7 +876,7 @@ export default function CarFormComponent({
       {/* CONTENT */}
       <div className="min-h-0 flex-1 overflow-y-auto">
 
-        <div className="mx-auto w-full max-w-[1100px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="app-container py-6 sm:py-8">
 
           <div className="mb-7">
 

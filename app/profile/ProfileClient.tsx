@@ -67,10 +67,12 @@ export default function ProfileClient() {
   if (!mounted || !authReady) {
     return (
       <div className="flex flex-col">
-        <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+        <header className="app-page-header safe-top">
+          <div className="app-container py-4">
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+          </div>
         </header>
-        <div className="px-4 pt-6 space-y-3">
+        <div className="app-container pt-6 space-y-3">
           <div className="h-32 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
           <div className="h-24 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
         </div>
@@ -80,11 +82,13 @@ export default function ProfileClient() {
 
   return (
     <div className="flex flex-col pb-6">
-      <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 py-4 safe-top">
-        <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+      <header className="app-page-header safe-top">
+        <div className="app-container py-4">
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+        </div>
       </header>
 
-      <div className="px-4 pt-5 pb-4">
+      <div className="app-container pt-5 pb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-5">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/20">
@@ -133,7 +137,7 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      <div className="px-4 mb-4">
+      <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -179,7 +183,7 @@ export default function ProfileClient() {
       </div>
 
       {/* THEME TOGGLE */}
-      <div className="px-4 mb-4">
+      <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             {theme === 'dark' ? <Moon size={16} className="text-brand-text" /> : <Sun size={16} className="text-brand-text" />}
@@ -209,7 +213,7 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      <div className="px-4 mb-4">
+      <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-4">
             <SlidersHorizontal size={16} className="text-brand-text" />
@@ -294,7 +298,7 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      <div className="px-4 mb-4">
+      <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             <Lock size={16} className="text-brand-text" />
@@ -321,7 +325,7 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      <div className="px-4 mb-4">
+      <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             <HelpCircle size={16} className="text-brand-text" />
@@ -380,7 +384,7 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      <div className="px-4 mb-4">
+      <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
             <Database size={16} className="text-brand-text" />
@@ -407,7 +411,7 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      <div className="px-4 mb-6">
+      <div className="app-container mb-6">
         <button
           onClick={logout}
           className="w-full flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500/15 text-tone-negative font-semibold py-3.5 rounded-xl text-sm border border-rose-500/20 transition-all duration-200"
