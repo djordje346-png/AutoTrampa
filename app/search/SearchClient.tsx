@@ -74,9 +74,9 @@ export default function SearchClient() {
           {mounted && showTrade && (
             <Link
               href="/garage"
-              className="flex items-center gap-1.5 text-xs text-app-muted hover:text-brand-400 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-app-muted hover:text-brand-text transition-colors"
             >
-              <TrendingUp size={13} className="text-brand-400" />
+              <TrendingUp size={13} className="text-brand-text" />
               {selectedCar.brand} {selectedCar.model}
             </Link>
           )}
@@ -140,7 +140,7 @@ export default function SearchClient() {
               onClick={() => setSortBy(key)}
               className={`flex-shrink-0 whitespace-nowrap text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
                 (sortBy === key || (sortBy === 'trade' && !showTrade && key === 'price-asc'))
-                  ? 'text-brand-400 bg-brand-500/10'
+                  ? 'text-brand-text bg-brand-500/10'
                   : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
               }`}
             >
@@ -157,7 +157,7 @@ export default function SearchClient() {
         {hasFilters && (
           <button
             onClick={() => { setQuery(''); setActiveType(null); }}
-            className="text-xs text-brand-400 hover:text-brand-400 transition-colors flex items-center gap-1"
+            className="text-xs text-brand-text hover:text-brand-text transition-colors flex items-center gap-1"
           >
             <X size={12} />
             Očisti
@@ -201,28 +201,33 @@ export default function SearchClient() {
                         {tl.short}
                       </span>
                     )}
+                    {!car.ownerId && (
+                      <span className="absolute left-1 top-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                        Demo
+                      </span>
+                    )}
                   </Link>
 
                   <div className="min-w-0 flex-1 p-3">
                     <div className="flex items-start justify-between gap-2">
                       <Link href={`/car/${car.id}`} className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-400">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text">
                           {bodyLabel(car.bodyType)}
                         </p>
-                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary dark:text-zinc-100 transition-colors hover:text-brand-400">
+                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary dark:text-zinc-100 transition-colors hover:text-brand-text">
                           {car.year} {car.brand} {car.model}
                         </h3>
                         <p className="text-xs text-app-muted">{car.generation}</p>
                       </Link>
                       <div className="flex flex-shrink-0 items-start gap-2">
-                        <p className="text-sm font-bold text-app-primary dark:text-zinc-400">{formatEuro(car.price)}</p>
+                        <p className="text-sm font-bold text-app-primary">{formatEuro(car.price)}</p>
                         <button
                           onClick={() => toggleSave(car.id)}
                           aria-label={saved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
                           className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
                             saved
-                              ? 'bg-rose-500/10 text-rose-400'
-                              : 'text-app-muted hover:bg-hover-surface hover:text-rose-400'
+                              ? 'bg-rose-500/10 text-tone-negative'
+                              : 'text-app-muted hover:bg-hover-surface hover:text-tone-negative'
                           }`}
                         >
                           <Heart size={14} fill={saved ? 'currentColor' : 'none'} />

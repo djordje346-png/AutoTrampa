@@ -1,0 +1,19 @@
+# Vercel reads .vercelignore on top of .gitignore. Everything listed here is
+# already ignored by git, so the list only matters for CLI/API deploys.
+
+node_modules
+.next
+out
+build
+coverage
+.vercel
+
+# Local env files must never reach a deployment.
+.env
+.env*.local
+
+# Stray local artefacts.
+*.log
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts

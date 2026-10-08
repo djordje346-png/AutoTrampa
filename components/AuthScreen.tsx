@@ -137,7 +137,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
               className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                 tab === key
                   ? 'bg-brand-500 text-zinc-950'
-                  : 'text-app-secondary dark:text-zinc-400 hover:text-app-primary dark:text-zinc-100'
+                  : 'text-app-secondary hover:text-app-primary'
               }`}
             >
               {key === 'login' ? 'Prijavi se' : 'Registruj se'}
@@ -171,7 +171,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
           {tab === 'register' && (
             <div>
               <label htmlFor="auth-phone" className="mb-1.5 block text-xs font-medium text-app-secondary dark:text-zinc-400">
-                Broj telefona <span className="text-brand-400">(obavezno)</span>
+                Broj telefona <span className="text-brand-text">(obavezno)</span>
               </label>
               <div className="relative">
                 <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
@@ -247,7 +247,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
                 type="button"
                 onClick={handlePasswordReset}
                 disabled={submitting}
-                className="text-xs text-brand-400 transition-colors hover:text-brand-400"
+                className="text-xs text-brand-text transition-colors hover:text-brand-text"
               >
                 Zaboravili ste lozinku?
               </button>
@@ -270,14 +270,14 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
         </div>
         <GoogleSignInButton />
 
-        {notice && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-400">{notice}</p>}
+        {notice && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5 text-sm text-tone-positive">{notice}</p>}
 
         <p className="text-center text-xs text-app-muted">
           {tab === 'login' ? 'Nemate nalog? ' : 'Već imate nalog? '}
           <button
             type="button"
             onClick={() => switchTab(tab === 'login' ? 'register' : 'login')}
-            className="font-medium text-brand-400 transition-colors hover:text-brand-400"
+            className="font-medium text-brand-text transition-colors hover:text-brand-text"
           >
             {tab === 'login' ? 'Registruj se' : 'Prijavi se'}
           </button>
@@ -294,7 +294,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-400">
+    <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-tone-negative">
       <TriangleAlert size={12} className="flex-shrink-0" />
       {message}
     </p>

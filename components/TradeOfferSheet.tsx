@@ -70,7 +70,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
       {sent ? (
         <div className="flex flex-col items-center py-4">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
-            <CheckCircle size={36} className="text-emerald-400" />
+            <CheckCircle size={36} className="text-tone-positive" />
           </div>
           <h3 className="mb-2 text-lg font-bold text-app-primary dark:text-zinc-100">Ponuda poslata!</h3>
           <p className="mb-1 text-center text-sm text-app-secondary dark:text-zinc-400">
@@ -106,7 +106,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
               <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
                 {myCar.brand} {myCar.model}
               </p>
-              <p className="text-sm font-bold text-brand-400 dark:text-zinc-400">{formatEuro(myCar.price)}</p>
+              <p className="text-sm font-bold text-brand-text">{formatEuro(myCar.price)}</p>
             </div>
             <ArrowLeftRight size={20} className="flex-shrink-0 text-app-muted" />
             <div className="min-w-0 flex-1 rounded-xl bg-elevated p-3 text-center">
@@ -114,7 +114,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
               <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
                 {car.brand} {car.model}
               </p>
-              <p className="text-sm font-bold text-brand-400 dark:text-zinc-400">{formatEuro(car.price)}</p>
+              <p className="text-sm font-bold text-brand-text">{formatEuro(car.price)}</p>
             </div>
           </div>
 

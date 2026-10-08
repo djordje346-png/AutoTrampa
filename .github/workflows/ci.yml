@@ -1,0 +1,23 @@
+name: CI
+
+# Vercel already runs `npm run build` (which typechecks) on every push, so this
+# exists to fail fast on a PR before a preview deployment is built, and to run
+# the linter as its own visible signal.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint

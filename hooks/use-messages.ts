@@ -82,8 +82,11 @@ function mapConversation(row: ConversationRow, userId: string): Conversation | n
   };
 }
 
-export function useMessages() {
+export function useMessages(options?: { poll?: boolean }) {
   const { userId } = useAuth();
+  // The footer asks for unread counts on every route, but polling belongs to
+  // the Poruke screen: anywhere else this only subscribes for the badge.
+  const poll = options?.poll ?? true;
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -121,14 +124,22 @@ export function useMessages() {
       await refresh();
     };
     void load();
-    const timer = window.setInterval(load, 20_000);
-    window.addEventListener('focus', load);
+
+    const timer = poll ? window.setInterval(load, 20_000) : null;
+    // Coming back to the tab is the other moment the count can be stale.
+    // Only refresh when there is a session, so signed-out browsing stays quiet.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void load();
+    };
+    window.addEventListener('focus', onVisible);
+    document.addEventListener('visibilitychange', onVisible);
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
-      window.removeEventListener('focus', load);
+      if (timer !== null) window.clearInterval(timer);
+      window.removeEventListener('focus', onVisible);
+      document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [refresh, userId]);
+  }, [poll, refresh, userId]);
 
   const sendMessage = useCallback(async (conversationId: string, text: string) => {
     const body = text.trim().slice(0, 1000);

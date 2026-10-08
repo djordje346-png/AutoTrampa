@@ -115,7 +115,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
               type="button"
               onClick={() => removeImage(index)}
               aria-label={`Ukloni sliku ${index + 1}`}
-              className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition hover:text-rose-400"
+              className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition hover:text-tone-negative"
             >
               <X size={14} />
             </button>
@@ -137,10 +137,10 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
               onChange={handleFileChange}
               className="hidden"
             />
-            <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-hover-surface text-app-muted transition group-hover:text-brand-400">
+            <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-hover-surface text-app-muted transition group-hover:text-brand-text">
               {busy ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
             </div>
-            <span className="text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition group-hover:text-brand-400">
+            <span className="text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition group-hover:text-brand-text">
               {busy ? 'Obrada…' : 'Dodaj sliku'}
             </span>
             <span className="mt-0.5 text-[9px] text-app-muted">JPG, PNG, WebP</span>

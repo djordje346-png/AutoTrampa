@@ -198,7 +198,7 @@ interface CarFormFieldsProps {
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="mt-1.5 text-xs font-medium text-rose-400">
+    <p role="alert" className="mt-1.5 text-xs font-medium text-tone-negative">
       {message}
     </p>
   );
@@ -494,7 +494,7 @@ function CarFormFields({
                   ${
                     active
                       ? 'border-brand-500 bg-brand-500 text-zinc-950'
-                      : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
+                      : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary'
                   }
                 `}
               >
@@ -705,7 +705,7 @@ function CarFormFields({
               <div key={category.id}>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-7 h-7 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                    <CatIcon size={14} className="text-brand-400" />
+                    <CatIcon size={14} className="text-brand-text" />
                   </div>
                   <p className="text-xs font-bold text-app-primary dark:text-zinc-100">{category.label}</p>
                 </div>
@@ -724,7 +724,7 @@ function CarFormFields({
                           ${
                             active
                               ? 'border-brand-500 bg-brand-500 text-zinc-950'
-                              : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
+                              : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary'
                           }
                         `}
                       >
@@ -853,7 +853,7 @@ export default function CarFormComponent({
             type="button"
             onClick={onCancel}
             aria-label="Zatvori"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary"
           >
             <svg
               width="18"
@@ -874,7 +874,7 @@ export default function CarFormComponent({
       </header>
 
       {/* CONTENT */}
-      <main className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
 
         <div className="mx-auto w-full max-w-[1100px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 
@@ -908,7 +908,7 @@ export default function CarFormComponent({
           <div className="h-8" />
 
         </div>
-      </main>
+      </div>
 
       {/* ACTION BUTTONS */}
       <div
@@ -925,14 +925,14 @@ export default function CarFormComponent({
           <button
             type="button"
             onClick={onCancel}
-            className="h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 text-sm font-semibold text-app-secondary dark:text-zinc-400 transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100 active:scale-[0.98]"
+            className="h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98]"
           >
             Otkaži
           </button>
 
           {/* OBJAVI OGLAS */}
           {submitted && !isValid && (
-            <p role="alert" className="w-full text-center text-xs font-medium text-rose-400">
+            <p role="alert" className="w-full text-center text-xs font-medium text-tone-negative">
               Popuni obavezna polja označena crvenim.
             </p>
           )}

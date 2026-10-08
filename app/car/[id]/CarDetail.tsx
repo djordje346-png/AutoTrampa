@@ -11,15 +11,17 @@ import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
-import { useMarketplace } from '@/hooks/use-marketplace';
 import { ImageLightbox } from '@/components/ImageLightbox';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { toast } from 'sonner';
 
-export default function CarDetail({ car: initialCar, carId }: { car: Car | null; carId: string }) {
+/**
+ * The listing view. The listing itself is resolved on the server (see
+ * `page.tsx`), so this component always receives a car and never has to show a
+ * client-side "loading" or "not found" state.
+ */
+export default function CarDetail({ car }: { car: Car }) {
   const router = useRouter();
-  const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
-  const car = initialCar ?? marketplaceCars.find((item) => item.id === carId) ?? null;
   const { selectedCar, mounted: garageMounted } = useGarage();
   const { isSaved: isCarSaved, toggleSave } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
@@ -28,14 +30,6 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  if (!car) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-lg font-bold text-app-primary dark:text-zinc-100">{marketplaceReady ? 'Oglas nije pronađen' : 'Učitavam oglas…'}</h1>
-        {marketplaceReady && <button onClick={() => router.push('/')} className="mt-4 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-zinc-950">Nazad na oglase</button>}
-      </div>
-    );
-  }
   const currentCar = car;
 
   async function shareCar() {
@@ -88,7 +82,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
 
   return (
     <div className="min-h-screen pb-32 md:pb-10">
-      <main id="sadrzaj" className="mx-auto w-full max-w-7xl px-4 pb-10 pt-5 sm:px-6 sm:pb-12 sm:pt-7 lg:px-8 lg:pt-8">
+      <section id="oglas" className="mx-auto w-full max-w-7xl px-4 pb-10 pt-5 sm:px-6 sm:pb-12 sm:pt-7 lg:px-8 lg:pt-8">
         <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-stretch lg:gap-8 xl:gap-10">
           <section className="min-w-0">
             <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] sm:rounded-3xl lg:aspect-square xl:aspect-[4/3]">
@@ -146,12 +140,17 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
 
           <aside className="flex min-w-0 flex-col rounded-2xl border border-surface bg-card-surface p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-400">
+              <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-text">
                 Oglas za zamenu
               </span>
               {showTrade && (
                 <span className={`rounded-full border px-3 py-1 text-[11px] font-bold ${tl.bg} ${tl.color}`}>
                   {tl.label}
+                </span>
+              )}
+              {!car.ownerId && (
+                <span className="rounded-full border border-surface bg-elevated px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-app-muted">
+                  Demo oglas
                 </span>
               )}
             </div>
@@ -171,7 +170,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               {specs.map(({ icon: Icon, label, value }) => (
                 <div key={label} className="min-w-0 rounded-xl bg-elevated/70 p-2 sm:p-2.5">
                   <div className="flex min-w-0 items-center gap-1">
-                    <Icon size={13} className="shrink-0 text-brand-400" />
+                    <Icon size={13} className="shrink-0 text-brand-text" />
                     <p className="truncate text-[8px] font-semibold uppercase leading-tight tracking-wider text-app-muted sm:text-[9px]">{label}</p>
                   </div>
                   <p className="mt-1 truncate pl-4 text-[10px] font-bold leading-tight text-app-primary dark:text-zinc-100 sm:text-[11px]">{value}</p>
@@ -193,13 +192,13 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                 <button
                   onClick={() => toggleSave(car.id)}
                   aria-pressed={isSaved}
-                  className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-200 ${isSaved ? 'border-brand-500/40 bg-brand-500/10 text-brand-400' : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface dark:border-zinc-800 dark:text-zinc-400'}`}
+                  className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-200 ${isSaved ? 'border-brand-500/40 bg-brand-500/10 text-brand-text' : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface dark:border-zinc-800'}`}
                 >
                   <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />
                   {isSaved ? 'Sačuvano' : 'Sačuvaj'}
                 </button>
                 {car.owner.phone && (
-                  <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface hover:text-brand-400 dark:border-zinc-800 dark:text-zinc-400">
+                  <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface hover:text-brand-text dark:border-zinc-800">
                     <Phone size={17} />
                     <span>Pozovi</span>
                   </a>
@@ -213,11 +212,11 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
           <div className="min-w-0 space-y-5 sm:space-y-6">
             <section className="rounded-2xl border border-brand-500/25 bg-brand-500/5 p-5 sm:rounded-3xl sm:p-7">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-text">
                   <ArrowLeftRight size={19} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-brand-400">Dogovor o zameni</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Dogovor o zameni</p>
                   <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100 sm:text-xl">Šta vlasnik traži?</h2>
                   <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
                     Vlasnik prima ponude za zamenu. Predstavi automobil koji nudiš, a detalje dogovorite direktno kroz ponudu.
@@ -259,13 +258,13 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                     return (
                       <div key={category.id}>
                         <div className="mb-2 flex items-center gap-2">
-                          <CatIcon size={14} className="text-brand-400" />
+                          <CatIcon size={14} className="text-brand-text" />
                           <p className="text-[11px] font-bold uppercase tracking-wider text-app-secondary dark:text-zinc-400">{category.label}</p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {items.map((item) => (
                             <span key={item.id} className="inline-flex items-center gap-1.5 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs font-medium text-app-secondary dark:border-zinc-800 dark:text-zinc-400">
-                              <Check size={12} className="text-brand-400" />
+                              <Check size={12} className="text-brand-text" />
                               {item.label}
                             </span>
                           ))}
@@ -329,7 +328,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                   <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
-                  <Star size={13} className="fill-brand-400 text-brand-400" />
+                  <Star size={13} className="fill-brand-500 text-brand-500" />
                   <span className="text-xs font-bold text-app-primary dark:text-zinc-100">{car.owner.rating.toFixed(1)}</span>
                 </div>
               </div>
@@ -338,7 +337,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                 <span className="text-sm font-semibold text-app-secondary dark:text-zinc-400">{car.owner.rating.toFixed(1)} / 5</span>
               </div>
               {car.owner.phone && (
-                <a href={`tel:${car.owner.phone}`} className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-surface bg-elevated text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-brand-400 dark:border-zinc-800 dark:text-zinc-400">
+                <a href={`tel:${car.owner.phone}`} className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-surface bg-elevated text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-brand-text dark:border-zinc-800">
                   <Phone size={16} />
                   Pozovi vlasnika
                 </a>
@@ -349,7 +348,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Preuzimanje vozila</p>
               <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Lokacija</h2>
               <div className="mt-4 flex items-start gap-3 rounded-2xl bg-elevated p-4">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-brand-400" />
+                <MapPin size={18} className="mt-0.5 shrink-0 text-brand-text" />
                 <div className="min-w-0">
                   <p className="break-words text-sm font-semibold text-app-primary dark:text-zinc-100">{car.city}</p>
                   <p className="mt-0.5 text-xs text-app-muted">{car.country}</p>
@@ -358,7 +357,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             </section>
           </aside>
         </div>
-      </main>
+      </section>
 
       <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 border-t border-surface bg-app/95 px-4 py-3 shadow-lg backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/95">
         <div className="mx-auto flex w-full max-w-md gap-2">
@@ -367,7 +366,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             <span className="truncate">Pošalji ponudu</span>
           </button>
           {car.owner.phone && (
-            <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-400 dark:border-zinc-800 dark:text-zinc-400">
+            <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-zinc-800">
               <Phone size={17} />
             </a>
           )}

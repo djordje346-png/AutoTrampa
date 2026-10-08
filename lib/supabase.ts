@@ -29,7 +29,9 @@ export function getSupabase(): SupabaseClient<any, any, any, any, any> {
       auth: {
         autoRefreshToken: true,
         // Callback handlers exchange PKCE codes explicitly, and @supabase/ssr
-        // persists sessions in cookies shared by browser and server.
+        // persists sessions in cookies shared by browser and server. Middleware
+        // (middleware.ts) refreshes those cookies; without it the session would
+        // only be current while a tab is open.
         detectSessionInUrl: false,
         flowType: 'pkce',
         persistSession: true,

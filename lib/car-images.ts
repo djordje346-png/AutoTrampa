@@ -1,5 +1,16 @@
 import { getSupabase } from '@/lib/supabase';
 
+/**
+ * `crypto.randomUUID` only exists in a secure context, which a phone testing
+ * against a LAN address (http://192.168.x.x:3000) is not.
+ */
+function randomId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 function publicObjectPath(url: string): string | null {
   const marker = '/storage/v1/object/public/car-images/';
   const position = url.indexOf(marker);
@@ -19,7 +30,7 @@ export async function uploadCarImages(userId: string, images: string[]) {
 
       const blob = await fetch(image).then((response) => response.blob());
       const extension = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg';
-      const path = `${userId}/${crypto.randomUUID()}-${index}.${extension}`;
+      const path = `${userId}/${randomId()}-${index}.${extension}`;
       const { error } = await supabase.storage.from('car-images').upload(path, blob, {
         cacheControl: '31536000',
         contentType: blob.type || 'image/jpeg',

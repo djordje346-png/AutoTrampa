@@ -30,7 +30,7 @@ export function SignedOut({ title, description, reason }: SignedOutProps) {
 
       <Link
         href="/"
-        className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-app-muted transition-colors hover:text-brand-400"
+        className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-app-muted transition-colors hover:text-brand-text"
       >
         <ArrowLeftRight size={12} />
         Pregledaj oglase bez naloga

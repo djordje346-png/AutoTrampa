@@ -7,7 +7,7 @@ export default function NotFound() {
       <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated">
         <Compass size={34} className="text-app-muted" />
       </div>
-      <p className="text-4xl font-black tracking-tight text-brand-400">404</p>
+      <p className="text-4xl font-black tracking-tight text-brand-text">404</p>
       <h1 className="mt-2 text-lg font-bold text-app-primary dark:text-zinc-100">Stranica nije pronađena</h1>
       <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
         Oglas je možda uklonjen ili adresa nije ispravna.

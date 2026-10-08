@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { MARKETPLACE_CARS } from '@/lib/cars';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://autotrampa.netlify.app';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://autotrampa.vercel.app';
 
 /** Only the publicly browsable surface — the personal screens are noindex. */
 export default function sitemap(): MetadataRoute.Sitemap {

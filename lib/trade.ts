@@ -76,7 +76,7 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
       diff,
       label: 'Ravna zamena',
       short: 'Ravno',
-      color: 'text-emerald-400',
+      color: 'text-tone-positive',
       bg: 'bg-emerald-500/10 border-emerald-500/30',
     };
   }
@@ -87,7 +87,7 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
       diff,
       label: `Tvoja doplata ${formatEuro(diff)}`,
       short: `+${formatEuro(diff)}`,
-      color: 'text-rose-400',
+      color: 'text-tone-negative',
       bg: 'bg-rose-500/10 border-rose-500/30',
     };
   }
@@ -97,7 +97,7 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
     diff,
     label: `Vlasnik doplaćuje ${formatEuro(Math.abs(diff))}`,
     short: `−${formatEuro(Math.abs(diff))}`,
-    color: 'text-sky-400',
+    color: 'text-tone-info',
     bg: 'bg-sky-500/10 border-sky-500/30',
   };
 }

@@ -99,8 +99,8 @@ export default function ProfileClient() {
               </div>
               {user.verified && (
                 <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1">
-                  <Shield size={11} className="text-emerald-400" />
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Verifikovan vozač</span>
+                  <Shield size={11} className="text-tone-positive" />
+                  <span className="text-[10px] font-bold text-tone-positive uppercase tracking-wider">Verifikovan vozač</span>
                 </div>
               )}
             </div>
@@ -108,7 +108,7 @@ export default function ProfileClient() {
             <button
               onClick={() => setShowEditProfile(true)}
               aria-label="Uredi profil"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:bg-hover-surface hover:text-brand-400"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:bg-hover-surface hover:text-brand-text"
             >
               <Pencil size={15} />
             </button>
@@ -119,12 +119,12 @@ export default function ProfileClient() {
               <p className="text-base font-bold text-app-primary dark:text-zinc-100">{user.trades}</p>
               <p className="text-[10px] text-app-muted">Trampi</p>
             </div>
-            <div className="w-px h-8 bg-surface" />
+            <div className="w-px h-8 bg-surface dark:bg-zinc-800" />
             <div className="flex-1 text-center">
               <p className="text-base font-bold text-app-primary dark:text-zinc-100">{cars.length}</p>
               <p className="text-[10px] text-app-muted">Vozila</p>
             </div>
-            <div className="w-px h-8 bg-surface" />
+            <div className="w-px h-8 bg-surface dark:bg-zinc-800" />
             <div className="flex-1 text-center">
               <p className="text-base font-bold text-app-primary dark:text-zinc-100">{user.rating}</p>
               <p className="text-[10px] text-app-muted">Ocena</p>
@@ -137,7 +137,7 @@ export default function ProfileClient() {
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Car size={16} className="text-brand-400" />
+              <Car size={16} className="text-brand-text" />
               <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Moja garaža</p>
             </div>
             <span className="text-xs font-semibold text-app-secondary dark:text-zinc-400 bg-elevated px-2.5 py-1 rounded-full">
@@ -153,23 +153,23 @@ export default function ProfileClient() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-app-primary dark:text-zinc-100 truncate">{activeCar.brand} {activeCar.model} {activeCar.generation}</p>
                 <p className="text-xs text-app-muted">{activeCar.year} · {formatKm(activeCar.mileage)}</p>
-                <p className="text-brand-400 text-xs font-bold mt-0.5 dark:text-zinc-400">{formatEuro(activeCar.price)}</p>
+                <p className="text-brand-text text-xs font-bold mt-0.5 dark:text-zinc-400">{formatEuro(activeCar.price)}</p>
               </div>
               <div className="flex items-center gap-1 bg-brand-500/10 border border-brand-500/30 rounded-full px-2 py-0.5">
-                <span className="text-[9px] font-bold text-brand-400 uppercase">Aktivno</span>
+                <span className="text-[9px] font-bold text-brand-text uppercase">Aktivno</span>
               </div>
             </div>
           )}
 
           {garageFull ? (
             <div className="flex items-center gap-2.5 bg-brand-500/5 border border-brand-500/20 rounded-xl p-3">
-              <AlertTriangle size={15} className="text-brand-400 flex-shrink-0" />
-              <p className="text-xs text-brand-400 font-medium">Dostignut besplatni limit od 3 vozila</p>
+              <AlertTriangle size={15} className="text-brand-text flex-shrink-0" />
+              <p className="text-xs text-brand-text font-medium">Dostignut besplatni limit od 3 vozila</p>
             </div>
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="w-full flex items-center justify-center gap-2 border border-dashed border-surface dark:border-zinc-800 hover:border-brand-500/50 hover:bg-brand-500/5 text-brand-400 text-sm font-semibold rounded-xl py-3 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 border border-dashed border-surface dark:border-zinc-800 hover:border-brand-500/50 hover:bg-brand-500/5 text-brand-text text-sm font-semibold rounded-xl py-3 transition-all duration-200"
             >
               <Plus size={16} strokeWidth={2.5} />
               Dodaj auto u garažu
@@ -182,7 +182,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            {theme === 'dark' ? <Moon size={16} className="text-brand-400" /> : <Sun size={16} className="text-brand-400" />}
+            {theme === 'dark' ? <Moon size={16} className="text-brand-text" /> : <Sun size={16} className="text-brand-text" />}
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Izgled</p>
           </div>
           <div className="flex items-center justify-between gap-3">
@@ -201,7 +201,7 @@ export default function ProfileClient() {
                 {theme === 'dark' ? (
                   <Moon size={10} className="text-white" />
                 ) : (
-                  <Sun size={10} className="text-brand-400" />
+                  <Sun size={10} className="text-brand-text" />
                 )}
               </span>
             </button>
@@ -212,14 +212,14 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-4">
-            <SlidersHorizontal size={16} className="text-brand-400" />
+            <SlidersHorizontal size={16} className="text-brand-text" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Preferencije zamene</p>
           </div>
 
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Radijus pretrage</label>
-              <span className="text-xs font-bold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full">{radius} km</span>
+              <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">{radius} km</span>
             </div>
             <input
               type="range"
@@ -235,7 +235,7 @@ export default function ProfileClient() {
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Budžet za doplatu</label>
-              <span className="text-xs font-bold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">
                 {noTopUp ? 'Bez doplate' : budget != null ? formatEuro(budget) : 'Nije postavljen'}
               </span>
             </div>
@@ -297,18 +297,18 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Lock size={16} className="text-brand-400" />
+            <Lock size={16} className="text-brand-text" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Privatnost</p>
           </div>
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1">
-              <p className="text-sm font-medium text-app-primary dark:text-zinc-100">Prikaži telefon samo nakon obostranog match-a</p>
-              <p className="text-xs text-app-muted mt-0.5">Vaš broj je skriven dok ne prihvatite trampu</p>
+              <p className="text-xs font-medium text-app-secondary">Prikaži telefon samo posle dogovorene zamene</p>
+              <p className="text-xs text-app-muted mt-0.5">Broj ostaje skriven na oglasu dok se ne dogovorite</p>
             </div>
             <button
               onClick={() => updatePreferences({ phoneAfterMatch: !phoneAfterMatch })}
               aria-pressed={phoneAfterMatch}
-              aria-label="Prikaži telefon samo nakon match-a"
+              aria-label="Prikaži telefon samo posle dogovorene zamene"
               className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
                 phoneAfterMatch ? 'bg-brand-500' : 'bg-elevated'
               }`}
@@ -324,7 +324,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <HelpCircle size={16} className="text-brand-400" />
+            <HelpCircle size={16} className="text-brand-text" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Podrška i dokumenti</p>
           </div>
 
@@ -334,7 +334,7 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-text transition">
                   <HelpCircle size={16} />
                 </div>
                 <div>
@@ -350,7 +350,7 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-text transition">
                   <FileText size={16} />
                 </div>
                 <div>
@@ -366,7 +366,7 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-text transition">
                   <ShieldAlert size={16} />
                 </div>
                 <div>
@@ -383,7 +383,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Database size={16} className="text-brand-400" />
+            <Database size={16} className="text-brand-text" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Lokalni podaci</p>
           </div>
           <div className="flex items-center justify-between mb-2">
@@ -410,7 +410,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-6">
         <button
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500/15 text-rose-400 font-semibold py-3.5 rounded-xl text-sm border border-rose-500/20 transition-all duration-200"
+          className="w-full flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500/15 text-tone-negative font-semibold py-3.5 rounded-xl text-sm border border-rose-500/20 transition-all duration-200"
         >
           <LogOut size={16} />
           Odjavi se
@@ -441,32 +441,33 @@ export default function ProfileClient() {
           {activeModal === 'faq' && (
             <>
               <div className="space-y-1.5">
-                <p className="font-bold text-brand-400">1. Kako funkcioniše zamena automobila?</p>
+                <p className="font-bold text-brand-text">1. Kako funkcioniše zamena automobila?</p>
                 <p className="text-app-muted">
-                  Kada pronađete vozilo u feed-u i pošaljete zahtev, ukoliko i drugi vlasnik
-                  prihvati (match), otvara vam se direktan kontakt za dogovor o pregledu i razlici
-                  u ceni.
+                  Kada pronađete vozilo u feed-u i pošaljete ponudu, otvara se razgovor sa
+                  vlasnikom u kome se dogovarate o pregledu i razlici u ceni. Cena i doplata se
+                  prikazuju unapred, na osnovu vrednosti tvog i njegovog vozila.
                 </p>
               </div>
               <div className="space-y-1.5">
-                <p className="font-bold text-brand-400">2. Da li je AutoTrampa posrednik?</p>
+                <p className="font-bold text-brand-text">2. Da li je AutoTrampa posrednik?</p>
                 <p className="text-app-muted">
                   Ne. AutoTrampa samo spaja vozače. Svi dogovori i overa ugovora vrše se lično
                   između korisnika.
                 </p>
               </div>
               <div className="space-y-1.5">
-                <p className="font-bold text-brand-400">3. Gde se čuvaju moji podaci?</p>
+                <p className="font-bold text-brand-text">3. Gde se čuvaju moji podaci?</p>
                 <p className="text-app-muted">
-                  Trenutno lokalno, u vašem pregledaču. Brisanjem podataka pregledača briše se i
-                  vaša garaža, sačuvani oglasi i poruke.
+                  Nalog, garaža, sačuvani oglasi, razgovori i fotografije čuvaju se na tvom
+                  nalogu (Supabase), pa su dostupni sa svakog uređaja. U pregledaču ostaju
+                  samo lokalna podešavanja — tema, filteri i budžet.
                 </p>
               </div>
             </>
           )}
           {activeModal === 'terms' && (
             <div className="space-y-1.5">
-              <p className="font-bold text-brand-400">Pravila platforme</p>
+              <p className="font-bold text-brand-text">Pravila platforme</p>
               <p className="text-app-muted">
                 Svi oglasi moraju predstavljati realno stanje vozila u vašem vlasništvu. Zabranjeno
                 je unošenje lažnih podataka.
@@ -475,10 +476,10 @@ export default function ProfileClient() {
           )}
           {activeModal === 'privacy' && (
             <div className="space-y-1.5">
-              <p className="font-bold text-brand-400">Zaštita podataka</p>
+              <p className="font-bold text-brand-text">Zaštita podataka</p>
               <p className="text-app-muted">
-                Vaš broj telefona je sakriven sve dok se ne ostvari obostrani match sa drugim
-                vozačem.
+                Broj telefona se čuva u privatnoj tabeli profila i nikada se ne prikazuje na
+                javnom oglasu. Ostali korisnici vide samo tvoje ime, grad i ocenu.
               </p>
             </div>
           )}

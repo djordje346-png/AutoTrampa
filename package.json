@@ -4,10 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run typecheck",
     "build": "next build",
+    "build:check": "npm run typecheck && npm run lint && next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:deploy": "node scripts/verify-deploy.mjs"
+  },
+  "engines": {
+    "node": "20.x || 22.x"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

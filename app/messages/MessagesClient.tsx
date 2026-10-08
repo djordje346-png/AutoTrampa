@@ -37,7 +37,7 @@ function formatDayLabel(ts: number): string {
 
 export default function MessagesClient() {
   const { conversations, sendMessage, markRead, deleteConversation, totalUnread, mounted } =
-    useMessages();
+    useMessages({ poll: true });
   const { isLoggedIn, mounted: authReady } = useAuth();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState('');
@@ -117,7 +117,7 @@ export default function MessagesClient() {
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPendingDelete(null)} />
       <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
-          <TriangleAlert size={22} className="text-rose-400" />
+          <TriangleAlert size={22} className="text-tone-negative" />
         </div>
         <h3 id="delete-conv-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
           Arhivirati razgovor?
@@ -182,7 +182,7 @@ export default function MessagesClient() {
             <button
               onClick={() => setActiveId(null)}
               aria-label="Nazad na razgovore"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-app-primary dark:text-zinc-100"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-app-primary"
             >
               <ArrowLeft size={18} />
             </button>
@@ -204,7 +204,7 @@ export default function MessagesClient() {
               <a
                 href={`tel:${activeConv.ownerPhone}`}
                 aria-label={`Pozovi ${activeConv.ownerName}`}
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-brand-400"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-brand-text"
               >
                 <Phone size={16} />
               </a>
@@ -212,7 +212,7 @@ export default function MessagesClient() {
             <button
               onClick={() => setPendingDelete(activeConv)}
               aria-label="Arhiviraj razgovor"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-rose-400"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-rose-500 dark:text-zinc-400"
             >
               <Trash2 size={16} />
             </button>
@@ -222,7 +222,7 @@ export default function MessagesClient() {
             href={`/car/${activeConv.carId}`}
             className="mx-4 mt-3 flex flex-shrink-0 items-center justify-between rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 transition-colors hover:bg-brand-500/15"
           >
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-400">
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-text">
               <ArrowLeftRight size={12} />
               {activeConv.tradeSummary}
             </span>
@@ -386,7 +386,7 @@ export default function MessagesClient() {
                           ? (lastMsg.sender === 'me' ? 'Ti: ' : '') + lastMsg.text
                           : 'Još nema poruka'}
                       </p>
-                      <span className="flex-shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-400">
+                      <span className="flex-shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-text">
                         {conv.tradeSummary}
                       </span>
                     </div>
@@ -402,7 +402,7 @@ export default function MessagesClient() {
                   <button
                     onClick={() => setPendingDelete(conv)}
                     aria-label={`Arhiviraj razgovor sa ${conv.ownerName}`}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+                    className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-rose-500/10 hover:text-tone-negative"
                   >
                     <Trash2 size={14} />
                   </button>

@@ -162,7 +162,7 @@ export default function GarageClient() {
                   </div>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <p className="text-brand-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
+                  <p className="text-brand-text text-[10px] font-bold uppercase tracking-widest mb-0.5">
                     {car.year} · {bodyLabel(car.bodyType)}
                   </p>
                   <h2 className="text-xl font-black text-white tracking-tight">
@@ -173,11 +173,11 @@ export default function GarageClient() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-surface dark:border-zinc-800">
-                <p className="text-app-primary dark:text-zinc-100 font-bold text-lg mr-auto dark:text-zinc-400">{formatEuro(car.price)}</p>
+                <p className="text-app-primary font-bold text-lg mr-auto">{formatEuro(car.price)}</p>
                 {!isSelected && (
                   <button
                     onClick={() => selectCar(car.id)}
-                    className="flex items-center gap-1.5 bg-elevated hover:bg-hover-surface text-brand-400 text-xs font-semibold rounded-lg px-2.5 py-1.5 transition-all"
+                    className="flex items-center gap-1.5 bg-elevated hover:bg-hover-surface text-brand-text text-xs font-semibold rounded-lg px-2.5 py-1.5 transition-all"
                   >
                     <Check size={13} />
                     Izaberi
@@ -192,7 +192,7 @@ export default function GarageClient() {
                 </button>
                 <button
                   onClick={() => setPendingDelete(car)}
-                  className="flex shrink-0 items-center justify-center gap-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all"
+                  className="flex shrink-0 items-center justify-center gap-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-tone-negative rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all"
                   aria-label={`Obriši ${car.brand} ${car.model} iz garaže`}
                   title="Obriši auto"
                 >
@@ -201,17 +201,17 @@ export default function GarageClient() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-px bg-surface">
+              <div className="grid grid-cols-2 gap-px bg-surface dark:bg-zinc-800">
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <TrendingUp size={13} className="text-brand-400" />
+                    <TrendingUp size={13} className="text-brand-text" />
                     <p className="text-[10px] text-app-muted font-medium">Procenjena vrednost</p>
                   </div>
-                  <p className="text-sm font-black text-app-primary dark:text-zinc-400">{formatEuro(car.estimatedValue)}</p>
+                  <p className="text-sm font-black text-app-primary">{formatEuro(car.estimatedValue)}</p>
                 </div>
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Activity size={13} className="text-sky-400" />
+                    <Activity size={13} className="text-tone-info" />
                     <p className="text-[10px] text-app-muted font-medium">Kilometraža</p>
                   </div>
                   <p className="text-sm font-black text-app-primary dark:text-zinc-100">{formatKm(car.mileage)}</p>
@@ -225,7 +225,7 @@ export default function GarageClient() {
                 </div>
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Gauge size={13} className="text-rose-400" />
+                    <Gauge size={13} className="text-tone-negative" />
                     <p className="text-[10px] text-app-muted font-medium">Obrtni moment</p>
                   </div>
                   <p className="text-sm font-black text-app-primary dark:text-zinc-100">{car.specs.torque}</p>
@@ -237,7 +237,7 @@ export default function GarageClient() {
                 className="w-full flex items-center justify-between px-4 py-3 text-left"
               >
                 <div className="flex items-center gap-2">
-                  <Settings size={14} className="text-brand-400" />
+                  <Settings size={14} className="text-brand-text" />
                   <span className="text-xs font-bold text-app-primary dark:text-zinc-100">Specifikacije i detalji</span>
                 </div>
                 {isExpanded ? (
@@ -280,7 +280,7 @@ export default function GarageClient() {
                   {car.buildNotes && car.buildNotes.length > 0 && (
                     <div className="px-4 py-3 border-t border-surface dark:border-zinc-800">
                       <div className="flex items-center gap-2 mb-2">
-                        <Award size={13} className="text-emerald-400" />
+                        <Award size={13} className="text-tone-positive" />
                         <p className="text-[11px] font-bold text-app-primary dark:text-zinc-100">Istorija servisa</p>
                       </div>
                       <div className="space-y-1.5">
@@ -297,12 +297,12 @@ export default function GarageClient() {
                   {car.securityFeatures && car.securityFeatures.length > 0 && (
                     <div className="px-4 py-3 border-t border-surface dark:border-zinc-800">
                       <div className="flex items-center gap-2 mb-2">
-                        <Shield size={13} className="text-sky-400" />
+                        <Shield size={13} className="text-tone-info" />
                         <p className="text-[11px] font-bold text-app-primary dark:text-zinc-100">Sigurnost</p>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {car.securityFeatures.map(feat => (
-                          <span key={feat} className="px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-[10px] font-medium text-sky-300">
+                          <span key={feat} className="px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-[10px] font-medium text-tone-info">
                             {feat}
                           </span>
                         ))}
@@ -348,7 +348,7 @@ export default function GarageClient() {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
-                <p className="text-brand-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
+                <p className="text-brand-text text-[10px] font-bold uppercase tracking-widest mb-0.5">
                   {previewCar.year} · {bodyLabel(previewCar.bodyType)}
                 </p>
                 <h2 className="text-xl font-black text-white tracking-tight">
@@ -366,7 +366,7 @@ export default function GarageClient() {
 
             <div className="p-4 space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-app-primary dark:text-zinc-100 font-bold text-xl dark:text-zinc-400">{formatEuro(previewCar.price)}</p>
+                <p className="text-app-primary font-bold text-xl">{formatEuro(previewCar.price)}</p>
                 {previewCar.id !== selectedId && (
                   <button
                     onClick={() => { selectCar(previewCar.id); setPreviewCar(null); }}
@@ -378,15 +378,15 @@ export default function GarageClient() {
                 )}
                 {previewCar.id === selectedId && (
                   <div className="flex items-center gap-1 bg-brand-500/10 border border-brand-500/30 rounded-lg px-3 py-2">
-                    <span className="text-[10px] font-bold text-brand-400 uppercase">Aktivno</span>
+                    <span className="text-[10px] font-bold text-brand-text uppercase">Aktivno</span>
                   </div>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-px bg-surface rounded-xl overflow-hidden">
+              <div className="grid grid-cols-2 gap-px bg-surface dark:bg-zinc-800 rounded-xl overflow-hidden">
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Activity size={13} className="text-sky-400" />
+                    <Activity size={13} className="text-tone-info" />
                     <p className="text-[10px] text-app-muted font-medium">Kilometraža</p>
                   </div>
                   <p className="text-sm font-black text-app-primary dark:text-zinc-100">{formatKm(previewCar.mileage)}</p>
@@ -400,14 +400,14 @@ export default function GarageClient() {
                 </div>
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Fuel size={13} className="text-brand-400" />
+                    <Fuel size={13} className="text-brand-text" />
                     <p className="text-[10px] text-app-muted font-medium">Gorivo</p>
                   </div>
                   <p className="text-sm font-black text-app-primary dark:text-zinc-100">{fuelLabel(previewCar.specs.fuelType)}</p>
                 </div>
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Settings size={13} className="text-emerald-400" />
+                    <Settings size={13} className="text-tone-positive" />
                     <p className="text-[10px] text-app-muted font-medium">Menjač</p>
                   </div>
                   <p className="text-sm font-black text-app-primary dark:text-zinc-100">{transmissionLabel(previewCar.specs.transmission)}</p>
@@ -425,7 +425,7 @@ export default function GarageClient() {
                   <div className="flex flex-wrap gap-1.5">
                     {EQUIPMENT_CATEGORIES.flatMap((cat) => cat.items).filter((item) => previewCar.equipment!.includes(item.id)).map((item) => (
                       <span key={item.id} className="inline-flex items-center gap-1 bg-elevated border border-surface dark:border-zinc-800 rounded-lg px-2 py-1 text-[10px] font-medium text-app-secondary dark:text-zinc-400">
-                        <Check size={10} className="text-emerald-400" />
+                        <Check size={10} className="text-tone-positive" />
                         {item.label}
                       </span>
                     ))}
@@ -490,7 +490,7 @@ export default function GarageClient() {
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPendingDelete(null)} />
           <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
-              <TriangleAlert size={22} className="text-rose-400" />
+              <TriangleAlert size={22} className="text-tone-negative" />
             </div>
             <h3 id="delete-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
               Obrisati vozilo?

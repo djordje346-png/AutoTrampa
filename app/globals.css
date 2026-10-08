@@ -13,6 +13,7 @@
     --popover-foreground: 240 10% 10%;
     --primary: 56.16 100% 49.02%;
     --brand-text: 56.16 100% 25%;
+    --brand-hover: 54 100% 45%;
     --primary-foreground: 0 0% 0%;
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 10% 10%;
@@ -37,6 +38,14 @@
     --text-secondary: 240 4% 35%;
     --text-muted: 240 4% 55%;
     --on-accent: 0 0% 0%;
+
+    /* Semantic state colours. The 400-level Tailwind shades are readable on a
+       dark surface but wash out on white, so each tone gets a per-theme value
+       and components use the .text-tone-* helpers instead of emerald-400 etc. */
+    --tone-positive: 158 64% 32%;
+    --tone-negative: 347 77% 45%;
+    --tone-info: 201 90% 37%;
+    --tone-warn: 32 95% 40%;
   }
 
   .dark {
@@ -49,6 +58,7 @@
     --popover-foreground: 240 5% 96%;
     --primary: 56.16 100% 49.02%;
     --brand-text: 56.16 100% 49.02%;
+    --brand-hover: 54 100% 45%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 14%;
     --secondary-foreground: 0 0% 96%;
@@ -73,6 +83,12 @@
     --text-secondary: 240 5% 65%;
     --text-muted: 240 4% 46%;
     --on-accent: 0 0% 0%;
+
+    /* See the light block: these are the readable-on-dark counterparts. */
+    --tone-positive: 158 64% 52%;
+    --tone-negative: 351 95% 71%;
+    --tone-info: 199 89% 64%;
+    --tone-warn: 43 96% 56%;
   }
 
   * {
@@ -140,6 +156,11 @@
   .bg-hover-surface {
     background-color: hsl(var(--surface-hover));
   }
+  /* Hairline between stacked rows. Was used as `divide-surface`, which no
+     such utility ever backed, so those separators rendered transparent. */
+  .divide-surface {
+    border-color: hsl(var(--surface-border));
+  }
   .border-surface {
     border-color: hsl(var(--surface-border));
   }
@@ -155,6 +176,23 @@
   .text-on-accent {
     color: hsl(var(--on-accent));
   }
+  /* Accent-coloured text that stays readable in both themes: dark olive on a
+     light surface, the bright brand yellow on a dark one. */
+  .text-brand-text {
+    color: hsl(var(--brand-text));
+  }
+  .text-tone-positive {
+    color: hsl(var(--tone-positive));
+  }
+  .text-tone-negative {
+    color: hsl(var(--tone-negative));
+  }
+  .text-tone-info {
+    color: hsl(var(--tone-info));
+  }
+  .text-tone-warn {
+    color: hsl(var(--tone-warn));
+  }
 }
 
 .btn-primary {
@@ -163,17 +201,17 @@
   justify-content: center;
   gap: 0.5rem;
   border-radius: 0.75rem;
-  background-color: #FAEB00;
+  background-color: hsl(var(--primary));
   padding: 0.75rem 1.5rem;
-  color: #09090b;
+  color: hsl(var(--primary-foreground));
   font-weight: 700;
-  box-shadow: 0 4px 6px -1px rgb(250 235 0 / 0.25), 0 2px 4px -2px rgb(250 235 0 / 0.25);
+  box-shadow: 0 4px 6px -1px hsl(var(--primary) / 0.25), 0 2px 4px -2px hsl(var(--primary) / 0.25);
   transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: scale(1.02);
-  background-color: #E3D400;
+  background-color: hsl(var(--brand-hover));
 }
 
 .btn-primary:active:not(:disabled) {

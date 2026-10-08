@@ -31,7 +31,7 @@ export default function GoogleSignInButton() {
         </span>
         {pending ? 'Povezujem sa Google-om…' : 'Prijavi se preko Google-a'}
       </button>
-      {error && <p role="alert" className="text-center text-xs text-rose-400">{error}</p>}
+      {error && <p role="alert" className="text-center text-xs text-tone-negative">{error}</p>}
     </div>
   );
 }

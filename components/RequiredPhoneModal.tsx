@@ -36,7 +36,7 @@ export default function RequiredPhoneModal({ open }: { open: boolean }) {
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="required-phone-title" aria-describedby="required-phone-description">
       <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl border border-surface bg-card-surface p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/10">
-          <Phone size={21} className="text-brand-400" />
+          <Phone size={21} className="text-brand-text" />
         </div>
         <h2 id="required-phone-title" className="text-center text-lg font-bold text-app-primary dark:text-zinc-100">Dodaj broj telefona</h2>
         <p id="required-phone-description" className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
@@ -60,7 +60,7 @@ export default function RequiredPhoneModal({ open }: { open: boolean }) {
             className={`w-full rounded-xl border bg-elevated py-3 pl-10 pr-4 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:ring-2 focus:ring-brand-500/10 dark:text-zinc-100 ${error ? 'border-rose-500/70' : 'border-surface focus:border-brand-500 dark:border-zinc-800'}`}
           />
         </div>
-        {error && <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-400"><TriangleAlert size={12} />{error}</p>}
+        {error && <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-tone-negative"><TriangleAlert size={12} />{error}</p>}
 
         <button type="submit" disabled={saving} className="btn-primary mt-5 w-full disabled:cursor-wait disabled:opacity-60">
           {saving ? 'Čuvanje…' : 'Sačuvaj i nastavi'}

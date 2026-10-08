@@ -201,7 +201,7 @@ export default function FeedPage() {
               {showTrade && cars.length === 0 ? (
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="flex flex-shrink-0 items-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-400 transition-all hover:bg-brand-500/15"
+                  className="flex flex-shrink-0 items-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-text transition-all hover:bg-brand-500/15"
                   aria-label="Dodaj auto u svoju garažu"
                 >
                   <Plus size={15} />
@@ -273,7 +273,7 @@ export default function FeedPage() {
                     <div className="border-t border-surface dark:border-zinc-800 p-2">
                       <button
                         onClick={() => { setSelectorOpen(false); setShowAddForm(true); }}
-                        className="w-full flex items-center justify-center gap-2 text-brand-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-zinc-800 hover:bg-hover-surface transition-all"
+                        className="w-full flex items-center justify-center gap-2 text-brand-text text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-zinc-800 hover:bg-hover-surface transition-all"
                       >
                         <Plus size={15} />
                         Dodaj vozilo
@@ -298,7 +298,7 @@ export default function FeedPage() {
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                   tradeFilter === key
                     ? 'bg-brand-500 text-black'
-                    : 'bg-elevated/70 text-app-secondary dark:text-zinc-400 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
+                    : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
                 }`}
               >
                 {label}
@@ -306,7 +306,7 @@ export default function FeedPage() {
             ))}
             <button
               onClick={() => setShowMoreFilters(true)}
-              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary dark:text-zinc-400 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100 transition-all duration-150"
+              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150"
               aria-label="Više filtera"
             >
               <SlidersHorizontal size={11} />
@@ -319,7 +319,7 @@ export default function FeedPage() {
       {authReady && !isLoggedIn && (
         <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-bold text-brand-400">Koliko je doplata za tebe?</p>
+            <p className="text-sm font-bold text-brand-text">Koliko je doplata za tebe?</p>
             <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
               Dodaj svoj auto u garažu i svaki oglas ti pokazuje razliku u ceni.
             </p>
@@ -340,7 +340,7 @@ export default function FeedPage() {
             <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
           <p className="text-app-secondary dark:text-zinc-400 font-semibold text-sm">Nema vozila po ovom filteru</p>
-          <button onClick={() => { updatePreferences({ tradeFilter: 'all' }); setSwipeIndex(0); }} className="mt-2 text-brand-400 text-xs font-semibold">Poništi filtere</button>
+          <button onClick={() => { updatePreferences({ tradeFilter: 'all' }); setSwipeIndex(0); }} className="mt-2 text-brand-text text-xs font-semibold">Poništi filtere</button>
         </div>
       )}
 
@@ -357,7 +357,7 @@ export default function FeedPage() {
               className="flex cursor-not-allowed items-center justify-between rounded-xl border border-surface dark:border-zinc-800 bg-elevated/50 px-4 py-3"
             >
               <span className="text-sm font-medium text-app-secondary dark:text-zinc-400">{label}</span>
-              <span className="rounded-md bg-brand-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-400">
+              <span className="rounded-md bg-brand-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-text">
                 Uskoro
               </span>
             </div>
@@ -377,12 +377,12 @@ export default function FeedPage() {
           {/* Swipe header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-surface dark:border-zinc-800">
             <div className="flex items-center gap-2">
-              <Flame size={18} className="text-brand-400" />
+              <Flame size={18} className="text-brand-text" />
               <span className="text-sm font-bold text-app-primary dark:text-zinc-100">Svajp režim</span>
             </div>
             <button
               onClick={exitSwipeMode}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 hover:text-app-primary dark:text-zinc-100 transition-all duration-200"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary hover:text-app-primary transition-all duration-200"
               aria-label="Izađi iz svajp režima"
             >
               <X size={18} />
@@ -434,7 +434,7 @@ export default function FeedPage() {
 
                       {/* LIKE badge */}
                       <div
-                        className="absolute top-8 left-6 -rotate-12 border-4 border-emerald-400 text-emerald-400 font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
+                        className="absolute top-8 left-6 -rotate-12 border-4 border-emerald-400 text-tone-positive font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
                         style={{ opacity: Math.max(0, Math.min(1, dragX / 100)) }}
                       >
                         LIKE
@@ -452,7 +452,7 @@ export default function FeedPage() {
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleSave(swipeCar.id); }}
                         className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                          isSaved(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
+                          isSaved(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-tone-negative'
                         }`}
                         aria-label="Sačuvaj"
                       >
@@ -466,7 +466,7 @@ export default function FeedPage() {
                             {swipeTl.label}
                           </div>
                           {tradeAware && budget != null && isWithinBudget(swipeCar, selectedCar, budget) && swipeCar.price > selectedCar.price && (
-                            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2 py-1">
+                            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider text-tone-positive bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2 py-1">
                               <Wallet size={10} /> U budžetu
                             </span>
                           )}
@@ -481,7 +481,7 @@ export default function FeedPage() {
                           <h2 className="text-lg font-black text-app-primary dark:text-zinc-100 tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
                           <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
                         </div>
-                        <p className="text-app-primary dark:text-zinc-100 font-black text-xl flex-shrink-0 dark:text-zinc-400">{formatEuro(swipeCar.price)}</p>
+                        <p className="text-app-primary font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
                       </div>
 
                       <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -516,7 +516,7 @@ export default function FeedPage() {
                   <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {filteredCars.length}</span>
                   <button
                     onClick={handleSwipeLike}
-                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center text-tone-positive hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
                     aria-label="Sviđa mi se"
                   >
                     <Heart size={28} strokeWidth={3} fill={isSaved(swipeCar.id) ? 'currentColor' : 'none'} />
@@ -528,7 +528,7 @@ export default function FeedPage() {
               /* All done screen */
               <div className="flex flex-col items-center text-center py-8">
                 <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
-                  <CheckCircle size={40} className="text-emerald-400" />
+                  <CheckCircle size={40} className="text-tone-positive" />
                 </div>
                 <h2 className="text-xl font-bold text-app-primary dark:text-zinc-100 mb-2">Sve pregledano!</h2>
                 <p className="text-sm text-app-secondary dark:text-zinc-400 mb-1">Pregledao si sve oglase.</p>
@@ -553,13 +553,13 @@ export default function FeedPage() {
                   <div className="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center animate-pulse">
                     <X size={32} className="text-rose-500" strokeWidth={3} />
                   </div>
-                  <p className="text-xs font-bold text-rose-400 uppercase tracking-wider">← Preskoči</p>
+                  <p className="text-xs font-bold text-tone-negative uppercase tracking-wider">← Preskoči</p>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center animate-pulse">
-                    <Heart size={32} className="text-emerald-400" fill="currentColor" />
+                    <Heart size={32} className="text-tone-positive" fill="currentColor" />
                   </div>
-                  <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Like →</p>
+                  <p className="text-xs font-bold text-tone-positive uppercase tracking-wider">Like →</p>
                 </div>
               </div>
             </div>
@@ -579,10 +579,15 @@ export default function FeedPage() {
                 <Link href={`/car/${car.id}`} className="relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
                   <img src={car.image} alt={`${car.brand} ${car.model}`} className="absolute inset-0 h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                  {!car.ownerId && (
+                    <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                      Demo
+                    </span>
+                  )}
                   <button
                     onClick={(e) => { e.preventDefault(); toggleSave(car.id); }}
                     className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                      carSaved ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-rose-400'
+                      carSaved ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-tone-negative'
                     }`}
                     aria-label={carSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
                   >
@@ -595,7 +600,7 @@ export default function FeedPage() {
                   {/* Title and specs reserve consistent space so cards align in each row. */}
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-400 dark:text-zinc-100">
+                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
                         {car.year} {car.brand} {car.model}
                       </h2>
                     </Link>
@@ -617,7 +622,7 @@ export default function FeedPage() {
                       <div className="flex min-w-0 items-center gap-2">
                         <p className="truncate text-lg font-bold text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
                         {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
-                          <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
+                          <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-tone-positive bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
                             <Wallet size={9} /> U budžetu
                           </span>
                         )}

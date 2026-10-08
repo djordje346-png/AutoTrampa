@@ -19,7 +19,7 @@ const title = 'AutoTrampa — Platforma za zamenu automobila';
 const description =
   'Trampi svoj auto. Pronađi zamenu, vidi koliko je doplata i dogovori se direktno sa vlasnikom.';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://autotrampa.netlify.app';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://autotrampa.vercel.app';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -30,6 +30,11 @@ export const metadata: Metadata = {
   description,
   applicationName: 'AutoTrampa',
   manifest: '/manifest.webmanifest',
+  /**
+   * Next 13.5 still expects themeColor/viewport inside `metadata`; the separate
+   * `viewport` export with a `Viewport` type only exists from Next 14, and
+   * importing that type here fails `tsc` with TS2614.
+   */
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#FAEB00' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
@@ -79,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="dark:bg-zinc-950 min-h-screen bg-background font-sans text-foreground antialiased">
+      <body className="min-h-screen bg-app font-sans text-app-primary antialiased">
         <AppShell>{children}</AppShell>
       </body>
     </html>

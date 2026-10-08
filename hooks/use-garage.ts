@@ -7,6 +7,7 @@ import { createPersistentStore, usePersistentStore } from '@/lib/persistent-stor
 import type { StorageFailure } from '@/lib/storage';
 import { getSupabase } from '@/lib/supabase';
 import { storedCarImagePaths, uploadCarImages } from '@/lib/car-images';
+import { CAR_ROW_COLUMNS, rowToGarageCar, type CarRow } from '@/lib/car-row';
 import { useAuth } from '@/hooks/use-auth';
 import { shortName, userStore } from '@/hooks/use-user';
 
@@ -24,80 +25,23 @@ export type GarageResult =
   | { ok: false; error: GarageError }
   | { ok: false; error: 'storage'; storage: { ok: false; reason: StorageFailure } };
 
-interface CarRow {
-  id: string;
-  user_id: string;
-  brand: string;
-  model: string;
-  generation: string | null;
-  year: number;
-  body_type: string;
-  color: string | null;
-  mileage: number;
-  price: number | string;
-  city: string | null;
-  country: string | null;
-  image: string | null;
-  images: string[] | null;
-  specs: Record<string, unknown> | null;
-  features: Record<string, unknown> | null;
-  equipment: string[] | null;
-  modifications: string | null;
-  description: string | null;
-  estimated_value: number | string | null;
-  security_features: string[] | null;
-  build_notes: string[] | null;
-  owner_name: string | null;
-  owner_city: string | null;
-  owner_rating: number | string | null;
-}
-
-function parseList(value: string | null): string[] {
-  if (!value) return [];
-  try {
-    const parsed: unknown = JSON.parse(value);
-    if (Array.isArray(parsed)) return parsed.filter((item): item is string => typeof item === 'string');
-  } catch {
-    // Older rows used free text, one item per line.
-  }
-  return value.split('\n').map((item) => item.trim()).filter(Boolean);
-}
-
-function rowToCar(row: CarRow): MyGarageCar {
+/**
+ * Adds the private owner details the row cannot carry: only the signed-in user
+ * may see their own phone number, and their profile is the source of truth for
+ * their display name and city.
+ */
+function withOwnerProfile(car: MyGarageCar, userId: string | null): MyGarageCar {
   const profile = userStore.get();
-  const features = row.features ?? {};
-  const strings = (key: string) => {
-    const value = features[key];
-    return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
-  };
+  const mine = Boolean(userId) && profile.id === car.ownerId;
+  if (!mine) return car;
   return {
-    id: row.id,
-    brand: row.brand,
-    model: row.model,
-    generation: row.generation ?? '-',
-    year: row.year,
-    bodyType: row.body_type as MyGarageCar['bodyType'],
-    color: row.color ?? '-',
-    mileage: row.mileage,
-    price: Number(row.price ?? 0),
-    city: row.city ?? '-',
-    country: row.country ?? 'Serbia',
-    image: row.image ?? '',
-    images: row.images ?? undefined,
-    specs: (row.specs ?? {}) as unknown as MyGarageCar['specs'],
+    ...car,
     owner: {
-      name: row.owner_name ?? profile.name,
-      // The profiles table is private; only put the current user's number in their own garage.
-      phone: profile.id === row.user_id ? profile.phone : '',
-      city: row.owner_city ?? row.city ?? profile.city,
-      rating: Number(row.owner_rating ?? 5),
+      ...car.owner,
+      name: car.owner.name || shortName(profile.name),
+      phone: profile.phone,
+      city: profile.city || car.owner.city,
     },
-    description: row.description ?? '',
-    modifications: parseList(row.modifications),
-    equipment: row.equipment ?? undefined,
-    securityFeatures: row.security_features ?? strings('securityFeatures'),
-    buildNotes: row.build_notes ?? strings('buildNotes'),
-    estimatedValue: Number(row.estimated_value ?? 0),
   };
 }
 
@@ -141,7 +85,9 @@ export function useGarage() {
   const [cars, setCars] = useState<MyGarageCar[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, selectedReady] = usePersistentStore(selectedStore);
-  const [profile] = usePersistentStore(userStore);
+  // Subscribing to the profile store (via withOwnerProfile) is what re-renders
+  // the garage once the current user's name and phone arrive.
+  usePersistentStore(userStore);
 
   useEffect(() => {
     let cancelled = false;
@@ -156,13 +102,13 @@ export function useGarage() {
       try {
         const { data, error } = await getSupabase()
           .from('cars')
-          .select('*')
+          .select(CAR_ROW_COLUMNS)
           .eq('user_id', userId)
           .order('created_at', { ascending: true });
         if (error) throw error;
         if (cancelled) return;
-        const rows = (data ?? []) as CarRow[];
-        const next = rows.map(rowToCar);
+        const rows = (data ?? []) as unknown as CarRow[];
+        const next = rows.map(rowToGarageCar);
         setCars(next);
         if (next.length > 0 && !next.some((car) => car.id === selectedStore.get())) {
           selectedStore.set(next[0].id);
@@ -189,7 +135,7 @@ export function useGarage() {
       const { data, error } = await getSupabase()
         .from('cars')
         .insert(prepared.row)
-        .select('*')
+        .select(CAR_ROW_COLUMNS)
         .single();
       if (error || !data) {
         if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
@@ -197,7 +143,7 @@ export function useGarage() {
         return { ok: false, error: 'network' };
       }
       uploaded = [];
-      const saved = rowToCar(data as CarRow);
+      const saved = rowToGarageCar(data as unknown as CarRow);
       setCars((previous) => [...previous, saved]);
       return { ok: true, id: saved.id };
     } catch {
@@ -261,14 +207,7 @@ export function useGarage() {
   }, [cars, userId]);
 
   const mounted = !loading && selectedReady;
-  const visibleCars = cars.map((car) => ({
-    ...car,
-    owner: {
-      ...car.owner,
-      phone: profile.id === userId ? profile.phone : '',
-      city: profile.id === userId ? profile.city || car.owner.city : car.owner.city,
-    },
-  }));
+  const visibleCars = cars.map((car) => withOwnerProfile(car, userId));
   const selectedCar = visibleCars.find((car) => car.id === selectedId) ?? visibleCars[0] ?? DEFAULT_GARAGE_CARS[0];
 
   return {

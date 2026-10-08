@@ -41,7 +41,7 @@ export default function AuthOverlay() {
       <button
         onClick={closePrompt}
         aria-label="Zatvori prijavu"
-        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-app-primary dark:text-zinc-100 safe-top"
+        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary transition-colors hover:text-app-primary safe-top"
       >
         <X size={18} />
       </button>
@@ -49,7 +49,7 @@ export default function AuthOverlay() {
       <div className="mx-auto w-full max-w-md">
         {promptReason ? (
           <div className="px-6 pt-16">
-            <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-center text-sm font-semibold text-brand-400">
+            <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-center text-sm font-semibold text-brand-text">
               {promptReason}
             </div>
           </div>

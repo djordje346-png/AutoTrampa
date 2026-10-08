@@ -75,7 +75,7 @@ export function BottomSheet({
             <button
               onClick={onClose}
               aria-label="Zatvori"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-app-primary dark:text-zinc-100"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-app-primary"
             >
               <X size={16} />
             </button>

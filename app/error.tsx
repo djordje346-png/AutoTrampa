@@ -18,7 +18,7 @@ export default function Error({
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
       <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-rose-500/10">
-        <TriangleAlert size={34} className="text-rose-400" />
+        <TriangleAlert size={34} className="text-tone-negative" />
       </div>
       <h1 className="text-lg font-bold text-app-primary dark:text-zinc-100">Nešto je pošlo naopako</h1>
       <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-zinc-400">

@@ -112,7 +112,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
               className={`${inputBase} ${errors[key] ? bad : ok}`}
             />
             {errors[key] && (
-              <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-400">
+              <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-tone-negative">
                 <TriangleAlert size={12} className="flex-shrink-0" />
                 {errors[key]}
               </p>

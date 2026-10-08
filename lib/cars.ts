@@ -137,7 +137,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'Ibis White',
     mileage: 212000,
     price: 5800,
-    city: 'Belgrade',
+    city: 'Beograd',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/37472548/pexels-photo-37472548.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -161,7 +161,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Marko D.',
       phone: '+381 63 987 6543',
-      city: 'Belgrade',
+      city: 'Beograd',
       rating: 4.7,
     },
     description:
@@ -224,7 +224,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'Grigio Alfissimo',
     mileage: 165000,
     price: 4900,
-    city: 'Nis',
+    city: 'Niš',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/15515159/pexels-photo-15515159.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -247,7 +247,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Aleksandar M.',
       phone: '+381 60 345 6789',
-      city: 'Nis',
+      city: 'Niš',
       rating: 4.3,
     },
     description:
@@ -306,7 +306,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'Obsidian Black',
     mileage: 201000,
     price: 7400,
-    city: 'Belgrade',
+    city: 'Beograd',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/16284837/pexels-photo-16284837.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -329,7 +329,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Dejan S.',
       phone: '+381 62 111 2233',
-      city: 'Belgrade',
+      city: 'Beograd',
       rating: 4.6,
     },
     description:
@@ -386,7 +386,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'Alpine White',
     mileage: 188000,
     price: 6800,
-    city: 'Nis',
+    city: 'Niš',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/32724480/pexels-photo-32724480.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -408,7 +408,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Nemanja T.',
       phone: '+381 60 333 4455',
-      city: 'Nis',
+      city: 'Niš',
       rating: 4.7,
     },
     description:
@@ -504,7 +504,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'White Pearl',
     mileage: 155000,
     price: 6200,
-    city: 'Belgrade',
+    city: 'Beograd',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/37620310/pexels-photo-37620310.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -525,7 +525,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Slobodan V.',
       phone: '+381 61 666 7788',
-      city: 'Belgrade',
+      city: 'Beograd',
       rating: 4.9,
     },
     description:
@@ -581,7 +581,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'Moondust Silver',
     mileage: 198000,
     price: 3200,
-    city: 'Nis',
+    city: 'Niš',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/27138933/pexels-photo-27138933.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -604,7 +604,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Zoran K.',
       phone: '+381 60 888 9900',
-      city: 'Nis',
+      city: 'Niš',
       rating: 4.1,
     },
     description:
@@ -659,7 +659,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'Glacier White',
     mileage: 168000,
     price: 3900,
-    city: 'Cacak',
+    city: 'Čačak',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/20286882/pexels-photo-20286882.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -681,7 +681,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Biljana M.',
       phone: '+381 65 112 2334',
-      city: 'Cacak',
+      city: 'Čačak',
       rating: 4.4,
     },
     description:
@@ -776,7 +776,7 @@ export const MARKETPLACE_CARS: Car[] = [
     color: 'World Rally Blue',
     mileage: 175000,
     price: 6900,
-    city: 'Belgrade',
+    city: 'Beograd',
     country: 'Serbia',
     image: 'https://images.pexels.com/photos/19868899/pexels-photo-19868899.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     images: [
@@ -798,7 +798,7 @@ export const MARKETPLACE_CARS: Car[] = [
     owner: {
       name: 'Aleksa R.',
       phone: '+381 63 445 5667',
-      city: 'Belgrade',
+      city: 'Beograd',
       rating: 4.6,
     },
     description:

@@ -76,7 +76,7 @@ export default function SavedClient() {
           {savedCars.length > 0 && (
             <button
               onClick={() => setConfirmClear(true)}
-              className="flex-shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-app-muted transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+              className="flex-shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-app-muted transition-colors hover:bg-rose-500/10 hover:text-tone-negative"
             >
               Obriši sve
             </button>
@@ -92,7 +92,7 @@ export default function SavedClient() {
             </div>
             <p className="text-base font-semibold text-app-secondary dark:text-zinc-400">Nema sačuvanih oglasa</p>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-muted">
-              Pritisni <Heart size={13} className="mx-0.5 inline text-rose-400" /> ikonu na bilo kom
+              Pritisni <Heart size={13} className="mx-0.5 inline text-tone-negative" /> ikonu na bilo kom
               oglasu da ga sačuvaš ovde.
             </p>
             <Link
@@ -120,7 +120,7 @@ export default function SavedClient() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
                     <div className="absolute bottom-3 left-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-brand-400">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text">
                         {bodyLabel(car.bodyType)}
                       </p>
                       <h2 className="text-base font-bold text-white">
@@ -132,7 +132,7 @@ export default function SavedClient() {
                   <button
                     onClick={() => remove(car)}
                     aria-label={`Ukloni ${car.brand} ${car.model} iz sačuvanih`}
-                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition-colors hover:text-rose-400"
+                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition-colors hover:text-tone-negative"
                   >
                     <X size={15} />
                   </button>
@@ -162,7 +162,7 @@ export default function SavedClient() {
                         {car.city}
                       </span>
                     </div>
-                    <p className="flex-shrink-0 font-bold text-app-primary dark:text-zinc-400">{formatEuro(car.price)}</p>
+                    <p className="flex-shrink-0 font-bold text-app-primary">{formatEuro(car.price)}</p>
                   </div>
 
                   <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-app-secondary dark:text-zinc-400">
@@ -220,7 +220,7 @@ export default function SavedClient() {
           />
           <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
-              <TriangleAlert size={22} className="text-rose-400" />
+              <TriangleAlert size={22} className="text-tone-negative" />
             </div>
             <h3 id="clear-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
               Obrisati celu listu?
