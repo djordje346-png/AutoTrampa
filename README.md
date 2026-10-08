@@ -23,6 +23,10 @@ ključ u `NEXT_PUBLIC_*`.
 | `npm run start` | pokreće build |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint (`next/core-web-vitals`) |
+| `npm run verify:deploy -- <url>` | provera da su izmene žive na datom domenu |
+
+`.nvmrc` prepisuje Node 20 (isti kao na Vercelu), a `engines` zahteva `>=20` — Node 24 je testiran i
+radi, pa nema razloga da te npm upozorava.
 
 ## Šta aplikacija ima
 

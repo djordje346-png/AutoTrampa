@@ -7,6 +7,7 @@ import { BottomSheet } from '@/components/BottomSheet';
 import { toast } from 'sonner';
 import { formatEuro } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
+import { displayValue } from '@/lib/car-row';
 import { useMessages } from '@/hooks/use-messages';
 import type { Car, MyGarageCar } from '@/types';
 
@@ -44,7 +45,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
     const result = await createConversation(
       {
         carId: car.id,
-        carTitle: `${car.year} ${car.brand} ${car.model} ${car.generation}`,
+        carTitle: [car.year, car.brand, car.model, displayValue(car.generation)].filter(Boolean).join(' '),
         carImage: car.image,
         ownerName: car.owner.name,
         ownerId: car.ownerId,

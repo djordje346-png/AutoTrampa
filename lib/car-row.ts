@@ -134,6 +134,17 @@ function imagesOf(row: CarRow): string[] | undefined {
   return row.image ? [row.image] : undefined;
 }
 
+/** A field the form left empty is stored as '-' — never show that literally. */
+export function displayValue(value: string | null | undefined): string {
+  const trimmed = (value ?? '').trim();
+  return trimmed === '' || trimmed === '-' ? '' : trimmed;
+}
+
+/** Renders the sub-line under a listing title, e.g. "E60 · Sapphire Black". */
+export function carSubtitle(car: { generation?: string | null; color?: string | null }): string {
+  return [displayValue(car.generation), displayValue(car.color)].filter(Boolean).join(' · ');
+}
+
 /** Shared projection: everything except the fields only the owner may see. */
 function baseFields(row: CarRow) {
   const images = imagesOf(row);

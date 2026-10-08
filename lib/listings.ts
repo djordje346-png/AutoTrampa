@@ -69,5 +69,8 @@ export async function fetchListing(id: string): Promise<Car | null> {
 
 /** Title and description shared by metadata and share previews. */
 export function listingTitle(car: Car): string {
-  return `${car.year} ${car.brand} ${car.model} ${car.generation}`.trim();
+  // Cars added through the form can end up with a placeholder generation ('-'),
+  // which must not leak into an <title> or a share card.
+  const generation = car.generation && car.generation !== '-' ? car.generation : '';
+  return [car.year, car.brand, car.model, generation].filter(Boolean).join(' ');
 }

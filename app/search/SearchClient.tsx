@@ -11,6 +11,7 @@ import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
 import { useSearchPrefs } from '@/hooks/use-search-prefs';
 import { useMarketplace } from '@/hooks/use-marketplace';
+import { displayValue } from '@/lib/car-row';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { BodyType, Car } from '@/types';
 
@@ -217,7 +218,7 @@ export default function SearchClient() {
                         <h3 className="truncate text-sm font-bold leading-tight text-app-primary dark:text-zinc-100 transition-colors hover:text-brand-text">
                           {car.year} {car.brand} {car.model}
                         </h3>
-                        <p className="text-xs text-app-muted">{car.generation}</p>
+                        <p className="text-xs text-app-muted">{displayValue(car.generation)}</p>
                       </Link>
                       <div className="flex flex-shrink-0 items-start gap-2">
                         <p className="text-sm font-bold text-app-primary">{formatEuro(car.price)}</p>

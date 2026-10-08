@@ -6,6 +6,7 @@ import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Ga
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel, TRADE_TOLERANCE, sortByBudget, isWithinBudget } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
+import { carSubtitle, displayValue } from '@/lib/car-row';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import { useMarketplace } from '@/hooks/use-marketplace';
@@ -258,7 +259,7 @@ export default function FeedPage() {
                               {car.image && <img src={car.image} alt={car.model} className="w-full h-full object-cover" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-app-primary dark:text-zinc-100 truncate">{car.brand} {car.model} {car.generation}</p>
+                              <p className="text-xs font-bold text-app-primary dark:text-zinc-100 truncate">{[car.brand, car.model, displayValue(car.generation)].filter(Boolean).join(' ')}</p>
                               <p className="text-[10px] text-app-muted dark:text-zinc-400">{car.year} · {formatEuro(car.price)}</p>
                             </div>
                             {isActive && (
@@ -604,7 +605,7 @@ export default function FeedPage() {
                         {car.year} {car.brand} {car.model}
                       </h2>
                     </Link>
-                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{car.generation} · {car.color}</p>
+                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
                     <div className="mt-2 flex min-h-9 flex-wrap content-start items-center gap-x-3 gap-y-1.5 text-xs text-app-secondary dark:text-zinc-400">
                       <span className="flex min-w-0 items-center gap-1"><Gauge size={13} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
