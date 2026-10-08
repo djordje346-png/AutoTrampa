@@ -31,7 +31,7 @@ const COMING_SOON_FILTERS = ['Gorivo', 'Marka', 'Godište', 'Kilometraža', 'Men
 
 export default function FeedPage() {
   const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
-  const { cars: marketplaceCars } = useMarketplace();
+  const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
   const { saved, isSaved, toggleSave, save: saveCar } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
@@ -509,7 +509,7 @@ export default function FeedPage() {
                 <div className="flex items-center gap-5 mt-6">
                   <button
                     onClick={handleSwipeSkip}
-                    className="w-14 h-14 rounded-full bg-rose-500/10 border-2 border-rose-500/30 flex items-center justify-center text-rose-500 hover:bg-rose-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+                    className="w-14 h-14 rounded-full bg-rose-500/10 border-2 border-tone-negative flex items-center justify-center text-tone-negative-ring hover:bg-rose-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
                     aria-label="Preskoči"
                   >
                     <X size={28} strokeWidth={3} />
@@ -517,7 +517,7 @@ export default function FeedPage() {
                   <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {filteredCars.length}</span>
                   <button
                     onClick={handleSwipeLike}
-                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center text-tone-positive hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-tone-positive flex items-center justify-center text-tone-positive-ring hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
                     aria-label="Sviđa mi se"
                   >
                     <Heart size={28} strokeWidth={3} fill={isSaved(swipeCar.id) ? 'currentColor' : 'none'} />
@@ -551,13 +551,13 @@ export default function FeedPage() {
             <div className="absolute inset-0 z-[70] flex items-center justify-center pointer-events-none">
               <div className="flex items-center gap-10">
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center animate-pulse">
-                    <X size={32} className="text-rose-500" strokeWidth={3} />
+                  <div className="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-tone-negative flex items-center justify-center animate-pulse">
+                    <X size={32} className="text-tone-negative-ring" strokeWidth={3} />
                   </div>
                   <p className="text-xs font-bold text-tone-negative uppercase tracking-wider">← Preskoči</p>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center animate-pulse">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-tone-positive flex items-center justify-center animate-pulse">
                     <Heart size={32} className="text-tone-positive" fill="currentColor" />
                   </div>
                   <p className="text-xs font-bold text-tone-positive uppercase tracking-wider">Like →</p>
@@ -569,7 +569,36 @@ export default function FeedPage() {
       )}
 
       {/* GRID/LIST MODE */}
-      {viewMode === 'grid' && (
+      {viewMode === 'grid' && !marketplaceReady && (
+        /*
+         * Real listings arrive one request after the demo seed, and they sort to
+         * the front, so without this the cards visibly jump while the user is
+         * already reading the first one. Same grid and same aspect ratio as the
+         * real cards, and it is the exact complement of the block below, so the
+         * list is never empty during loading.
+         */
+        <div className="mx-auto mt-3 grid w-full max-w-7xl grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2 sm:gap-4 sm:px-5 lg:grid-cols-3 lg:gap-5 lg:px-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900"
+            >
+              <div className="aspect-[16/9] w-full bg-hover-surface" />
+              <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+                <div className="h-5 w-3/4 rounded bg-hover-surface" />
+                <div className="h-3 w-1/2 rounded bg-hover-surface" />
+                <div className="mt-1 h-3 w-2/3 rounded bg-hover-surface" />
+                <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+                  <div className="h-5 w-20 rounded bg-hover-surface" />
+                  <div className="h-5 w-24 rounded-full bg-hover-surface" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {viewMode === 'grid' && marketplaceReady && (
         <div className="mx-auto mt-3 grid w-full max-w-7xl grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2 sm:gap-4 sm:px-5 lg:grid-cols-3 lg:gap-5 lg:px-6">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;

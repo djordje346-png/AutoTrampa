@@ -46,6 +46,12 @@
     --tone-negative: 347 77% 45%;
     --tone-info: 201 90% 37%;
     --tone-warn: 32 95% 40%;
+
+    /* Outlined controls (swipe buttons, hint rings) need a border and an icon
+       in the same tone. The bright 400s vanish on white, so light mode uses the
+       darker pair while dark mode keeps the vivid one. */
+    --tone-positive-ring: 158 64% 32%;
+    --tone-negative-ring: 347 77% 45%;
   }
 
   .dark {
@@ -89,6 +95,10 @@
     --tone-negative: 351 95% 71%;
     --tone-info: 199 89% 64%;
     --tone-warn: 43 96% 56%;
+
+    /* See the light block: outlined controls keep the vivid shade here. */
+    --tone-positive-ring: 158 64% 52%;
+    --tone-negative-ring: 351 95% 71%;
   }
 
   * {
@@ -192,6 +202,20 @@
   }
   .text-tone-warn {
     color: hsl(var(--tone-warn));
+  }
+  /* Outlined controls: the icon and its ring share one tone, so they can never
+     disagree, and both stay visible on a light surface. */
+  .text-tone-positive-ring {
+    color: hsl(var(--tone-positive-ring));
+  }
+  .text-tone-negative-ring {
+    color: hsl(var(--tone-negative-ring));
+  }
+  .border-tone-positive {
+    border-color: hsl(var(--tone-positive-ring));
+  }
+  .border-tone-negative {
+    border-color: hsl(var(--tone-negative-ring));
   }
 }
 
