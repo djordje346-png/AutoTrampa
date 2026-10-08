@@ -204,7 +204,7 @@ export default function MessagesClient() {
               <a
                 href={`tel:${activeConv.ownerPhone}`}
                 aria-label={`Pozovi ${activeConv.ownerName}`}
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-orange-400"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-brand-400"
               >
                 <Phone size={16} />
               </a>
@@ -220,9 +220,9 @@ export default function MessagesClient() {
 
           <Link
             href={`/car/${activeConv.carId}`}
-            className="mx-4 mt-3 flex flex-shrink-0 items-center justify-between rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2 transition-colors hover:bg-orange-500/15"
+            className="mx-4 mt-3 flex flex-shrink-0 items-center justify-between rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 transition-colors hover:bg-brand-500/15"
           >
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-orange-400">
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-400">
               <ArrowLeftRight size={12} />
               {activeConv.tradeSummary}
             </span>
@@ -258,7 +258,7 @@ export default function MessagesClient() {
                       <div
                         className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
                           mine
-                            ? 'rounded-br-md bg-orange-500 text-black'
+                            ? 'rounded-br-md bg-brand-500 text-black'
                             : 'rounded-bl-md bg-elevated text-app-primary dark:text-zinc-100'
                         }`}
                       >
@@ -295,13 +295,13 @@ export default function MessagesClient() {
               maxLength={1000}
               placeholder="Napiši poruku..."
               aria-label="Poruka"
-              className="flex-1 rounded-full border border-surface dark:border-zinc-800 bg-elevated px-4 py-2.5 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-orange-500 focus:outline-none"
+              className="flex-1 rounded-full border border-surface dark:border-zinc-800 bg-elevated px-4 py-2.5 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none"
             />
             <button
               onClick={() => void handleSend()}
               disabled={!input.trim() || sending}
               aria-label="Pošalji poruku"
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-black transition-all duration-200 hover:bg-orange-600 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-500 text-black transition-all duration-200 hover:bg-brand-600 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Send size={17} />
             </button>
@@ -386,7 +386,7 @@ export default function MessagesClient() {
                           ? (lastMsg.sender === 'me' ? 'Ti: ' : '') + lastMsg.text
                           : 'Još nema poruka'}
                       </p>
-                      <span className="flex-shrink-0 rounded-full bg-orange-500/10 px-2 py-0.5 text-[10px] font-semibold text-orange-400">
+                      <span className="flex-shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-400">
                         {conv.tradeSummary}
                       </span>
                     </div>

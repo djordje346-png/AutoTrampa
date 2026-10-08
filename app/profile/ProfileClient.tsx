@@ -87,8 +87,8 @@ export default function ProfileClient() {
       <div className="px-4 pt-5 pb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-5">
           <div className="flex items-start gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/20">
-              <span className="text-2xl font-black text-white">{initials(user.name)}</span>
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/20">
+              <span className="text-2xl font-black text-zinc-950">{initials(user.name)}</span>
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-base font-bold text-app-primary dark:text-zinc-100 truncate">{user.name}</h2>
@@ -108,7 +108,7 @@ export default function ProfileClient() {
             <button
               onClick={() => setShowEditProfile(true)}
               aria-label="Uredi profil"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:bg-hover-surface hover:text-orange-400"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:bg-hover-surface hover:text-brand-400"
             >
               <Pencil size={15} />
             </button>
@@ -137,7 +137,7 @@ export default function ProfileClient() {
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Car size={16} className="text-orange-400" />
+              <Car size={16} className="text-brand-400" />
               <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Moja garaža</p>
             </div>
             <span className="text-xs font-semibold text-app-secondary dark:text-zinc-400 bg-elevated px-2.5 py-1 rounded-full">
@@ -153,23 +153,23 @@ export default function ProfileClient() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-app-primary dark:text-zinc-100 truncate">{activeCar.brand} {activeCar.model} {activeCar.generation}</p>
                 <p className="text-xs text-app-muted">{activeCar.year} · {formatKm(activeCar.mileage)}</p>
-                <p className="text-orange-400 text-xs font-bold mt-0.5 dark:text-zinc-400">{formatEuro(activeCar.price)}</p>
+                <p className="text-brand-400 text-xs font-bold mt-0.5 dark:text-zinc-400">{formatEuro(activeCar.price)}</p>
               </div>
-              <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 rounded-full px-2 py-0.5">
-                <span className="text-[9px] font-bold text-orange-400 uppercase">Aktivno</span>
+              <div className="flex items-center gap-1 bg-brand-500/10 border border-brand-500/30 rounded-full px-2 py-0.5">
+                <span className="text-[9px] font-bold text-brand-400 uppercase">Aktivno</span>
               </div>
             </div>
           )}
 
           {garageFull ? (
-            <div className="flex items-center gap-2.5 bg-orange-500/5 border border-orange-500/20 rounded-xl p-3">
-              <AlertTriangle size={15} className="text-orange-400 flex-shrink-0" />
-              <p className="text-xs text-orange-400 font-medium">Dostignut besplatni limit od 3 vozila</p>
+            <div className="flex items-center gap-2.5 bg-brand-500/5 border border-brand-500/20 rounded-xl p-3">
+              <AlertTriangle size={15} className="text-brand-400 flex-shrink-0" />
+              <p className="text-xs text-brand-400 font-medium">Dostignut besplatni limit od 3 vozila</p>
             </div>
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="w-full flex items-center justify-center gap-2 border border-dashed border-surface dark:border-zinc-800 hover:border-orange-500/50 hover:bg-orange-500/5 text-orange-400 text-sm font-semibold rounded-xl py-3 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 border border-dashed border-surface dark:border-zinc-800 hover:border-brand-500/50 hover:bg-brand-500/5 text-brand-400 text-sm font-semibold rounded-xl py-3 transition-all duration-200"
             >
               <Plus size={16} strokeWidth={2.5} />
               Dodaj auto u garažu
@@ -182,7 +182,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            {theme === 'dark' ? <Moon size={16} className="text-orange-400" /> : <Sun size={16} className="text-orange-400" />}
+            {theme === 'dark' ? <Moon size={16} className="text-brand-400" /> : <Sun size={16} className="text-brand-400" />}
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Izgled</p>
           </div>
           <div className="flex items-center justify-between gap-3">
@@ -196,12 +196,12 @@ export default function ProfileClient() {
               aria-label="Promeni temu"
             >
               <span className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-transform duration-200 flex items-center justify-center ${
-                theme === 'dark' ? 'translate-x-5 bg-orange-500' : 'translate-x-0 bg-white'
+                theme === 'dark' ? 'translate-x-5 bg-brand-500' : 'translate-x-0 bg-white'
               }`}>
                 {theme === 'dark' ? (
                   <Moon size={10} className="text-white" />
                 ) : (
-                  <Sun size={10} className="text-orange-500" />
+                  <Sun size={10} className="text-brand-400" />
                 )}
               </span>
             </button>
@@ -212,14 +212,14 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-4">
-            <SlidersHorizontal size={16} className="text-orange-400" />
+            <SlidersHorizontal size={16} className="text-brand-400" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Preferencije zamene</p>
           </div>
 
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Radijus pretrage</label>
-              <span className="text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full">{radius} km</span>
+              <span className="text-xs font-bold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full">{radius} km</span>
             </div>
             <input
               type="range"
@@ -228,14 +228,14 @@ export default function ProfileClient() {
               step={10}
               value={radius}
               onChange={e => updatePreferences({ radius: Number(e.target.value) })}
-              className="w-full h-2 bg-elevated rounded-full appearance-none cursor-pointer accent-orange-500"
+              className="w-full h-2 bg-elevated rounded-full appearance-none cursor-pointer accent-brand-500"
             />
           </div>
 
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Budžet za doplatu</label>
-              <span className="text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full">
                 {noTopUp ? 'Bez doplate' : budget != null ? formatEuro(budget) : 'Nije postavljen'}
               </span>
             </div>
@@ -251,7 +251,7 @@ export default function ProfileClient() {
                 const v = e.target.value;
                 updatePreferences({ budget: v === '' ? null : Math.max(0, Number(v)) });
               }}
-              className={`w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted outline-none transition-colors focus:border-orange-500/50 ${
+              className={`w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted outline-none transition-colors focus:border-brand-500/50 ${
                 noTopUp ? 'opacity-40 cursor-not-allowed' : ''
               }`}
             />
@@ -263,7 +263,7 @@ export default function ProfileClient() {
               className="mt-2.5 flex items-center gap-2.5 w-full text-left"
             >
               <span className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                noTopUp ? 'bg-orange-500' : 'bg-elevated border border-surface dark:border-zinc-800'
+                noTopUp ? 'bg-brand-500' : 'bg-elevated border border-surface dark:border-zinc-800'
               }`}>
                 <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
                   noTopUp ? 'translate-x-5' : 'translate-x-0'
@@ -282,7 +282,7 @@ export default function ProfileClient() {
                     key={type}
                     onClick={() => toggleBodyPref(type)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                      active ? 'bg-orange-500 border-orange-500 text-white' : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-orange-500/40'
+                      active ? 'bg-brand-500 border-brand-500 text-zinc-950' : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-brand-500/40'
                     }`}
                   >
                     {bodyLabel(type)}
@@ -297,7 +297,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Lock size={16} className="text-orange-400" />
+            <Lock size={16} className="text-brand-400" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Privatnost</p>
           </div>
           <div className="flex items-center justify-between gap-3">
@@ -310,7 +310,7 @@ export default function ProfileClient() {
               aria-pressed={phoneAfterMatch}
               aria-label="Prikaži telefon samo nakon match-a"
               className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                phoneAfterMatch ? 'bg-orange-500' : 'bg-elevated'
+                phoneAfterMatch ? 'bg-brand-500' : 'bg-elevated'
               }`}
             >
               <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
@@ -324,7 +324,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <HelpCircle size={16} className="text-orange-400" />
+            <HelpCircle size={16} className="text-brand-400" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Podrška i dokumenti</p>
           </div>
 
@@ -334,7 +334,7 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-orange-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-400 transition">
                   <HelpCircle size={16} />
                 </div>
                 <div>
@@ -350,7 +350,7 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-orange-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-400 transition">
                   <FileText size={16} />
                 </div>
                 <div>
@@ -366,7 +366,7 @@ export default function ProfileClient() {
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-orange-400 transition">
+                <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center text-app-secondary dark:text-zinc-400 group-hover:text-brand-400 transition">
                   <ShieldAlert size={16} />
                 </div>
                 <div>
@@ -383,7 +383,7 @@ export default function ProfileClient() {
       <div className="px-4 mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Database size={16} className="text-orange-400" />
+            <Database size={16} className="text-brand-400" />
             <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Lokalni podaci</p>
           </div>
           <div className="flex items-center justify-between mb-2">
@@ -441,7 +441,7 @@ export default function ProfileClient() {
           {activeModal === 'faq' && (
             <>
               <div className="space-y-1.5">
-                <p className="font-bold text-orange-400">1. Kako funkcioniše zamena automobila?</p>
+                <p className="font-bold text-brand-400">1. Kako funkcioniše zamena automobila?</p>
                 <p className="text-app-muted">
                   Kada pronađete vozilo u feed-u i pošaljete zahtev, ukoliko i drugi vlasnik
                   prihvati (match), otvara vam se direktan kontakt za dogovor o pregledu i razlici
@@ -449,14 +449,14 @@ export default function ProfileClient() {
                 </p>
               </div>
               <div className="space-y-1.5">
-                <p className="font-bold text-orange-400">2. Da li je AutoTrampa posrednik?</p>
+                <p className="font-bold text-brand-400">2. Da li je AutoTrampa posrednik?</p>
                 <p className="text-app-muted">
                   Ne. AutoTrampa samo spaja vozače. Svi dogovori i overa ugovora vrše se lično
                   između korisnika.
                 </p>
               </div>
               <div className="space-y-1.5">
-                <p className="font-bold text-orange-400">3. Gde se čuvaju moji podaci?</p>
+                <p className="font-bold text-brand-400">3. Gde se čuvaju moji podaci?</p>
                 <p className="text-app-muted">
                   Trenutno lokalno, u vašem pregledaču. Brisanjem podataka pregledača briše se i
                   vaša garaža, sačuvani oglasi i poruke.
@@ -466,7 +466,7 @@ export default function ProfileClient() {
           )}
           {activeModal === 'terms' && (
             <div className="space-y-1.5">
-              <p className="font-bold text-orange-400">Pravila platforme</p>
+              <p className="font-bold text-brand-400">Pravila platforme</p>
               <p className="text-app-muted">
                 Svi oglasi moraju predstavljati realno stanje vozila u vašem vlasništvu. Zabranjeno
                 je unošenje lažnih podataka.
@@ -475,7 +475,7 @@ export default function ProfileClient() {
           )}
           {activeModal === 'privacy' && (
             <div className="space-y-1.5">
-              <p className="font-bold text-orange-400">Zaštita podataka</p>
+              <p className="font-bold text-brand-400">Zaštita podataka</p>
               <p className="text-app-muted">
                 Vaš broj telefona je sakriven sve dok se ne ostvari obostrani match sa drugim
                 vozačem.

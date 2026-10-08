@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   applicationName: 'AutoTrampa',
   manifest: '/manifest.webmanifest',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f97316' },
+    { media: '(prefers-color-scheme: light)', color: '#FAEB00' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
   ],
   viewport: {
@@ -65,10 +65,10 @@ const themeInitScript = `
 (function() {
   try {
     var stored = localStorage.getItem('autotrampa_theme');
-    var theme = stored || 'dark';
+    var theme = stored === 'dark' ? 'dark' : 'light';
     document.documentElement.classList.toggle('dark', theme === 'dark');
   } catch (e) {
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('dark');
   }
 })();
 `;

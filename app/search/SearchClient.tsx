@@ -74,9 +74,9 @@ export default function SearchClient() {
           {mounted && showTrade && (
             <Link
               href="/garage"
-              className="flex items-center gap-1.5 text-xs text-app-muted hover:text-orange-400 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-app-muted hover:text-brand-400 transition-colors"
             >
-              <TrendingUp size={13} className="text-orange-400" />
+              <TrendingUp size={13} className="text-brand-400" />
               {selectedCar.brand} {selectedCar.model}
             </Link>
           )}
@@ -88,7 +88,7 @@ export default function SearchClient() {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Marka, model, grad..."
-            className="w-full bg-elevated border border-surface dark:border-zinc-800 rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-elevated border border-surface dark:border-zinc-800 rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted focus:outline-none focus:border-brand-500 transition-colors"
           />
           {query && (
             <button
@@ -105,8 +105,8 @@ export default function SearchClient() {
             onClick={() => setActiveType(null)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
               !activeType
-                ? 'bg-orange-500 border-orange-500 text-black'
-                : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-orange-500/40'
+                ? 'bg-brand-500 border-brand-500 text-black'
+                : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-brand-500/40'
             }`}
           >
             <SlidersHorizontal size={11} />
@@ -118,8 +118,8 @@ export default function SearchClient() {
               onClick={() => setActiveType(activeType === type ? null : type)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                 activeType === type
-                  ? 'bg-orange-500 border-orange-500 text-black'
-                  : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-orange-500/40'
+                  ? 'bg-brand-500 border-brand-500 text-black'
+                  : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-brand-500/40'
               }`}
             >
               {bodyLabel(type)}
@@ -140,7 +140,7 @@ export default function SearchClient() {
               onClick={() => setSortBy(key)}
               className={`flex-shrink-0 whitespace-nowrap text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
                 (sortBy === key || (sortBy === 'trade' && !showTrade && key === 'price-asc'))
-                  ? 'text-orange-400 bg-orange-500/10'
+                  ? 'text-brand-400 bg-brand-500/10'
                   : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
               }`}
             >
@@ -157,7 +157,7 @@ export default function SearchClient() {
         {hasFilters && (
           <button
             onClick={() => { setQuery(''); setActiveType(null); }}
-            className="text-xs text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-1"
+            className="text-xs text-brand-400 hover:text-brand-400 transition-colors flex items-center gap-1"
           >
             <X size={12} />
             Očisti
@@ -181,7 +181,7 @@ export default function SearchClient() {
             return (
               <article
                 key={car.id}
-                className="overflow-hidden rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 transition-all duration-200 hover:border-orange-500/30"
+                className="overflow-hidden rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 transition-all duration-200 hover:border-brand-500/30"
               >
                 <div className="flex flex-col sm:flex-row">
                   <Link
@@ -206,10 +206,10 @@ export default function SearchClient() {
                   <div className="min-w-0 flex-1 p-3">
                     <div className="flex items-start justify-between gap-2">
                       <Link href={`/car/${car.id}`} className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-400">
                           {bodyLabel(car.bodyType)}
                         </p>
-                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary dark:text-zinc-100 transition-colors hover:text-orange-400">
+                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary dark:text-zinc-100 transition-colors hover:text-brand-400">
                           {car.year} {car.brand} {car.model}
                         </h3>
                         <p className="text-xs text-app-muted">{car.generation}</p>

@@ -32,7 +32,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
         <h1 className="text-lg font-bold text-app-primary dark:text-zinc-100">{marketplaceReady ? 'Oglas nije pronađen' : 'Učitavam oglas…'}</h1>
-        {marketplaceReady && <button onClick={() => router.push('/')} className="mt-4 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white">Nazad na oglase</button>}
+        {marketplaceReady && <button onClick={() => router.push('/')} className="mt-4 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-zinc-950">Nazad na oglase</button>}
       </div>
     );
   }
@@ -107,7 +107,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                   <button
                     key={i}
                     onClick={() => setActiveImage(i)}
-                    className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-orange-500' : 'w-1.5 bg-white/60'}`}
+                    className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-brand-500' : 'w-1.5 bg-white/60'}`}
                   />
                 ))}
               </div>
@@ -167,19 +167,19 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
           </div>
 
           <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface dark:border-zinc-800">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 text-zinc-950">
               <span className="text-sm font-black text-white">{car.owner.name[0]}</span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
               <div className="flex items-center gap-1">
-                <Star size={11} className="text-orange-400 fill-orange-400" />
+                <Star size={11} className="text-brand-400 fill-brand-400" />
                 <span className="text-xs text-app-muted">{car.owner.rating} · {car.owner.city}</span>
               </div>
             </div>
             {car.owner.phone && <a
               href={`tel:${car.owner.phone}`}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 hover:text-orange-400 transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 hover:text-brand-400 transition-colors"
             >
               <Phone size={15} />
             </a>}
@@ -189,7 +189,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
         <div className="grid grid-cols-3 gap-2">
           {specs.map(({ icon: Icon, label, value }) => (
             <div key={label} className="bg-card-surface dark:bg-zinc-900 rounded-xl border border-surface dark:border-zinc-800 p-3 text-center">
-              <Icon size={16} className="text-orange-400 mx-auto mb-1.5" />
+              <Icon size={16} className="text-brand-400 mx-auto mb-1.5" />
               <p className="text-[10px] text-app-muted uppercase tracking-wider mb-0.5">{label}</p>
               <p className="text-xs font-bold text-app-primary dark:text-zinc-100 leading-tight">{value}</p>
             </div>
@@ -226,7 +226,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                 return (
                   <div key={category.id}>
                     <div className="flex items-center gap-1.5 mb-2">
-                      <CatIcon size={12} className="text-orange-400" />
+                      <CatIcon size={12} className="text-brand-400" />
                       <p className="text-[10px] font-bold text-app-secondary dark:text-zinc-400 uppercase tracking-wider">{category.label}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -250,7 +250,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             <div className="space-y-2">
               {car.modifications.map(mod => (
                 <div key={mod} className="flex items-center gap-2.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" />
                   <p className="text-xs text-app-secondary dark:text-zinc-400">{mod}</p>
                 </div>
               ))}

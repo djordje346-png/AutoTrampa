@@ -6,10 +6,10 @@ type Theme = 'light' | 'dark';
 
 const STORAGE_KEY = 'autotrampa_theme';
 
-let globalTheme: Theme = 'dark';
+let globalTheme: Theme = 'light';
 if (typeof window !== 'undefined') {
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-  globalTheme = stored || 'dark';
+  globalTheme = stored === 'dark' ? 'dark' : 'light';
   if (globalTheme === 'dark') {
     document.documentElement.classList.add('dark');
   } else {

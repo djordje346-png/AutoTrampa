@@ -49,7 +49,7 @@ export default function AuthOverlay() {
       <div className="mx-auto w-full max-w-md">
         {promptReason ? (
           <div className="px-6 pt-16">
-            <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-center text-sm font-semibold text-orange-400">
+            <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-center text-sm font-semibold text-brand-400">
               {promptReason}
             </div>
           </div>

@@ -180,7 +180,7 @@ export default function FeedPage() {
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
+                    viewMode === 'grid' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
                   }`}
                   aria-label="Prikaz mreže"
                 >
@@ -189,7 +189,7 @@ export default function FeedPage() {
                 <button
                   onClick={() => setViewMode('swipe')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'swipe' ? 'bg-orange-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
+                    viewMode === 'swipe' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
                   }`}
                   aria-label="Svajp režim"
                 >
@@ -201,7 +201,7 @@ export default function FeedPage() {
               {showTrade && cars.length === 0 ? (
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="flex flex-shrink-0 items-center gap-2 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-xs font-semibold text-orange-500 transition-all hover:bg-orange-500/15"
+                  className="flex flex-shrink-0 items-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-400 transition-all hover:bg-brand-500/15"
                   aria-label="Dodaj auto u svoju garažu"
                 >
                   <Plus size={15} />
@@ -251,7 +251,7 @@ export default function FeedPage() {
                             key={car.id}
                             onClick={() => { selectCar(car.id); setSelectorOpen(false); }}
                             className={`w-full flex items-center gap-2.5 rounded-xl p-2 transition-all duration-150 text-left ${
-                              isActive ? 'bg-orange-500/10' : 'hover:bg-hover-surface'
+                              isActive ? 'bg-brand-500/10' : 'hover:bg-hover-surface'
                             }`}
                           >
                             <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
@@ -262,7 +262,7 @@ export default function FeedPage() {
                               <p className="text-[10px] text-app-muted dark:text-zinc-400">{car.year} · {formatEuro(car.price)}</p>
                             </div>
                             {isActive && (
-                              <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
+                              <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0">
                                 <Check size={12} className="text-white" strokeWidth={3} />
                               </div>
                             )}
@@ -273,7 +273,7 @@ export default function FeedPage() {
                     <div className="border-t border-surface dark:border-zinc-800 p-2">
                       <button
                         onClick={() => { setSelectorOpen(false); setShowAddForm(true); }}
-                        className="w-full flex items-center justify-center gap-2 text-orange-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-zinc-800 hover:bg-hover-surface transition-all"
+                        className="w-full flex items-center justify-center gap-2 text-brand-400 text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-zinc-800 hover:bg-hover-surface transition-all"
                       >
                         <Plus size={15} />
                         Dodaj vozilo
@@ -297,7 +297,7 @@ export default function FeedPage() {
                 onClick={() => { updatePreferences({ tradeFilter: key }); setSwipeIndex(0); }}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                   tradeFilter === key
-                    ? 'bg-orange-500 text-black'
+                    ? 'bg-brand-500 text-black'
                     : 'bg-elevated/70 text-app-secondary dark:text-zinc-400 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
                 }`}
               >
@@ -317,9 +317,9 @@ export default function FeedPage() {
       </div>
 
       {authReady && !isLoggedIn && (
-        <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-bold text-orange-400">Koliko je doplata za tebe?</p>
+            <p className="text-sm font-bold text-brand-400">Koliko je doplata za tebe?</p>
             <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
               Dodaj svoj auto u garažu i svaki oglas ti pokazuje razliku u ceni.
             </p>
@@ -340,7 +340,7 @@ export default function FeedPage() {
             <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
           <p className="text-app-secondary dark:text-zinc-400 font-semibold text-sm">Nema vozila po ovom filteru</p>
-          <button onClick={() => { updatePreferences({ tradeFilter: 'all' }); setSwipeIndex(0); }} className="mt-2 text-orange-400 text-xs font-semibold">Poništi filtere</button>
+          <button onClick={() => { updatePreferences({ tradeFilter: 'all' }); setSwipeIndex(0); }} className="mt-2 text-brand-400 text-xs font-semibold">Poništi filtere</button>
         </div>
       )}
 
@@ -357,7 +357,7 @@ export default function FeedPage() {
               className="flex cursor-not-allowed items-center justify-between rounded-xl border border-surface dark:border-zinc-800 bg-elevated/50 px-4 py-3"
             >
               <span className="text-sm font-medium text-app-secondary dark:text-zinc-400">{label}</span>
-              <span className="rounded-md bg-orange-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-orange-400/80">
+              <span className="rounded-md bg-brand-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-400">
                 Uskoro
               </span>
             </div>
@@ -377,7 +377,7 @@ export default function FeedPage() {
           {/* Swipe header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-surface dark:border-zinc-800">
             <div className="flex items-center gap-2">
-              <Flame size={18} className="text-orange-400" />
+              <Flame size={18} className="text-brand-400" />
               <span className="text-sm font-bold text-app-primary dark:text-zinc-100">Svajp režim</span>
             </div>
             <button
@@ -397,7 +397,7 @@ export default function FeedPage() {
                 <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm">
                   {filteredCars.map((_, i) => (
                     <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === swipeIndex ? 'w-6 bg-orange-400' : i < swipeIndex ? 'w-1.5 bg-orange-400/40' : 'w-1.5 bg-elevated'
+                      i === swipeIndex ? 'w-6 bg-brand-400' : i < swipeIndex ? 'w-1.5 bg-brand-400/40' : 'w-1.5 bg-elevated'
                     }`} />
                   ))}
                 </div>
@@ -574,7 +574,7 @@ export default function FeedPage() {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const carSaved = isSaved(car.id);
             return (
-              <article key={car.id} className="bg-card-surface dark:bg-zinc-900 rounded-2xl overflow-hidden border border-surface dark:border-zinc-800 hover:border-orange-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
+              <article key={car.id} className="bg-card-surface dark:bg-zinc-900 rounded-2xl overflow-hidden border border-surface dark:border-zinc-800 hover:border-brand-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
                 {/* Image */}
                 <Link href={`/car/${car.id}`} className="block relative h-44 sm:h-48 md:w-72 md:h-auto md:flex-shrink-0">
                   <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
@@ -595,7 +595,7 @@ export default function FeedPage() {
                   {/* Left: title + specs */}
                   <div className="md:flex-1 md:min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="font-bold text-app-primary dark:text-zinc-100 text-base leading-tight hover:text-orange-400 transition-colors">
+                      <h2 className="font-bold text-app-primary dark:text-zinc-100 text-base leading-tight hover:text-brand-400 transition-colors">
                         {car.year} {car.brand} {car.model}
                       </h2>
                     </Link>

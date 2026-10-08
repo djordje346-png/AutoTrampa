@@ -172,7 +172,7 @@ export function ImageLightbox({
               key={i}
               onClick={() => onIndexChange(i)}
               className={`h-2 rounded-full transition-all ${
-                i === index ? 'w-6 bg-orange-500' : 'w-2 bg-white/50'
+                i === index ? 'w-6 bg-brand-500' : 'w-2 bg-white/50'
               }`}
             />
           ))}

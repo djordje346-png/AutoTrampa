@@ -14,7 +14,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
-      theme={mounted ? theme : 'dark'}
+      theme={mounted ? theme : 'light'}
       position="top-center"
       offset={16}
       duration={3000}

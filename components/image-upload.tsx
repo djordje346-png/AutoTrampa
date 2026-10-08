@@ -95,7 +95,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
             />
 
             {index === 0 ? (
-              <span className="absolute bottom-1.5 left-1.5 rounded bg-orange-500 px-1.5 py-0.5 text-[9px] font-extrabold text-white shadow">
+              <span className="absolute bottom-1.5 left-1.5 rounded bg-brand-500 px-1.5 py-0.5 text-[9px] font-extrabold text-zinc-950 shadow">
                 GLAVNA
               </span>
             ) : (
@@ -104,7 +104,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
                 onClick={() => makeCover(index)}
                 title="Postavi kao glavnu"
                 aria-label={`Postavi sliku ${index + 1} kao glavnu`}
-                className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm transition hover:bg-orange-500"
+                className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm transition hover:bg-brand-500 hover:text-zinc-950"
               >
                 <Star size={9} />
                 GLAVNA
@@ -124,7 +124,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
 
         {images.length < maxImages && (
           <label
-            className={`group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-surface dark:border-zinc-800 bg-elevated p-2 text-center transition hover:border-orange-500/50 hover:bg-orange-500/5 ${
+            className={`group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-surface dark:border-zinc-800 bg-elevated p-2 text-center transition hover:border-brand-500/50 hover:bg-brand-500/5 ${
               busy ? 'pointer-events-none opacity-60' : ''
             }`}
           >
@@ -137,10 +137,10 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
               onChange={handleFileChange}
               className="hidden"
             />
-            <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-hover-surface text-app-muted transition group-hover:text-orange-400">
+            <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-hover-surface text-app-muted transition group-hover:text-brand-400">
               {busy ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
             </div>
-            <span className="text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition group-hover:text-orange-400">
+            <span className="text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition group-hover:text-brand-400">
               {busy ? 'Obrada…' : 'Dodaj sliku'}
             </span>
             <span className="mt-0.5 text-[9px] text-app-muted">JPG, PNG, WebP</span>

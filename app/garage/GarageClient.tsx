@@ -112,7 +112,7 @@ export default function GarageClient() {
             onClick={openAddForm}
             aria-disabled={!canAddCar}
               className={`btn-primary btn-primary-compact flex-shrink-0 text-xs ${
-              canAddCar ? 'bg-orange-500 hover:bg-orange-600' : 'bg-orange-500/40'
+              canAddCar ? 'bg-brand-500 hover:bg-brand-600' : 'bg-brand-500/40'
             }`}
           >
             <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
@@ -156,13 +156,13 @@ export default function GarageClient() {
                   </div>
                 )}
                 {isSelected && (
-                  <div className="absolute top-3 right-3 flex items-center gap-1 bg-orange-500 rounded-full px-2.5 py-1">
+                  <div className="absolute top-3 right-3 flex items-center gap-1 bg-brand-500 text-zinc-950 rounded-full px-2.5 py-1">
                     <Check size={11} className="text-white" strokeWidth={3} />
                     <span className="text-[10px] font-bold text-white uppercase tracking-wider">Aktivno</span>
                   </div>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <p className="text-orange-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
+                  <p className="text-brand-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
                     {car.year} · {bodyLabel(car.bodyType)}
                   </p>
                   <h2 className="text-xl font-black text-white tracking-tight">
@@ -177,7 +177,7 @@ export default function GarageClient() {
                 {!isSelected && (
                   <button
                     onClick={() => selectCar(car.id)}
-                    className="flex items-center gap-1.5 bg-elevated hover:bg-hover-surface text-orange-400 text-xs font-semibold rounded-lg px-2.5 py-1.5 transition-all"
+                    className="flex items-center gap-1.5 bg-elevated hover:bg-hover-surface text-brand-400 text-xs font-semibold rounded-lg px-2.5 py-1.5 transition-all"
                   >
                     <Check size={13} />
                     Izaberi
@@ -204,7 +204,7 @@ export default function GarageClient() {
               <div className="grid grid-cols-2 gap-px bg-surface">
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <TrendingUp size={13} className="text-orange-400" />
+                    <TrendingUp size={13} className="text-brand-400" />
                     <p className="text-[10px] text-app-muted font-medium">Procenjena vrednost</p>
                   </div>
                   <p className="text-sm font-black text-app-primary dark:text-zinc-400">{formatEuro(car.estimatedValue)}</p>
@@ -237,7 +237,7 @@ export default function GarageClient() {
                 className="w-full flex items-center justify-between px-4 py-3 text-left"
               >
                 <div className="flex items-center gap-2">
-                  <Settings size={14} className="text-orange-400" />
+                  <Settings size={14} className="text-brand-400" />
                   <span className="text-xs font-bold text-app-primary dark:text-zinc-100">Specifikacije i detalji</span>
                 </div>
                 {isExpanded ? (
@@ -269,7 +269,7 @@ export default function GarageClient() {
                       <div className="space-y-1.5">
                         {car.modifications.map(mod => (
                           <div key={mod} className="flex items-center gap-2">
-                            <div className="w-1 h-1 rounded-full bg-orange-400 flex-shrink-0" />
+                            <div className="w-1 h-1 rounded-full bg-brand-400 flex-shrink-0" />
                             <p className="text-[11px] text-app-secondary dark:text-zinc-400">{mod}</p>
                           </div>
                         ))}
@@ -340,7 +340,7 @@ export default function GarageClient() {
                       <button
                         key={i}
                         onClick={() => setPreviewImage(i)}
-                        className={`h-1.5 rounded-full transition-all ${i === previewImage ? 'w-5 bg-orange-500' : 'w-1.5 bg-white/60'}`}
+                        className={`h-1.5 rounded-full transition-all ${i === previewImage ? 'w-5 bg-brand-500' : 'w-1.5 bg-white/60'}`}
                       />
                     ))}
                   </div>
@@ -348,7 +348,7 @@ export default function GarageClient() {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
-                <p className="text-orange-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
+                <p className="text-brand-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
                   {previewCar.year} · {bodyLabel(previewCar.bodyType)}
                 </p>
                 <h2 className="text-xl font-black text-white tracking-tight">
@@ -377,8 +377,8 @@ export default function GarageClient() {
                   </button>
                 )}
                 {previewCar.id === selectedId && (
-                  <div className="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 rounded-lg px-3 py-2">
-                    <span className="text-[10px] font-bold text-orange-400 uppercase">Aktivno</span>
+                  <div className="flex items-center gap-1 bg-brand-500/10 border border-brand-500/30 rounded-lg px-3 py-2">
+                    <span className="text-[10px] font-bold text-brand-400 uppercase">Aktivno</span>
                   </div>
                 )}
               </div>
@@ -400,7 +400,7 @@ export default function GarageClient() {
                 </div>
                 <div className="bg-card-surface dark:bg-zinc-900 p-3">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Fuel size={13} className="text-orange-400" />
+                    <Fuel size={13} className="text-brand-400" />
                     <p className="text-[10px] text-app-muted font-medium">Gorivo</p>
                   </div>
                   <p className="text-sm font-black text-app-primary dark:text-zinc-100">{fuelLabel(previewCar.specs.fuelType)}</p>
@@ -442,7 +442,7 @@ export default function GarageClient() {
                   <div className="space-y-1.5">
                     {previewCar.modifications.map(mod => (
                       <div key={mod} className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-orange-400 flex-shrink-0" />
+                        <div className="w-1 h-1 rounded-full bg-brand-400 flex-shrink-0" />
                         <p className="text-[11px] text-app-secondary dark:text-zinc-400">{mod}</p>
                       </div>
                     ))}

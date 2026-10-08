@@ -82,8 +82,8 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
   }
 
   const inputBase =
-    'h-11 w-full rounded-xl border bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted focus:ring-2 focus:ring-orange-500/10';
-  const ok = 'border-surface dark:border-zinc-800 hover:border-orange-500/40 focus:border-orange-500';
+    'h-11 w-full rounded-xl border bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted focus:ring-2 focus:ring-brand-500/10';
+  const ok = 'border-surface dark:border-zinc-800 hover:border-brand-500/40 focus:border-brand-500';
   const bad = 'border-rose-500/70 focus:border-rose-500';
 
   const fields: { key: Field; label: string; placeholder: string; type?: string }[] = [

@@ -64,11 +64,12 @@ const config: Config = {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
-        orange: {
-          300: '#FDBA74',
-          400: '#FB923C',
-          500: '#F97316',
-          600: '#EA580C',
+        brand: {
+          300: '#FAEB00',
+          400: 'hsl(var(--brand-text))',
+          500: '#FAEB00',
+          600: '#E3D400',
+          700: '#625900',
         },
       },
       keyframes: {

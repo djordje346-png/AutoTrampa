@@ -120,7 +120,7 @@ export default function SavedClient() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
                     <div className="absolute bottom-3 left-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-brand-400">
                         {bodyLabel(car.bodyType)}
                       </p>
                       <h2 className="text-base font-bold text-white">

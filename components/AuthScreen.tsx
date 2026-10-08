@@ -93,8 +93,8 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
   }
 
   const inputBase =
-    'w-full rounded-xl border bg-elevated py-3 pl-10 text-sm text-app-primary dark:text-zinc-100 outline-none transition-colors placeholder:text-app-muted focus:ring-2 focus:ring-orange-500/10';
-  const inputOk = 'border-surface dark:border-zinc-800 focus:border-orange-500';
+    'w-full rounded-xl border bg-elevated py-3 pl-10 text-sm text-app-primary dark:text-zinc-100 outline-none transition-colors placeholder:text-app-muted focus:ring-2 focus:ring-brand-500/10';
+  const inputOk = 'border-surface dark:border-zinc-800 focus:border-brand-500';
   const inputBad = 'border-rose-500/70 focus:border-rose-500';
 
   function fieldClass(field: Field, extra = 'pr-4') {
@@ -109,11 +109,11 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
         }`}
       >
         <div
-          className={`mb-4 flex items-center justify-center rounded-2xl bg-orange-500 shadow-lg shadow-orange-500/20 ${
+          className={`mb-4 flex items-center justify-center rounded-2xl bg-brand-500 shadow-lg shadow-brand-500/20 ${
             compact ? 'h-12 w-12' : 'h-16 w-16'
           }`}
         >
-          <ArrowLeftRight size={compact ? 22 : 30} className="text-white" strokeWidth={2.5} />
+          <ArrowLeftRight size={compact ? 22 : 30} className="text-zinc-950" strokeWidth={2.5} />
         </div>
         <h1
           className={`font-bold tracking-tight text-app-primary dark:text-zinc-100 ${
@@ -134,9 +134,9 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
               role="tab"
               aria-selected={tab === key}
               onClick={() => switchTab(key)}
-              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
+              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                 tab === key
-                  ? 'bg-orange-500 text-white'
+                  ? 'bg-brand-500 text-zinc-950'
                   : 'text-app-secondary dark:text-zinc-400 hover:text-app-primary dark:text-zinc-100'
               }`}
             >
@@ -171,7 +171,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
           {tab === 'register' && (
             <div>
               <label htmlFor="auth-phone" className="mb-1.5 block text-xs font-medium text-app-secondary dark:text-zinc-400">
-                Broj telefona <span className="text-orange-400">(obavezno)</span>
+                Broj telefona <span className="text-brand-400">(obavezno)</span>
               </label>
               <div className="relative">
                 <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
@@ -247,7 +247,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
                 type="button"
                 onClick={handlePasswordReset}
                 disabled={submitting}
-                className="text-xs text-orange-400 transition-colors hover:text-orange-300"
+                className="text-xs text-brand-400 transition-colors hover:text-brand-400"
               >
                 Zaboravili ste lozinku?
               </button>
@@ -277,7 +277,7 @@ export default function AuthScreen({ compact = false }: AuthScreenProps) {
           <button
             type="button"
             onClick={() => switchTab(tab === 'login' ? 'register' : 'login')}
-            className="font-medium text-orange-400 transition-colors hover:text-orange-300"
+            className="font-medium text-brand-400 transition-colors hover:text-brand-400"
           >
             {tab === 'login' ? 'Registruj se' : 'Prijavi se'}
           </button>

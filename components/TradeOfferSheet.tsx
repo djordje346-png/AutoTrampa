@@ -106,7 +106,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
               <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
                 {myCar.brand} {myCar.model}
               </p>
-              <p className="text-sm font-bold text-orange-400 dark:text-zinc-400">{formatEuro(myCar.price)}</p>
+              <p className="text-sm font-bold text-brand-400 dark:text-zinc-400">{formatEuro(myCar.price)}</p>
             </div>
             <ArrowLeftRight size={20} className="flex-shrink-0 text-app-muted" />
             <div className="min-w-0 flex-1 rounded-xl bg-elevated p-3 text-center">
@@ -114,7 +114,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
               <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
                 {car.brand} {car.model}
               </p>
-              <p className="text-sm font-bold text-orange-400 dark:text-zinc-400">{formatEuro(car.price)}</p>
+              <p className="text-sm font-bold text-brand-400 dark:text-zinc-400">{formatEuro(car.price)}</p>
             </div>
           </div>
 
@@ -132,7 +132,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
             value={message}
             onChange={e => setMessage(e.target.value.slice(0, 500))}
             placeholder="Dodaj poruku uz ponudu... (opciono)"
-            className="h-24 w-full resize-none rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 py-3 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-orange-500 focus:outline-none"
+            className="h-24 w-full resize-none rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 py-3 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none"
           />
 
           <button

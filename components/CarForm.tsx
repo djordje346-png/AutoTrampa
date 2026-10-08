@@ -237,10 +237,10 @@ function CarFormFields({
   }
 
   const inputClass =
-    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-orange-500/40 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10';
+    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10';
 
   const selectClass =
-    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all hover:border-orange-500/40 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 disabled:cursor-not-allowed disabled:opacity-50';
+    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-50';
 
   const errorRing = 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/10';
 
@@ -493,8 +493,8 @@ function CarFormFields({
                   text-xs font-medium transition-all
                   ${
                     active
-                      ? 'border-orange-500 bg-orange-500 text-white'
-                      : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
+                      ? 'border-brand-500 bg-brand-500 text-zinc-950'
+                      : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
                   }
                 `}
               >
@@ -654,7 +654,7 @@ function CarFormFields({
           onChange={(e) => update('description', e.target.value.slice(0, 600))}
           rows={4}
           placeholder="Redovno servisiran, bez ulaganja, prvi vlasnik..."
-          className="w-full resize-y rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 py-3 text-sm leading-relaxed text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-orange-500/40 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10"
+          className="w-full resize-y rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 py-3 text-sm leading-relaxed text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10"
         />
         <p className="mt-1.5 text-right text-[11px] text-app-muted">
           {form.description.length}/600
@@ -704,8 +704,8 @@ function CarFormFields({
             return (
               <div key={category.id}>
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                    <CatIcon size={14} className="text-orange-400" />
+                  <div className="w-7 h-7 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
+                    <CatIcon size={14} className="text-brand-400" />
                   </div>
                   <p className="text-xs font-bold text-app-primary dark:text-zinc-100">{category.label}</p>
                 </div>
@@ -723,8 +723,8 @@ function CarFormFields({
                           text-xs font-medium transition-all
                           ${
                             active
-                              ? 'border-orange-500 bg-orange-500 text-white'
-                              : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
+                              ? 'border-brand-500 bg-brand-500 text-zinc-950'
+                              : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100'
                           }
                         `}
                       >
@@ -853,7 +853,7 @@ export default function CarFormComponent({
             type="button"
             onClick={onCancel}
             aria-label="Zatvori"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 transition-all hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary dark:text-zinc-400 transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100"
           >
             <svg
               width="18"
@@ -925,7 +925,7 @@ export default function CarFormComponent({
           <button
             type="button"
             onClick={onCancel}
-            className="h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 text-sm font-semibold text-app-secondary dark:text-zinc-400 transition-all hover:border-orange-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100 active:scale-[0.98]"
+            className="h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 text-sm font-semibold text-app-secondary dark:text-zinc-400 transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:text-zinc-100 active:scale-[0.98]"
           >
             Otkaži
           </button>

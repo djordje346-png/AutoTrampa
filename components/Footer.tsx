@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-zinc-950 ring-2 ring-zinc-900">
+    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-zinc-950 ring-2 ring-zinc-900">
       {count > 9 ? '9+' : count}
     </span>
   );
@@ -52,8 +52,8 @@ export default function Footer() {
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className={`relative flex min-w-[44px] flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
-                active ? 'text-orange-400' : 'text-zinc-400 hover:text-zinc-100'
+              className={`relative flex min-w-[44px] flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                active ? 'text-brand-500' : 'text-zinc-400 hover:text-zinc-100'
               }`}
             >
               <span className="relative">
@@ -64,11 +64,11 @@ export default function Footer() {
                 />
                 <Badge count={count} />
               </span>
-              <span className={`text-[9px] font-medium tracking-tight ${active ? 'text-orange-400' : ''}`}>
+              <span className={`text-[9px] font-medium tracking-tight ${active ? 'text-brand-500' : ''}`}>
                 {label}
               </span>
               {active && (
-                <span className="absolute -top-0.5 h-1 w-1 rounded-full bg-orange-400" />
+                <span className="absolute -top-0.5 h-1 w-1 rounded-full bg-brand-500" />
               )}
             </Link>
           );
