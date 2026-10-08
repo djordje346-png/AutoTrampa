@@ -569,16 +569,16 @@ export default function FeedPage() {
 
       {/* GRID/LIST MODE */}
       {viewMode === 'grid' && (
-        <div className="px-4 mt-3 space-y-3 pb-4 md:px-6 lg:px-8">
+        <div className="mx-auto mt-3 grid w-full max-w-7xl grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2 sm:gap-4 sm:px-5 lg:grid-cols-3 lg:gap-5 lg:px-6">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const carSaved = isSaved(car.id);
             return (
-              <article key={car.id} className="bg-card-surface dark:bg-zinc-900 rounded-2xl overflow-hidden border border-surface dark:border-zinc-800 hover:border-brand-500/30 transition-all duration-200 md:flex md:flex-row md:max-h-[200px]">
+              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900">
                 {/* Image */}
-                <Link href={`/car/${car.id}`} className="block relative h-44 sm:h-48 md:w-72 md:h-auto md:flex-shrink-0">
-                  <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent md:bg-gradient-to-r" />
+                <Link href={`/car/${car.id}`} className="relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
+                  <img src={car.image} alt={`${car.brand} ${car.model}`} className="absolute inset-0 h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
                   <button
                     onClick={(e) => { e.preventDefault(); toggleSave(car.id); }}
                     className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
@@ -591,31 +591,31 @@ export default function FeedPage() {
                 </Link>
 
                 {/* Info */}
-                <div className="p-4 md:flex-1 md:flex md:flex-row md:items-center md:gap-4 md:p-4">
-                  {/* Left: title + specs */}
-                  <div className="md:flex-1 md:min-w-0">
+                <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-4">
+                  {/* Title and specs reserve consistent space so cards align in each row. */}
+                  <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="font-bold text-app-primary dark:text-zinc-100 text-base leading-tight hover:text-brand-400 transition-colors">
+                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-400 dark:text-zinc-100">
                         {car.year} {car.brand} {car.model}
                       </h2>
                     </Link>
-                    <p className="text-xs text-app-muted mt-0.5">{car.generation} · {car.color}</p>
+                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{car.generation} · {car.color}</p>
 
-                    <div className="flex items-center gap-3 mt-2 text-xs text-app-secondary dark:text-zinc-400 flex-wrap">
-                      <span className="flex items-center gap-1"><Gauge size={13} className="text-app-muted" />{formatKm(car.mileage)}</span>
-                      <span className="flex items-center gap-1"><Fuel size={13} className="text-app-muted" />{fuelLabel(car.specs.fuelType)}</span>
-                      <span className="flex items-center gap-1"><Settings2 size={13} className="text-app-muted" />{transmissionLabel(car.specs.transmission)}</span>
-                      <span className="flex items-center gap-1"><MapPin size={13} className="text-app-muted" />{car.city}</span>
+                    <div className="mt-2 flex min-h-9 flex-wrap content-start items-center gap-x-3 gap-y-1.5 text-xs text-app-secondary dark:text-zinc-400">
+                      <span className="flex min-w-0 items-center gap-1"><Gauge size={13} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
+                      <span className="flex min-w-0 items-center gap-1"><Fuel size={13} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
+                      <span className="flex min-w-0 items-center gap-1"><Settings2 size={13} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
+                      <span className="flex min-w-0 items-center gap-1"><MapPin size={13} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
                     </div>
 
-                    <p className="text-xs text-app-secondary dark:text-zinc-400 mt-2 line-clamp-1 leading-relaxed hidden md:block">{car.description}</p>
+                    <p className="mt-2 hidden min-h-[1.25rem] line-clamp-1 text-xs leading-relaxed text-app-secondary dark:text-zinc-400 sm:block">{car.description}</p>
                   </div>
 
-                  {/* Right: price + match + CTA */}
-                  <div className="mt-3 md:mt-0 md:flex md:flex-col md:items-end md:justify-center md:gap-2 md:flex-shrink-0 md:min-w-[280px]">
-                    <div className="flex items-center justify-between gap-2 md:block md:text-right">
-                      <div className="flex items-center gap-2">
-                        <p className="text-app-primary dark:text-zinc-100 font-bold text-lg md:text-xl dark:text-zinc-400">{formatEuro(car.price)}</p>
+                  {/* Price, status and actions stay at the bottom of cards in the same row. */}
+                  <div className="mt-auto pt-3">
+                    <div className="flex min-h-8 items-center justify-between gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <p className="truncate text-lg font-bold text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
                         {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
                           <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
                             <Wallet size={9} /> U budžetu
@@ -623,24 +623,24 @@ export default function FeedPage() {
                         )}
                       </div>
                       {tl && (
-                        <div className={`md:mt-1 inline-block px-2.5 py-1 rounded-full border text-xs font-semibold ${tl.bg} ${tl.color}`}>
+                        <div className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${tl.bg} ${tl.color}`}>
                           {tl.label}
                         </div>
                       )}
                     </div>
 
-                    <div className="flex gap-2 mt-2 md:mt-3 md:w-full">
+                    <div className="mt-2 flex min-w-0 gap-2">
                       <button
                         onClick={() => openOffer(car)}
-                        className="btn-primary btn-primary-compact flex-1 whitespace-nowrap text-xs md:text-sm"
+                        className="btn-primary btn-primary-compact flex-1 min-w-0 whitespace-nowrap text-xs xl:text-sm"
                       >
-                        <ArrowLeftRight size={14} />
-                        Pošalji ponudu
+                        <ArrowLeftRight size={14} className="shrink-0" />
+                        <span className="truncate">Pošalji ponudu</span>
                       </button>
-                      <Link href={`/car/${car.id}`} className="px-3 md:px-4 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 text-xs md:text-sm font-semibold rounded-lg py-2 md:py-3 transition-all duration-200 whitespace-nowrap">
+                      <Link href={`/car/${car.id}`} className="flex shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-elevated px-3 py-2 text-xs font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface dark:text-zinc-400 sm:py-3 sm:text-xs xl:px-4 xl:text-sm">
                         Detalji
                       </Link>
-                      {car.owner.phone && <a href={`tel:${car.owner.phone}`} className="w-9 md:w-11 md:flex-shrink-0 flex items-center justify-center bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 rounded-lg py-2 md:py-3 transition-all duration-200" aria-label="Pozovi vlasnika">
+                      {car.owner.phone && <a href={`tel:${car.owner.phone}`} className="flex w-9 shrink-0 items-center justify-center rounded-lg bg-elevated py-2 text-app-secondary transition-all duration-200 hover:bg-hover-surface dark:text-zinc-400 sm:w-11 sm:py-3" aria-label="Pozovi vlasnika">
                         <Phone size={15} />
                       </a>}
                     </div>
