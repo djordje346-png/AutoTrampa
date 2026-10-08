@@ -91,7 +91,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
       <main id="sadrzaj" className="mx-auto w-full max-w-7xl px-4 pb-10 pt-5 sm:px-6 sm:pb-12 sm:pt-7 lg:px-8 lg:pt-8">
         <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-stretch lg:gap-8 xl:gap-10">
           <section className="min-w-0">
-            <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] sm:rounded-3xl lg:aspect-[4/3] xl:aspect-[16/10]">
+            <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] sm:rounded-3xl lg:aspect-square xl:aspect-[4/3]">
               <div
                 className="flex h-full cursor-zoom-in transition-transform duration-300 ease-out"
                 style={{ transform: `translateX(-${activeImage * 100}%)` }}
@@ -142,24 +142,9 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               )}
             </div>
 
-            {carImages.length > 1 && (
-              <div className="mt-4 grid grid-cols-4 gap-2.5 sm:mt-5 sm:gap-3">
-                {carImages.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImage(i)}
-                    aria-label={`Izaberi sliku ${i + 1}`}
-                    aria-pressed={i === activeImage}
-                    className={`aspect-[3/2] overflow-hidden rounded-xl border transition-all ${i === activeImage ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-surface opacity-75 hover:opacity-100 dark:border-zinc-800'}`}
-                  >
-                    <img src={img} alt="" className="h-full w-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
           </section>
 
-          <aside className="flex min-w-0 flex-col rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-6 lg:p-6">
+          <aside className="flex min-w-0 flex-col rounded-2xl border border-surface bg-card-surface p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-5">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-400">
                 Oglas za zamenu
@@ -171,36 +156,36 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               )}
             </div>
 
-            <div className="mt-4 min-w-0 sm:mt-5">
-              <h1 className="break-words text-[1.75rem] font-black leading-[1.08] tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl lg:text-4xl">
+            <div className="mt-3 min-w-0 sm:mt-4">
+              <h1 className="break-words text-[1.65rem] font-black leading-[1.08] tracking-tight text-app-primary dark:text-zinc-100 sm:text-2xl lg:text-3xl">
                 {car.year} {car.brand} {car.model}
               </h1>
-              <p className="mt-1.5 text-sm text-app-muted sm:text-base">{car.generation} · {car.color}</p>
-              <p className="mt-2.5 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
+              <p className="mt-1 text-sm text-app-muted">{car.generation} · {car.color}</p>
+              <p className="mt-2 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
                 <MapPin size={15} className="shrink-0 text-app-muted" />
                 {car.city}, {car.country}
               </p>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-2 border-y border-surface py-3 dark:border-zinc-800 sm:gap-2.5 sm:py-4 lg:grid-cols-3">
+            <div className="mt-3 grid grid-cols-2 gap-2 border-y border-surface py-3 dark:border-zinc-800 sm:grid-cols-3 sm:gap-2 sm:py-3">
               {specs.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="min-w-0 rounded-xl bg-elevated/70 p-2.5 sm:p-3">
-                  <div className="flex min-w-0 items-center gap-1.5">
-                    <Icon size={14} className="shrink-0 text-brand-400" />
-                    <p className="truncate text-[9px] font-semibold uppercase leading-tight tracking-wider text-app-muted">{label}</p>
+                <div key={label} className="min-w-0 rounded-xl bg-elevated/70 p-2 sm:p-2.5">
+                  <div className="flex min-w-0 items-center gap-1">
+                    <Icon size={13} className="shrink-0 text-brand-400" />
+                    <p className="truncate text-[8px] font-semibold uppercase leading-tight tracking-wider text-app-muted sm:text-[9px]">{label}</p>
                   </div>
-                  <p className="mt-1 truncate pl-[1.125rem] text-[11px] font-bold leading-tight text-app-primary dark:text-zinc-100 sm:text-xs">{value}</p>
+                  <p className="mt-1 truncate pl-4 text-[10px] font-bold leading-tight text-app-primary dark:text-zinc-100 sm:text-[11px]">{value}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 rounded-2xl bg-elevated/70 px-4 py-3.5 sm:px-5 sm:py-4">
+            <div className="mt-3 rounded-2xl bg-elevated/70 px-4 py-3 sm:px-4 sm:py-3">
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena vozila</p>
-              <p className="mt-1 tabular-nums text-3xl font-black tracking-tight text-app-primary dark:text-zinc-100 sm:text-4xl lg:text-[2.75rem]">{formatEuro(car.price)}</p>
+              <p className="mt-0.5 tabular-nums text-3xl font-black tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl">{formatEuro(car.price)}</p>
             </div>
 
-            <div className="mt-3 flex flex-col gap-2.5">
-              <button onClick={handleOfferClick} className="btn-primary hidden min-h-12 w-full text-sm md:flex">
+            <div className="mt-3 flex flex-col gap-2">
+              <button onClick={handleOfferClick} className="btn-primary hidden min-h-11 w-full text-sm md:flex">
                 <ArrowLeftRight size={17} className="shrink-0" />
                 Pošalji ponudu
               </button>
@@ -208,13 +193,13 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
                 <button
                   onClick={() => toggleSave(car.id)}
                   aria-pressed={isSaved}
-                  className={`flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-200 ${isSaved ? 'border-brand-500/40 bg-brand-500/10 text-brand-400' : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface dark:border-zinc-800 dark:text-zinc-400'}`}
+                  className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-200 ${isSaved ? 'border-brand-500/40 bg-brand-500/10 text-brand-400' : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface dark:border-zinc-800 dark:text-zinc-400'}`}
                 >
                   <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />
                   {isSaved ? 'Sačuvano' : 'Sačuvaj'}
                 </button>
                 {car.owner.phone && (
-                  <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface hover:text-brand-400 dark:border-zinc-800 dark:text-zinc-400">
+                  <a href={`tel:${car.owner.phone}`} aria-label={`Pozovi ${car.owner.name}`} className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface hover:text-brand-400 dark:border-zinc-800 dark:text-zinc-400">
                     <Phone size={17} />
                     <span>Pozovi</span>
                   </a>
