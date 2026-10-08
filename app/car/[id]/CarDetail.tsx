@@ -89,7 +89,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
   return (
     <div className="min-h-screen pb-32 md:pb-10">
       <main id="sadrzaj" className="mx-auto w-full max-w-7xl px-4 pb-10 pt-5 sm:px-6 sm:pb-12 sm:pt-7 lg:px-8 lg:pt-8">
-        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-start lg:gap-8 xl:gap-10">
+        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-stretch lg:gap-8 xl:gap-10">
           <section className="min-w-0">
             <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] sm:rounded-3xl lg:aspect-[3/2]">
               <div
@@ -159,7 +159,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             )}
           </section>
 
-          <aside className="min-w-0 rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-7 lg:p-8">
+          <aside className="flex min-w-0 flex-col rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-3xl sm:p-6 lg:h-full lg:p-7">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-400">
                 Oglas za zamenu
@@ -171,35 +171,35 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
               )}
             </div>
 
-            <div className="mt-5 min-w-0 sm:mt-6">
+            <div className="mt-4 min-w-0 sm:mt-5">
               <h1 className="break-words text-[1.75rem] font-black leading-[1.08] tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl lg:text-4xl">
                 {car.year} {car.brand} {car.model}
               </h1>
-              <p className="mt-2 text-sm text-app-muted sm:text-base">{car.generation} · {car.color}</p>
-              <p className="mt-3 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
+              <p className="mt-1.5 text-sm text-app-muted sm:text-base">{car.generation} · {car.color}</p>
+              <p className="mt-2.5 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
                 <MapPin size={15} className="shrink-0 text-app-muted" />
                 {car.city}, {car.country}
               </p>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3 border-y border-surface py-5 dark:border-zinc-800 sm:gap-3.5">
-              {specs.slice(0, 4).map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex min-w-0 items-center gap-3 rounded-xl bg-elevated/70 p-3 sm:p-3.5">
-                  <Icon size={16} className="shrink-0 text-brand-400" />
+            <div className="mt-4 grid grid-cols-2 gap-2 border-y border-surface py-3 dark:border-zinc-800 sm:gap-2.5 sm:py-4 xl:grid-cols-3">
+              {specs.map(({ icon: Icon, label, value }) => (
+                <div key={label} className="flex min-w-0 items-center gap-2 rounded-xl bg-elevated/70 px-2.5 py-2.5 sm:gap-2.5 sm:px-3 sm:py-3">
+                  <Icon size={15} className="shrink-0 text-brand-400" />
                   <div className="min-w-0">
-                    <p className="text-[9px] font-semibold uppercase tracking-wider text-app-muted">{label}</p>
-                    <p className="truncate text-xs font-bold text-app-primary dark:text-zinc-100">{value}</p>
+                    <p className="truncate text-[9px] font-semibold uppercase leading-tight tracking-wider text-app-muted">{label}</p>
+                    <p className="mt-0.5 truncate text-[11px] font-bold leading-tight text-app-primary dark:text-zinc-100 sm:text-xs">{value}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-6 rounded-2xl bg-elevated/70 px-4 py-4 sm:px-5 sm:py-5">
+            <div className="mt-4 rounded-2xl bg-elevated/70 px-4 py-3.5 sm:px-5 sm:py-4">
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena vozila</p>
               <p className="mt-1 tabular-nums text-3xl font-black tracking-tight text-app-primary dark:text-zinc-100 sm:text-4xl lg:text-[2.75rem]">{formatEuro(car.price)}</p>
             </div>
 
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="mt-auto flex flex-col gap-2.5 pt-4">
               <button onClick={handleOfferClick} className="btn-primary hidden min-h-12 w-full text-sm md:flex">
                 <ArrowLeftRight size={17} className="shrink-0" />
                 Pošalji ponudu
@@ -223,22 +223,6 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
             </div>
           </aside>
         </div>
-
-        <section className="mt-8 rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:mt-10 sm:rounded-3xl sm:p-7">
-          <div className="mb-5 sm:mb-6">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Detalji vozila</p>
-            <h2 className="mt-1 text-2xl font-bold tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl">Osnovne informacije</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
-            {specs.map(({ icon: Icon, label, value }) => (
-              <div key={label} className="min-w-0 rounded-2xl border border-surface bg-elevated/70 p-3 sm:p-4 dark:border-zinc-800">
-                <Icon size={17} className="text-brand-400" />
-                <p className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-app-muted">{label}</p>
-                <p className="mt-1 break-words text-sm font-bold text-app-primary dark:text-zinc-100">{value}</p>
-              </div>
-            ))}
-          </div>
-        </section>
 
         <div className="mt-6 grid min-w-0 grid-cols-1 items-start gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.8fr)] lg:gap-7">
           <div className="min-w-0 space-y-5 sm:space-y-6">
