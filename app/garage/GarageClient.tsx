@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel, TriangleAlert } from 'lucide-react';
+import { Wrench, Zap, TrendingUp, Settings, Gauge, Activity, MapPin, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { fuelLabel, transmissionLabel, bodyLabel } from '@/lib/labels';
+import { carSubtitle } from '@/lib/car-row';
 import { MyGarageCar, getCarImages } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
@@ -17,7 +18,6 @@ import { ImageLightbox } from '@/components/ImageLightbox';
 export default function GarageClient() {
   const { cars, selectedId, selectCar, addCar, updateCar, removeCar, canAddCar, limit, mounted, ownerPhone } = useGarage();
   const { isLoggedIn, mounted: authReady } = useAuth();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
   const [previewCar, setPreviewCar] = useState<MyGarageCar | null>(null);
@@ -68,11 +68,6 @@ export default function GarageClient() {
       toast.success(`${pendingDelete.brand} ${pendingDelete.model} obrisan iz garaže.`);
     }
     setPendingDelete(null);
-    setExpandedId(null);
-  }
-
-  function toggleExpand(id: string) {
-    setExpandedId(prev => (prev === id ? null : id));
   }
 
   if (authReady && !isLoggedIn) {
@@ -95,9 +90,11 @@ export default function GarageClient() {
             <p className="text-xs text-app-muted mt-0.5">Tvoja kolekcija vozila</p>
           </div>
         </header>
-        <div className="app-container pt-6 space-y-3">
-          <div className="h-48 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
-          <div className="h-48 bg-card-surface dark:bg-zinc-900 rounded-2xl animate-pulse" />
+        {/* Same grid as the loaded state, so nothing jumps when cars arrive. */}
+        <div className="app-container grid grid-cols-1 gap-4 pt-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-72 animate-pulse rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900" />
+          ))}
         </div>
       </div>
     );
@@ -159,195 +156,109 @@ export default function GarageClient() {
             <button onClick={openAddForm} className="btn-primary mt-5">Dodaj auto</button>
           </div>
         )}
+        {/*
+          * Same card as the feed: 16:9 image, title, one spec row, then the
+          * figures. Garage-specific controls replace the feed's single link —
+          * "Izaberi" only where the car is not already the active one, plus
+          * uredi/obriši. Full specs, equipment, service history and photos live
+          * in the preview sheet, so the card stays card-sized in a grid.
+          */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
         {cars.map(car => {
-          const isExpanded = expandedId === car.id;
           const isSelected = car.id === selectedId;
-
-          const engineSpecs = [
-            { label: 'Motor', value: car.specs.engine },
-            { label: 'Zapremina', value: car.specs.displacement },
-            { label: 'Snaga', value: car.specs.power },
-            { label: 'Obrtni moment', value: car.specs.torque },
-            { label: 'Gorivo', value: fuelLabel(car.specs.fuelType) },
-            { label: 'Menjač', value: transmissionLabel(car.specs.transmission) },
-            { label: 'Pogon', value: car.specs.drivetrain },
-            { label: 'Maks. brzina', value: car.specs.topSpeed },
-            { label: '0–100 km/h', value: car.specs.acceleration },
-          ];
+          const images = getCarImages(car);
 
           return (
-            <div key={car.id} className="bg-card-surface dark:bg-zinc-900 rounded-2xl overflow-hidden border border-surface dark:border-zinc-800">
-              <div className="relative h-44 cursor-pointer" onClick={() => { setPreviewCar(car); setPreviewImage(0); }}>
-                <img src={car.image} alt={`${car.brand} ${car.model}`} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                {getCarImages(car).length > 1 && (
-                  <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-2 py-0.5">
-                    <span className="text-[10px] font-bold text-white">{getCarImages(car).length} slika</span>
-                  </div>
+            <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900">
+              {/* Tapping the photo opens the full preview, as before. */}
+              <button
+                type="button"
+                onClick={() => { setPreviewCar(car); setPreviewImage(0); }}
+                aria-label={`Otvori pregled: ${car.brand} ${car.model}`}
+                className="relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden text-left"
+              >
+                <img src={car.image} alt={`${car.brand} ${car.model}`} className="absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                {images.length > 1 && (
+                  <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold text-white backdrop-blur-sm">
+                    {images.length} slika
+                  </span>
                 )}
                 {isSelected && (
-                  <div className="absolute top-3 right-3 flex items-center gap-1 bg-brand-500 text-zinc-950 rounded-full px-2.5 py-1">
-                    <Check size={11} className="text-zinc-950" strokeWidth={3} />
-                    <span className="text-[10px] font-bold text-zinc-950 uppercase tracking-wider">Aktivno</span>
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <p className="text-brand-text text-[10px] font-bold uppercase tracking-widest mb-0.5">
-                    {car.year} · {bodyLabel(car.bodyType)}
-                  </p>
-                  <h2 className="text-xl font-black text-white tracking-tight">
-                    {car.brand} {car.model} {car.generation}
-                  </h2>
-                  <p className="text-white/80 text-xs">{car.color} · {car.city}</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-surface dark:border-zinc-800">
-                <p className="text-app-primary font-bold text-lg mr-auto">{formatEuro(car.price)}</p>
-                {!isSelected && (
-                  <button
-                    onClick={() => selectCar(car.id)}
-                    className="flex items-center gap-1.5 bg-elevated hover:bg-hover-surface text-brand-text text-xs font-semibold rounded-lg px-2.5 py-1.5 transition-all"
-                  >
-                    <Check size={13} />
-                    Izaberi
-                  </button>
-                )}
-                <button
-                  onClick={() => openEditForm(car)}
-                  className="flex items-center gap-1.5 bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 text-xs font-semibold rounded-lg px-2.5 py-1.5 transition-all"
-                >
-                  <Edit3 size={13} />
-                  Uredi
-                </button>
-                <button
-                  onClick={() => setPendingDelete(car)}
-                  className="flex shrink-0 items-center justify-center gap-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-tone-negative rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all"
-                  aria-label={`Obriši ${car.brand} ${car.model} iz garaže`}
-                  title="Obriši auto"
-                >
-                  <Trash2 size={13} />
-                  <span>Obriši</span>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-px bg-surface dark:bg-zinc-800">
-                <div className="bg-card-surface dark:bg-zinc-900 p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <TrendingUp size={13} className="text-brand-text" />
-                    <p className="text-[10px] text-app-muted font-medium">Procenjena vrednost</p>
-                  </div>
-                  <p className="text-sm font-black text-app-primary">{formatEuro(car.estimatedValue)}</p>
-                </div>
-                <div className="bg-card-surface dark:bg-zinc-900 p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Activity size={13} className="text-tone-info" />
-                    <p className="text-[10px] text-app-muted font-medium">Kilometraža</p>
-                  </div>
-                  <p className="text-sm font-black text-app-primary dark:text-zinc-100">{formatKm(car.mileage)}</p>
-                </div>
-                <div className="bg-card-surface dark:bg-zinc-900 p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Zap size={13} className="text-violet-400" />
-                    <p className="text-[10px] text-app-muted font-medium">Snaga</p>
-                  </div>
-                  <p className="text-sm font-black text-app-primary dark:text-zinc-100">{car.specs.power}</p>
-                </div>
-                <div className="bg-card-surface dark:bg-zinc-900 p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Gauge size={13} className="text-tone-negative" />
-                    <p className="text-[10px] text-app-muted font-medium">Obrtni moment</p>
-                  </div>
-                  <p className="text-sm font-black text-app-primary dark:text-zinc-100">{car.specs.torque}</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => toggleExpand(car.id)}
-                className="w-full flex items-center justify-between px-4 py-3 text-left"
-              >
-                <div className="flex items-center gap-2">
-                  <Settings size={14} className="text-brand-text" />
-                  <span className="text-xs font-bold text-app-primary dark:text-zinc-100">Specifikacije i detalji</span>
-                </div>
-                {isExpanded ? (
-                  <ChevronUp size={16} className="text-app-muted" />
-                ) : (
-                  <ChevronDown size={16} className="text-app-muted" />
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-950">
+                    <Check size={11} strokeWidth={3} />
+                    Aktivno
+                  </span>
                 )}
               </button>
 
-              {isExpanded && (
-                <div className="border-t border-surface dark:border-zinc-800">
-                  <div className="divide-y divide-surface">
-                    {engineSpecs
-                      .filter(s => s.value && s.value !== '-' && s.value !== '0')
-                      .map(({ label, value }) => (
-                        <div key={label} className="flex items-center justify-between px-4 py-2">
-                          <span className="text-[11px] text-app-muted">{label}</span>
-                          <span className="text-[11px] font-semibold text-app-secondary dark:text-zinc-400 text-right">{value}</span>
-                        </div>
-                      ))}
+              <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
+                <div className="min-w-0">
+                  <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary dark:text-zinc-100">
+                    {car.year} {car.brand} {car.model}
+                  </h2>
+                  <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
+
+                  <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400">
+                    <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
+                    <span className="text-app-muted/60" aria-hidden="true">·</span>
+                    <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
+                    <span className="text-app-muted/60" aria-hidden="true">·</span>
+                    <span className="flex min-w-0 items-center gap-1"><Settings size={12} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
+                    <span className="text-app-muted/60" aria-hidden="true">·</span>
+                    <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-3.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                    <span className="inline-flex min-w-0 items-center gap-1 truncate text-[11px] font-semibold text-app-muted">
+                      <TrendingUp size={12} className="shrink-0 text-brand-text" />
+                      <span className="truncate">{formatEuro(car.estimatedValue)}</span>
+                    </span>
                   </div>
 
-                  {car.modifications && car.modifications.length > 0 && (
-                    <div className="px-4 py-3 border-t border-surface dark:border-zinc-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Wrench size={13} className="text-violet-400" />
-                        <p className="text-[11px] font-bold text-app-primary dark:text-zinc-100">Modifikacije</p>
-                      </div>
-                      <div className="space-y-1.5">
-                        {car.modifications.map(mod => (
-                          <div key={mod} className="flex items-center gap-2">
-                            <div className="w-1 h-1 rounded-full bg-brand-400 flex-shrink-0" />
-                            <p className="text-[11px] text-app-secondary dark:text-zinc-400">{mod}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => openEditForm(car)}
+                      className="flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-3 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
+                    >
+                      <Edit3 size={15} className="shrink-0" />
+                      Uredi
+                    </button>
+                    <button
+                      onClick={() => setPendingDelete(car)}
+                      aria-label={`Obriši ${car.brand} ${car.model} iz garaže`}
+                      className="flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 text-sm font-semibold text-tone-negative transition-colors hover:bg-rose-500/20"
+                    >
+                      <Trash2 size={15} className="shrink-0" />
+                      Obriši
+                    </button>
+                  </div>
+
+                  {!isSelected && (
+                    <button
+                      onClick={() => selectCar(car.id)}
+                      className="mt-2 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-brand-500/40 bg-brand-500/10 px-4 text-sm font-semibold text-brand-text transition-colors hover:bg-brand-500/15"
+                    >
+                      <Check size={15} className="shrink-0" />
+                      Postavi kao aktivno
+                    </button>
                   )}
 
-                  {car.buildNotes && car.buildNotes.length > 0 && (
-                    <div className="px-4 py-3 border-t border-surface dark:border-zinc-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Award size={13} className="text-tone-positive" />
-                        <p className="text-[11px] font-bold text-app-primary dark:text-zinc-100">Istorija servisa</p>
-                      </div>
-                      <div className="space-y-1.5">
-                        {car.buildNotes.map(note => (
-                          <div key={note} className="flex items-start gap-2">
-                            <div className="w-1 h-1 rounded-full bg-emerald-400 flex-shrink-0 mt-1.5" />
-                            <p className="text-[11px] text-app-secondary dark:text-zinc-400 leading-relaxed">{note}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {car.securityFeatures && car.securityFeatures.length > 0 && (
-                    <div className="px-4 py-3 border-t border-surface dark:border-zinc-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Shield size={13} className="text-tone-info" />
-                        <p className="text-[11px] font-bold text-app-primary dark:text-zinc-100">Sigurnost</p>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {car.securityFeatures.map(feat => (
-                          <span key={feat} className="px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-[10px] font-medium text-tone-info">
-                            {feat}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <p className="px-4 py-3 text-[11px] text-app-muted leading-relaxed border-t border-surface dark:border-zinc-800">
-                    {car.description}
-                  </p>
+                  <button
+                    onClick={() => { setPreviewCar(car); setPreviewImage(0); }}
+                    className="mt-2 w-full text-center text-[11px] font-semibold text-app-muted transition-colors hover:text-brand-text"
+                  >
+                    Sve specifikacije i oprema
+                  </button>
                 </div>
-              )}
-            </div>
+              </div>
+            </article>
           );
         })}
+        </div>
       </div>
 
       {previewCar && (

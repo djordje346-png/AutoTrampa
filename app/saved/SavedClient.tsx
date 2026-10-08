@@ -2,16 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Heart, X, MapPin, Gauge, Fuel, Phone, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
+import { Heart, X, MapPin, Gauge, Fuel, BookmarkX, ArrowRight, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
-import { fuelLabel, bodyLabel } from '@/lib/labels';
+import { fuelLabel } from '@/lib/labels';
+import { carSubtitle } from '@/lib/car-row';
 import { useSaved } from '@/hooks/use-saved';
 import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
-import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { Car } from '@/types';
 
@@ -19,10 +18,8 @@ export default function SavedClient() {
   const { saved: savedIds, remove: removeSaved, save, clear, mounted } = useSaved();
   const { selectedCar } = useGarage();
   const { cars: marketplaceCars } = useMarketplace();
-  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
-  const [offerCar, setOfferCar] = useState<Car | null>(null);
+  const { isLoggedIn, mounted: authReady } = useAuth();
   const [confirmClear, setConfirmClear] = useState(false);
-  const router = useRouter();
 
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
 
@@ -88,9 +85,9 @@ export default function SavedClient() {
         </div>
       </header>
 
-      <div className="app-container space-y-3 pb-4 pt-4">
+      <div className="app-container mt-3 grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
         {savedCars.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated/60">
               <BookmarkX size={36} className="text-app-muted" />
             </div>
@@ -111,107 +108,65 @@ export default function SavedClient() {
           savedCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
             return (
-              <article
-                key={car.id}
-                className="overflow-hidden rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900"
-              >
-                <div className="relative h-40">
-                  <Link href={`/car/${car.id}`} className="block h-full">
+              /* Same card as the feed, with the remove button in place of detail links. */
+              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="relative aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
+                  <Link href={`/car/${car.id}`} className="block h-full w-full">
                     <img
                       src={car.image}
                       alt={`${car.brand} ${car.model}`}
-                      className="h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                    <div className="absolute bottom-3 left-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text">
-                        {bodyLabel(car.bodyType)}
-                      </p>
-                      <h2 className="text-base font-bold text-white">
-                        {car.year} {car.brand} {car.model}
-                      </h2>
-                    </div>
                   </Link>
-
+                  {!car.ownerId && (
+                    <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                      Demo
+                    </span>
+                  )}
                   <button
                     onClick={() => remove(car)}
                     aria-label={`Ukloni ${car.brand} ${car.model} iz sačuvanih`}
-                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition-colors hover:text-tone-negative"
+                    className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:text-tone-negative"
                   >
-                    <X size={15} />
+                    <X size={16} />
                   </button>
-
-                  {tl && (
-                    <span
-                      className={`absolute bottom-3 right-3 rounded-full border px-2 py-0.5 text-[10px] font-bold ${tl.bg} ${tl.color}`}
-                    >
-                      {tl.label}
-                    </span>
-                  )}
                 </div>
 
-                <div className="p-4">
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-app-secondary dark:text-zinc-400">
-                      <span className="flex items-center gap-1">
-                        <Gauge size={12} className="text-app-muted" />
-                        {formatKm(car.mileage)}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Fuel size={12} className="text-app-muted" />
-                        {fuelLabel(car.specs.fuelType)}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin size={12} className="text-app-muted" />
-                        {car.city}
-                      </span>
+                <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
+                  <div className="min-w-0">
+                    <Link href={`/car/${car.id}`}>
+                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
+                        {car.year} {car.brand} {car.model}
+                      </h2>
+                    </Link>
+                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
+
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400">
+                      <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
                     </div>
-                    <p className="flex-shrink-0 font-bold text-app-primary">{formatEuro(car.price)}</p>
                   </div>
 
-                  <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-app-secondary dark:text-zinc-400">
-                    {car.description}
-                  </p>
+                  <div className="mt-auto pt-3.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                      {tl && (
+                        <span className={`inline-flex min-w-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none ${tl.bg} ${tl.color}`}>
+                          <span className="truncate">{tl.label}</span>
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        if (
-                          !requireAuth('Prijavi se da pošalješ ponudu za zamenu', () =>
-                            setOfferCar(car),
-                          )
-                        ) {
-                          return;
-                        }
-                        // The offer sheet needs a car of your own to state a
-                        // difference; without one it stays shut, so say why.
-                        if (!selectedCar) {
-                          toast.error('Prvo dodaj svoj auto u garažu.', {
-                            description: 'Ponuda je razlika između tvog i ovog vozila.',
-                            action: { label: 'Garaža', onClick: () => router.push('/garage') },
-                          });
-                          return;
-                        }
-                        setOfferCar(car);
-                      }}
-                      className="btn-primary btn-primary-compact flex-1 text-sm"
-                    >
-                      <ArrowLeftRight size={14} />
-                      Pošalji ponudu
-                    </button>
                     <Link
                       href={`/car/${car.id}`}
-                      className="flex items-center justify-center gap-1.5 rounded-xl bg-elevated px-3 py-2.5 text-sm font-semibold text-app-secondary dark:text-zinc-400 transition-all duration-200 hover:bg-hover-surface"
+                      className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
                     >
-                      Detalji
+                      Pogledaj oglas
                     </Link>
-                    {car.owner.phone && <a
-                      href={`tel:${car.owner.phone}`}
-                      aria-label={`Pozovi ${car.owner.name}`}
-                      className="flex w-11 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400 transition-all duration-200 hover:bg-hover-surface"
-                    >
-                      <Phone size={14} />
-                    </a>}
                   </div>
                 </div>
               </article>
@@ -258,8 +213,6 @@ export default function SavedClient() {
           </div>
         </div>
       )}
-
-      <TradeOfferSheet car={offerCar} myCar={selectedCar} onClose={() => setOfferCar(null)} />
     </div>
   );
 }
