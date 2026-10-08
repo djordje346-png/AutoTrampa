@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Heart, X, MapPin, Gauge, Fuel, BookmarkX, ArrowRight, TriangleAlert } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Heart, X, MapPin, Gauge, Fuel, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
@@ -12,14 +13,17 @@ import { useSaved } from '@/hooks/use-saved';
 import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
 import { useMarketplace } from '@/hooks/use-marketplace';
+import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { Car } from '@/types';
 
 export default function SavedClient() {
   const { saved: savedIds, remove: removeSaved, save, clear, mounted } = useSaved();
   const { selectedCar } = useGarage();
   const { cars: marketplaceCars } = useMarketplace();
-  const { isLoggedIn, mounted: authReady } = useAuth();
+  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const [confirmClear, setConfirmClear] = useState(false);
+  const [offerCar, setOfferCar] = useState<Car | null>(null);
+  const router = useRouter();
 
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
 
@@ -27,6 +31,23 @@ export default function SavedClient() {
   const savedCars: Car[] = savedIds
     .map(id => marketplaceCars.find(c => c.id === id))
     .filter((c): c is Car => Boolean(c));
+
+  /**
+   * Wish list is where the offer is usually sent from, so the card keeps the
+   * primary action. Same guards as everywhere else: sign in first, then a car
+   * of your own, otherwise say why instead of doing nothing.
+   */
+  function openOffer(car: Car) {
+    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferCar(car))) return;
+    if (!selectedCar) {
+      toast.error('Prvo dodaj svoj auto u garažu.', {
+        description: 'Ponuda je razlika između tvog i ovog vozila.',
+        action: { label: 'Garaža', onClick: () => router.push('/garage') },
+      });
+      return;
+    }
+    setOfferCar(car);
+  }
 
   function remove(car: Car) {
     removeSaved(car.id);
@@ -161,9 +182,16 @@ export default function SavedClient() {
                       )}
                     </div>
 
+                    <button
+                      onClick={() => openOffer(car)}
+                      className="btn-primary btn-primary-compact mt-3 flex w-full items-center justify-center gap-1.5 text-sm"
+                    >
+                      <ArrowLeftRight size={15} className="shrink-0" />
+                      Pošalji ponudu
+                    </button>
                     <Link
                       href={`/car/${car.id}`}
-                      className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
+                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
                     >
                       Pogledaj oglas
                     </Link>
@@ -213,6 +241,8 @@ export default function SavedClient() {
           </div>
         </div>
       )}
+
+      <TradeOfferSheet car={offerCar} myCar={selectedCar} onClose={() => setOfferCar(null)} />
     </div>
   );
 }

@@ -1,33 +1,35 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
-import { getTradeLabel, TRADE_TOLERANCE, sortByBudget } from '@/lib/trade';
+import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { useSaved } from '@/hooks/use-saved';
-import { usePreferences, type TradeFilter } from '@/hooks/use-preferences';
+import { usePreferences } from '@/hooks/use-preferences';
+import { useFilteredCars } from '@/hooks/use-filtered-cars';
+import { countActiveFilters, useSearchPrefs, type SearchFilters } from '@/hooks/use-search-prefs';
 import { useAuth } from '@/hooks/use-auth';
 import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
+import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 
 type ViewMode = 'grid' | 'swipe';
 
-const TRADE_FILTERS: { key: TradeFilter; label: string }[] = [
+/** Quick trade filter in the feed header; the full set lives in the sidebar. */
+const TRADE_FILTERS: { key: SearchFilters['trade']; label: string }[] = [
   { key: 'all', label: 'Sve' },
   { key: 'similar', label: 'Slična vrednost' },
   { key: 'cheaper', label: 'Vlasnik doplaćuje' },
   { key: 'expensive', label: 'Ja doplaćujem' },
 ];
-
-const COMING_SOON_FILTERS = ['Gorivo', 'Marka', 'Godište', 'Kilometraža', 'Menjač'];
 
 export default function FeedPage() {
   const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
@@ -39,11 +41,10 @@ export default function FeedPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [swipeIndex, setSwipeIndex] = useState(0);
-  const { preferences, update: updatePreferences } = usePreferences();
-  const tradeFilter = preferences.tradeFilter;
+  const { preferences } = usePreferences();
   const budget = preferences.budget;
   const noTopUp = preferences.noTopUp;
-  const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen } = useSearchPrefs();
   const [dragX, setDragX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSwipeHint, setShowSwipeHint] = useState(false);
@@ -69,20 +70,20 @@ export default function FeedPage() {
    */
   const tradeAware = authReady && isLoggedIn && selectedCar !== null;
 
-  const baseFiltered = useMemo(() => marketplaceCars.filter(car => {
-    // Without a garage car the trade filter has no meaning — show everything.
-    if (!tradeAware || selectedCar === null || tradeFilter === 'all') return true;
-    const diff = car.price - selectedCar.price;
-    if (tradeFilter === 'similar') return Math.abs(diff) < TRADE_TOLERANCE;
-    if (tradeFilter === 'cheaper') return diff < -TRADE_TOLERANCE;
-    if (tradeFilter === 'expensive') return diff > TRADE_TOLERANCE;
-    return true;
-  }), [marketplaceCars, tradeFilter, selectedCar, tradeAware]);
+  /**
+   * All filtering and ordering lives in one hook, shared with Pretraga, so a
+   * filter means the same thing on both screens. `selectedCar` is passed as
+   * null when the garage is empty, which switches the trade filter off.
+   */
+  const filteredCars = useFilteredCars(
+    marketplaceCars,
+    filters,
+    tradeAware ? selectedCar : null,
+    budget,
+    noTopUp,
+  );
 
-  const filteredCars = useMemo(() => {
-    if (!tradeAware || selectedCar === null || (!budget && !noTopUp)) return baseFiltered;
-    return sortByBudget(baseFiltered, selectedCar, budget, noTopUp);
-  }, [baseFiltered, tradeAware, selectedCar, budget, noTopUp]);
+  const activeFilters = countActiveFilters(filters);
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -300,9 +301,9 @@ export default function FeedPage() {
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
                 key={key}
-                onClick={() => { updatePreferences({ tradeFilter: key }); setSwipeIndex(0); }}
+                onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
-                  tradeFilter === key
+                  filters.trade === key
                     ? 'bg-brand-500 text-black'
                     : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
                 }`}
@@ -310,12 +311,17 @@ export default function FeedPage() {
                 {label}
               </button>
             ))}
+            {/* Below lg the sidebar is hidden, so the sheet is the only way in. */}
             <button
-              onClick={() => setShowMoreFilters(true)}
-              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150"
-              aria-label="Više filtera"
+              onClick={() => setFiltersOpen(true)}
+              className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150 lg:hidden"
+              aria-label={`Filteri${activeFilters > 0 ? ` (${activeFilters} aktivnih)` : ''}`}
             >
               <SlidersHorizontal size={11} />
+              Filteri
+              {activeFilters > 0 && (
+                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-black">{activeFilters}</span>
+              )}
             </button>
           </div>
         </div>
@@ -364,34 +370,28 @@ export default function FeedPage() {
             <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
           <p className="text-app-secondary dark:text-zinc-400 font-semibold text-sm">Nema vozila po ovom filteru</p>
-          <button onClick={() => { updatePreferences({ tradeFilter: 'all' }); setSwipeIndex(0); }} className="mt-2 text-brand-text text-xs font-semibold">Poništi filtere</button>
+          <button onClick={() => { resetFilters(); setSwipeIndex(0); }} className="mt-2 text-brand-text text-xs font-semibold">Poništi filtere</button>
         </div>
       )}
 
+      {/* Mobile/tablet filter sheet — the desktop column lives beside the grid. */}
       <BottomSheet
-        open={showMoreFilters}
-        onClose={() => setShowMoreFilters(false)}
-        title="Više filtera"
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        title="Filteri"
+        className="sm:max-w-lg"
       >
-        <p className="-mt-3 mb-5 text-xs text-app-muted">Napredne opcije filtera uskoro dolaze.</p>
-        <div className="space-y-2">
-          {COMING_SOON_FILTERS.map(label => (
-            <div
-              key={label}
-              className="flex cursor-not-allowed items-center justify-between rounded-xl border border-surface dark:border-zinc-800 bg-elevated/50 px-4 py-3"
-            >
-              <span className="text-sm font-medium text-app-secondary dark:text-zinc-400">{label}</span>
-              <span className="rounded-md bg-brand-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-text">
-                Uskoro
-              </span>
-            </div>
-          ))}
-        </div>
+        <FilterSheetBody
+          filters={filters}
+          update={updateFilters}
+          onReset={resetFilters}
+          showTrade={showTrade}
+        />
         <button
-          onClick={() => setShowMoreFilters(false)}
+          onClick={() => setFiltersOpen(false)}
           className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
         >
-          Gotovo
+          Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
         </button>
       </BottomSheet>
 
@@ -584,38 +584,44 @@ export default function FeedPage() {
         </div>
       )}
 
-      {/* GRID/LIST MODE */}
-      {viewMode === 'grid' && !marketplaceReady && (
-        /*
-         * Real listings arrive one request after the demo seed, and they sort to
-         * the front, so without this the cards visibly jump while the user is
-         * already reading the first one. Same grid and same aspect ratio as the
-         * real cards, and it is the exact complement of the block below, so the
-         * list is never empty during loading.
-         */
-        <div className="app-container mt-3 grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900"
-            >
-              <div className="aspect-[16/9] w-full bg-hover-surface" />
-              <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
-                <div className="h-5 w-3/4 rounded bg-hover-surface" />
-                <div className="h-3 w-1/2 rounded bg-hover-surface" />
-                <div className="mt-1 h-3 w-2/3 rounded bg-hover-surface" />
-                <div className="mt-auto flex items-center justify-between gap-2 pt-3">
-                  <div className="h-5 w-20 rounded bg-hover-surface" />
-                  <div className="h-5 w-24 rounded-full bg-hover-surface" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {viewMode === 'grid' && (
+        <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start">
+          {/* Desktop filters. Below lg the same groups open in the sheet. */}
+          <FilterSidebar
+            filters={filters}
+            update={updateFilters}
+            onReset={resetFilters}
+            showTrade={showTrade}
+            className="w-full lg:sticky lg:top-24 lg:w-64 lg:flex-shrink-0"
+          />
 
-      {viewMode === 'grid' && marketplaceReady && (
-        <div className="app-container mt-3 grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          <div className="min-w-0 flex-1">
+            {!marketplaceReady && (
+              /* Placeholder cards while the first request is in flight: real
+                 listings arrive after the demo seed and sort to the front, so
+                 without this the grid visibly jumps under the reader. */
+              <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:gap-5">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900"
+                  >
+                    <div className="aspect-[16/9] w-full bg-hover-surface" />
+                    <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+                      <div className="h-5 w-3/4 rounded bg-hover-surface" />
+                      <div className="h-3 w-1/2 rounded bg-hover-surface" />
+                      <div className="mt-1 h-3 w-2/3 rounded bg-hover-surface" />
+                      <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+                        <div className="h-5 w-20 rounded bg-hover-surface" />
+                        <div className="h-5 w-24 rounded-full bg-hover-surface" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          {marketplaceReady && (
+            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const carSaved = isSaved(car.id);
@@ -689,6 +695,9 @@ export default function FeedPage() {
               </article>
             );
           })}
+            </div>
+          )}
+          </div>
         </div>
       )}
 

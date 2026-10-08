@@ -11,13 +11,15 @@ import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
-import { useSearchPrefs } from '@/hooks/use-search-prefs';
+import { countActiveFilters, useSearchPrefs } from '@/hooks/use-search-prefs';
+import { filterCars } from '@/hooks/use-filtered-cars';
+import { usePreferences } from '@/hooks/use-preferences';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { displayValue } from '@/lib/car-row';
+import { BottomSheet } from '@/components/BottomSheet';
+import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
-import { BodyType, Car } from '@/types';
-
-const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV'];
+import { Car } from '@/types';
 
 export default function SearchClient() {
   const { selectedCar, mounted } = useGarage();
@@ -27,52 +29,31 @@ export default function SearchClient() {
   // Trade sorting and labelling need the user's own car; without one there is
   // no difference to compute.
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
-  const { prefs, update } = useSearchPrefs();
-  const [query, setQuery] = useState('');
+  const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen } = useSearchPrefs();
+  const { preferences } = usePreferences();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const router = useRouter();
 
-  const { bodyType: activeType, sortBy } = prefs;
-  const setActiveType = (next: BodyType | null) => update({ bodyType: next });
-  const setSortBy = (next: typeof prefs.sortBy) => update({ sortBy: next });
+  /**
+   * A stored "best trade" ordering must not survive signing out or emptying the
+   * garage, so it falls back to price when there is nothing to compare against.
+   */
+  const effectiveSort = filters.sortBy === 'trade' && selectedCar === null ? 'price-asc' : filters.sortBy;
 
-  const results = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    const filtered = marketplaceCars.filter(car => {
-      const matchesQuery =
-        !q ||
-        car.brand.toLowerCase().includes(q) ||
-        car.model.toLowerCase().includes(q) ||
-        car.city.toLowerCase().includes(q) ||
-        car.generation.toLowerCase().includes(q);
-      const matchesType = !activeType || car.bodyType === activeType;
-      return matchesQuery && matchesType;
-    });
+  const results = useMemo(
+    () =>
+      filterCars(
+        marketplaceCars,
+        { ...filters, sortBy: effectiveSort },
+        selectedCar,
+        preferences.budget,
+        preferences.noTopUp,
+      ),
+    [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp],
+  );
 
-    // A stored "best trade" sort must not survive signing out.
-    const effectiveSort = sortBy === 'trade' && !showTrade ? 'price-asc' : sortBy;
-
-    const sorted = [...filtered];
-    switch (effectiveSort) {
-      case 'price-asc':
-        sorted.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        sorted.sort((a, b) => b.price - a.price);
-        break;
-      case 'year-desc':
-        sorted.sort((a, b) => b.year - a.year);
-        break;
-      case 'trade':
-        if (selectedCar) {
-          sorted.sort((a, b) => Math.abs(a.price - selectedCar.price) - Math.abs(b.price - selectedCar.price));
-        }
-        break;
-    }
-    return sorted;
-  }, [marketplaceCars, query, activeType, sortBy, selectedCar, showTrade]);
-
-  const hasFilters = query || activeType;
+  const hasFilters =
+    filters.query.trim() !== '' || countActiveFilters(filters) > 0;
 
   return (
     <div className="flex flex-col">
@@ -94,14 +75,15 @@ export default function SearchClient() {
         <div className="relative">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
           <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
+            value={filters.query}
+            onChange={e => updateFilters({ query: e.target.value })}
             placeholder="Marka, model, grad..."
             className="w-full bg-elevated border border-surface dark:border-zinc-800 rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted focus:outline-none focus:border-brand-500 transition-colors"
           />
-          {query && (
+          {filters.query && (
             <button
-              onClick={() => setQuery('')}
+              onClick={() => updateFilters({ query: '' })}
+              aria-label="Obriši pretragu"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-app-muted hover:text-app-secondary dark:text-zinc-400 transition-colors"
             >
               <X size={15} />
@@ -109,34 +91,20 @@ export default function SearchClient() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 mt-3 overflow-x-auto scrollbar-hide pb-0.5">
+        <div className="mt-3 flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
           <button
-            onClick={() => setActiveType(null)}
-            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-              !activeType
-                ? 'bg-brand-500 border-brand-500 text-black'
-                : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-brand-500/40'
-            }`}
+            onClick={() => setFiltersOpen(true)}
+            className="flex-shrink-0 flex items-center gap-1.5 rounded-full border border-surface bg-elevated px-3 py-1.5 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 lg:hidden"
           >
-            <SlidersHorizontal size={11} />
-            Sve
+            <SlidersHorizontal size={12} />
+            Filteri
+            {countActiveFilters(filters) > 0 && (
+              <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-black">
+                {countActiveFilters(filters)}
+              </span>
+            )}
           </button>
-          {BODY_TYPES.map(type => (
-            <button
-              key={type}
-              onClick={() => setActiveType(activeType === type ? null : type)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                activeType === type
-                  ? 'bg-brand-500 border-brand-500 text-black'
-                  : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-brand-500/40'
-              }`}
-            >
-              {bodyLabel(type)}
-            </button>
-          ))}
-        </div>
 
-        <div className="mt-2.5 flex items-center gap-2 overflow-x-auto scrollbar-hide">
           <span className="flex-shrink-0 text-[10px] text-app-muted font-medium uppercase tracking-wider">Sortiraj:</span>
           {([
             ...(showTrade ? [{ key: 'trade', label: 'Najbolja zamena' }] as const : []),
@@ -146,9 +114,9 @@ export default function SearchClient() {
           ] as const).map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setSortBy(key)}
+              onClick={() => updateFilters({ sortBy: key })}
               className={`flex-shrink-0 whitespace-nowrap text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
-                (sortBy === key || (sortBy === 'trade' && !showTrade && key === 'price-asc'))
+                (filters.sortBy === key || (filters.sortBy === 'trade' && !showTrade && key === 'price-asc'))
                   ? 'text-brand-text bg-brand-500/10'
                   : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
               }`}
@@ -166,7 +134,7 @@ export default function SearchClient() {
         </p>
         {hasFilters && (
           <button
-            onClick={() => { setQuery(''); setActiveType(null); }}
+            onClick={() => resetFilters()}
             className="text-xs text-brand-text hover:text-brand-text transition-colors flex items-center gap-1"
           >
             <X size={12} />
@@ -175,7 +143,16 @@ export default function SearchClient() {
         )}
       </div>
 
-      <div className="app-container space-y-3 pb-4">
+      <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start">
+        <FilterSidebar
+          filters={filters}
+          update={updateFilters}
+          onReset={resetFilters}
+          showTrade={showTrade}
+          className="w-full lg:sticky lg:top-40 lg:w-64 lg:flex-shrink-0"
+        />
+
+        <div className="min-w-0 flex-1 space-y-3 pb-4">
         {results.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
@@ -300,7 +277,28 @@ export default function SearchClient() {
             );
           })
         )}
+        </div>
       </div>
+
+      <BottomSheet
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        title="Filteri"
+        className="sm:max-w-lg"
+      >
+        <FilterSheetBody
+          filters={filters}
+          update={updateFilters}
+          onReset={resetFilters}
+          showTrade={showTrade}
+        />
+        <button
+          onClick={() => setFiltersOpen(false)}
+          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+        >
+          Prikaži {results.length} {results.length === 1 ? 'oglas' : 'oglasa'}
+        </button>
+      </BottomSheet>
 
       <TradeOfferSheet car={offerCar} myCar={selectedCar} onClose={() => setOfferCar(null)} />
     </div>

@@ -3,8 +3,6 @@
 import { useCallback } from 'react';
 import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
 
-export type TradeFilter = 'all' | 'similar' | 'cheaper' | 'expensive';
-
 export interface Preferences {
   /** Search radius in km. */
   radius: number;
@@ -12,8 +10,6 @@ export interface Preferences {
   bodyPrefs: string[];
   /** Hide phone number until both sides accept a swap. */
   phoneAfterMatch: boolean;
-  /** Trade filter on the feed — kept so it survives opening a listing. */
-  tradeFilter: TradeFilter;
   /** Budget for top-up in EUR. null = not set. */
   budget: number | null;
   /** If true, user does not want to pay extra — hide cars where they'd add cash. */
@@ -24,7 +20,6 @@ export const DEFAULT_PREFERENCES: Preferences = {
   radius: 50,
   bodyPrefs: ['Sedan', 'Caravan'],
   phoneAfterMatch: true,
-  tradeFilter: 'all',
   budget: null,
   noTopUp: false,
 };
