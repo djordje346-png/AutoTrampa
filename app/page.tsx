@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal, Wallet } from 'lucide-react';
+import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
-import { getTradeLabel, TRADE_TOLERANCE, sortByBudget, isWithinBudget } from '@/lib/trade';
+import { getTradeLabel, TRADE_TOLERANCE, sortByBudget } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { Car, MyGarageCar } from '@/types';
@@ -64,8 +64,8 @@ export default function FeedPage() {
 
   /**
    * Trade maths needs BOTH a signed-in user and a car of their own to compare
-   * against. Without the car there is no "doplata" to speak of, so every trade
-   * label, filter and budget badge stays off rather than inventing one.
+   * against. Without the car there is no "doplata" to speak of, so the trade
+   * label and the value filters stay off rather than inventing one.
    */
   const tradeAware = authReady && isLoggedIn && selectedCar !== null;
 
@@ -485,15 +485,8 @@ export default function FeedPage() {
 
                       {/* Trade label */}
                       {swipeTl && (
-                        <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                          <div className={`px-3 py-1.5 rounded-full border text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
-                            {swipeTl.label}
-                          </div>
-                          {tradeAware && budget != null && isWithinBudget(swipeCar, selectedCar, budget) && swipeCar.price > selectedCar.price && (
-                            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider text-tone-positive bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2 py-1">
-                              <Wallet size={10} /> U budžetu
-                            </span>
-                          )}
+                        <div className={`absolute bottom-3 left-3 rounded-full border px-3 py-1.5 text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
+                          {swipeTl.label}
                         </div>
                       )}
                     </div>
@@ -671,27 +664,19 @@ export default function FeedPage() {
                   </div>
 
                   {/*
-                   * Price and doplata own the bottom of the card: the difference
-                   * in value is what this product is about, so the label gets a
-                   * full line instead of being squeezed next to the price.
-                   * One action only — the offer is sent from the listing, where
-                   * the doplata, the equipment and the owner are all visible.
+                   * Price and doplata share one line: the price is the anchor,
+                   * the difference sits right next to it. No budget badge here —
+                   * the budget only reorders the feed, it does not mark listings.
                    */}
                   <div className="mt-auto pt-3.5">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                      <p className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
-                      {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
-                        <span className="inline-flex items-center gap-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-tone-positive">
-                          <Wallet size={9} /> U budžetu
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                      {tl && (
+                        <span className={`inline-flex min-w-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none ${tl.bg} ${tl.color}`}>
+                          <span className="truncate">{tl.label}</span>
                         </span>
                       )}
                     </div>
-
-                    {tl && (
-                      <div className={`mt-2 inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${tl.bg} ${tl.color}`}>
-                        <span className="truncate">{tl.label}</span>
-                      </div>
-                    )}
 
                     <Link
                       href={`/car/${car.id}`}
