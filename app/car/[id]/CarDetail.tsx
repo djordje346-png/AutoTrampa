@@ -127,6 +127,18 @@ export default function CarDetail({ car }: { car: Car }) {
 
               <div className="flex gap-2">
                 <button
+                  onClick={() => toggleSave(car.id)}
+                  aria-pressed={isSaved}
+                  aria-label={isSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full shadow-sm backdrop-blur-sm transition-colors ${
+                    isSaved
+                      ? 'bg-rose-500 text-white hover:bg-rose-600'
+                      : 'bg-black/60 text-white hover:text-rose-400'
+                  }`}
+                >
+                  <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />
+                </button>
+                <button
                   onClick={shareCar}
                   aria-label="Podeli oglas"
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-black/75"
@@ -204,32 +216,29 @@ export default function CarDetail({ car }: { car: Car }) {
               <p className="mt-0.5 tabular-nums text-3xl font-black tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
             </div>
 
-            <div className="mt-4 flex flex-col gap-2">
-              <button onClick={handleOfferClick} className="btn-primary hidden min-h-11 w-full text-sm md:flex">
-                <ArrowLeftRight size={17} className="shrink-0" />
-                Pošalji ponudu
+            {/*
+              * Two equal actions, side by side: send the offer (primary yellow)
+              * and call the owner (secondary). Saving moved to the gallery heart,
+              * which is where every other screen in the app keeps it.
+              */}
+            <div className={`mt-4 grid ${car.owner.phone ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
+              <button
+                onClick={handleOfferClick}
+                className="btn-primary btn-primary-compact hidden min-h-11 min-w-0 text-sm md:inline-flex"
+              >
+                <ArrowLeftRight size={16} className="shrink-0" />
+                <span className="truncate">Pošalji ponudu</span>
               </button>
-
-              <div className={car.owner.phone ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-1'}>
-                <button
-                  onClick={() => toggleSave(car.id)}
-                  aria-pressed={isSaved}
-                  className={`${CHIP} px-4 ${isSaved ? 'border-brand-500/40 bg-brand-500/10 text-brand-text' : ''}`}
+              {car.owner.phone && (
+                <a
+                  href={`tel:${car.owner.phone}`}
+                  aria-label={`Pozovi ${car.owner.name}`}
+                  className={`${CHIP} min-h-11 min-w-0 px-3 hover:text-brand-text`}
                 >
-                  <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />
-                  {isSaved ? 'Sačuvano' : 'Sačuvaj'}
-                </button>
-                {car.owner.phone && (
-                  <a
-                    href={`tel:${car.owner.phone}`}
-                    aria-label={`Pozovi ${car.owner.name}`}
-                    className={`${CHIP} px-4 hover:text-brand-text`}
-                  >
-                    <Phone size={17} />
-                    <span>Pozovi</span>
-                  </a>
-                )}
-              </div>
+                  <Phone size={16} className="shrink-0" />
+                  <span className="truncate">Pozovi</span>
+                </a>
+              )}
             </div>
           </aside>
         </div>
