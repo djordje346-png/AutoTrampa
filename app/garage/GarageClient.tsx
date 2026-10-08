@@ -157,8 +157,8 @@ export default function GarageClient() {
                 )}
                 {isSelected && (
                   <div className="absolute top-3 right-3 flex items-center gap-1 bg-brand-500 text-zinc-950 rounded-full px-2.5 py-1">
-                    <Check size={11} className="text-white" strokeWidth={3} />
-                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">Aktivno</span>
+                    <Check size={11} className="text-zinc-950" strokeWidth={3} />
+                    <span className="text-[10px] font-bold text-zinc-950 uppercase tracking-wider">Aktivno</span>
                   </div>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-4">

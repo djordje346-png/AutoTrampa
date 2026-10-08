@@ -168,7 +168,7 @@ export default function CarDetail({ car: initialCar, carId }: { car: Car | null;
 
           <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface dark:border-zinc-800">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 text-zinc-950">
-              <span className="text-sm font-black text-white">{car.owner.name[0]}</span>
+              <span className="text-sm font-black text-zinc-950">{car.owner.name[0]}</span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
