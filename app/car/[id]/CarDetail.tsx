@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus } from 'lucide-react';
+import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -62,6 +62,15 @@ export default function CarDetail({ car }: { car: Car }) {
 
   // Only meaningful with a car of your own to compare against.
   const tl = selectedCar ? getTradeLabel(selectedCar, car) : null;
+  /**
+   * Body listings carry no phone number by design, so the call button has to
+   * explain itself instead of silently disappearing.
+   */
+  const contactNote = car.owner.phone
+    ? null
+    : !authReady || !isLoggedIn
+      ? 'Prijavi se da vidiš kako da stupiš u kontakt sa vlasnikom.'
+      : 'Vlasnik nije ostavio broj telefona. Pošalji ponudu i dogovorite se kroz poruke.';
   const isSaved = isCarSaved(car.id);
   const carImages = getCarImages(car);
   // "E60 · Sapphire Black", or nothing when the form left both fields empty.
@@ -87,6 +96,18 @@ export default function CarDetail({ car }: { car: Car }) {
 
   function handleOfferClick() {
     if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferOpen(true))) return;
+    /*
+     * Signed in but nothing in the garage: the offer sheet needs a car of your
+     * own to state a difference, so it stays shut. Say why and point at the fix
+     * instead of letting the button look dead.
+     */
+    if (!selectedCar) {
+      toast.error('Prvo dodaj svoj auto u garažu.', {
+        description: 'Ponuda za zamenu je razlika između tvog i ovog vozila.',
+        action: { label: 'Garaža', onClick: () => router.push('/garage') },
+      });
+      return;
+    }
     setOfferOpen(true);
   }
 
@@ -220,8 +241,13 @@ export default function CarDetail({ car }: { car: Car }) {
               * Two equal actions, side by side: send the offer (primary yellow)
               * and call the owner (secondary). Saving moved to the gallery heart,
               * which is where every other screen in the app keeps it.
+              *
+              * Real listings never carry a phone number — it lives in the private
+              * `profiles` row and is not selected for the public feed — so the
+              * call button stays in place but disabled, explaining the situation,
+              * rather than vanishing and leaving the row looking lopsided.
               */}
-            <div className={`mt-4 grid ${car.owner.phone ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
+            <div className={`mt-4 grid ${contactNote ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
               <button
                 onClick={handleOfferClick}
                 className="btn-primary btn-primary-compact hidden min-h-11 min-w-0 text-sm md:inline-flex"
@@ -229,7 +255,7 @@ export default function CarDetail({ car }: { car: Car }) {
                 <ArrowLeftRight size={16} className="shrink-0" />
                 <span className="truncate">Pošalji ponudu</span>
               </button>
-              {car.owner.phone && (
+              {car.owner.phone ? (
                 <a
                   href={`tel:${car.owner.phone}`}
                   aria-label={`Pozovi ${car.owner.name}`}
@@ -238,8 +264,26 @@ export default function CarDetail({ car }: { car: Car }) {
                   <Phone size={16} className="shrink-0" />
                   <span className="truncate">Pozovi</span>
                 </a>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  title="Vlasnik nije ostavio broj telefona — kontakt ide preko ponude"
+                  className={`${CHIP} min-h-11 min-w-0 cursor-not-allowed px-3 opacity-55`}
+                >
+                  <Phone size={16} className="shrink-0" />
+                  <span className="truncate">Pozovi</span>
+                </button>
               )}
             </div>
+
+            {contactNote && (
+              <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-app-muted">
+                <Info size={12} className="mt-0.5 shrink-0" />
+                {contactNote}
+              </p>
+            )}
           </aside>
         </div>
 

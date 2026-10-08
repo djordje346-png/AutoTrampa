@@ -2,7 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, Heart, ArrowLeftRight, TrendingUp } from 'lucide-react';
+import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, bodyLabel } from '@/lib/labels';
@@ -28,6 +30,7 @@ export default function SearchClient() {
   const { prefs, update } = useSearchPrefs();
   const [query, setQuery] = useState('');
   const [offerCar, setOfferCar] = useState<Car | null>(null);
+  const router = useRouter();
 
   const { bodyType: activeType, sortBy } = prefs;
   const setActiveType = (next: BodyType | null) => update({ bodyType: next });
@@ -263,6 +266,15 @@ export default function SearchClient() {
                               setOfferCar(car),
                             )
                           ) {
+                            return;
+                          }
+                          // The offer sheet needs a car of your own to state a
+                          // difference; without one it stays shut, so say why.
+                          if (!selectedCar) {
+                            toast.error('Prvo dodaj svoj auto u garažu.', {
+                              description: 'Ponuda je razlika između tvog i ovog vozila.',
+                              action: { label: 'Garaža', onClick: () => router.push('/garage') },
+                            });
                             return;
                           }
                           setOfferCar(car);

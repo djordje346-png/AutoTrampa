@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Wrench, Zap, Shield, TrendingUp, ChevronDown, ChevronUp, Settings, Gauge, Activity, Award, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
@@ -14,7 +15,7 @@ import CarForm from '@/components/CarForm';
 import { ImageLightbox } from '@/components/ImageLightbox';
 
 export default function GarageClient() {
-  const { cars, selectedId, selectCar, addCar, updateCar, removeCar, canAddCar, limit, mounted } = useGarage();
+  const { cars, selectedId, selectCar, addCar, updateCar, removeCar, canAddCar, limit, mounted, ownerPhone } = useGarage();
   const { isLoggedIn, mounted: authReady } = useAuth();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -122,6 +123,33 @@ export default function GarageClient() {
       </header>
 
       <div className="px-4 pt-4 space-y-4 pb-4">
+        {/*
+          * Listings deliberately do not carry a phone number (it lives in the
+          * private `profiles` row), so an account without one is invisible to
+          * buyers: their "Pozovi" button is disabled everywhere. Only worth
+          * saying once there is a listing to be unreachable about.
+        */}
+        {cars.length > 0 && !ownerPhone.trim() && (
+          <div className="flex flex-col gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-2.5">
+              <TriangleAlert size={16} className="mt-0.5 shrink-0 text-tone-warn" />
+              <div>
+                <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Kupci ne mogu da te pozovu</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-app-secondary dark:text-zinc-400">
+                  Broj telefona nije unet, pa na tvojim oglasima stoji onemogućeno dugme „Pozovi“.
+                  Dodaj broj u profilu da te dobiju jednim klikom.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/profile"
+              className="btn-primary btn-primary-compact flex-shrink-0 text-xs"
+            >
+              Dodaj broj
+            </Link>
+          </div>
+        )}
+
         {cars.length === 0 && (
           <div className="rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 px-5 py-8 text-center">
             <h2 className="text-base font-bold text-app-primary dark:text-zinc-100">Garaža je prazna</h2>

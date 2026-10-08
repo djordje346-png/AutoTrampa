@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Heart, X, MapPin, Gauge, Fuel, Phone, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
@@ -21,6 +22,7 @@ export default function SavedClient() {
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const router = useRouter();
 
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
 
@@ -177,6 +179,15 @@ export default function SavedClient() {
                             setOfferCar(car),
                           )
                         ) {
+                          return;
+                        }
+                        // The offer sheet needs a car of your own to state a
+                        // difference; without one it stays shut, so say why.
+                        if (!selectedCar) {
+                          toast.error('Prvo dodaj svoj auto u garažu.', {
+                            description: 'Ponuda je razlika između tvog i ovog vozila.',
+                            action: { label: 'Garaža', onClick: () => router.push('/garage') },
+                          });
                           return;
                         }
                         setOfferCar(car);

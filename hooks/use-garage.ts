@@ -85,9 +85,9 @@ export function useGarage() {
   const [cars, setCars] = useState<MyGarageCar[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, selectedReady] = usePersistentStore(selectedStore);
-  // Subscribing to the profile store (via withOwnerProfile) is what re-renders
-  // the garage once the current user's name and phone arrive.
-  usePersistentStore(userStore);
+  // Subscribing to the profile store is what re-renders the garage once the
+  // current user's name and phone arrive.
+  const [profile] = usePersistentStore(userStore);
 
   useEffect(() => {
     let cancelled = false;
@@ -229,5 +229,11 @@ export function useGarage() {
     remainingSlots: Math.max(0, GARAGE_LIMIT - cars.length),
     limit: GARAGE_LIMIT,
     mounted,
+    /**
+     * The account's own phone. Listings carry no phone (it lives in `profiles`),
+     * so this is what tells an owner their listing currently has no way for a
+     * buyer to call them.
+     */
+    ownerPhone: profile.phone,
   };
 }

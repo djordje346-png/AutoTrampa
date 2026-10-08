@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, Phone, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal, Wallet } from 'lucide-react';
+import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal, Wallet } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel, TRADE_TOLERANCE, sortByBudget, isWithinBudget } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -649,7 +649,7 @@ export default function FeedPage() {
                 </Link>
 
                 {/* Info */}
-                <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-4">
+                <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
                   {/* Title and specs reserve consistent space so cards align in each row. */}
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
@@ -659,49 +659,46 @@ export default function FeedPage() {
                     </Link>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
-                    <div className="mt-2 flex min-h-9 flex-wrap content-start items-center gap-x-3 gap-y-1.5 text-xs text-app-secondary dark:text-zinc-400">
-                      <span className="flex min-w-0 items-center gap-1"><Gauge size={13} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
-                      <span className="flex min-w-0 items-center gap-1"><Fuel size={13} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
-                      <span className="flex min-w-0 items-center gap-1"><Settings2 size={13} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
-                      <span className="flex min-w-0 items-center gap-1"><MapPin size={13} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400">
+                      <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><Settings2 size={12} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
                     </div>
-
-                    <p className="mt-2 hidden min-h-[1.25rem] line-clamp-1 text-xs leading-relaxed text-app-secondary dark:text-zinc-400 sm:block">{car.description}</p>
                   </div>
 
-                  {/* Price, status and actions stay at the bottom of cards in the same row. */}
-                  <div className="mt-auto pt-3">
-                    <div className="flex min-h-8 items-center justify-between gap-2">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <p className="truncate text-lg font-bold text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
-                        {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
-                          <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-tone-positive bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
-                            <Wallet size={9} /> U budžetu
-                          </span>
-                        )}
-                      </div>
-                      {tl && (
-                        <div className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${tl.bg} ${tl.color}`}>
-                          {tl.label}
-                        </div>
+                  {/*
+                   * Price and doplata own the bottom of the card: the difference
+                   * in value is what this product is about, so the label gets a
+                   * full line instead of being squeezed next to the price.
+                   * One action only — the offer is sent from the listing, where
+                   * the doplata, the equipment and the owner are all visible.
+                   */}
+                  <div className="mt-auto pt-3.5">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                      <p className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                      {tradeAware && budget != null && isWithinBudget(car, selectedCar, budget) && car.price > selectedCar.price && (
+                        <span className="inline-flex items-center gap-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-tone-positive">
+                          <Wallet size={9} /> U budžetu
+                        </span>
                       )}
                     </div>
 
-                    <div className="mt-2 flex min-w-0 gap-2">
-                      <button
-                        onClick={() => openOffer(car)}
-                        className="btn-primary btn-primary-compact flex-1 min-w-0 whitespace-nowrap text-xs xl:text-sm"
-                      >
-                        <ArrowLeftRight size={14} className="shrink-0" />
-                        <span className="truncate">Pošalji ponudu</span>
-                      </button>
-                      <Link href={`/car/${car.id}`} className="flex shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-elevated px-3 py-2 text-xs font-semibold text-app-secondary transition-all duration-200 hover:bg-hover-surface dark:text-zinc-400 sm:py-3 sm:text-xs xl:px-4 xl:text-sm">
-                        Detalji
-                      </Link>
-                      {car.owner.phone && <a href={`tel:${car.owner.phone}`} className="flex w-9 shrink-0 items-center justify-center rounded-lg bg-elevated py-2 text-app-secondary transition-all duration-200 hover:bg-hover-surface dark:text-zinc-400 sm:w-11 sm:py-3" aria-label="Pozovi vlasnika">
-                        <Phone size={15} />
-                      </a>}
-                    </div>
+                    {tl && (
+                      <div className={`mt-2 inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${tl.bg} ${tl.color}`}>
+                        <span className="truncate">{tl.label}</span>
+                      </div>
+                    )}
+
+                    <Link
+                      href={`/car/${car.id}`}
+                      className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
+                    >
+                      Pogledaj oglas
+                    </Link>
                   </div>
                 </div>
               </article>

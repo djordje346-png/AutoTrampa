@@ -80,6 +80,11 @@ export function useUser() {
         if (error) throw error;
 
         if (data) {
+          /*
+           * Backfill the phone from the Auth metadata when the row predates the
+           * phone column (or was created before the user typed a number), so the
+           * value stays recoverable instead of being silently empty forever.
+           */
           if (!data.phone && fallback.phone) {
             const { error: profileUpdateError } = await supabase.from('profiles').upsert({
               id: activeUser.id,
