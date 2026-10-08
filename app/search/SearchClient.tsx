@@ -22,7 +22,9 @@ export default function SearchClient() {
   const { cars: marketplaceCars } = useMarketplace();
   const { isSaved, toggleSave } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
-  const showTrade = authReady && isLoggedIn;
+  // Trade sorting and labelling need the user's own car; without one there is
+  // no difference to compute.
+  const showTrade = authReady && isLoggedIn && selectedCar !== null;
   const { prefs, update } = useSearchPrefs();
   const [query, setQuery] = useState('');
   const [offerCar, setOfferCar] = useState<Car | null>(null);
@@ -59,7 +61,9 @@ export default function SearchClient() {
         sorted.sort((a, b) => b.year - a.year);
         break;
       case 'trade':
-        sorted.sort((a, b) => Math.abs(a.price - selectedCar.price) - Math.abs(b.price - selectedCar.price));
+        if (selectedCar) {
+          sorted.sort((a, b) => Math.abs(a.price - selectedCar.price) - Math.abs(b.price - selectedCar.price));
+        }
         break;
     }
     return sorted;
@@ -72,7 +76,7 @@ export default function SearchClient() {
       <header className="sticky top-0 z-40 bg-app dark:bg-zinc-950 border-b border-surface dark:border-zinc-800 px-4 pt-4 pb-3 safe-top">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Pretraga</h1>
-          {mounted && showTrade && (
+          {mounted && showTrade && selectedCar && (
             <Link
               href="/garage"
               className="flex items-center gap-1.5 text-xs text-app-muted hover:text-brand-text transition-colors"
@@ -177,7 +181,7 @@ export default function SearchClient() {
           </div>
         ) : (
           results.map(car => {
-            const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
+            const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
             const saved = isSaved(car.id);
             return (
               <article

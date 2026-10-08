@@ -62,11 +62,16 @@ export default function FeedPage() {
     }
   }, [selectorOpen]);
 
-  const tradeAware = authReady && isLoggedIn;
+  /**
+   * Trade maths needs BOTH a signed-in user and a car of their own to compare
+   * against. Without the car there is no "doplata" to speak of, so every trade
+   * label, filter and budget badge stays off rather than inventing one.
+   */
+  const tradeAware = authReady && isLoggedIn && selectedCar !== null;
 
   const baseFiltered = useMemo(() => marketplaceCars.filter(car => {
     // Without a garage car the trade filter has no meaning — show everything.
-    if (!tradeAware || tradeFilter === 'all') return true;
+    if (!tradeAware || selectedCar === null || tradeFilter === 'all') return true;
     const diff = car.price - selectedCar.price;
     if (tradeFilter === 'similar') return Math.abs(diff) < TRADE_TOLERANCE;
     if (tradeFilter === 'cheaper') return diff < -TRADE_TOLERANCE;
@@ -75,7 +80,7 @@ export default function FeedPage() {
   }), [marketplaceCars, tradeFilter, selectedCar, tradeAware]);
 
   const filteredCars = useMemo(() => {
-    if (!tradeAware || (!budget && !noTopUp)) return baseFiltered;
+    if (!tradeAware || selectedCar === null || (!budget && !noTopUp)) return baseFiltered;
     return sortByBudget(baseFiltered, selectedCar, budget, noTopUp);
   }, [baseFiltered, tradeAware, selectedCar, budget, noTopUp]);
 
@@ -215,7 +220,7 @@ export default function FeedPage() {
                   className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface dark:border-zinc-800"
                   aria-label="Izaberi vozilo"
                 >
-                  {mounted ? (
+                  {mounted && selectedCar ? (
                     <>
                       <div className="w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 bg-hover-surface">
                         {selectedCar.image && (
@@ -238,7 +243,7 @@ export default function FeedPage() {
                   )}
                 </button>
 
-                {selectorOpen && mounted && (
+                {selectorOpen && mounted && selectedCar && (
                   <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface dark:bg-zinc-900 border border-surface dark:border-zinc-800 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-surface dark:border-zinc-800">
                       <p className="text-xs font-bold text-app-primary dark:text-zinc-100">Moja vozila</p>
@@ -316,6 +321,24 @@ export default function FeedPage() {
         </div>
         )}
       </div>
+
+      {authReady && isLoggedIn && cars.length === 0 && (
+        <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-bold text-brand-text">Dodaj svoj auto da vidiš doplatu</p>
+            <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
+              Doplata je razlika između tvog i tuđeg vozila. Bez auta u garaži nemamo sa čime da je
+              uporedimo, pa je trenutno ne prikazujemo.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="btn-primary flex-shrink-0 text-xs"
+          >
+            Dodaj auto
+          </button>
+        </div>
+      )}
 
       {authReady && !isLoggedIn && (
         <div className="mx-4 mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">

@@ -41,7 +41,7 @@ export default function Footer() {
   return (
     <nav
       aria-label="Glavna navigacija"
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-surface bg-app/90 text-app-secondary backdrop-blur-md safe-bottom"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-surface bg-card-surface text-app-secondary safe-bottom"
     >
       <div className="mx-auto flex w-full max-w-md items-center justify-around px-1 py-2 md:max-w-2xl lg:max-w-5xl">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {

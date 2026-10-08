@@ -34,9 +34,12 @@ in — without a car in the garage there is nothing to compare against. Signed-o
 CTA explaining what they are missing. Note these are gated on `authReady && isLoggedIn`, so the
 server render is always the public variant.
 
-New accounts start with an empty Supabase garage. The demo cars in `DEFAULT_GARAGE_CARS` are used
-only as a client-side comparison fallback until the user adds a real car; they are never inserted
-into the shared database.
+New accounts start with an empty Supabase garage. `useGarage().selectedCar` is **null** in that
+state — it deliberately does not fall back to the demo cars in `DEFAULT_GARAGE_CARS`. Those are
+unreferenced seed data kept as a yardstick for realistic listings; using one as the comparison car
+made every listing show a confident "Tvoja doplata 2.000 €" derived from a car the user does not
+own. Consumers must guard instead: `tradeAware` in the feed, `showTrade` on Pretraga/Sačuvano, and
+a "dodaj svoj auto" prompt where the comparison would have been.
 
 ## Stack
 
@@ -83,8 +86,9 @@ to carry their own copy, so every new column had to be added twice. Anything not
 signed-in user's own phone number, for instance — is layered on by the hook that queried.
 
 Invariants worth keeping:
-- The garage is never empty (`removeCar` refuses the last car) — every screen compares against
-  `selectedCar`.
+- `selectedCar` is `null` when the garage is empty, and the UI must say "add your car" rather than
+  compute a doplata. Never substitute a demo car.
+- Any screen that subtracts `selectedCar.price` must run only when `selectedCar` exists.
 - `GARAGE_LIMIT` is enforced in `use-garage`, not by hiding a button.
 - Garage listings copy only public owner name/city/rating. Phone numbers stay in `profiles` and are
   not returned to anonymous clients.

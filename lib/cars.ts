@@ -77,6 +77,13 @@ export const MY_CAR: MyGarageCar = {
   estimatedValue: 7200,
 };
 
+/**
+ * Demo garage cars, kept as realistic reference data.
+ *
+ * NOTHING imports these any more, on purpose: `useGarage().selectedCar` is null
+ * when the garage is empty. Using one of these as the comparison car made every
+ * listing show a doplata computed against a car the user does not own.
+ */
 export const DEFAULT_GARAGE_CARS: MyGarageCar[] = [
   MY_CAR,
   {

@@ -14,7 +14,8 @@ import type { Car, MyGarageCar } from '@/types';
 interface TradeOfferSheetProps {
   /** The listing being offered against; null closes the sheet. */
   car: Car | null;
-  myCar: MyGarageCar;
+  /** Your own car. Without it there is nothing to offer, so the sheet stays shut. */
+  myCar: MyGarageCar | null;
   onClose: () => void;
 }
 
@@ -35,7 +36,9 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
     }
   }, [car]);
 
-  if (!car) return null;
+  // The doplata shown in the sheet is `car.price - myCar.price`, so both sides
+  // have to exist before the flow can open.
+  if (!car || !myCar) return null;
 
   const trade = getTradeLabel(myCar, car);
 

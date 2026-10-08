@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { MyGarageCar } from '@/types';
-import { DEFAULT_GARAGE_CARS } from '@/lib/cars';
 import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
 import type { StorageFailure } from '@/lib/storage';
 import { getSupabase } from '@/lib/supabase';
@@ -15,7 +14,8 @@ export const GARAGE_LIMIT = 3;
 
 const selectedStore = createPersistentStore<string>(
   'autotrampa_selected_car',
-  DEFAULT_GARAGE_CARS[0].id,
+  // Empty means "nothing selected yet"; the hook resolves the first real car.
+  '',
   (raw) => (typeof raw === 'string' && raw ? raw : null),
 );
 
@@ -199,7 +199,7 @@ export function useGarage() {
       const removed = cars.find((car) => car.id === id)?.images ?? [];
       const paths = storedCarImagePaths(removed);
       if (paths.length) void getSupabase().storage.from('car-images').remove(paths);
-      if (selectedStore.get() === id) selectedStore.set(next[0]?.id ?? DEFAULT_GARAGE_CARS[0].id);
+      if (selectedStore.get() === id) selectedStore.set(next[0]?.id ?? '');
       return { ok: true };
     } catch {
       return { ok: false, error: 'network' };
@@ -208,7 +208,14 @@ export function useGarage() {
 
   const mounted = !loading && selectedReady;
   const visibleCars = cars.map((car) => withOwnerProfile(car, userId));
-  const selectedCar = visibleCars.find((car) => car.id === selectedId) ?? visibleCars[0] ?? DEFAULT_GARAGE_CARS[0];
+  /**
+   * Null when the garage is empty. It must NOT fall back to a demo car: the
+   * trade maths (`other.price - myCar.price`) would then be computed against a
+   * car the user does not own, and the listing pages would show a confident
+   * "Tvoja doplata 2.000 €" derived from nothing. Every consumer has to say
+   * "add your car" instead.
+   */
+  const selectedCar = visibleCars.find((car) => car.id === selectedId) ?? visibleCars[0] ?? null;
 
   return {
     cars: visibleCars,

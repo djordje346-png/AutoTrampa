@@ -22,7 +22,7 @@ export default function SavedClient() {
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
 
-  const showTrade = authReady && isLoggedIn;
+  const showTrade = authReady && isLoggedIn && selectedCar !== null;
 
   // Keep the order the user saved them in.
   const savedCars: Car[] = savedIds
@@ -105,7 +105,7 @@ export default function SavedClient() {
           </div>
         ) : (
           savedCars.map(car => {
-            const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
+            const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
             return (
               <article
                 key={car.id}

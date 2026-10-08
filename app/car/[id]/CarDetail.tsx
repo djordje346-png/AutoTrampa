@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check } from 'lucide-react';
+import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -31,7 +32,7 @@ export default function CarDetail({ car }: { car: Car }) {
   const { selectedCar, mounted: garageMounted } = useGarage();
   const { isSaved: isCarSaved, toggleSave } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
-  const showTrade = authReady && isLoggedIn;
+  const showTrade = authReady && isLoggedIn && selectedCar !== null;
   const [offerOpen, setOfferOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -59,7 +60,8 @@ export default function CarDetail({ car }: { car: Car }) {
     }
   }
 
-  const tl = getTradeLabel(selectedCar, car);
+  // Only meaningful with a car of your own to compare against.
+  const tl = selectedCar ? getTradeLabel(selectedCar, car) : null;
   const isSaved = isCarSaved(car.id);
   const carImages = getCarImages(car);
   // "E60 · Sapphire Black", or nothing when the form left both fields empty.
@@ -162,7 +164,7 @@ export default function CarDetail({ car }: { car: Car }) {
               <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-text">
                 Oglas za zamenu
               </span>
-              {showTrade && (
+              {showTrade && tl && (
                 <span className={`rounded-full border px-3 py-1 text-[11px] font-bold ${tl.bg} ${tl.color}`}>
                   {tl.label}
                 </span>
@@ -321,7 +323,30 @@ export default function CarDetail({ car }: { car: Car }) {
               </section>
             )}
 
-            {garageMounted && showTrade && (
+            {/*
+              * Signed in with an empty garage: say so instead of hiding the
+              * block, because "why is there no doplata here" is the first
+              * question a new user has.
+              */}
+            {garageMounted && authReady && isLoggedIn && !selectedCar && (
+              <section className={CARD}>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Poređenje zamene</p>
+                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Dodaj svoj auto</h2>
+                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+                  Doplata je razlika između vrednosti tvog i ovog vozila. Kada dodaš svoj auto u
+                  garažu, ovde ćeš videti koliko ko doplaćuje.
+                </p>
+                <Link
+                  href="/garage"
+                  className="btn-primary mt-4 w-full text-sm sm:w-auto"
+                >
+                  <Plus size={16} className="shrink-0" />
+                  Dodaj auto u garažu
+                </Link>
+              </section>
+            )}
+
+            {garageMounted && showTrade && tl && selectedCar && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Za prijavljene korisnike</p>
                 <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Poređenje zamene</h2>
