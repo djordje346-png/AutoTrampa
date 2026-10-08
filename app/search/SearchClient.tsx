@@ -92,18 +92,20 @@ export default function SearchClient() {
         </div>
 
         <div className="mt-3 flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
-          <button
-            onClick={() => setFiltersOpen(true)}
-            className="flex-shrink-0 flex items-center gap-1.5 rounded-full border border-surface bg-elevated px-3 py-1.5 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 lg:hidden"
-          >
-            <SlidersHorizontal size={12} />
-            Filteri
-            {countActiveFilters(filters) > 0 && (
-              <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-black">
-                {countActiveFilters(filters)}
-              </span>
-            )}
-          </button>
+          {isLoggedIn && (
+            <button
+              onClick={() => setFiltersOpen(true)}
+              className="flex-shrink-0 flex items-center gap-1.5 rounded-full border border-surface bg-elevated px-3 py-1.5 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 lg:hidden"
+            >
+              <SlidersHorizontal size={12} />
+              Filteri
+              {countActiveFilters(filters) > 0 && (
+                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-black">
+                  {countActiveFilters(filters)}
+                </span>
+              )}
+            </button>
+          )}
 
           <span className="flex-shrink-0 text-[10px] text-app-muted font-medium uppercase tracking-wider">Sortiraj:</span>
           {([
@@ -144,13 +146,16 @@ export default function SearchClient() {
       </div>
 
       <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start">
-        <FilterSidebar
-          filters={filters}
-          update={updateFilters}
-          onReset={resetFilters}
-          showTrade={showTrade}
-          className="w-full lg:sticky lg:top-40 lg:w-64 lg:flex-shrink-0"
-        />
+        {/* Filters are for signed-in users; browsing stays open to everyone. */}
+        {isLoggedIn && (
+          <FilterSidebar
+            filters={filters}
+            update={updateFilters}
+            onReset={resetFilters}
+            showTrade={showTrade}
+            className="w-full lg:sticky lg:top-40 lg:w-64 lg:flex-shrink-0"
+          />
+        )}
 
         <div className="min-w-0 flex-1 space-y-3 pb-4">
         {results.length === 0 ? (

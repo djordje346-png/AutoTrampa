@@ -586,14 +586,21 @@ export default function FeedPage() {
 
       {viewMode === 'grid' && (
         <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start">
-          {/* Desktop filters. Below lg the same groups open in the sheet. */}
-          <FilterSidebar
-            filters={filters}
-            update={updateFilters}
-            onReset={resetFilters}
-            showTrade={showTrade}
-            className="w-full lg:sticky lg:top-24 lg:w-64 lg:flex-shrink-0"
-          />
+          {/*
+            * Filters are for signed-in users. A visitor can still browse the
+            * whole feed, and the sign-in CTA explains what an account adds —
+            * showing a filter panel that mostly belongs to trade maths (which
+            * needs a car) would only invite dead ends.
+            */}
+          {isLoggedIn && (
+            <FilterSidebar
+              filters={filters}
+              update={updateFilters}
+              onReset={resetFilters}
+              showTrade={showTrade}
+              className="w-full lg:sticky lg:top-24 lg:w-64 lg:flex-shrink-0"
+            />
+          )}
 
           <div className="min-w-0 flex-1">
             {!marketplaceReady && (
