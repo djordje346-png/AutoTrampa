@@ -236,16 +236,16 @@ export default function CarDetail({ car }: { car: Car }) {
               ))}
             </div>
 
-            <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(132px,0.85fr)] lg:items-center">
+            <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(150px,1.15fr)] lg:items-center">
               <div className="min-w-0 rounded-2xl bg-elevated/70 px-4 py-3 lg:px-3">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena vozila</p>
                 <p className="mt-0.5 truncate tabular-nums text-2xl font-black tracking-tight text-app-primary dark:text-zinc-100 xl:text-3xl">{formatEuro(car.price)}</p>
               </div>
 
-              <div className={`grid ${contactNote ? 'grid-cols-2 lg:grid-cols-1' : 'grid-cols-1'} gap-2`}>
+              <div className="grid min-w-0 gap-2">
                 <button
                   onClick={handleOfferClick}
-                  className="btn-primary btn-primary-compact hidden min-h-10 min-w-0 px-3 text-xs md:inline-flex lg:w-full"
+                  className="btn-primary hidden min-h-11 w-full min-w-0 px-3 text-xs md:inline-flex"
                 >
                   <ArrowLeftRight size={15} className="shrink-0" />
                   <span className="truncate">Pošalji ponudu</span>
@@ -254,7 +254,7 @@ export default function CarDetail({ car }: { car: Car }) {
                   <a
                     href={`tel:${car.owner.phone}`}
                     aria-label={`Pozovi ${car.owner.name}`}
-                    className={`${CHIP} min-h-10 min-w-0 px-3 text-xs hover:text-brand-text`}
+                    className={`${CHIP} min-h-11 w-full min-w-0 px-3 text-xs shadow-sm hover:text-brand-text`}
                   >
                     <Phone size={15} className="shrink-0" />
                     <span className="truncate">Pozovi</span>
@@ -265,7 +265,7 @@ export default function CarDetail({ car }: { car: Car }) {
                     disabled
                     aria-disabled="true"
                     title="Vlasnik nije ostavio broj telefona — kontakt ide preko ponude"
-                    className={`${CHIP} min-h-10 min-w-0 cursor-not-allowed px-3 text-xs opacity-55`}
+                    className={`${CHIP} min-h-11 w-full min-w-0 cursor-not-allowed px-3 text-xs opacity-55`}
                   >
                     <Phone size={15} className="shrink-0" />
                     <span className="truncate">Pozovi</span>
@@ -275,7 +275,7 @@ export default function CarDetail({ car }: { car: Car }) {
             </div>
 
             {/*
-              * Two equal actions, side by side: send the offer (primary yellow)
+              * Matching full-width actions: send the offer (primary yellow)
               * and call the owner (secondary). Saving moved to the gallery heart,
               * which is where every other screen in the app keeps it.
               *
