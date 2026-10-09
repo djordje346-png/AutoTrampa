@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Car } from '@/types';
 import { MARKETPLACE_CARS } from '@/lib/cars';
 import { getSupabase } from '@/lib/supabase';
-import { CAR_ROW_COLUMNS, rowToCar, type CarRow } from '@/lib/car-row';
+import { PUBLIC_CAR_ROW_COLUMNS, rowToCar, type CarRow } from '@/lib/car-row';
 import { useAuth } from '@/hooks/use-auth';
 
 /** Live listings, newest first, mixed with the local demo seed. */
@@ -21,7 +21,7 @@ export function useMarketplace() {
       try {
         let query = getSupabase()
           .from('cars')
-          .select(CAR_ROW_COLUMNS)
+          .select(PUBLIC_CAR_ROW_COLUMNS)
           .order('created_at', { ascending: false })
           .limit(LISTING_LIMIT);
         // A user's own cars belong in the garage, not in the swap feed.

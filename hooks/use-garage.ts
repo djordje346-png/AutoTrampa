@@ -6,7 +6,7 @@ import { createPersistentStore, usePersistentStore } from '@/lib/persistent-stor
 import type { StorageFailure } from '@/lib/storage';
 import { getSupabase } from '@/lib/supabase';
 import { storedCarImagePaths, uploadCarImages } from '@/lib/car-images';
-import { CAR_ROW_COLUMNS, rowToGarageCar, type CarRow } from '@/lib/car-row';
+import { CAR_PRIVATE_DETAIL_COLUMNS, PUBLIC_CAR_ROW_COLUMNS, rowToGarageCar, type CarRow } from '@/lib/car-row';
 import { useAuth } from '@/hooks/use-auth';
 import { shortName, userStore } from '@/hooks/use-user';
 
@@ -65,12 +65,18 @@ function carToRow(car: MyGarageCar, userId: string) {
     equipment: car.equipment ?? [],
     modifications: JSON.stringify(car.modifications ?? []),
     description: car.description,
+    owner_name: car.owner.name || shortName(userStore.get().name),
+    owner_city: car.owner.city || userStore.get().city,
+  };
+}
+
+function privateDetailsToRow(car: MyGarageCar, userId: string) {
+  return {
+    car_id: car.id,
+    user_id: userId,
     estimated_value: car.estimatedValue,
     security_features: car.securityFeatures ?? [],
     build_notes: car.buildNotes ?? [],
-    owner_name: car.owner.name || shortName(userStore.get().name),
-    owner_city: car.owner.city || userStore.get().city,
-    owner_rating: car.owner.rating || userStore.get().rating,
   };
 }
 
@@ -102,13 +108,21 @@ export function useGarage() {
       try {
         const { data, error } = await getSupabase()
           .from('cars')
-          .select(CAR_ROW_COLUMNS)
+          .select(PUBLIC_CAR_ROW_COLUMNS)
           .eq('user_id', userId)
           .order('created_at', { ascending: true });
         if (error) throw error;
         if (cancelled) return;
         const rows = (data ?? []) as unknown as CarRow[];
-        const next = rows.map(rowToGarageCar);
+        const { data: details, error: detailsError } = rows.length
+          ? await getSupabase()
+              .from('car_private_details')
+              .select(CAR_PRIVATE_DETAIL_COLUMNS)
+              .in('car_id', rows.map((row) => row.id))
+          : { data: [], error: null };
+        if (detailsError) throw detailsError;
+        const detailsByCar = new Map((details ?? []).map((item) => [item.car_id, item]));
+        const next = rows.map((row) => rowToGarageCar(row, detailsByCar.get(row.id)));
         setCars(next);
         if (next.length > 0 && !next.some((car) => car.id === selectedStore.get())) {
           selectedStore.set(next[0].id);
@@ -135,15 +149,28 @@ export function useGarage() {
       const { data, error } = await getSupabase()
         .from('cars')
         .insert(prepared.row)
-        .select(CAR_ROW_COLUMNS)
+        .select(PUBLIC_CAR_ROW_COLUMNS)
         .single();
       if (error || !data) {
         if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
         uploaded = [];
         return { ok: false, error: 'network' };
       }
+      const insertedCar = data as unknown as CarRow;
+      const { error: detailsError } = await getSupabase()
+        .from('car_private_details')
+        .insert(privateDetailsToRow({ ...prepared.car, id: insertedCar.id }, userId));
+      if (detailsError) {
+        await getSupabase().from('cars').delete().eq('id', insertedCar.id).eq('user_id', userId);
+        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        uploaded = [];
+        return { ok: false, error: 'network' };
+      }
       uploaded = [];
-      const saved = rowToGarageCar(data as unknown as CarRow);
+      const saved = rowToGarageCar(
+        insertedCar,
+        privateDetailsToRow({ ...prepared.car, id: insertedCar.id }, userId),
+      );
       setCars((previous) => [...previous, saved]);
       return { ok: true, id: saved.id };
     } catch {
@@ -158,6 +185,14 @@ export function useGarage() {
     try {
       const prepared = await prepareCar(car, userId);
       uploaded = prepared.uploaded;
+      const { error: detailsError } = await getSupabase()
+        .from('car_private_details')
+        .upsert(privateDetailsToRow(car, userId), { onConflict: 'car_id' });
+      if (detailsError) {
+        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        uploaded = [];
+        return { ok: false, error: 'network' };
+      }
       const { data, error } = await getSupabase()
         .from('cars')
         .update(prepared.row)

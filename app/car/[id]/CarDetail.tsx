@@ -7,7 +7,7 @@ import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
-import { carSubtitle } from '@/lib/car-row';
+import { carSubtitle, displayValue } from '@/lib/car-row';
 import { getCarImages, type Car } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
@@ -33,6 +33,7 @@ export default function CarDetail({ car }: { car: Car }) {
   const { isSaved: isCarSaved, toggleSave } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
+  const location = [displayValue(car.city), displayValue(car.country)].filter(Boolean).join(', ');
   const [offerOpen, setOfferOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -214,10 +215,12 @@ export default function CarDetail({ car }: { car: Car }) {
                 {car.year} {car.brand} {car.model}
               </h1>
               {subtitle && <p className="mt-1 text-sm text-app-muted">{subtitle}</p>}
-              <p className="mt-2 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
-                <MapPin size={15} className="shrink-0 text-app-muted" />
-                {car.city}, {car.country}
-              </p>
+              {location && (
+                <p className="mt-2 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
+                  <MapPin size={15} className="shrink-0 text-app-muted" />
+                  {location}
+                </p>
+              )}
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-2 border-y border-surface py-3 dark:border-zinc-800 sm:grid-cols-3">
@@ -458,8 +461,9 @@ export default function CarDetail({ car }: { car: Car }) {
               <div className="mt-4 flex items-start gap-3 rounded-2xl bg-elevated p-4">
                 <MapPin size={18} className="mt-0.5 shrink-0 text-brand-text" />
                 <div className="min-w-0">
-                  <p className="break-words text-sm font-semibold text-app-primary dark:text-zinc-100">{car.city}</p>
-                  <p className="mt-0.5 text-xs text-app-muted">{car.country}</p>
+                  <p className="break-words text-sm font-semibold text-app-primary dark:text-zinc-100">
+                    {location || 'Lokacija nije navedena'}
+                  </p>
                 </div>
               </div>
             </section>

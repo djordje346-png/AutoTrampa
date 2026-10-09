@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { CAR_ROW_COLUMNS, rowToCar, type CarRow } from '@/lib/car-row';
+import { PUBLIC_CAR_ROW_COLUMNS, rowToCar, type CarRow } from '@/lib/car-row';
 import type { Car } from '@/types';
 
 /**
@@ -12,7 +12,7 @@ import type { Car } from '@/types';
  * server has to be able to read the database, so it lives here.
  *
  * This is a read-only anonymous client and it uses the same public projection
- * as the browse hooks (`CAR_ROW_COLUMNS`, which never selects a phone number),
+ * as the browse hooks (`PUBLIC_CAR_ROW_COLUMNS`, which only selects public fields),
  * so RLS and the column list stay the only gatekeepers.
  */
 
@@ -43,7 +43,7 @@ export async function fetchListingRow(id: string): Promise<CarRow | null> {
   try {
     const { data, error } = await supabase
       .from('cars')
-      .select(CAR_ROW_COLUMNS)
+      .select(PUBLIC_CAR_ROW_COLUMNS)
       .eq('id', id)
       .maybeSingle();
     if (error || !data) return null;
@@ -71,6 +71,8 @@ export async function fetchListing(id: string): Promise<Car | null> {
 export function listingTitle(car: Car): string {
   // Cars added through the form can end up with a placeholder generation ('-'),
   // which must not leak into an <title> or a share card.
-  const generation = car.generation && car.generation !== '-' ? car.generation : '';
+  const generation = car.generation && car.generation !== '-' && car.generation !== String(car.year)
+    ? car.generation
+    : '';
   return [car.year, car.brand, car.model, generation].filter(Boolean).join(' ');
 }

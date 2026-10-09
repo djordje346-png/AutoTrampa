@@ -9,8 +9,8 @@ import type { BodyType, Car, CarSpec, MyGarageCar } from '@/types';
  * own phone number, for instance) is layered on by the hook that called this.
  */
 
-/** Column list a caller needs so that every mapped field is actually present. */
-export const CAR_ROW_COLUMNS = [
+/** Fields safe to expose to visitors through the public cars table. */
+export const PUBLIC_CAR_ROW_COLUMNS = [
   'id',
   'user_id',
   'brand',
@@ -30,14 +30,14 @@ export const CAR_ROW_COLUMNS = [
   'equipment',
   'modifications',
   'description',
-  'estimated_value',
-  'security_features',
-  'build_notes',
   'owner_name',
   'owner_city',
   'owner_rating',
   'created_at',
 ].join(',');
+
+/** Owner-only fields live in `car_private_details`, never in public listings. */
+export const CAR_PRIVATE_DETAIL_COLUMNS = 'car_id,estimated_value,security_features,build_notes';
 
 export interface CarRow {
   id: string;
@@ -59,9 +59,9 @@ export interface CarRow {
   equipment: string[] | null;
   modifications: string | null;
   description: string | null;
-  estimated_value: number | string | null;
-  security_features: string[] | null;
-  build_notes: string[] | null;
+  estimated_value?: number | string | null;
+  security_features?: string[] | null;
+  build_notes?: string[] | null;
   owner_name: string | null;
   owner_city: string | null;
   owner_rating: number | string | null;
@@ -141,8 +141,10 @@ export function displayValue(value: string | null | undefined): string {
 }
 
 /** Renders the sub-line under a listing title, e.g. "E60 · Sapphire Black". */
-export function carSubtitle(car: { generation?: string | null; color?: string | null }): string {
-  return [displayValue(car.generation), displayValue(car.color)].filter(Boolean).join(' · ');
+export function carSubtitle(car: { generation?: string | null; color?: string | null; year?: number | null }): string {
+  const generation = displayValue(car.generation);
+  const distinctGeneration = generation === String(car.year ?? '') ? '' : generation;
+  return [distinctGeneration, displayValue(car.color)].filter(Boolean).join(' · ');
 }
 
 /** Shared projection: everything except the fields only the owner may see. */
@@ -183,11 +185,14 @@ export function rowToCar(row: CarRow): Car {
 }
 
 /** The signed-in user's own car: same shape plus the private garage fields. */
-export function rowToGarageCar(row: CarRow): MyGarageCar {
+export function rowToGarageCar(
+  row: CarRow,
+  privateDetails?: Pick<CarRow, 'estimated_value' | 'security_features' | 'build_notes'>,
+): MyGarageCar {
   return {
     ...baseFields(row),
-    securityFeatures: row.security_features ?? fromFeatures(row, 'securityFeatures'),
-    buildNotes: row.build_notes ?? fromFeatures(row, 'buildNotes'),
-    estimatedValue: toNumber(row.estimated_value),
+    securityFeatures: privateDetails?.security_features ?? fromFeatures(row, 'securityFeatures'),
+    buildNotes: privateDetails?.build_notes ?? fromFeatures(row, 'buildNotes'),
+    estimatedValue: toNumber(privateDetails?.estimated_value),
   };
 }
