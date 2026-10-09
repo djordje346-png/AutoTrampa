@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
@@ -11,6 +12,7 @@ import { Car, MyGarageCar } from '@/types';
 import { useGarage } from '@/hooks/use-garage';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { useSaved } from '@/hooks/use-saved';
+import { useSwipes } from '@/hooks/use-swipes';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useFilteredCars } from '@/hooks/use-filtered-cars';
 import { countActiveFilters, useSearchPrefs, type SearchFilters } from '@/hooks/use-search-prefs';
@@ -22,6 +24,7 @@ import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 
 type ViewMode = 'grid' | 'swipe';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /** Quick trade filter in the feed header; the full set lives in the sidebar. */
 const TRADE_FILTERS: { key: SearchFilters['trade']; label: string }[] = [
@@ -32,10 +35,12 @@ const TRADE_FILTERS: { key: SearchFilters['trade']; label: string }[] = [
 ];
 
 export default function FeedPage() {
+  const router = useRouter();
   const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
   const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
-  const { saved, isSaved, toggleSave, save: saveCar } = useSaved();
-  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const { saved, isSaved, toggleSave } = useSaved();
+  const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
+  const { reviewedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -48,6 +53,7 @@ export default function FeedPage() {
   const [dragX, setDragX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSwipeHint, setShowSwipeHint] = useState(false);
+  const [sessionReviewedIds, setSessionReviewedIds] = useState<Set<string>>(new Set());
   const selectorRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number } | null>(null);
 
@@ -95,6 +101,11 @@ export default function FeedPage() {
     }
   }, [viewMode]);
 
+  useEffect(() => {
+    setSwipeIndex(0);
+    setSessionReviewedIds(new Set());
+  }, [selectedId, filters]);
+
   function openOffer(car: Car) {
     if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferCar(car))) return;
     setOfferCar(car);
@@ -125,12 +136,72 @@ export default function FeedPage() {
     }, 300);
   }
 
-  function handleSwipeLike() {
-    if (swipeCar) saveCar(swipeCar.id);
+  async function handleSwipeLike() {
+    if (!swipeCar || isAnimating) return;
+    if (!requireAuth('Prijavi se i dodaj auto da lajkuješ oglas', () => void handleSwipeLike())) return;
+    if (!selectedCar) {
+      toast.error('Prvo dodaj svoj auto u garažu.', {
+        description: 'Za match je potreban oglas koji nudiš za zamenu.',
+        action: { label: 'Garaža', onClick: () => router.push('/garage') },
+      });
+      return;
+    }
+    if (!UUID_RE.test(swipeCar.id)) {
+      toast.message('Ovo je demo oglas — lajk nije sačuvan u sistemu matchovanja.');
+      flyAway('right');
+      return;
+    }
+    if (!UUID_RE.test(selectedCar.id)) {
+      toast.error('Za match dodaj objavljeno vozilo u svoju garažu.');
+      return;
+    }
+
+    setIsAnimating(true);
+    setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
+    const result = await recordSwipe(swipeCar.id, selectedCar.id, true);
+    if (!result.ok) {
+      setIsAnimating(false);
+      setSessionReviewedIds((previous) => {
+        const next = new Set(previous);
+        next.delete(swipeCar.id);
+        return next;
+      });
+      toast.error('Lajk nije sačuvan. Pokušaj ponovo.');
+      return;
+    }
+    if (result.result.matched && result.result.new_match) {
+      toast.success('Imate match!', {
+        description: 'Oboje ste lajkovali oglase za zamenu. Razgovor je otvoren u Porukama.',
+        action: {
+          label: 'Otvori poruke',
+          onClick: () => router.push('/messages'),
+        },
+      });
+    }
     flyAway('right');
   }
 
-  function handleSwipeSkip() {
+  async function handleSwipeSkip() {
+    if (isAnimating) return;
+    if (swipeCar && userId && UUID_RE.test(swipeCar.id)) {
+      setIsAnimating(true);
+      setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
+      const result = await recordSwipe(
+        swipeCar.id,
+        selectedCar && UUID_RE.test(selectedCar.id) ? selectedCar.id : null,
+        false,
+      );
+      if (!result.ok) {
+        setIsAnimating(false);
+        setSessionReviewedIds((previous) => {
+          const next = new Set(previous);
+          next.delete(swipeCar.id);
+          return next;
+        });
+        toast.error('Oglas nije preskočen. Pokušaj ponovo.');
+        return;
+      }
+    }
     flyAway('left');
   }
 
@@ -152,22 +223,27 @@ export default function FeedPage() {
     const dx = e.clientX - dragStart.current.x;
     dragStart.current = null;
     if (dx > 100) {
-      handleSwipeLike();
+      void handleSwipeLike();
     } else if (dx < -100) {
-      handleSwipeSkip();
+      void handleSwipeSkip();
     } else {
       setDragX(0);
     }
   }
 
   function exitSwipeMode() {
+    void refreshSwipes();
+    setSessionReviewedIds(new Set());
     setViewMode('grid');
     setSwipeIndex(0);
     setDragX(0);
   }
 
   const showTrade = tradeAware;
-  const swipeCar = filteredCars[swipeIndex];
+  const swipeCars = userId
+    ? filteredCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
+    : filteredCars;
+  const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
 
   return (
@@ -415,11 +491,11 @@ export default function FeedPage() {
 
           {/* Swipe content */}
           <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden">
-            {swipeIndex < filteredCars.length && swipeCar ? (
+            {swipeIndex < swipeCars.length && swipeCar ? (
               <>
                 {/* Progress dots */}
                 <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm">
-                  {filteredCars.map((_, i) => (
+                  {swipeCars.map((_, i) => (
                     <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
                       i === swipeIndex ? 'w-6 bg-brand-400' : i < swipeIndex ? 'w-1.5 bg-brand-400/40' : 'w-1.5 bg-elevated'
                     }`} />
@@ -429,10 +505,10 @@ export default function FeedPage() {
                 {/* Card stack */}
                 <div className="relative w-full max-w-sm">
                   {/* Next card peeking behind */}
-                  {filteredCars[swipeIndex + 1] && (
+                  {swipeCars[swipeIndex + 1] && (
                     <div className="absolute inset-0 bg-card-surface dark:bg-zinc-900 rounded-3xl overflow-hidden border border-surface dark:border-zinc-800 shadow-lg" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
                       <div className="relative h-72 sm:h-80">
-                        <img src={filteredCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
+                        <img src={swipeCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
                       </div>
                     </div>
                   )}
@@ -524,19 +600,19 @@ export default function FeedPage() {
                 {/* Action buttons */}
                 <div className="flex items-center gap-5 mt-6">
                   <button
-                    onClick={handleSwipeSkip}
+                    onClick={() => void handleSwipeSkip()}
                     className="w-14 h-14 rounded-full bg-rose-500/10 border-2 border-tone-negative flex items-center justify-center text-tone-negative-ring hover:bg-rose-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
                     aria-label="Preskoči"
                   >
                     <X size={28} strokeWidth={3} />
                   </button>
-                  <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {filteredCars.length}</span>
+                  <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {swipeCars.length}</span>
                   <button
-                    onClick={handleSwipeLike}
+                    onClick={() => void handleSwipeLike()}
                     className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-tone-positive flex items-center justify-center text-tone-positive-ring hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
                     aria-label="Sviđa mi se"
                   >
-                    <Heart size={28} strokeWidth={3} fill={isSaved(swipeCar.id) ? 'currentColor' : 'none'} />
+                    <Heart size={28} strokeWidth={3} />
                   </button>
                 </div>
                 <p className="text-[10px] text-app-muted mt-3 opacity-70">Prevuci desno = LIKE · levo = PRESKOK</p>
@@ -551,8 +627,16 @@ export default function FeedPage() {
                 <p className="text-sm text-app-secondary dark:text-zinc-400 mb-1">Pregledao si sve oglase.</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
-                  <button onClick={() => setSwipeIndex(0)} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-zinc-100 font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
-                    <RotateCcw size={15} /> Ispočetka
+                  <button onClick={async () => {
+                    const reset = await resetPasses();
+                    if (!reset) {
+                      toast.error('Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
+                      return;
+                    }
+                    setSwipeIndex(0);
+                    setSessionReviewedIds(new Set());
+                  }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-zinc-100 font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
+                    <RotateCcw size={15} /> Ponovi preskočene
                   </button>
                   <button onClick={exitSwipeMode} className="btn-primary text-sm">
                     Nazad na feed
@@ -563,7 +647,7 @@ export default function FeedPage() {
           </div>
 
           {/* Swipe hint overlay */}
-          {showSwipeHint && swipeIndex < filteredCars.length && (
+          {showSwipeHint && swipeIndex < swipeCars.length && (
             <div className="absolute inset-0 z-[70] flex items-center justify-center pointer-events-none">
               <div className="flex items-center gap-10">
                 <div className="flex flex-col items-center gap-2">
@@ -717,3 +801,4 @@ export default function FeedPage() {
     </div>
   );
 }
+
