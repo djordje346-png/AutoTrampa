@@ -256,6 +256,14 @@ export default function MessagesClient() {
                         </span>
                       </div>
                     )}
+                    {msg.sender === 'system' ? (
+                      <div className="flex justify-center">
+                        <div className="max-w-[90%] whitespace-pre-wrap rounded-2xl border border-brand-500/25 bg-brand-500/10 px-4 py-3 text-center text-xs leading-relaxed text-app-secondary dark:text-zinc-300">
+                          <p className="font-semibold text-brand-text">{msg.text}</p>
+                          <span className="mt-1 block text-[9px] text-app-muted">{formatMessageTime(msg.timestamp)}</span>
+                        </div>
+                      </div>
+                    ) : (
                     <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
@@ -277,6 +285,7 @@ export default function MessagesClient() {
                         </div>
                       </div>
                     </div>
+                    )}
                   </div>
                 );
               })
@@ -419,3 +428,4 @@ export default function MessagesClient() {
     </div>
   );
 }
+
