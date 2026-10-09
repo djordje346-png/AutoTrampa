@@ -8,7 +8,7 @@ import { userStore } from '@/hooks/use-user';
 export interface ChatMessage {
   id: string;
   text: string;
-  sender: 'me' | 'them';
+  sender: 'me' | 'them' | 'system';
   timestamp: number;
 }
 
@@ -28,7 +28,8 @@ export interface Conversation {
 
 interface MessageRow {
   id: string;
-  sender_id: string;
+  sender_id: string | null;
+  kind: 'text' | 'match';
   body: string;
   created_at: string;
   read_at: string | null;
@@ -73,7 +74,7 @@ function mapConversation(row: ConversationRow, userId: string): Conversation | n
     messages: messages.map((message) => ({
       id: message.id,
       text: message.body,
-      sender: message.sender_id === userId ? 'me' : 'them',
+      sender: message.kind === 'match' ? 'system' : message.sender_id === userId ? 'me' : 'them',
       timestamp: new Date(message.created_at).getTime(),
     })),
     unread: messages.filter((message) => message.sender_id !== userId && !message.read_at).length,
@@ -99,7 +100,7 @@ export function useMessages(options?: { poll?: boolean }) {
     try {
       const { data, error } = await getSupabase()
         .from('conversations')
-        .select('id,car_id,buyer_id,seller_id,buyer_name,trade_summary,updated_at,created_at,car:cars!conversations_car_id_fkey(brand,model,generation,year,image,owner_name),messages:messages!messages_conversation_id_fkey(id,sender_id,body,created_at,read_at)')
+        .select('id,car_id,buyer_id,seller_id,buyer_name,trade_summary,updated_at,created_at,car:cars!conversations_car_id_fkey(brand,model,generation,year,image,owner_name),messages:messages!messages_conversation_id_fkey(id,sender_id,kind,body,created_at,read_at)')
         .order('updated_at', { ascending: false });
       if (error) throw error;
       const rows = (data ?? []) as unknown as ConversationRow[];
@@ -160,7 +161,7 @@ export function useMessages(options?: { poll?: boolean }) {
       .from('messages')
       .update({ read_at: new Date().toISOString() })
       .eq('conversation_id', conversationId)
-      .neq('sender_id', userId)
+      .or(`sender_id.is.null,sender_id.neq.${userId}`)
       .is('read_at', null);
     if (!error) await refresh();
   }, [refresh, userId]);
@@ -253,3 +254,4 @@ export function useMessages(options?: { poll?: boolean }) {
   const totalUnread = conversations.reduce((sum, conversation) => sum + conversation.unread, 0);
   return { conversations, sendMessage, markRead, createConversation, deleteConversation, totalUnread, mounted };
 }
+
