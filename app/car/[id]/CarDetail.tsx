@@ -118,9 +118,9 @@ export default function CarDetail({ car }: { car: Car }) {
         id="oglas"
         className="app-container pb-10 pt-4 sm:pb-12 sm:pt-6 lg:pt-8"
       >
-        {/* Gallery and the summary panel share one row on desktop. */}
-        <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-stretch lg:gap-8 xl:gap-10">
-          <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] lg:aspect-square xl:aspect-[4/3]">
+        {/* Keep the listing, owner and location cards together in one desktop column. */}
+        <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-start lg:gap-5 xl:gap-6">
+          <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] lg:col-start-1 lg:row-start-1 lg:aspect-square xl:aspect-[4/3]">
             <div
               className="flex h-full cursor-zoom-in transition-transform duration-300 ease-out"
               style={{ transform: `translateX(-${activeImage * 100}%)` }}
@@ -193,7 +193,8 @@ export default function CarDetail({ car }: { car: Car }) {
             )}
           </div>
 
-          <aside className={`flex min-w-0 flex-col ${CARD}`}>
+          <aside className="min-w-0 space-y-5 lg:sticky lg:top-6 lg:row-span-2 lg:row-start-1 lg:col-start-2 lg:self-start">
+            <section className={`flex min-w-0 flex-col ${CARD}`}>
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-text">
                 Oglas za zamenu
@@ -287,12 +288,52 @@ export default function CarDetail({ car }: { car: Car }) {
                 {contactNote}
               </p>
             )}
-          </aside>
-        </div>
+            </section>
 
-        {/* Details below the fold: description and specs on the left, owner on the right. */}
-        <div className="mt-5 grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.8fr)] lg:gap-7">
-          <div className="min-w-0 space-y-5">
+            <section className={CARD}>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
+              <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O vlasniku</h2>
+              <div className="mt-4 flex min-w-0 items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-zinc-950">
+                  <span className="text-base font-black">{car.owner.name[0]}</span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
+                  <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
+                  <Star size={13} className="fill-brand-500 text-brand-500" />
+                  <span className="text-xs font-bold text-app-primary dark:text-zinc-100">{car.owner.rating.toFixed(1)}</span>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 dark:border-zinc-800">
+                <span className="text-sm text-app-muted">Ocena vlasnika</span>
+                <span className="text-sm font-semibold text-app-secondary dark:text-zinc-400">{car.owner.rating.toFixed(1)} / 5</span>
+              </div>
+              {car.owner.phone && (
+                <a href={`tel:${car.owner.phone}`} className={`mt-4 w-full hover:text-brand-text ${CHIP}`}>
+                  <Phone size={16} />
+                  Pozovi vlasnika
+                </a>
+              )}
+            </section>
+
+            <section className={CARD}>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Preuzimanje vozila</p>
+              <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Lokacija</h2>
+              <div className="mt-4 flex items-start gap-3 rounded-2xl bg-elevated p-4">
+                <MapPin size={18} className="mt-0.5 shrink-0 text-brand-text" />
+                <div className="min-w-0">
+                  <p className="break-words text-sm font-semibold text-app-primary dark:text-zinc-100">
+                    {location || 'Lokacija nije navedena'}
+                  </p>
+                </div>
+              </div>
+            </section>
+          </aside>
+
+        {/* Details continue beneath the gallery while the right column stays sticky. */}
+        <div className="min-w-0 space-y-5 lg:col-start-1 lg:row-start-2">
             <section className="rounded-2xl border border-brand-500/25 bg-brand-500/5 p-5 sm:p-6">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-text">
@@ -424,50 +465,7 @@ export default function CarDetail({ car }: { car: Car }) {
                 </div>
               </section>
             )}
-          </div>
-
-          <aside className="min-w-0 space-y-5 lg:sticky lg:top-6">
-            <section className={CARD}>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
-              <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O vlasniku</h2>
-              <div className="mt-4 flex min-w-0 items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-zinc-950">
-                  <span className="text-base font-black">{car.owner.name[0]}</span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
-                  <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
-                </div>
-                <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
-                  <Star size={13} className="fill-brand-500 text-brand-500" />
-                  <span className="text-xs font-bold text-app-primary dark:text-zinc-100">{car.owner.rating.toFixed(1)}</span>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 dark:border-zinc-800">
-                <span className="text-sm text-app-muted">Ocena vlasnika</span>
-                <span className="text-sm font-semibold text-app-secondary dark:text-zinc-400">{car.owner.rating.toFixed(1)} / 5</span>
-              </div>
-              {car.owner.phone && (
-                <a href={`tel:${car.owner.phone}`} className={`mt-4 w-full hover:text-brand-text ${CHIP}`}>
-                  <Phone size={16} />
-                  Pozovi vlasnika
-                </a>
-              )}
-            </section>
-
-            <section className={CARD}>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Preuzimanje vozila</p>
-              <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Lokacija</h2>
-              <div className="mt-4 flex items-start gap-3 rounded-2xl bg-elevated p-4">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-brand-text" />
-                <div className="min-w-0">
-                  <p className="break-words text-sm font-semibold text-app-primary dark:text-zinc-100">
-                    {location || 'Lokacija nije navedena'}
-                  </p>
-                </div>
-              </div>
-            </section>
-          </aside>
+        </div>
         </div>
       </section>
 
