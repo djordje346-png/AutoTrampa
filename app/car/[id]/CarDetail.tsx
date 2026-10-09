@@ -245,7 +245,7 @@ export default function CarDetail({ car }: { car: Car }) {
               <div className="grid min-w-0 gap-2">
                 <button
                   onClick={handleOfferClick}
-                  className="btn-primary hidden min-h-11 w-full min-w-0 px-3 text-xs md:inline-flex"
+                  className="btn-primary hidden h-12 min-h-12 w-full min-w-0 px-3 py-0 text-xs md:inline-flex"
                 >
                   <ArrowLeftRight size={15} className="shrink-0" />
                   <span className="truncate">Pošalji ponudu</span>
@@ -254,7 +254,7 @@ export default function CarDetail({ car }: { car: Car }) {
                   <a
                     href={`tel:${car.owner.phone}`}
                     aria-label={`Pozovi ${car.owner.name}`}
-                    className={`${CHIP} min-h-11 w-full min-w-0 px-3 text-xs shadow-sm hover:text-brand-text`}
+                    className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-hover-surface hover:text-brand-text active:scale-[0.98] dark:border-zinc-800"
                   >
                     <Phone size={15} className="shrink-0" />
                     <span className="truncate">Pozovi</span>
@@ -265,7 +265,7 @@ export default function CarDetail({ car }: { car: Car }) {
                     disabled
                     aria-disabled="true"
                     title="Vlasnik nije ostavio broj telefona — kontakt ide preko ponude"
-                    className={`${CHIP} min-h-11 w-full min-w-0 cursor-not-allowed px-3 text-xs opacity-55`}
+                    className="inline-flex h-12 min-h-12 w-full min-w-0 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary opacity-55 shadow-sm dark:border-zinc-800"
                   >
                     <Phone size={15} className="shrink-0" />
                     <span className="truncate">Pozovi</span>
