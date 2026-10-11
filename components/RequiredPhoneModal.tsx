@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Phone, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUser } from '@/hooks/use-user';
+import { useAuth } from '@/hooks/use-auth';
 import { isValidPhoneNumber } from '@/lib/phone';
 
 export default function RequiredPhoneModal({
@@ -16,9 +17,12 @@ export default function RequiredPhoneModal({
   onRetry?: () => void;
 }) {
   const { updateUser } = useUser();
+  const { logout } = useAuth();
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const [logoutError, setLogoutError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   if (!open && !loadError) return null;
 
@@ -38,6 +42,14 @@ export default function RequiredPhoneModal({
       return;
     }
     toast.success('Broj telefona je sačuvan.');
+  }
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    setLogoutError('');
+    const result = await logout();
+    setLoggingOut(false);
+    if (!result.ok) setLogoutError(`Odjava nije uspela. ${result.message}`);
   }
 
   return (
@@ -88,6 +100,16 @@ export default function RequiredPhoneModal({
         </button>
           </>
         )}
+
+        {logoutError && <p role="alert" className="mt-3 text-center text-xs text-tone-negative">{logoutError}</p>}
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="mt-3 w-full rounded-xl border border-surface px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-elevated disabled:opacity-60 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        >
+          {loggingOut ? 'Odjavljivanje…' : 'Odjavi se'}
+        </button>
       </form>
     </div>
   );

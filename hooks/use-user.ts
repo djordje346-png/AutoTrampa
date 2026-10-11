@@ -59,13 +59,20 @@ function ensureProfileLoaded(
 
     if (data) {
       if (!data.phone && fallback.phone) {
-        const { error: profileUpdateError } = await supabase.from('profiles').upsert({
-          id: activeUser.id,
-          name: data.name ?? fallback.name,
-          city: data.city ?? '',
-          phone: fallback.phone,
-        });
+        const { data: updatedProfile, error: profileUpdateError } = await supabase
+          .from('profiles')
+          .update({
+            name: data.name ?? fallback.name,
+            city: data.city ?? '',
+            phone: fallback.phone,
+          })
+          .eq('id', activeUser.id)
+          .select('id,phone')
+          .single();
         if (profileUpdateError) throw profileUpdateError;
+        if (!updatedProfile || updatedProfile.id !== activeUser.id || updatedProfile.phone !== fallback.phone) {
+          throw new Error('Baza nije potvrdila sačuvan broj telefona.');
+        }
       }
       userStore.set({
         ...fallback,
@@ -80,7 +87,7 @@ function ensureProfileLoaded(
     }
 
     // Email-confirmed signups may not have a profile row until their first sign-in.
-    const { error: insertError } = await supabase.from('profiles').upsert({
+    const { error: insertError } = await supabase.from('profiles').insert({
       id: activeUser.id,
       name: fallback.name,
       city: '',
@@ -165,12 +172,11 @@ export function useUser() {
 
     const next = { ...current, ...patch };
     try {
-      const { data, error } = await getSupabase().from('profiles').upsert({
-        id: current.id,
+      const { data, error } = await getSupabase().from('profiles').update({
         name: next.name,
         city: next.city,
         phone: next.phone,
-      }).select('id,phone').single();
+      }).eq('id', current.id).select('id,phone').single();
       if (error) {
         console.error('Profil nije sačuvan u Supabase-u.', {
           code: error.code,
