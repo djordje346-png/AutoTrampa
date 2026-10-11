@@ -77,9 +77,23 @@ export function useSaved() {
     return nowSaved;
   }, [remoteSaved, userId]);
 
-  const save = useCallback((id: string) => {
-    if (!isUuid(id) || !userId) savedStore.set((prev) => (prev.includes(id) ? prev : [...prev, id]));
-    else if (!remoteSaved.includes(id)) void getSupabase().from('saved_cars').insert({ user_id: userId, car_id: id }).then(({ error }) => { if (!error) setRemoteSaved((prev) => Array.from(new Set([...prev, id]))); });
+  const save = useCallback(async (id: string) => {
+    if (!isUuid(id) || !userId) {
+      savedStore.set((prev) => (prev.includes(id) ? prev : [...prev, id]));
+      return true;
+    }
+    if (remoteSaved.includes(id)) return true;
+    try {
+      const { error } = await getSupabase().from('saved_cars').upsert(
+        { user_id: userId, car_id: id },
+        { onConflict: 'user_id,car_id', ignoreDuplicates: true },
+      );
+      if (error) return false;
+      setRemoteSaved((prev) => Array.from(new Set([...prev, id])));
+      return true;
+    } catch {
+      return false;
+    }
   }, [remoteSaved, userId]);
 
   const remove = useCallback((id: string) => {

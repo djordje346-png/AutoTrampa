@@ -3,13 +3,15 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, Heart, ArrowLeftRight, TrendingUp } from 'lucide-react';
+import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, HeartHandshake, ArrowLeftRight, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
+import { useSwipes } from '@/hooks/use-swipes';
+import { useMatchLike } from '@/hooks/use-match-like';
 import { useAuth } from '@/hooks/use-auth';
 import { countActiveFilters, useSearchPrefs } from '@/hooks/use-search-prefs';
 import { filterCars } from '@/hooks/use-filtered-cars';
@@ -24,7 +26,9 @@ import { Car } from '@/types';
 export default function SearchClient() {
   const { selectedCar, mounted } = useGarage();
   const { cars: marketplaceCars } = useMarketplace();
-  const { isSaved, toggleSave } = useSaved();
+  const { save } = useSaved();
+  const { recordSwipe } = useSwipes();
+  const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   // Trade sorting and labelling need the user's own car; without one there is
   // no difference to compute.
@@ -169,7 +173,6 @@ export default function SearchClient() {
         ) : (
           results.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
-            const saved = isSaved(car.id);
             return (
               <article
                 key={car.id}
@@ -214,15 +217,13 @@ export default function SearchClient() {
                       <div className="flex flex-shrink-0 items-start gap-2">
                         <p className="text-sm font-bold text-app-primary">{formatEuro(car.price)}</p>
                         <button
-                          onClick={() => toggleSave(car.id)}
-                          aria-label={saved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
-                          className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
-                            saved
-                              ? 'bg-rose-500/10 text-tone-negative'
-                              : 'text-app-muted hover:bg-hover-surface hover:text-tone-negative'
-                          }`}
+                          onClick={() => void likeCar(car)}
+                          disabled={isLiking(car.id)}
+                          aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
+                          title="Lajkuj i sačuvaj za match"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-brand-500/10 hover:text-brand-text disabled:opacity-60"
                         >
-                          <Heart size={14} fill={saved ? 'currentColor' : 'none'} />
+                          <HeartHandshake size={15} />
                         </button>
                       </div>
                     </div>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Heart, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info } from 'lucide-react';
+import { ArrowLeft, HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -13,6 +13,8 @@ import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
+import { useSwipes } from '@/hooks/use-swipes';
+import { useMatchLike } from '@/hooks/use-match-like';
 import { ImageLightbox } from '@/components/ImageLightbox';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { toast } from 'sonner';
@@ -30,8 +32,10 @@ const CHIP = 'flex min-h-11 items-center justify-center gap-2 rounded-xl border 
 export default function CarDetail({ car }: { car: Car }) {
   const router = useRouter();
   const { selectedCar, mounted: garageMounted } = useGarage();
-  const { isSaved: isCarSaved, toggleSave } = useSaved();
+  const { save } = useSaved();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const { recordSwipe } = useSwipes();
+  const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
   const location = [displayValue(car.city), displayValue(car.country)].filter(Boolean).join(', ');
   const [offerOpen, setOfferOpen] = useState(false);
@@ -72,7 +76,6 @@ export default function CarDetail({ car }: { car: Car }) {
     : !authReady || !isLoggedIn
       ? 'Prijavi se da vidiš kako da stupiš u kontakt sa vlasnikom.'
       : 'Vlasnik nije ostavio broj telefona. Pošalji ponudu i dogovorite se kroz poruke.';
-  const isSaved = isCarSaved(car.id);
   const carImages = getCarImages(car);
   // "E60 · Sapphire Black", or nothing when the form left both fields empty.
   const subtitle = carSubtitle(car);
@@ -149,16 +152,13 @@ export default function CarDetail({ car }: { car: Car }) {
 
               <div className="flex gap-2">
                 <button
-                  onClick={() => toggleSave(car.id)}
-                  aria-pressed={isSaved}
-                  aria-label={isSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full shadow-sm backdrop-blur-sm transition-colors ${
-                    isSaved
-                      ? 'bg-rose-500 text-white hover:bg-rose-600'
-                      : 'bg-black/60 text-white hover:text-rose-400'
-                  }`}
+                  onClick={() => void likeCar(car)}
+                  disabled={isLiking(car.id)}
+                  aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
+                  title="Lajkuj i sačuvaj za match"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-colors hover:text-brand-300 disabled:opacity-60"
                 >
-                  <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />
+                  <HeartHandshake size={17} />
                 </button>
                 <button
                   onClick={shareCar}

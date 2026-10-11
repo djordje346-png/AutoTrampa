@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, X, MapPin, Gauge, Fuel, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
+import { Heart, HeartHandshake, X, MapPin, Gauge, Fuel, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
@@ -12,6 +12,8 @@ import { carSubtitle } from '@/lib/car-row';
 import { useSaved } from '@/hooks/use-saved';
 import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
+import { useSwipes } from '@/hooks/use-swipes';
+import { useMatchLike } from '@/hooks/use-match-like';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { Car } from '@/types';
@@ -21,6 +23,8 @@ export default function SavedClient() {
   const { selectedCar } = useGarage();
   const { cars: marketplaceCars } = useMarketplace();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const { recordSwipe } = useSwipes();
+  const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [confirmClear, setConfirmClear] = useState(false);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const router = useRouter();
@@ -145,13 +149,24 @@ export default function SavedClient() {
                       Demo
                     </span>
                   )}
-                  <button
-                    onClick={() => remove(car)}
-                    aria-label={`Ukloni ${car.brand} ${car.model} iz sačuvanih`}
-                    className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:text-tone-negative"
-                  >
-                    <X size={16} />
-                  </button>
+                  <div className="absolute right-3 top-3 flex gap-2">
+                    <button
+                      onClick={() => void likeCar(car)}
+                      disabled={isLiking(car.id)}
+                      aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
+                      title="Lajkuj i sačuvaj za match"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:text-brand-300 disabled:opacity-60"
+                    >
+                      <HeartHandshake size={17} />
+                    </button>
+                    <button
+                      onClick={() => remove(car)}
+                      aria-label={`Ukloni ${car.brand} ${car.model} iz sačuvanih`}
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:text-tone-negative"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">

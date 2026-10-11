@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -13,6 +13,7 @@ import { useGarage } from '@/hooks/use-garage';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { useSaved } from '@/hooks/use-saved';
 import { useSwipes } from '@/hooks/use-swipes';
+import { useMatchLike } from '@/hooks/use-match-like';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useFilteredCars } from '@/hooks/use-filtered-cars';
 import { countActiveFilters, useSearchPrefs, type SearchFilters } from '@/hooks/use-search-prefs';
@@ -38,9 +39,10 @@ export default function FeedPage() {
   const router = useRouter();
   const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
   const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
-  const { saved, isSaved, toggleSave } = useSaved();
+  const { saved, save } = useSaved();
   const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
   const { reviewedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
+  const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -138,45 +140,17 @@ export default function FeedPage() {
 
   async function handleSwipeLike() {
     if (!swipeCar || isAnimating) return;
-    if (!requireAuth('Prijavi se i dodaj auto da lajkuješ oglas', () => void handleSwipeLike())) return;
-    if (!selectedCar) {
-      toast.error('Prvo dodaj svoj auto u garažu.', {
-        description: 'Za match je potreban oglas koji nudiš za zamenu.',
-        action: { label: 'Garaža', onClick: () => router.push('/garage') },
-      });
-      return;
-    }
-    if (!UUID_RE.test(swipeCar.id)) {
-      toast.message('Ovo je demo oglas — lajk nije sačuvan u sistemu matchovanja.');
-      flyAway('right');
-      return;
-    }
-    if (!UUID_RE.test(selectedCar.id)) {
-      toast.error('Za match dodaj objavljeno vozilo u svoju garažu.');
-      return;
-    }
-
     setIsAnimating(true);
     setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
-    const result = await recordSwipe(swipeCar.id, selectedCar.id, true);
-    if (!result.ok) {
+    const liked = await likeCar(swipeCar);
+    if (!liked) {
       setIsAnimating(false);
       setSessionReviewedIds((previous) => {
         const next = new Set(previous);
         next.delete(swipeCar.id);
         return next;
       });
-      toast.error('Lajk nije sačuvan. Pokušaj ponovo.');
       return;
-    }
-    if (result.result.matched && result.result.new_match) {
-      toast.success('Imate match!', {
-        description: 'Oboje ste lajkovali oglase za zamenu. Razgovor je otvoren u Porukama.',
-        action: {
-          label: 'Otvori poruke',
-          onClick: () => router.push('/messages'),
-        },
-      });
     }
     flyAway('right');
   }
@@ -548,17 +522,6 @@ export default function FeedPage() {
                         PRESKOK
                       </div>
 
-                      {/* Save button */}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleSave(swipeCar.id); }}
-                        className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                          isSaved(swipeCar.id) ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-tone-negative'
-                        }`}
-                        aria-label="Sačuvaj"
-                      >
-                        <Heart size={18} fill={isSaved(swipeCar.id) ? 'currentColor' : 'none'} />
-                      </button>
-
                       {/* Trade label */}
                       {swipeTl && (
                         <div className={`absolute bottom-3 left-3 rounded-full border px-3 py-1.5 text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
@@ -715,28 +678,29 @@ export default function FeedPage() {
             <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
-            const carSaved = isSaved(car.id);
             return (
               <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900">
                 {/* Image */}
-                <Link href={`/car/${car.id}`} className="relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
-                  <img src={car.image} alt={`${car.brand} ${car.model}`} className="absolute inset-0 h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                  {!car.ownerId && (
-                    <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
-                      Demo
-                    </span>
-                  )}
+                <div className="relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
+                  <Link href={`/car/${car.id}`} className="absolute inset-0 block">
+                    <img src={car.image} alt={`${car.brand} ${car.model}`} className="absolute inset-0 h-full w-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                    {!car.ownerId && (
+                      <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                        Demo
+                      </span>
+                    )}
+                  </Link>
                   <button
-                    onClick={(e) => { e.preventDefault(); toggleSave(car.id); }}
-                    className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-                      carSaved ? 'bg-rose-500 text-white' : 'bg-black/60 text-white hover:text-tone-negative'
-                    }`}
-                    aria-label={carSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj oglas'}
+                    onClick={() => void likeCar(car)}
+                    disabled={isLiking(car.id)}
+                    className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-all duration-200 hover:text-brand-300 disabled:opacity-60"
+                    aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
+                    title="Lajkuj i sačuvaj za match"
                   >
-                    <Heart size={16} fill={carSaved ? 'currentColor' : 'none'} />
+                    <HeartHandshake size={17} />
                   </button>
-                </Link>
+                </div>
 
                 {/* Info */}
                 <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
