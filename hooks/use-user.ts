@@ -22,6 +22,8 @@ const EMPTY_USER: UserProfile = {
 
 /** In-memory only: profile and contact details must never leak between accounts. */
 export const userStore = createMemoryStore<UserProfile>(EMPTY_USER);
+const loadedProfiles = new Set<string>();
+const profileRequests = new Map<string, Promise<void>>();
 
 function profileFromAuth(user: NonNullable<ReturnType<typeof useAuth>['user']>): UserProfile {
   return {
@@ -31,6 +33,72 @@ function profileFromAuth(user: NonNullable<ReturnType<typeof useAuth>['user']>):
     email: user.email ?? '',
     phone: typeof user.user_metadata?.phone === 'string' ? user.user_metadata.phone : '',
   };
+}
+
+/** Load each account profile once per browser session and share in-flight work. */
+function ensureProfileLoaded(
+  activeUser: NonNullable<ReturnType<typeof useAuth>['user']>,
+): Promise<void> {
+  const cached = userStore.get();
+  if (loadedProfiles.has(activeUser.id) && cached.id === activeUser.id) return Promise.resolve();
+
+  const inFlight = profileRequests.get(activeUser.id);
+  if (inFlight) return inFlight;
+
+  const fallback = profileFromAuth(activeUser);
+  if (cached.id !== activeUser.id) userStore.set(fallback);
+
+  const request = (async () => {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('name,city,phone,rating,trade_count,verified')
+      .eq('id', activeUser.id)
+      .maybeSingle();
+    if (error) throw error;
+
+    if (data) {
+      if (!data.phone && fallback.phone) {
+        const { error: profileUpdateError } = await supabase.from('profiles').upsert({
+          id: activeUser.id,
+          name: data.name ?? fallback.name,
+          city: data.city ?? '',
+          phone: fallback.phone,
+        });
+        if (profileUpdateError) throw profileUpdateError;
+      }
+      userStore.set({
+        ...fallback,
+        name: data.name ?? fallback.name,
+        city: data.city ?? '',
+        phone: data.phone || fallback.phone,
+        rating: Number(data.rating ?? 5),
+        trades: Number(data.trade_count ?? 0),
+        verified: Boolean(data.verified),
+      });
+      return;
+    }
+
+    // Email-confirmed signups may not have a profile row until their first sign-in.
+    const { error: insertError } = await supabase.from('profiles').upsert({
+      id: activeUser.id,
+      name: fallback.name,
+      city: '',
+      phone: fallback.phone,
+    });
+    if (insertError) throw insertError;
+    userStore.set(fallback);
+  })();
+
+  profileRequests.set(activeUser.id, request);
+  return request.then(
+    () => { loadedProfiles.add(activeUser.id); },
+    (error: unknown) => {
+      throw error;
+    },
+  ).finally(() => {
+    profileRequests.delete(activeUser.id);
+  });
 }
 
 /** "Nikola Vukovic" → "Nikola V." — how owners are shown on listings. */
@@ -51,6 +119,8 @@ export function useUser() {
   const { user: authUser, mounted: authReady } = useAuth();
   const [user, storeReady] = usePersistentStore(userStore);
   const [profileReady, setProfileReady] = useState(false);
+  const [profileError, setProfileError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,93 +130,67 @@ export function useUser() {
     }
     if (!authUser) {
       userStore.set(EMPTY_USER);
+      setProfileError('');
+      setProfileReady(true);
+      return;
+    }
+
+    const activeUser = authUser;
+    if (loadedProfiles.has(activeUser.id) && userStore.get().id === activeUser.id) {
+      setProfileError('');
       setProfileReady(true);
       return;
     }
 
     setProfileReady(false);
-    const activeUser = authUser;
-    const fallback = profileFromAuth(activeUser);
-    userStore.set(fallback);
-
-    async function loadProfile() {
-      try {
-        const supabase = getSupabase();
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('name,city,phone,rating,trade_count,verified')
-          .eq('id', activeUser.id)
-          .maybeSingle();
-        if (error) throw error;
-
-        if (data) {
-          /*
-           * Backfill the phone from the Auth metadata when the row predates the
-           * phone column (or was created before the user typed a number), so the
-           * value stays recoverable instead of being silently empty forever.
-           */
-          if (!data.phone && fallback.phone) {
-            const { error: profileUpdateError } = await supabase.from('profiles').upsert({
-              id: activeUser.id,
-              name: data.name ?? fallback.name,
-              city: data.city ?? '',
-              phone: fallback.phone,
-            });
-            if (profileUpdateError) throw profileUpdateError;
-          }
-          if (!cancelled) {
-            userStore.set({
-              ...fallback,
-              name: data.name ?? fallback.name,
-              city: data.city ?? '',
-              phone: data.phone || fallback.phone,
-              rating: Number(data.rating ?? 5),
-              trades: Number(data.trade_count ?? 0),
-              verified: Boolean(data.verified),
-            });
-          }
-          return;
-        }
-
-        // Email-confirmed signups cannot write a profile until the first sign-in.
-        const { error: insertError } = await supabase.from('profiles').upsert({
-          id: activeUser.id,
-          name: fallback.name,
-          city: '',
-          phone: fallback.phone,
-        });
-        if (insertError) throw insertError;
-        if (!cancelled) userStore.set(fallback);
-      } catch {
-        // Keep the Auth metadata fallback visible; writes still report errors.
-      }
-    }
-
-    void loadProfile().finally(() => {
+    setProfileError('');
+    void ensureProfileLoaded(activeUser).then(() => {
       if (!cancelled) setProfileReady(true);
+    }).catch((error: unknown) => {
+      if (!cancelled) {
+        const message = error instanceof Error ? error.message : 'Profil nije mogao da se učita.';
+        setProfileError(message);
+      }
     });
     return () => { cancelled = true; };
-  }, [authReady, authUser]);
+  }, [authReady, authUser, reloadKey]);
+
+  const reloadProfile = useCallback(() => {
+    setReloadKey((key) => key + 1);
+  }, []);
 
   const updateUser = useCallback(async (patch: Partial<UserProfile>) => {
     const current = userStore.get();
-    if (!current.id) return { ok: false as const };
+    if (!current.id) return { ok: false as const, message: 'Profil još nije učitan. Pokušaj ponovo.' };
 
     const next = { ...current, ...patch };
     try {
-      const { error } = await getSupabase().from('profiles').upsert({
+      const { data, error } = await getSupabase().from('profiles').upsert({
         id: current.id,
         name: next.name,
         city: next.city,
         phone: next.phone,
-      });
-      if (error) return { ok: false as const };
+      }).select('id,phone').single();
+      if (error) {
+        console.error('Profil nije sačuvan u Supabase-u.', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        return { ok: false as const, message: error.message || 'Supabase nije prihvatio izmene.' };
+      }
+      if (!data || data.id !== current.id || data.phone !== next.phone) {
+        return { ok: false as const, message: 'Baza nije potvrdila sačuvan broj telefona.' };
+      }
       userStore.set(next);
       return { ok: true as const };
-    } catch {
-      return { ok: false as const };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Došlo je do greške pri čuvanju.';
+      console.error('Profil nije sačuvan.', { message });
+      return { ok: false as const, message };
     }
   }, []);
 
-  return { user, updateUser, mounted: storeReady && authReady, profileReady };
+  return { user, updateUser, mounted: storeReady && authReady, profileReady, profileError, reloadProfile };
 }

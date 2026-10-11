@@ -14,8 +14,9 @@ import { useUser } from '@/hooks/use-user';
  */
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { promptOpen, user, mounted } = useAuth();
-  const { user: profile, profileReady } = useUser();
-  const requiresPhone = mounted && Boolean(user) && profileReady && !profile.phone.trim();
+  const { user: profile, profileReady, profileError, reloadProfile } = useUser();
+  const profileMatchesSession = Boolean(user && profile.id === user.id);
+  const requiresPhone = mounted && profileMatchesSession && profileReady && !profile.phone.trim();
 
   return (
     <div className="min-h-screen w-full bg-app text-app-primary dark:bg-zinc-950 dark:text-zinc-100">
@@ -32,7 +33,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       <Footer />
       {promptOpen && <AuthOverlay />}
-      <RequiredPhoneModal key={user?.id ?? 'signed-out'} open={requiresPhone} />
+      <RequiredPhoneModal
+        key={user?.id ?? 'signed-out'}
+        open={requiresPhone}
+        loadError={profileMatchesSession ? profileError : ''}
+        onRetry={reloadProfile}
+      />
       <Toaster />
     </div>
   );

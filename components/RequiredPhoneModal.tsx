@@ -6,13 +6,21 @@ import { toast } from 'sonner';
 import { useUser } from '@/hooks/use-user';
 import { isValidPhoneNumber } from '@/lib/phone';
 
-export default function RequiredPhoneModal({ open }: { open: boolean }) {
+export default function RequiredPhoneModal({
+  open,
+  loadError = '',
+  onRetry,
+}: {
+  open: boolean;
+  loadError?: string;
+  onRetry?: () => void;
+}) {
   const { updateUser } = useUser();
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  if (!open) return null;
+  if (!open && !loadError) return null;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,7 +34,7 @@ export default function RequiredPhoneModal({ open }: { open: boolean }) {
     const result = await updateUser({ phone: phone.trim() });
     setSaving(false);
     if (!result.ok) {
-      setError('Broj telefona nije sačuvan. Pokušaj ponovo.');
+      setError(result.message ? `Broj telefona nije sačuvan. ${result.message}` : 'Broj telefona nije sačuvan. Pokušaj ponovo.');
       return;
     }
     toast.success('Broj telefona je sačuvan.');
@@ -40,9 +48,22 @@ export default function RequiredPhoneModal({ open }: { open: boolean }) {
         </div>
         <h2 id="required-phone-title" className="text-center text-lg font-bold text-app-primary dark:text-zinc-100">Dodaj broj telefona</h2>
         <p id="required-phone-description" className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
-          Broj telefona je obavezan za korišćenje AutoTrampa. Unesi ga da nastaviš.
+          {loadError
+            ? 'Ne možemo trenutno da proverimo podatke profila. Pokušaj ponovo pre nego što nastaviš.'
+            : 'Broj telefona je obavezan za korišćenje AutoTrampa. Unesi ga da nastaviš.'}
         </p>
 
+        {loadError ? (
+          <>
+            <p role="alert" className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs leading-relaxed text-tone-negative">
+              Profil nije učitan: {loadError}
+            </p>
+            <button type="button" onClick={onRetry} className="btn-primary mt-5 w-full">
+              Pokušaj ponovo
+            </button>
+          </>
+        ) : (
+          <>
         <label htmlFor="required-phone" className="mb-1.5 mt-5 block text-xs font-medium text-app-secondary dark:text-zinc-400">Broj telefona</label>
         <div className="relative">
           <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
@@ -65,6 +86,8 @@ export default function RequiredPhoneModal({ open }: { open: boolean }) {
         <button type="submit" disabled={saving} className="btn-primary mt-5 w-full disabled:cursor-wait disabled:opacity-60">
           {saving ? 'Čuvanje…' : 'Sačuvaj i nastavi'}
         </button>
+          </>
+        )}
       </form>
     </div>
   );
