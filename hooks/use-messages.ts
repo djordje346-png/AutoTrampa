@@ -171,13 +171,16 @@ export function useMessages(options?: { poll?: boolean }) {
     const conversation = conversations.find((item) => item.id === conversationId);
     if (!conversation) return false;
     const field = conversation.isBuyer ? 'buyer_archived' : 'seller_archived';
-    const { data, error } = await getSupabase()
+    const participantField = conversation.isBuyer ? 'buyer_id' : 'seller_id';
+    const { error } = await getSupabase()
       .from('conversations')
       .update({ [field]: true })
       .eq('id', conversationId)
-      .select('id')
-      .maybeSingle();
-    if (error || !data) return false;
+      .eq(participantField, userId);
+    if (error) {
+      console.error('Razgovor nije arhiviran.', { code: error.code, message: error.message });
+      return false;
+    }
     setConversations((previous) => previous.filter((item) => item.id !== conversationId));
     return true;
   }, [conversations, userId]);
