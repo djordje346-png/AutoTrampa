@@ -13,11 +13,11 @@ const ACCOUNT_LINKS = [
   { href: '/profile', label: 'Profil' },
 ] as const;
 
-const LINK_CLASS = 'w-fit text-sm text-zinc-400 transition-colors hover:text-[#FAEB00] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FAEB00]';
+const LINK_CLASS = 'w-fit text-sm text-zinc-400 transition-colors hover:text-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
 
 export function DesktopFooter() {
   return (
-    <footer className="mt-auto hidden border-t border-[#3A2A42] bg-[#24172E] text-zinc-400 lg:block">
+    <footer className="mt-auto hidden border-t border-zinc-800 bg-zinc-900 text-zinc-400 lg:block">
       <div className="mx-auto max-w-7xl px-8">
         <div className="grid gap-8 py-9 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div className="max-w-sm">
@@ -43,7 +43,7 @@ export function DesktopFooter() {
           </nav>
         </div>
 
-        <div className="border-t border-[#3A2A42] py-4 text-xs text-zinc-500">
+        <div className="border-t border-zinc-800 py-4 text-xs text-zinc-500">
           AutoTrampa · Platforma za zamenu automobila
         </div>
       </div>

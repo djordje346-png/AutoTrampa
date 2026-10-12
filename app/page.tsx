@@ -28,7 +28,6 @@ import { FilterSheetBody } from '@/components/FilterPanel';
 import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
 import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
 import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
-import { useDesktopHeaderActions } from '@/components/DesktopHeaderActions';
 
 type ViewMode = 'grid' | 'swipe';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -55,7 +54,6 @@ export default function FeedPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [desktopFiltersOpen, setDesktopFiltersOpen] = useState(false);
-  const { setAction: setDesktopHeaderAction } = useDesktopHeaderActions();
   const [swipeIndex, setSwipeIndex] = useState(0);
   const { preferences } = usePreferences();
   const budget = preferences.budget;
@@ -67,32 +65,6 @@ export default function FeedPage() {
   const [sessionReviewedIds, setSessionReviewedIds] = useState<Set<string>>(new Set());
   const selectorRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number } | null>(null);
-
-  useEffect(() => {
-    setDesktopHeaderAction(
-      <div className="flex items-center rounded-lg border border-surface bg-elevated p-0.5 dark:border-zinc-800" aria-label="Način prikaza oglasa">
-        <button
-          type="button"
-          onClick={() => setViewMode('grid')}
-          className={`flex h-8 w-9 items-center justify-center rounded-md transition-all duration-200 ${viewMode === 'grid' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'}`}
-          aria-label="Prikaz mreže"
-          aria-pressed={viewMode === 'grid'}
-        >
-          <LayoutGrid size={15} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setViewMode('swipe')}
-          className={`flex h-8 w-9 items-center justify-center rounded-md transition-all duration-200 ${viewMode === 'swipe' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'}`}
-          aria-label="Svajp režim"
-          aria-pressed={viewMode === 'swipe'}
-        >
-          <Flame size={15} />
-        </button>
-      </div>,
-    );
-    return () => setDesktopHeaderAction(null);
-  }, [setDesktopHeaderAction, viewMode]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
