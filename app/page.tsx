@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
+import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 
 type ViewMode = 'grid' | 'swipe';
@@ -109,8 +110,8 @@ export default function FeedPage() {
   }, [selectedId, filters]);
 
   function openOffer(car: Car) {
-    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferCar(car))) return;
-    setOfferCar(car);
+    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => requestPhoneAction(() => setOfferCar(car)))) return;
+    requestPhoneAction(() => setOfferCar(car));
   }
 
   async function handleAddCar(form: MyGarageCar) {

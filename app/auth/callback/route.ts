@@ -59,13 +59,11 @@ export async function GET(request: NextRequest) {
       : typeof metadata.name === 'string'
         ? metadata.name
         : '';
-    const phone = typeof metadata.phone === 'string' ? metadata.phone : '';
-
     await supabase.from('profiles').upsert({
       id: data.user.id,
       name,
       city: '',
-      phone,
+      phone: '',
     });
   }
 

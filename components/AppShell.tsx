@@ -4,8 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import AuthOverlay from '@/components/AuthOverlay';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/sonner';
-import RequiredPhoneModal from '@/components/RequiredPhoneModal';
-import { useUser } from '@/hooks/use-user';
+import PhoneGateHost from '@/components/PhoneGateHost';
 
 /**
  * Browsing is public: listings render on the server so they can be shared and
@@ -13,10 +12,7 @@ import { useUser } from '@/hooks/use-user';
  * see `requireAuth` in use-auth — not as a wall in front of the app.
  */
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { promptOpen, user, mounted } = useAuth();
-  const { user: profile, profileReady, profileError, reloadProfile } = useUser();
-  const profileMatchesSession = Boolean(user && profile.id === user.id);
-  const requiresPhone = mounted && profileMatchesSession && profileReady && !profile.phone.trim();
+  const { promptOpen } = useAuth();
 
   return (
     <div className="min-h-screen w-full bg-app text-app-primary dark:bg-zinc-950 dark:text-zinc-100">
@@ -33,12 +29,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       <Footer />
       {promptOpen && <AuthOverlay />}
-      <RequiredPhoneModal
-        key={user?.id ?? 'signed-out'}
-        open={requiresPhone}
-        loadError={profileMatchesSession ? profileError : ''}
-        onRetry={reloadProfile}
-      />
+      <PhoneGateHost />
       <Toaster />
     </div>
   );

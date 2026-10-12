@@ -17,6 +17,7 @@ import { useMatchLike } from '@/hooks/use-match-like';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { Car } from '@/types';
+import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
 export default function SavedClient() {
   const { saved: savedIds, remove: removeSaved, save, clear, mounted } = useSaved();
@@ -42,7 +43,8 @@ export default function SavedClient() {
    * of your own, otherwise say why instead of doing nothing.
    */
   function openOffer(car: Car) {
-    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferCar(car))) return;
+    const continueToOffer = () => requestPhoneAction(() => setOfferCar(car));
+    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', continueToOffer)) return;
     if (!selectedCar) {
       toast.error('Prvo dodaj svoj auto u garažu.', {
         description: 'Ponuda je razlika između tvog i ovog vozila.',
@@ -50,7 +52,7 @@ export default function SavedClient() {
       });
       return;
     }
-    setOfferCar(car);
+    continueToOffer();
   }
 
   function remove(car: Car) {

@@ -98,14 +98,13 @@ export function useAuth() {
     email: string,
     password: string,
     name: string,
-    phone: string,
   ): Promise<AuthResult> => {
     try {
       const { data, error } = await getSupabase().auth.signUp({
         email,
         password,
         options: {
-          data: { name, phone },
+          data: { name },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });

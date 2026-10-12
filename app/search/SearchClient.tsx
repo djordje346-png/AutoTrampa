@@ -22,6 +22,7 @@ import { BottomSheet } from '@/components/BottomSheet';
 import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { Car } from '@/types';
+import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
 export default function SearchClient() {
   const { selectedCar, mounted } = useGarage();
@@ -58,6 +59,12 @@ export default function SearchClient() {
 
   const hasFilters =
     filters.query.trim() !== '' || countActiveFilters(filters) > 0;
+
+  function openOffer(car: Car) {
+    const continueToOffer = () => requestPhoneAction(() => setOfferCar(car));
+    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', continueToOffer)) return;
+    continueToOffer();
+  }
 
   return (
     <div className="flex flex-col">
@@ -246,11 +253,8 @@ export default function SearchClient() {
                     <div className="mt-2.5 flex items-center gap-2">
                       <button
                         onClick={() => {
-                          if (
-                            !requireAuth('Prijavi se da pošalješ ponudu za zamenu', () =>
-                              setOfferCar(car),
-                            )
-                          ) {
+                          if (!isLoggedIn) {
+                            openOffer(car);
                             return;
                           }
                           // The offer sheet needs a car of your own to state a
@@ -262,7 +266,7 @@ export default function SearchClient() {
                             });
                             return;
                           }
-                          setOfferCar(car);
+                          openOffer(car);
                         }}
                         className="btn-primary btn-primary-compact flex-1 text-[11px]"
                       >

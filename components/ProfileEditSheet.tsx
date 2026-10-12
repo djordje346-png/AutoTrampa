@@ -6,10 +6,9 @@ import { toast } from 'sonner';
 import { BottomSheet } from '@/components/BottomSheet';
 import { useUser, shortName, type UserProfile } from '@/hooks/use-user';
 import { useGarage } from '@/hooks/use-garage';
+import { isValidPhoneNumber, normalizePhoneNumber } from '@/lib/phone';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_RE = /^\+?[\d\s/-]{6,}$/;
-
 type Field = 'name' | 'email' | 'phone' | 'city';
 
 interface ProfileEditSheetProps {
@@ -36,11 +35,8 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
     if (draft.email.trim() && !EMAIL_RE.test(draft.email.trim())) {
       next.email = 'Email nije ispravan.';
     }
-    if (draft.phone.trim() && !PHONE_RE.test(draft.phone.trim())) {
-      next.phone = 'Broj telefona nije ispravan.';
-    }
-    if (!draft.email.trim() && !draft.phone.trim()) {
-      next.email = 'Ostavi bar email ili broj telefona.';
+    if (draft.phone.trim() && !isValidPhoneNumber(draft.phone)) {
+      next.phone = 'Unesi ispravan broj telefona.';
     }
     return next;
   }
@@ -52,7 +48,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
 
     const cleaned: Partial<UserProfile> = {
       name: draft.name.trim(),
-      phone: draft.phone.trim(),
+      phone: draft.phone.trim() ? normalizePhoneNumber(draft.phone) : '',
       city: draft.city.trim(),
     };
 
@@ -99,7 +95,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
         {fields.map(({ key, label, placeholder, type }) => (
           <div key={key}>
             <label htmlFor={`profile-${key}`} className="mb-2 block text-xs font-medium text-app-muted">
-              {label}
+              {key === 'phone' ? 'Broj telefona' : label}
             </label>
             <input
               id={`profile-${key}`}
@@ -121,7 +117,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
         ))}
 
         <p className="text-[11px] leading-relaxed text-app-muted">
-          Ime i grad se prikazuju na oglasima. Broj telefona ostaje privatan dok aplikacija ne podrži dogovoreni meč.
+          Ime i grad se prikazuju na oglasima. Broj telefona ostaje privatan.
         </p>
 
         <div className="flex gap-2 pt-1">

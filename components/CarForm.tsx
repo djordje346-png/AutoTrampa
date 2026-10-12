@@ -13,6 +13,7 @@ import { getCarImages } from '@/types';
 import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
 import { bodyLabel, fuelLabel, transmissionLabel } from '@/lib/labels';
 import { userStore, shortName } from '@/hooks/use-user';
+import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
 
@@ -806,14 +807,12 @@ export default function CarFormComponent({
       editingCar?.id ||
       `garage-${Date.now()}`;
 
-    onSave(
-      formToMyGarageCar(
-        form,
-        id,
-        images,
-        editingCar,
-      ),
-    );
+    const car = formToMyGarageCar(form, id, images, editingCar);
+    if (editingCar) {
+      onSave(car);
+      return;
+    }
+    requestPhoneAction(() => onSave(car));
   }
 
   if (!mounted) {

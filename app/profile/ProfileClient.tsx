@@ -101,6 +101,18 @@ export default function ProfileClient() {
                 <MapPin size={11} className="text-app-muted" />
                 <span className="text-xs text-app-muted">{user.city}</span>
               </div>
+              <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="text-[11px] text-app-muted">
+                  {user.phone ? 'Broj dodat' : 'Broj nije dodat'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowEditProfile(true)}
+                  className="text-[11px] font-semibold text-brand-text hover:underline"
+                >
+                  {user.phone ? 'Promeni broj' : 'Dodaj broj'}
+                </button>
+              </div>
               {user.verified && (
                 <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1">
                   <Shield size={11} className="text-tone-positive" />

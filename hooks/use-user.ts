@@ -31,7 +31,7 @@ function profileFromAuth(user: NonNullable<ReturnType<typeof useAuth>['user']>):
     id: user.id,
     name: typeof user.user_metadata?.name === 'string' ? user.user_metadata.name : '',
     email: user.email ?? '',
-    phone: typeof user.user_metadata?.phone === 'string' ? user.user_metadata.phone : '',
+    phone: '',
   };
 }
 
@@ -58,27 +58,11 @@ function ensureProfileLoaded(
     if (error) throw error;
 
     if (data) {
-      if (!data.phone && fallback.phone) {
-        const { data: updatedProfile, error: profileUpdateError } = await supabase
-          .from('profiles')
-          .update({
-            name: data.name ?? fallback.name,
-            city: data.city ?? '',
-            phone: fallback.phone,
-          })
-          .eq('id', activeUser.id)
-          .select('id,phone')
-          .single();
-        if (profileUpdateError) throw profileUpdateError;
-        if (!updatedProfile || updatedProfile.id !== activeUser.id || updatedProfile.phone !== fallback.phone) {
-          throw new Error('Baza nije potvrdila sačuvan broj telefona.');
-        }
-      }
       userStore.set({
         ...fallback,
         name: data.name ?? fallback.name,
         city: data.city ?? '',
-        phone: data.phone || fallback.phone,
+        phone: data.phone ?? '',
         rating: Number(data.rating ?? 5),
         trades: Number(data.trade_count ?? 0),
         verified: Boolean(data.verified),

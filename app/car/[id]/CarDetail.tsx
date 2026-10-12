@@ -18,6 +18,7 @@ import { useMatchLike } from '@/hooks/use-match-like';
 import { ImageLightbox } from '@/components/ImageLightbox';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { toast } from 'sonner';
+import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
 /** Shared card chrome, so every block on the page has the same padding. */
 const CARD = 'rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6';
@@ -99,7 +100,17 @@ export default function CarDetail({ car }: { car: Car }) {
   ];
 
   function handleOfferClick() {
-    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => setOfferOpen(true))) return;
+    const continueToOffer = () => requestPhoneAction(() => {
+      if (!selectedCar) {
+        toast.error('Prvo dodaj svoj auto u garažu.', {
+          description: 'Ponuda za zamenu je razlika između tvog i ovog vozila.',
+          action: { label: 'Garaža', onClick: () => router.push('/garage') },
+        });
+        return;
+      }
+      setOfferOpen(true);
+    });
+    if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', continueToOffer)) return;
     /*
      * Signed in but nothing in the garage: the offer sheet needs a car of your
      * own to state a difference, so it stays shut. Say why and point at the fix
@@ -112,7 +123,7 @@ export default function CarDetail({ car }: { car: Car }) {
       });
       return;
     }
-    setOfferOpen(true);
+    continueToOffer();
   }
 
   return (
