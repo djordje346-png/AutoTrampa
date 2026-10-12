@@ -7,6 +7,7 @@ import { BottomSheet } from '@/components/BottomSheet';
 import { useUser, shortName, type UserProfile } from '@/hooks/use-user';
 import { useGarage } from '@/hooks/use-garage';
 import { isValidPhoneNumber, normalizePhoneNumber } from '@/lib/phone';
+import { CitySelect } from '@/components/CitySelect';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 type Field = 'name' | 'email' | 'phone' | 'city';
@@ -97,16 +98,26 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
             <label htmlFor={`profile-${key}`} className="mb-2 block text-xs font-medium text-app-muted">
               {key === 'phone' ? 'Broj telefona' : label}
             </label>
-            <input
-              id={`profile-${key}`}
-              type={type ?? 'text'}
-              value={draft[key]}
-              onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
-              readOnly={key === 'email'}
-              placeholder={placeholder}
-              aria-invalid={Boolean(errors[key])}
-              className={`${inputBase} ${errors[key] ? bad : ok}`}
-            />
+            {key === 'city' ? (
+              <CitySelect
+                id="profile-city"
+                value={draft.city}
+                onChange={(city) => setDraft({ ...draft, city })}
+                className={`${inputBase} ${errors.city ? bad : ok}`}
+                invalid={Boolean(errors.city)}
+              />
+            ) : (
+              <input
+                id={`profile-${key}`}
+                type={type ?? 'text'}
+                value={draft[key]}
+                onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
+                readOnly={key === 'email'}
+                placeholder={placeholder}
+                aria-invalid={Boolean(errors[key])}
+                className={`${inputBase} ${errors[key] ? bad : ok}`}
+              />
+            )}
             {errors[key] && (
               <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-tone-negative">
                 <TriangleAlert size={12} className="flex-shrink-0" />

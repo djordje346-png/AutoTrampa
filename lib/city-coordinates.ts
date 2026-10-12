@@ -1,51 +1,31 @@
-type Coordinates = readonly [latitude: number, longitude: number];
+import placesData from '@/lib/serbian-places.json';
 
-// City-centre coordinates keep distance recommendations useful without GPS,
-// address collection, or a geocoding service.
-const SERBIAN_CITIES: Record<string, Coordinates> = {
-  beograd: [44.7866, 20.4489],
-  belgrade: [44.7866, 20.4489],
-  novi_beograd: [44.8167, 20.4167],
-  novi_sad: [45.2671, 19.8335],
-  nis: [43.3209, 21.8958],
-  subotica: [46.1, 19.6656],
-  kragujevac: [44.0128, 20.9114],
-  kraljevo: [43.7234, 20.687],
-  cacak: [43.8914, 20.3497],
-  zrenjanin: [45.3836, 20.3819],
-  smederevo: [44.6644, 20.9276],
-  leskovac: [42.9981, 21.9461],
-  pancevo: [44.8708, 20.6403],
-  valjevo: [44.2751, 19.8982],
-  uzice: [43.8554, 19.8425],
-  novi_pazar: [43.1367, 20.5122],
-  pozarevac: [44.6213, 21.1878],
-  vranje: [42.5514, 21.9003],
-  sabac: [44.7467, 19.69],
-  krusevac: [43.58, 21.3339],
-  sombor: [45.7742, 19.1122],
-  jagodina: [43.9771, 21.2612],
-  kikinda: [45.8297, 20.4653],
-  mitrovica: [42.8914, 20.866],
-  kosovska_mitrovica: [42.8914, 20.866],
-  loznica: [44.5333, 19.2258],
-  vrbas: [45.5714, 19.6408],
-  backa_palanka: [45.25, 19.3919],
-  indjija: [45.0482, 20.0816],
-  stara_pazova: [44.985, 20.1608],
-  ruma: [45.0081, 19.8222],
-  arandjelovac: [44.3069, 20.56],
-  paracin: [43.8608, 21.4078],
-  aleksinac: [43.5417, 21.7078],
-  prokuplje: [43.2342, 21.5881],
-  bor: [44.0747, 22.0959],
-  zajecar: [43.9036, 22.2641],
-  pirot: [43.1557, 22.5857],
-  kruševac: [43.58, 21.3339],
-};
+export interface SerbianPlace {
+  id: number;
+  canonicalName: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  population: number;
+  district: string;
+  searchNames: string[];
+}
+
+/**
+ * GeoNames `cities500` Serbia extract, downloaded 2026-10-12. The dataset lists
+ * places with 500+ residents or administrative seats and WGS84 coordinates.
+ * Source: https://download.geonames.org/export/dump/cities500.zip (CC BY 4.0).
+ * Kosovska Mitrovica is included from GeoNames ID 789225 for legacy listings.
+ */
+export const SERBIAN_PLACES = placesData as SerbianPlace[];
+
+export const POPULAR_SERBIAN_PLACES = [...SERBIAN_PLACES]
+  .sort((a, b) => b.population - a.population || a.name.localeCompare(b.name, 'sr-Latn'))
+  .slice(0, 12);
 
 function normalizeCity(city: string): string {
-  return city.split(',')[0]
+  return city
+    .split(',')[0]
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLocaleLowerCase('sr-Latn')
@@ -54,19 +34,37 @@ function normalizeCity(city: string): string {
     .replace(/^_|_$/g, '');
 }
 
-function coordinatesFor(city: string): Coordinates | null {
-  const key = normalizeCity(city);
-  return SERBIAN_CITIES[key] ?? null;
+const placeByName = new Map<string, SerbianPlace>();
+
+// Exact visible labels win; legacy city names resolve to the most populated
+// matching place when GeoNames contains same-name localities.
+for (const place of SERBIAN_PLACES) {
+  placeByName.set(normalizeCity(place.name), place);
+}
+for (const place of [...SERBIAN_PLACES].sort((a, b) => b.population - a.population)) {
+  for (const name of place.searchNames) {
+    const key = normalizeCity(name);
+    if (key && !placeByName.has(key)) placeByName.set(key, place);
+  }
+}
+
+export function getSerbianPlace(city: string): SerbianPlace | null {
+  return placeByName.get(normalizeCity(city)) ?? null;
 }
 
 export function hasCityCoordinates(city: string): boolean {
-  return Boolean(city.trim() && coordinatesFor(city));
+  return Boolean(city.trim() && getSerbianPlace(city));
 }
 
-function distanceKm(from: Coordinates, to: Coordinates): number {
+function distanceKm(
+  from: Pick<SerbianPlace, 'latitude' | 'longitude'>,
+  to: Pick<SerbianPlace, 'latitude' | 'longitude'>,
+): number {
   const radians = (degrees: number) => (degrees * Math.PI) / 180;
-  const [lat1, lon1] = from.map(radians);
-  const [lat2, lon2] = to.map(radians);
+  const lat1 = radians(from.latitude);
+  const lon1 = radians(from.longitude);
+  const lat2 = radians(to.latitude);
+  const lon2 = radians(to.longitude);
   const dLat = lat2 - lat1;
   const dLon = lon2 - lon1;
   const a = Math.sin(dLat / 2) ** 2
@@ -75,9 +73,7 @@ function distanceKm(from: Coordinates, to: Coordinates): number {
 }
 
 export function distanceBetweenCitiesKm(fromCity: string, toCity: string): number | null {
-  const from = coordinatesFor(fromCity);
-  const to = coordinatesFor(toCity);
+  const from = getSerbianPlace(fromCity);
+  const to = getSerbianPlace(toCity);
   return from && to ? distanceKm(from, to) : null;
 }
-
-

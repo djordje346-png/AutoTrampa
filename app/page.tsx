@@ -121,7 +121,7 @@ export default function FeedPage() {
     tradeAware ? selectedCar : null,
     budget,
     noTopUp,
-    profileReady && profile.id === userId ? profile.city : '',
+    selectedCar?.city ?? '',
     preferences.radius,
   );
 

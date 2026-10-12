@@ -15,6 +15,8 @@ import { bodyLabel, fuelLabel, transmissionLabel } from '@/lib/labels';
 import { userStore, shortName } from '@/hooks/use-user';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
+import { CitySelect } from '@/components/CitySelect';
+import { getSerbianPlace } from '@/lib/city-coordinates';
 
 const BODY_TYPES: BodyType[] = [
   'Sedan',
@@ -108,6 +110,7 @@ export function validateCarForm(form: CarFormType): Partial<Record<keyof CarForm
   const errors: Partial<Record<keyof CarFormType, string>> = {};
   if (!form.brand.trim()) errors.brand = 'Izaberi marku vozila.';
   if (!form.model.trim()) errors.model = 'Izaberi model.';
+  if (!getSerbianPlace(form.city)) errors.city = 'Izaberi grad ili naselje iz liste.';
 
   const price = parseInt(form.price, 10);
   if (!form.price.trim()) errors.price = 'Unesi cenu.';
@@ -446,18 +449,19 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>
-              Grad
+            <label htmlFor="car-city" className={labelClass}>
+              Grad oglasa *
             </label>
 
-            <input
+            <CitySelect
+              id="car-city"
               value={form.city}
-              onChange={(e) =>
-                update('city', e.target.value)
-              }
-              placeholder="Kosovska Mitrovica"
-              className={inputClass}
+              onChange={(city) => update('city', city)}
+              className={`${inputClass} ${errors.city ? errorRing : ''}`}
+              invalid={Boolean(errors.city)}
+              required
             />
+            <FieldError message={errors.city} />
           </div>
 
         </div>
