@@ -27,6 +27,7 @@ import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { FilterSheetBody } from '@/components/FilterPanel';
 import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
 import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
+import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
 import { useDesktopHeaderActions } from '@/components/DesktopHeaderActions';
 
 type ViewMode = 'grid' | 'swipe';
@@ -488,6 +489,8 @@ export default function FeedPage() {
                 </span>
               )}
             </button>
+
+            {isLoggedIn && selectedCar && <DesktopRadiusControl selectedCar={selectedCar} />}
 
             <span className="hidden h-7 w-px bg-surface dark:bg-zinc-800 sm:block" aria-hidden="true" />
 

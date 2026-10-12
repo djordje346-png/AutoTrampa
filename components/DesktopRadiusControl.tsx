@@ -1,0 +1,57 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { MapPin } from 'lucide-react';
+import { toast } from 'sonner';
+import { usePreferences } from '@/hooks/use-preferences';
+import { getSerbianPlace } from '@/lib/city-coordinates';
+import type { MyGarageCar } from '@/types';
+
+interface DesktopRadiusControlProps {
+  selectedCar: MyGarageCar;
+}
+
+export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps) {
+  const { preferences, update, mounted: preferencesReady } = usePreferences();
+  const [draft, setDraft] = useState(preferences.radius);
+
+  useEffect(() => setDraft(preferences.radius), [preferences.radius]);
+
+  async function saveRadius() {
+    if (draft === preferences.radius) return;
+    const result = await update({ radius: draft });
+    if (!result.ok) {
+      setDraft(preferences.radius);
+      toast.error(result.message || 'Radius pretrage nije sačuvan. Pokušaj ponovo.');
+    }
+  }
+
+  const city = selectedCar.city && selectedCar.city !== '-'
+    ? getSerbianPlace(selectedCar.city)
+    : null;
+  const radiusLabel = !preferencesReady ? '…' : `${draft >= 200 ? '200+' : draft} km`;
+
+  return (
+    <div className="flex h-10 min-w-0 flex-shrink-0 items-center gap-2 rounded-xl border border-surface bg-card-surface px-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" title={city ? `Centar pretrage: ${city.name}` : 'Dodaj grad svom autu u garaži'}>
+      <MapPin size={15} className="flex-shrink-0 text-app-secondary" aria-hidden="true" />
+      <label htmlFor="desktop-search-radius" className="whitespace-nowrap text-xs font-semibold text-app-primary dark:text-zinc-100">Radius</label>
+      <input
+        id="desktop-search-radius"
+        type="range"
+        min={10}
+        max={200}
+        step={10}
+        value={draft}
+        disabled={!preferencesReady}
+        onChange={(event) => setDraft(Number(event.target.value))}
+        onPointerUp={() => void saveRadius()}
+        onKeyUp={(event) => {
+          if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) void saveRadius();
+        }}
+        aria-label={`Radius pretrage: ${radiusLabel}`}
+        className="h-2 w-24 cursor-pointer appearance-none rounded-full bg-elevated accent-brand-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-28"
+      />
+      <span className="min-w-[3.5rem] whitespace-nowrap text-right text-xs font-bold text-brand-text">{radiusLabel}</span>
+    </div>
+  );
+}

@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { CarFront, Check, ChevronDown, Flame, MapPin, Pencil, Plus, Sparkles } from 'lucide-react';
+import { CarFront, Check, ChevronDown, Flame, Pencil, Plus, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePreferences } from '@/hooks/use-preferences';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { fuelLabel } from '@/lib/labels';
 import { displayValue } from '@/lib/car-row';
-import { getSerbianPlace } from '@/lib/city-coordinates';
 import type { MyGarageCar } from '@/types';
 
 interface DesktopFeedOverviewProps {
@@ -20,7 +19,7 @@ interface DesktopFeedOverviewProps {
   onOpenSwipe: () => void;
 }
 
-const SEGMENT = 'min-w-0 px-4 py-4 sm:px-5 desktop:px-6';
+const SEGMENT = 'min-w-0 px-4 py-3 sm:px-5 desktop:px-5 desktop:py-3.5';
 
 export function DesktopFeedOverview({
   cars,
@@ -35,16 +34,11 @@ export function DesktopFeedOverview({
   const [carPickerOpen, setCarPickerOpen] = useState(false);
   const [budgetEditorOpen, setBudgetEditorOpen] = useState(false);
   const [budgetDraft, setBudgetDraft] = useState('');
-  const [radiusDraft, setRadiusDraft] = useState(preferences.radius);
   const carPickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setBudgetDraft(preferences.budget == null ? '' : String(preferences.budget));
   }, [preferences.budget]);
-
-  useEffect(() => {
-    setRadiusDraft(preferences.radius);
-  }, [preferences.radius]);
 
   useEffect(() => {
     if (!carPickerOpen) return;
@@ -83,19 +77,7 @@ export function DesktopFeedOverview({
     setBudgetEditorOpen(false);
   }
 
-  async function saveRadiusDraft() {
-    if (radiusDraft === preferences.radius) return;
-    const result = await update({ radius: radiusDraft });
-    if (!result.ok) {
-      setRadiusDraft(preferences.radius);
-      toast.error(result.message || 'Radius pretrage nije sačuvan. Pokušaj ponovo.');
-    }
-  }
-
   const estimatedValue = selectedCar.estimatedValue || selectedCar.price;
-  const selectedCity = selectedCar.city && selectedCar.city !== '-'
-    ? getSerbianPlace(selectedCar.city)
-    : null;
 
   return (
     <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900 desktop:grid-cols-[minmax(0,1.25fr)_minmax(0,.75fr)_minmax(0,1fr)_minmax(190px,.8fr)]">
@@ -170,13 +152,15 @@ export function DesktopFeedOverview({
         )}
       </div>
 
-      <div className={`${SEGMENT} flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-l desktop:border-t-0`}>
+      <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-surface dark:bg-zinc-800 desktop:block" />
         <p className="text-xs font-medium text-app-secondary dark:text-zinc-400">Vrednost mog auta</p>
         <p className="mt-1 truncate text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(estimatedValue)}</p>
         <p className="mt-1 text-[11px] text-app-muted">Vrednost iz oglasa</p>
       </div>
 
-      <div className={`${SEGMENT} flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-l desktop:border-t-0`}>
+      <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-surface dark:bg-zinc-800 desktop:block" />
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs font-medium text-app-secondary dark:text-zinc-400">Budžet za doplatu</p>
@@ -222,41 +206,10 @@ export function DesktopFeedOverview({
             </button>
           </form>
         )}
-        <div className="mt-3 border-t border-surface pt-3 dark:border-zinc-800">
-          <div className="flex items-center justify-between gap-2">
-            <p className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-app-primary dark:text-zinc-100">
-              <MapPin size={13} className="flex-shrink-0 text-app-muted" />
-              <span>Radius pretrage</span>
-            </p>
-            <span className="flex-shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[11px] font-bold text-brand-text">
-              {!preferencesReady ? 'Učitavanje…' : `${radiusDraft >= 200 ? '200+' : radiusDraft} km`}
-            </span>
-          </div>
-          <input
-            type="range"
-            min={10}
-            max={200}
-            step={10}
-            value={radiusDraft}
-            disabled={!preferencesReady}
-            onChange={(event) => setRadiusDraft(Number(event.target.value))}
-            onPointerUp={() => void saveRadiusDraft()}
-            onKeyUp={(event) => {
-              if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) {
-                void saveRadiusDraft();
-              }
-            }}
-            aria-label="Radius pretrage u kilometrima"
-            className="mt-2 h-2 w-full cursor-pointer appearance-none rounded-full bg-elevated accent-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
-          />
-          <p className="mt-1.5 flex min-w-0 items-center gap-1 text-[10px] text-app-muted">
-            <span className="truncate">{selectedCity ? `Centar: ${selectedCity.name}` : 'Dodaj grad svom autu u garaži'}</span>
-          </p>
-          <p className="mt-1 text-[10px] leading-relaxed text-app-muted">Širimo krug ako u blizini nema dovoljno oglasa.</p>
-        </div>
       </div>
 
-      <div className={`${SEGMENT} flex flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-l desktop:border-t-0`}>
+      <div className={`${SEGMENT} relative flex flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-surface dark:bg-zinc-800 desktop:block" />
         <button
           type="button"
           onClick={onOpenSwipe}
