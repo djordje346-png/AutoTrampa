@@ -285,7 +285,7 @@ export default function ProfileClient() {
               type="number"
               min={0}
               max={100000}
-              step={500}
+              step={100}
               value={budgetDraft}
               disabled={!preferencesReady || noTopUp}
               placeholder="npr. 3000"

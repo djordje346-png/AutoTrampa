@@ -196,7 +196,7 @@ export function DesktopFeedOverview({
                 type="number"
                 min={0}
                 max={100000}
-                step={500}
+                step={100}
                 inputMode="numeric"
                 value={budgetDraft}
                 onChange={(event) => setBudgetDraft(event.target.value)}
