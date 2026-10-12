@@ -44,7 +44,7 @@ export default function Footer() {
     <>
       <nav
         aria-label="Glavna navigacija"
-        className="sticky top-0 z-40 hidden border-b border-surface bg-card-surface/95 text-app-secondary shadow-sm backdrop-blur-xl lg:block"
+        className="sticky top-0 z-40 hidden border-b border-surface bg-card-surface text-app-secondary shadow-sm dark:border-zinc-800 dark:bg-zinc-950 lg:block"
       >
         <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-8">
           <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-app-primary dark:text-zinc-100">
@@ -52,7 +52,7 @@ export default function Footer() {
             <span className="text-base font-bold tracking-tight">AutoTrampa</span>
           </Link>
           <div className="flex items-center justify-center gap-2">
-            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            {NAV_ITEMS.filter(({ href }) => href !== '/profile').map(({ href, label, icon: Icon }) => {
               const active = pathname === href;
               const count = badgeFor(href);
               return (
@@ -73,7 +73,17 @@ export default function Footer() {
               );
             })}
           </div>
-          <div className="flex justify-end">{desktopAction}</div>
+          <div className="flex items-center justify-end gap-2">
+            {desktopAction}
+            <Link
+              href="/profile"
+              aria-label="Profil"
+              aria-current={pathname === '/profile' ? 'page' : undefined}
+              className={`flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'border-brand-500/40 bg-brand-500/10 text-brand-text' : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:text-brand-text dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'}`}
+            >
+              <User size={19} />
+            </Link>
+          </div>
         </div>
       </nav>
       <nav

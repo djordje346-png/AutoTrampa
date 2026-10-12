@@ -721,7 +721,7 @@ export default function FeedPage() {
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900">
+              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 hover:border-brand-500/30 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
                 {/* Image */}
                 <div className="relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
                   <Link href={`/car/${car.id}`} className="absolute inset-0 block">
@@ -781,12 +781,6 @@ export default function FeedPage() {
                       )}
                     </div>
 
-                    <Link
-                      href={`/car/${car.id}`}
-                      className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
-                    >
-                      Pogledaj oglas
-                    </Link>
                   </div>
                 </div>
               </article>
