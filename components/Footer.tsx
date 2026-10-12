@@ -70,15 +70,15 @@ export default function Footer() {
                 </Link>
               );
             })}
-          </div>
-          <Link
+            <Link
               href="/profile"
               aria-label="Profil"
               aria-current={pathname === '/profile' ? 'page' : undefined}
               className={`ml-2 flex h-10 w-10 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'text-brand-500' : 'text-zinc-200 hover:text-brand-500'}`}
             >
               <User size={19} />
-          </Link>
+            </Link>
+          </div>
         </div>
       </nav>
       <nav
