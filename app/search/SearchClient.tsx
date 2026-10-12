@@ -13,6 +13,7 @@ import { useSaved } from '@/hooks/use-saved';
 import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
 import { useAuth } from '@/hooks/use-auth';
+import { useUser } from '@/hooks/use-user';
 import { countActiveFilters, useSearchPrefs } from '@/hooks/use-search-prefs';
 import { filterCars } from '@/hooks/use-filtered-cars';
 import { usePreferences } from '@/hooks/use-preferences';
@@ -31,6 +32,7 @@ export default function SearchClient() {
   const { recordSwipe } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const { user: profile, profileReady } = useUser();
   // Trade sorting and labelling need the user's own car; without one there is
   // no difference to compute.
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
@@ -53,8 +55,10 @@ export default function SearchClient() {
         selectedCar,
         preferences.budget,
         preferences.noTopUp,
+        profileReady ? profile.city : '',
+        preferences.radius,
       ),
-    [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp],
+    [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, profile.city, profileReady, preferences.radius],
   );
 
   const hasFilters =

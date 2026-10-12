@@ -5,10 +5,12 @@ import { CarFront, Check, ChevronDown, Fuel, Pencil, Plus, RotateCcw } from 'luc
 import { toast } from 'sonner';
 import { DesktopCompactFilterGroups } from '@/components/FilterPanel';
 import { usePreferences } from '@/hooks/use-preferences';
+import { useUser } from '@/hooks/use-user';
 import { countActiveFilters, type SearchFilters, type TradeFilter } from '@/hooks/use-search-prefs';
 import { formatEuro } from '@/lib/cars';
 import { fuelLabel } from '@/lib/labels';
 import { displayValue } from '@/lib/car-row';
+import { hasCityCoordinates } from '@/lib/city-coordinates';
 import type { MyGarageCar } from '@/types';
 
 interface TradeOption {
@@ -49,6 +51,7 @@ export function DesktopFeedSidebar({
   showTrade,
 }: DesktopFeedSidebarProps) {
   const { preferences, update, mounted: preferencesReady } = usePreferences();
+  const { user: profile, profileReady } = useUser();
   const [carPickerOpen, setCarPickerOpen] = useState(false);
   const [budgetEditorOpen, setBudgetEditorOpen] = useState(false);
   const [budgetDraft, setBudgetDraft] = useState('');
@@ -73,6 +76,11 @@ export function DesktopFeedSidebar({
       return;
     }
     setBudgetEditorOpen(false);
+  }
+
+  async function saveRadius(value: string) {
+    const result = await update({ radius: Number(value) });
+    if (!result.ok) toast.error(result.message || 'Radius pretrage nije sačuvan. Pokušaj ponovo.');
   }
 
   return (
@@ -230,6 +238,35 @@ export function DesktopFeedSidebar({
             </button>
           </form>
         )}
+
+        <div className="mt-3 border-t border-surface pt-3 dark:border-zinc-800">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Radius pretrage</p>
+            <label className="flex items-center gap-1 text-xs font-bold text-brand-text">
+              <select
+                value={preferences.radius}
+                disabled={!preferencesReady}
+                onChange={(event) => void saveRadius(event.target.value)}
+                aria-label="Radius pretrage u kilometrima"
+                className="h-8 rounded-lg border border-surface bg-elevated px-2 text-xs font-bold text-brand-text outline-none focus:border-brand-500 disabled:opacity-60 dark:border-zinc-800 dark:bg-zinc-950"
+              >
+                {Array.from({ length: 20 }, (_, index) => (index + 1) * 10).map((km) => (
+                  <option key={km} value={km}>{km} km</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <p className="mt-1 text-[10px] text-app-muted">
+            {!profileReady || !profile.city.trim()
+              ? 'Dodaj grad u profilu za preporuke po blizini.'
+              : hasCityCoordinates(profile.city)
+                ? `Centar pretrage: ${profile.city}`
+                : 'Za ovaj grad nema procene udaljenosti; prikazujemo relevantne oglase.'}
+          </p>
+          <p className="mt-1 text-[10px] leading-relaxed text-app-muted">
+            Prvo prikazujemo oglase iz ovog kruga. Ako ih nema dovoljno, proširujemo pretragu na najbliže gradove.
+          </p>
+        </div>
       </section>
 
       <section className={SURFACE} aria-labelledby="desktop-filters-title">

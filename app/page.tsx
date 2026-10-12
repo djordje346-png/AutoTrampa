@@ -121,6 +121,8 @@ export default function FeedPage() {
     tradeAware ? selectedCar : null,
     budget,
     noTopUp,
+    profileReady && profile.id === userId ? profile.city : '',
+    preferences.radius,
   );
 
   const activeFilters = countActiveFilters(filters);
