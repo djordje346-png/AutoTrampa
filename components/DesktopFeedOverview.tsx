@@ -88,7 +88,7 @@ export function DesktopFeedOverview({
           onClick={() => setCarPickerOpen((open) => !open)}
           aria-expanded={carPickerOpen}
           aria-label={`Izabrano vozilo: ${selectedCar.brand} ${selectedCar.model}. Promeni vozilo`}
-          className="flex w-full min-w-0 items-center gap-3 rounded-xl border border-surface bg-transparent p-1.5 text-left transition-colors hover:border-brand-500/40 hover:bg-elevated/40 dark:border-zinc-800 dark:hover:bg-zinc-950/50"
+          className="flex w-full min-w-0 items-center gap-3 rounded-xl p-0 text-left transition-opacity hover:opacity-80"
         >
           <span className="h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-zinc-950">
             {selectedCar.image ? (
@@ -153,14 +153,14 @@ export function DesktopFeedOverview({
       </div>
 
       <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-surface dark:bg-zinc-800 desktop:block" />
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-surface to-transparent dark:via-zinc-700 desktop:block" />
         <p className="text-xs font-medium text-app-secondary dark:text-zinc-400">Vrednost mog auta</p>
         <p className="mt-1 truncate text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(estimatedValue)}</p>
         <p className="mt-1 text-[11px] text-app-muted">Vrednost iz oglasa</p>
       </div>
 
       <div className={`${SEGMENT} relative z-30 flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-surface dark:bg-zinc-800 desktop:block" />
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-surface to-transparent dark:via-zinc-700 desktop:block" />
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs font-medium text-app-secondary dark:text-zinc-400">Budžet za doplatu</p>
@@ -213,7 +213,7 @@ export function DesktopFeedOverview({
       </div>
 
       <div className={`${SEGMENT} relative flex flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-surface dark:bg-zinc-800 desktop:block" />
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-surface to-transparent dark:via-zinc-700 desktop:block" />
         <button
           type="button"
           onClick={onOpenSwipe}
