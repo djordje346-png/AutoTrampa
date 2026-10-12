@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Chrome as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
+import { CarFront, Chrome as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
 import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
@@ -44,27 +44,34 @@ export default function Footer() {
         aria-label="Glavna navigacija"
         className="sticky top-0 z-40 hidden border-b border-surface bg-card-surface/95 text-app-secondary shadow-sm backdrop-blur-xl lg:block"
       >
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-center gap-2 px-8">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
-            const count = badgeFor(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={active ? 'page' : undefined}
-                className={`relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                  active ? 'bg-brand-500/10 text-brand-text' : 'text-app-muted hover:bg-elevated hover:text-app-primary'
-                }`}
-              >
-                <span className="relative flex">
-                  <Icon size={18} strokeWidth={active ? 2.5 : 1.9} />
-                  <Badge count={count} />
-                </span>
-                {label}
-              </Link>
-            );
-          })}
+        <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-8">
+          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-app-primary dark:text-zinc-100">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-black"><CarFront size={20} strokeWidth={2.2} /></span>
+            <span className="text-base font-bold tracking-tight">AutoTrampa</span>
+          </Link>
+          <div className="flex items-center justify-center gap-2">
+            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href;
+              const count = badgeFor(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? 'page' : undefined}
+                  className={`relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                    active ? 'bg-brand-500/10 text-brand-text' : 'text-app-muted hover:bg-elevated hover:text-app-primary'
+                  }`}
+                >
+                  <span className="relative flex">
+                    <Icon size={18} strokeWidth={active ? 2.5 : 1.9} />
+                    <Badge count={count} />
+                  </span>
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+          <div aria-hidden="true" />
         </div>
       </nav>
       <nav

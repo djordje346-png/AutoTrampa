@@ -225,10 +225,10 @@ export default function FeedPage() {
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="app-page-header safe-top">
+      <div className="app-page-header safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
         <header className="app-container py-3">
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 lg:hidden">
               <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">AutoTrampa</h1>
               <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
             </div>
