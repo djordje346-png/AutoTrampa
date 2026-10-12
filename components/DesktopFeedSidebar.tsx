@@ -91,7 +91,7 @@ export function DesktopFeedSidebar({
   }
 
   return (
-    <aside className="hidden h-fit max-h-[calc(100vh-6rem)] w-64 flex-shrink-0 flex-col gap-2 overflow-y-auto overscroll-contain pb-2 lg:sticky lg:top-24 lg:flex xl:hidden">
+    <aside className="hidden h-fit max-h-[calc(100vh-6rem)] w-64 flex-shrink-0 flex-col gap-2 overflow-y-auto overscroll-contain pb-2 lg:sticky lg:top-24 lg:flex desktop:hidden">
       <section className={SURFACE} aria-labelledby="desktop-my-car-title">
         <p id="desktop-my-car-title" className={SECTION_TITLE}>Moj auto</p>
 

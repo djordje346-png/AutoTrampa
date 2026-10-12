@@ -460,7 +460,7 @@ export default function FeedPage() {
       )}
 
       {viewMode === 'grid' && (
-        <section className="app-container mt-4 hidden space-y-3 xl:block" aria-label="Podešavanja oglasa">
+        <section className="app-container mt-4 hidden space-y-3 desktop:block" aria-label="Podešavanja oglasa">
           {isLoggedIn && selectedCar && (
             <DesktopFeedOverview
               cars={cars}
@@ -765,7 +765,7 @@ export default function FeedPage() {
       )}
 
       {viewMode === 'grid' && (
-        <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start xl:flex-col">
+        <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start desktop:flex-col">
           {isLoggedIn && (
             <DesktopFeedSidebar
               cars={cars}
@@ -788,7 +788,7 @@ export default function FeedPage() {
               /* Placeholder cards while the first request is in flight: real
                  listings arrive after the demo seed and sort to the front, so
                  without this the grid visibly jumps under the reader. */
-              <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-3 xl:gap-5">
+              <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:gap-5 desktop:grid-cols-3 desktop:gap-5">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div
                     key={i}
@@ -809,7 +809,7 @@ export default function FeedPage() {
               </div>
             )}
           {marketplaceReady && (
-            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 xl:grid-cols-3 xl:gap-5">
+            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
