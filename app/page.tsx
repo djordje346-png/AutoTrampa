@@ -765,7 +765,7 @@ export default function FeedPage() {
       )}
 
       {viewMode === 'grid' && (
-        <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start desktop:flex-col">
+        <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start desktop:flex-col desktop:items-stretch">
           {isLoggedIn && (
             <DesktopFeedSidebar
               cars={cars}
