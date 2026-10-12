@@ -32,9 +32,9 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
   const radiusLabel = !preferencesReady ? '…' : `${draft >= 200 ? '200+' : draft} km`;
 
   return (
-    <div className="flex h-10 min-w-0 flex-shrink-0 items-center gap-2" title={city ? `Centar pretrage: ${city.name}` : 'Dodaj grad svom autu u garaži'}>
-      <MapPin size={15} className="flex-shrink-0 text-app-secondary" aria-hidden="true" />
-      <label htmlFor="desktop-search-radius" className="whitespace-nowrap text-xs font-semibold text-app-secondary dark:text-zinc-300">Radius</label>
+    <div className="flex h-9 min-w-0 flex-shrink-0 items-center gap-1.5" title={city ? `Centar pretrage: ${city.name}` : 'Dodaj grad svom autu u garaži'}>
+      <MapPin size={14} className="flex-shrink-0 text-app-secondary" aria-hidden="true" />
+      <label htmlFor="desktop-search-radius" className="whitespace-nowrap text-[11px] font-semibold text-app-secondary dark:text-zinc-300">Radius</label>
       <input
         id="desktop-search-radius"
         type="range"
@@ -49,9 +49,9 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
           if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) void saveRadius();
         }}
         aria-label={`Radius pretrage: ${radiusLabel}`}
-        className="h-2 w-24 cursor-pointer appearance-none rounded-full bg-elevated accent-brand-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-28"
+        className="h-2 w-20 cursor-pointer appearance-none rounded-full bg-elevated accent-brand-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-24"
       />
-      <span className="min-w-[3.5rem] whitespace-nowrap text-right text-xs font-bold text-brand-text">{radiusLabel}</span>
+      <span className="min-w-[3.25rem] whitespace-nowrap text-right text-[11px] font-bold text-brand-text">{radiusLabel}</span>
     </div>
   );
 }

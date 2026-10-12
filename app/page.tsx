@@ -461,7 +461,7 @@ export default function FeedPage() {
       )}
 
       {viewMode === 'grid' && (
-        <section className="app-container mt-4 hidden space-y-3 desktop:block" aria-label="Podešavanja oglasa">
+        <section className="app-container mt-4 hidden space-y-2 desktop:block" aria-label="Podešavanja oglasa">
           {isLoggedIn && selectedCar && (
             <DesktopFeedOverview
               cars={cars}
@@ -474,14 +474,14 @@ export default function FeedPage() {
             />
           )}
 
-          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-3 dark:border-zinc-800">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-2 dark:border-zinc-800">
             <button
               type="button"
               onClick={() => setDesktopFiltersOpen(true)}
               aria-label={`Otvori napredne filtere${advancedFilterCount > 0 ? `, ${advancedFilterCount} aktivnih filtera` : ''}`}
-              className="inline-flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-surface bg-card-surface px-3.5 text-sm font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+              className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
             >
-              <SlidersHorizontal size={16} />
+              <SlidersHorizontal size={15} />
               Filteri
               {advancedFilterCount > 0 && (
                 <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[11px] font-bold text-black">
@@ -490,7 +490,7 @@ export default function FeedPage() {
               )}
             </button>
 
-            <span className="hidden h-7 w-px bg-surface dark:bg-zinc-800 sm:block" aria-hidden="true" />
+            <span className="hidden h-6 w-px bg-surface dark:bg-zinc-800 sm:block" aria-hidden="true" />
 
             {showTrade && (
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5" aria-label="Tip zamene">
@@ -500,7 +500,7 @@ export default function FeedPage() {
                     type="button"
                     onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
                     aria-pressed={filters.trade === key}
-                    className={`min-h-10 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-150 ${
+                    className={`min-h-9 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition-all duration-150 ${
                       filters.trade === key
                         ? 'border-brand-500 bg-brand-500 text-black shadow-sm shadow-brand-500/20'
                         : 'border-surface bg-card-surface text-app-secondary hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'
