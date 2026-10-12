@@ -159,7 +159,7 @@ export function DesktopFeedOverview({
         <p className="mt-1 text-[11px] text-app-muted">Vrednost iz oglasa</p>
       </div>
 
-      <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
+      <div className={`${SEGMENT} relative z-30 flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
         <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-10 w-px -translate-y-1/2 bg-surface dark:bg-zinc-800 desktop:block" />
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -188,22 +188,26 @@ export function DesktopFeedOverview({
         </div>
         <p className="mt-1 text-[11px] leading-relaxed text-app-muted">Koristi se za preporuke</p>
         {budgetEditorOpen && (
-          <form onSubmit={saveBudget} className="mt-2 flex items-center gap-2">
-            <input
-              type="number"
-              min={0}
-              max={100000}
-              step={500}
-              inputMode="numeric"
-              value={budgetDraft}
-              onChange={(event) => setBudgetDraft(event.target.value)}
-              placeholder="Iznos u €"
-              aria-label="Budžet za doplatu u evrima"
-              className="h-9 min-w-0 flex-1 rounded-xl border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
-            />
-            <button type="submit" aria-label="Sačuvaj budžet" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500 text-black transition-colors hover:bg-brand-400">
-              <Check size={16} />
-            </button>
+          <form onSubmit={saveBudget} className="absolute left-3 right-3 top-[calc(100%-0.25rem)] z-40 rounded-xl border border-surface bg-card-surface p-3 shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
+            <label htmlFor="desktop-budget-input" className="mb-2 block text-[11px] font-semibold text-app-secondary dark:text-zinc-300">Budžet za doplatu</label>
+            <div className="flex items-center gap-2">
+              <input
+                id="desktop-budget-input"
+                type="number"
+                min={0}
+                max={100000}
+                step={500}
+                inputMode="numeric"
+                value={budgetDraft}
+                onChange={(event) => setBudgetDraft(event.target.value)}
+                placeholder="Iznos u €"
+                aria-label="Budžet za doplatu u evrima"
+                className="h-9 min-w-0 flex-1 rounded-lg border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+              />
+              <button type="submit" aria-label="Sačuvaj budžet" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-500 text-black transition-colors hover:bg-brand-400">
+                <Check size={16} />
+              </button>
+            </div>
           </form>
         )}
       </div>

@@ -32,9 +32,9 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
   const radiusLabel = !preferencesReady ? '…' : `${draft >= 200 ? '200+' : draft} km`;
 
   return (
-    <div className="flex h-10 min-w-0 flex-shrink-0 items-center gap-2 rounded-xl border border-surface bg-card-surface px-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900" title={city ? `Centar pretrage: ${city.name}` : 'Dodaj grad svom autu u garaži'}>
+    <div className="flex h-10 min-w-0 flex-shrink-0 items-center gap-2" title={city ? `Centar pretrage: ${city.name}` : 'Dodaj grad svom autu u garaži'}>
       <MapPin size={15} className="flex-shrink-0 text-app-secondary" aria-hidden="true" />
-      <label htmlFor="desktop-search-radius" className="whitespace-nowrap text-xs font-semibold text-app-primary dark:text-zinc-100">Radius</label>
+      <label htmlFor="desktop-search-radius" className="whitespace-nowrap text-xs font-semibold text-app-secondary dark:text-zinc-300">Radius</label>
       <input
         id="desktop-search-radius"
         type="range"

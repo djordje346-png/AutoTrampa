@@ -490,8 +490,6 @@ export default function FeedPage() {
               )}
             </button>
 
-            {isLoggedIn && selectedCar && <DesktopRadiusControl selectedCar={selectedCar} />}
-
             <span className="hidden h-7 w-px bg-surface dark:bg-zinc-800 sm:block" aria-hidden="true" />
 
             {showTrade && (
@@ -518,10 +516,16 @@ export default function FeedPage() {
               <button
                 type="button"
                 onClick={() => { resetFilters(); setSwipeIndex(0); }}
-                className="ml-auto flex-shrink-0 px-2 py-2 text-xs font-semibold text-app-muted transition-colors hover:text-brand-text"
+                className="flex-shrink-0 px-2 py-2 text-xs font-semibold text-app-muted transition-colors hover:text-brand-text"
               >
                 Očisti sve
               </button>
+            )}
+
+            {isLoggedIn && selectedCar && (
+              <div className="ml-auto flex flex-shrink-0 items-center border-l border-surface pl-3 dark:border-zinc-800">
+                <DesktopRadiusControl selectedCar={selectedCar} />
+              </div>
             )}
           </div>
         </section>
