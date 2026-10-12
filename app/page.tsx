@@ -26,6 +26,7 @@ import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { FilterSheetBody } from '@/components/FilterPanel';
 import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
+import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
 import { useDesktopHeaderActions } from '@/components/DesktopHeaderActions';
 
 type ViewMode = 'grid' | 'swipe';
@@ -52,6 +53,7 @@ export default function FeedPage() {
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [desktopFiltersOpen, setDesktopFiltersOpen] = useState(false);
   const { setAction: setDesktopHeaderAction } = useDesktopHeaderActions();
   const [swipeIndex, setSwipeIndex] = useState(0);
   const { preferences } = usePreferences();
@@ -126,6 +128,7 @@ export default function FeedPage() {
   );
 
   const activeFilters = countActiveFilters(filters);
+  const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -456,6 +459,71 @@ export default function FeedPage() {
         </div>
       )}
 
+      {viewMode === 'grid' && (
+        <section className="app-container mt-4 hidden space-y-3 xl:block" aria-label="Podešavanja oglasa">
+          {isLoggedIn && selectedCar && (
+            <DesktopFeedOverview
+              cars={cars}
+              selectedCar={selectedCar}
+              selectedId={selectedId}
+              selectCar={selectCar}
+              canAddCar={canAddCar}
+              onAddCar={handleAddListing}
+              onOpenSwipe={() => setViewMode('swipe')}
+            />
+          )}
+
+          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-3 dark:border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setDesktopFiltersOpen(true)}
+              aria-label={`Otvori napredne filtere${advancedFilterCount > 0 ? `, ${advancedFilterCount} aktivnih filtera` : ''}`}
+              className="inline-flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-surface bg-card-surface px-3.5 text-sm font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+            >
+              <SlidersHorizontal size={16} />
+              Filteri
+              {advancedFilterCount > 0 && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[11px] font-bold text-black">
+                  {advancedFilterCount}
+                </span>
+              )}
+            </button>
+
+            <span className="hidden h-7 w-px bg-surface dark:bg-zinc-800 sm:block" aria-hidden="true" />
+
+            {showTrade && (
+              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5" aria-label="Tip zamene">
+                {TRADE_FILTERS.map(({ key, label }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
+                    aria-pressed={filters.trade === key}
+                    className={`min-h-10 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-150 ${
+                      filters.trade === key
+                        ? 'border-brand-500 bg-brand-500 text-black shadow-sm shadow-brand-500/20'
+                        : 'border-surface bg-card-surface text-app-secondary hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {activeFilters > 0 && (
+              <button
+                type="button"
+                onClick={() => { resetFilters(); setSwipeIndex(0); }}
+                className="ml-auto flex-shrink-0 px-2 py-2 text-xs font-semibold text-app-muted transition-colors hover:text-brand-text"
+              >
+                Očisti sve
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* No results */}
       {filteredCars.length === 0 && (
         <div className="app-container pt-8 flex flex-col items-center text-center">
@@ -483,6 +551,28 @@ export default function FeedPage() {
         <button
           onClick={() => setFiltersOpen(false)}
           className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+        >
+          Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
+        </button>
+      </BottomSheet>
+
+      <BottomSheet
+        open={desktopFiltersOpen}
+        onClose={() => setDesktopFiltersOpen(false)}
+        title="Napredni filteri"
+        className="sm:max-w-4xl"
+      >
+        <FilterSheetBody
+          filters={filters}
+          update={updateFilters}
+          onReset={() => { resetFilters(); setSwipeIndex(0); }}
+          showTrade={false}
+          className="grid gap-x-8 gap-y-5 sm:grid-cols-2 sm:space-y-0"
+        />
+        <button
+          type="button"
+          onClick={() => setDesktopFiltersOpen(false)}
+          className="mt-6 w-full rounded-xl bg-brand-500 py-3 text-sm font-semibold text-black transition-colors hover:bg-brand-400"
         >
           Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
         </button>
@@ -675,7 +765,7 @@ export default function FeedPage() {
       )}
 
       {viewMode === 'grid' && (
-        <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start">
+        <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start xl:flex-col">
           {isLoggedIn && (
             <DesktopFeedSidebar
               cars={cars}

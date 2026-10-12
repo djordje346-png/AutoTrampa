@@ -21,6 +21,7 @@ interface FilterGroupsProps {
   update: (patch: Partial<SearchFilters>) => void;
   /** Trade options only make sense once the user has a car to compare against. */
   showTrade: boolean;
+  className?: string;
 }
 
 const TRADE_OPTIONS: { key: SearchFilters['trade']; label: string }[] = [
@@ -105,12 +106,12 @@ export function DesktopCompactFilterGroups({
   );
 }
 
-export function FilterGroups({ filters, update, showTrade }: FilterGroupsProps) {
+export function FilterGroups({ filters, update, showTrade, className = 'space-y-5' }: FilterGroupsProps) {
   const [showAllBrands, setShowAllBrands] = useState(false);
   const brands = showAllBrands ? BRAND_NAMES : BRAND_NAMES.slice(0, 10);
 
   return (
-    <div className="space-y-5">
+    <div className={className}>
       {showTrade && (
         <section>
           <p className={GROUP_TITLE}>Vrednost zamene</p>
@@ -304,21 +305,24 @@ export function FilterSidebar({ className = '', onReset, ...groups }: FilterPane
 }
 
 /** The same groups, for the mobile sheet. */
-export function FilterSheetBody({ onReset, ...groups }: Omit<FilterPanelProps, 'className'>) {
-  const active = countActiveFilters(groups.filters);
+export function FilterSheetBody({ onReset, className, ...groups }: Omit<FilterPanelProps, 'className'> & { className?: string }) {
+  const active = countActiveFilters(groups.filters, false);
+  const visibleActive = groups.showTrade
+    ? active
+    : countActiveFilters({ ...groups.filters, trade: 'all' }, false);
 
   return (
     <div>
-      {active > 0 && (
+      {visibleActive > 0 && (
         <button
           onClick={onReset}
           className="mb-4 flex items-center gap-1.5 text-xs font-semibold text-app-muted transition-colors hover:text-brand-text"
         >
           <RotateCcw size={12} />
-          Očisti filtere ({active})
+          Očisti filtere ({visibleActive})
         </button>
       )}
-      <FilterGroups {...groups} />
+      <FilterGroups {...groups} className={className} />
     </div>
   );
 }
