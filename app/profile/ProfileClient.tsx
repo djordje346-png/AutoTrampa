@@ -258,7 +258,7 @@ export default function ProfileClient() {
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Radijus pretrage</label>
-              <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">{preferencesReady ? `${radiusDraft} km` : 'Učitavanje…'}</span>
+              <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">{preferencesReady ? `${radiusDraft >= 200 ? "200+" : radiusDraft} km` : 'Učitavanje…'}</span>
             </div>
             <input
               type="range"

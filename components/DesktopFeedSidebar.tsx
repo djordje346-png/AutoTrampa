@@ -250,7 +250,7 @@ export function DesktopFeedSidebar({
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Radius pretrage</p>
             <span className="rounded-full bg-brand-500/10 px-2 py-0.5 text-xs font-bold text-brand-text">
-              {preferencesReady ? `${radiusDraft} km` : 'Učitavanje…'}
+              {preferencesReady ? `${radiusDraft >= 200 ? "200+" : radiusDraft} km` : 'Učitavanje…'}
             </span>
           </div>
           <input
