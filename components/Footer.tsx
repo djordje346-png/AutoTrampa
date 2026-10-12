@@ -44,10 +44,10 @@ export default function Footer() {
     <>
       <nav
         aria-label="Glavna navigacija"
-        className="sticky top-0 z-40 hidden border-b border-surface bg-card-surface text-app-secondary shadow-sm dark:border-zinc-800 dark:bg-zinc-950 lg:block"
+        className="sticky top-0 z-40 hidden border-b border-[#3A2A42] bg-[#24172E] text-zinc-200 shadow-sm lg:block"
       >
         <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-8">
-          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-app-primary dark:text-zinc-100">
+          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-white">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-black"><CarFront size={20} strokeWidth={2.2} /></span>
             <span className="text-base font-bold tracking-tight">AutoTrampa</span>
           </Link>
@@ -61,7 +61,7 @@ export default function Footer() {
                   href={href}
                   aria-current={active ? 'page' : undefined}
                   className={`relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                    active ? 'bg-brand-500/10 text-brand-text' : 'text-app-muted hover:bg-elevated hover:text-app-primary'
+                    active ? 'bg-white/10 text-[#FAEB00]' : 'text-zinc-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <span className="relative flex">
@@ -79,7 +79,7 @@ export default function Footer() {
               href="/profile"
               aria-label="Profil"
               aria-current={pathname === '/profile' ? 'page' : undefined}
-              className={`flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'border-brand-500/40 bg-brand-500/10 text-brand-text' : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:text-brand-text dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'}`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FAEB00] ${pathname === '/profile' ? 'border-[#FAEB00]/50 bg-white/10 text-[#FAEB00]' : 'border-white/15 bg-white/5 text-zinc-200 hover:border-[#FAEB00]/50 hover:text-[#FAEB00]'}`}
             >
               <User size={19} />
             </Link>
