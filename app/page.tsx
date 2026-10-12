@@ -788,7 +788,7 @@ export default function FeedPage() {
               /* Placeholder cards while the first request is in flight: real
                  listings arrive after the demo seed and sort to the front, so
                  without this the grid visibly jumps under the reader. */
-              <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:gap-5">
+              <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-3 xl:gap-5">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div
                     key={i}
