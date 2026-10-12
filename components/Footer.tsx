@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 function Badge({ count, desktop = false }: { count: number; desktop?: boolean }) {
   if (count <= 0) return null;
   return (
-    <span className={`absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ${desktop ? 'ring-[#24172E]' : 'ring-[hsl(var(--surface-card))]'}`}>
+    <span className={`absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ${desktop ? 'ring-zinc-900' : 'ring-[hsl(var(--surface-card))]'}`}>
       {count > 9 ? '9+' : count}
     </span>
   );
@@ -42,7 +42,7 @@ export default function Footer() {
     <>
       <nav
         aria-label="Glavna navigacija"
-        className="sticky top-0 z-40 hidden border-b border-white/10 bg-[#24172E] text-zinc-200 shadow-sm lg:block"
+        className="sticky top-0 z-40 hidden border-b border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm lg:block"
       >
         <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-8">
           <div className="flex items-center justify-start gap-0 xl:gap-1">
@@ -75,7 +75,7 @@ export default function Footer() {
               href="/profile"
               aria-label="Profil"
               aria-current={pathname === '/profile' ? 'page' : undefined}
-              className={`ml-auto flex h-10 w-10 items-center justify-self-end rounded-full border border-white/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'bg-white/10 text-brand-500' : 'text-zinc-200 hover:border-white/50 hover:bg-white/10 hover:text-white'}`}
+              className={`ml-auto flex h-10 w-10 items-center justify-center justify-self-end rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'text-brand-500' : 'text-zinc-200 hover:text-brand-500'}`}
             >
               <User size={19} />
           </Link>
