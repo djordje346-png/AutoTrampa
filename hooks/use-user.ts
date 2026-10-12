@@ -14,16 +14,22 @@ export interface UserProfile {
   trades: number;
   rating: number;
   verified: boolean;
+  budget: number | null;
+  searchRadius: number;
+  noTopUp: boolean;
 }
 
 const EMPTY_USER: UserProfile = {
   id: '', name: '', email: '', city: '', phone: '', trades: 0, rating: 5, verified: false,
+  budget: null, searchRadius: 50, noTopUp: false,
 };
 
 /** In-memory only: profile and contact details must never leak between accounts. */
 export const userStore = createMemoryStore<UserProfile>(EMPTY_USER);
 const loadedProfiles = new Set<string>();
 const profileRequests = new Map<string, Promise<void>>();
+type ProfilePreferenceSave = { ok: true } | { ok: false; message: string };
+const profilePreferenceWrites = new Map<string, Promise<ProfilePreferenceSave>>();
 
 function profileFromAuth(user: NonNullable<ReturnType<typeof useAuth>['user']>): UserProfile {
   return {
@@ -52,7 +58,7 @@ function ensureProfileLoaded(
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from('profiles')
-      .select('name,city,phone,rating,trade_count,verified')
+      .select('name,city,phone,rating,trade_count,verified,budget,search_radius_km,no_top_up')
       .eq('id', activeUser.id)
       .maybeSingle();
     if (error) throw error;
@@ -66,6 +72,9 @@ function ensureProfileLoaded(
         rating: Number(data.rating ?? 5),
         trades: Number(data.trade_count ?? 0),
         verified: Boolean(data.verified),
+        budget: data.budget == null ? null : Number(data.budget),
+        searchRadius: Number(data.search_radius_km ?? 50),
+        noTopUp: Boolean(data.no_top_up ?? false),
       });
       return;
     }
@@ -173,7 +182,10 @@ export function useUser() {
       if (!data || data.id !== current.id || data.phone !== next.phone) {
         return { ok: false as const, message: 'Baza nije potvrdila sačuvan broj telefona.' };
       }
-      userStore.set(next);
+      const latest = userStore.get();
+      if (latest.id === current.id) {
+        userStore.set({ ...latest, name: next.name, city: next.city, phone: next.phone });
+      }
       return { ok: true as const };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Došlo je do greške pri čuvanju.';
@@ -182,5 +194,77 @@ export function useUser() {
     }
   }, []);
 
-  return { user, updateUser, mounted: storeReady && authReady, profileReady, profileError, reloadProfile };
+  const updateProfilePreferences = useCallback(async (
+    patch: Partial<Pick<UserProfile, 'budget' | 'searchRadius' | 'noTopUp'>>,
+  ) => {
+    const userId = userStore.get().id;
+    if (!userId) return { ok: false as const, message: 'Profil još nije učitan. Pokušaj ponovo.' };
+
+    const save = async (): Promise<ProfilePreferenceSave> => {
+      const current = userStore.get();
+      if (current.id !== userId) {
+        return { ok: false, message: 'Nalog se promenio. Osveži stranicu pa pokušaj ponovo.' };
+      }
+
+      const next = { ...current, ...patch };
+      if (
+        (!('budget' in patch) || next.budget === current.budget) &&
+        (!('searchRadius' in patch) || next.searchRadius === current.searchRadius) &&
+        (!('noTopUp' in patch) || next.noTopUp === current.noTopUp)
+      ) {
+        return { ok: true };
+      }
+
+      const values: Record<string, number | boolean | null> = {};
+      if ('budget' in patch) values.budget = next.budget;
+      if ('searchRadius' in patch) values.search_radius_km = next.searchRadius;
+      if ('noTopUp' in patch) values.no_top_up = next.noTopUp;
+
+      try {
+        const { data, error } = await getSupabase()
+          .from('profiles')
+          .update(values)
+          .eq('id', userId)
+          .select('id,budget,search_radius_km,no_top_up')
+          .single();
+        if (error) {
+          console.error('Korisničke preference nisu sačuvane u Supabase-u.', {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+          });
+          return { ok: false, message: error.message || 'Supabase nije prihvatio izmene.' };
+        }
+
+        const matches = data && data.id === userId &&
+          (!('budget' in patch) || (data.budget == null ? null : Number(data.budget)) === next.budget) &&
+          (!('searchRadius' in patch) || Number(data.search_radius_km) === next.searchRadius) &&
+          (!('noTopUp' in patch) || Boolean(data.no_top_up) === next.noTopUp);
+        if (!matches) return { ok: false, message: 'Baza nije potvrdila sačuvane preference.' };
+
+        const latest = userStore.get();
+        if (latest.id !== userId) {
+          return { ok: false, message: 'Nalog se promenio. Osveži stranicu pa pokušaj ponovo.' };
+        }
+        userStore.set({ ...latest, ...patch });
+        return { ok: true };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Došlo je do greške pri čuvanju.';
+        console.error('Korisničke preference nisu sačuvane.', { message });
+        return { ok: false, message };
+      }
+    };
+
+    const previous = profilePreferenceWrites.get(userId);
+    const queued = previous ? previous.then(save, save) : save();
+    profilePreferenceWrites.set(userId, queued);
+    try {
+      return await queued;
+    } finally {
+      if (profilePreferenceWrites.get(userId) === queued) profilePreferenceWrites.delete(userId);
+    }
+  }, []);
+
+  return { user, updateUser, updateProfilePreferences, mounted: storeReady && authReady, profileReady, profileError, reloadProfile };
 }

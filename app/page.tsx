@@ -23,7 +23,8 @@ import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
-import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
+import { FilterSheetBody } from '@/components/FilterPanel';
+import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
 
 type ViewMode = 'grid' | 'swipe';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -266,7 +267,7 @@ export default function FeedPage() {
                   Dodaj auto
                 </button>
               ) : showTrade && (
-              <div className="relative flex-shrink-0" ref={selectorRef}>
+              <div className={`relative flex-shrink-0 ${viewMode === 'grid' ? 'lg:hidden' : ''}`} ref={selectorRef}>
                 <button
                   onClick={() => setSelectorOpen(p => !p)}
                   className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface dark:border-zinc-800"
@@ -347,7 +348,7 @@ export default function FeedPage() {
 
         {/* Trade filter bar */}
         {showTrade && (
-        <div className="border-t border-surface dark:border-zinc-800/50">
+        <div className={`border-t border-surface dark:border-zinc-800/50 ${viewMode === 'grid' ? 'lg:hidden' : ''}`}>
           <div className="app-container flex items-center gap-1.5 py-2 overflow-x-auto scrollbar-hide">
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
@@ -634,19 +635,20 @@ export default function FeedPage() {
 
       {viewMode === 'grid' && (
         <div className="app-container flex flex-col gap-5 pt-3 lg:flex-row lg:items-start">
-          {/*
-            * Filters are for signed-in users. A visitor can still browse the
-            * whole feed, and the sign-in CTA explains what an account adds —
-            * showing a filter panel that mostly belongs to trade maths (which
-            * needs a car) would only invite dead ends.
-            */}
           {isLoggedIn && (
-            <FilterSidebar
+            <DesktopFeedSidebar
+              cars={cars}
+              selectedCar={selectedCar}
+              selectedId={selectedId}
+              selectCar={selectCar}
+              canAddCar={canAddCar}
+              onAddCar={() => setShowAddForm(true)}
               filters={filters}
-              update={updateFilters}
-              onReset={resetFilters}
+              updateFilters={updateFilters}
+              onTradeChange={(trade) => { updateFilters({ trade }); setSwipeIndex(0); }}
+              onResetFilters={resetFilters}
+              tradeOptions={TRADE_FILTERS}
               showTrade={showTrade}
-              className="w-full lg:sticky lg:top-24 lg:w-64 lg:flex-shrink-0"
             />
           )}
 

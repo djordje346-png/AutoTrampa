@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
@@ -27,16 +27,34 @@ export default function ProfileClient() {
   const { cars, selectedCar, addCar, selectCar, canAddCar, limit: garageLimit, mounted } = useGarage();
   const { theme, toggleTheme } = useTheme();
   const { user } = useUser();
-  const { preferences, update: updatePreferences, toggleBodyPref } = usePreferences();
+  const { preferences, update: updatePreferences, toggleBodyPref, mounted: preferencesReady } = usePreferences();
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
 
   const { radius, bodyPrefs, phoneAfterMatch, budget, noTopUp } = preferences;
+  const [radiusDraft, setRadiusDraft] = useState(radius);
+  const [budgetDraft, setBudgetDraft] = useState(budget == null ? '' : String(budget));
+  const noTopUpButtonRef = useRef<HTMLButtonElement>(null);
   const garageFull = !canAddCar;
   const activeCar = cars.length > 0 ? selectedCar : null;
   const usedBytes = mounted ? estimateUsageBytes() : 0;
   const usedPercent = Math.min(100, Math.round((usedBytes / STORAGE_BUDGET_BYTES) * 100));
+
+  useEffect(() => setRadiusDraft(radius), [radius]);
+  useEffect(() => setBudgetDraft(budget == null ? '' : String(budget)), [budget]);
+
+  async function savePreference(patch: Parameters<typeof updatePreferences>[0]) {
+    const result = await updatePreferences(patch);
+    if (!result.ok) toast.error(result.message || 'Preference nisu sačuvane. Pokušaj ponovo.');
+  }
+
+  function commitBudgetDraft() {
+    if (noTopUp) return;
+    const value = budgetDraft.trim();
+    const next = value === '' ? null : Math.max(0, Number(value));
+    if (next == null || (Number.isFinite(next) && next <= 100000)) void savePreference({ budget: next });
+  }
 
   async function handleAddCar(car: MyGarageCar) {
     const result = await addCar(car);
@@ -235,15 +253,18 @@ export default function ProfileClient() {
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Radijus pretrage</label>
-              <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">{radius} km</span>
+              <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">{preferencesReady ? `${radiusDraft} km` : 'Učitavanje…'}</span>
             </div>
             <input
               type="range"
               min={10}
               max={200}
               step={10}
-              value={radius}
-              onChange={e => updatePreferences({ radius: Number(e.target.value) })}
+              value={radiusDraft}
+              disabled={!preferencesReady}
+              onChange={e => setRadiusDraft(Number(e.target.value))}
+              onPointerUp={() => void savePreference({ radius: radiusDraft })}
+              onBlur={() => void savePreference({ radius: radiusDraft })}
               className="w-full h-2 bg-elevated rounded-full appearance-none cursor-pointer accent-brand-500"
             />
           </div>
@@ -252,7 +273,7 @@ export default function ProfileClient() {
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-zinc-400">Budžet za doplatu</label>
               <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">
-                {noTopUp ? 'Bez doplate' : budget != null ? formatEuro(budget) : 'Nije postavljen'}
+                {!preferencesReady ? 'Učitavanje…' : noTopUp ? 'Bez doplate' : budget != null ? formatEuro(budget) : 'Nije postavljen'}
               </span>
             </div>
             <input
@@ -260,12 +281,19 @@ export default function ProfileClient() {
               min={0}
               max={100000}
               step={500}
-              value={budget ?? ''}
-              disabled={noTopUp}
+              value={budgetDraft}
+              disabled={!preferencesReady || noTopUp}
               placeholder="npr. 3000"
-              onChange={e => {
-                const v = e.target.value;
-                updatePreferences({ budget: v === '' ? null : Math.max(0, Number(v)) });
+              onChange={e => setBudgetDraft(e.target.value)}
+              onBlur={(e) => {
+                if (e.relatedTarget === noTopUpButtonRef.current) return;
+                commitBudgetDraft();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                }
               }}
               className={`w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted outline-none transition-colors focus:border-brand-500/50 ${
                 noTopUp ? 'opacity-40 cursor-not-allowed' : ''
@@ -275,7 +303,9 @@ export default function ProfileClient() {
               Budžet služi da ti bolje predložimo oglase. Ne filtrira — sva vozila ostaju vidljiva, samo redosled se menja.
             </p>
             <button
-              onClick={() => updatePreferences({ noTopUp: !noTopUp, ...(noTopUp ? {} : { budget: null }) })}
+              ref={noTopUpButtonRef}
+              disabled={!preferencesReady}
+              onClick={() => void savePreference({ noTopUp: !noTopUp, ...(noTopUp ? {} : { budget: null }) })}
               className="mt-2.5 flex items-center gap-2.5 w-full text-left"
             >
               <span className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
@@ -297,6 +327,7 @@ export default function ProfileClient() {
                   <button
                     key={type}
                     onClick={() => toggleBodyPref(type)}
+                    disabled={!preferencesReady}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
                       active ? 'bg-brand-500 border-brand-500 text-zinc-950' : 'bg-elevated border-surface dark:border-zinc-800 text-app-secondary dark:text-zinc-400 hover:border-brand-500/40'
                     }`}
@@ -322,7 +353,8 @@ export default function ProfileClient() {
               <p className="text-xs text-app-muted mt-0.5">Broj ostaje skriven na oglasu dok se ne dogovorite</p>
             </div>
             <button
-              onClick={() => updatePreferences({ phoneAfterMatch: !phoneAfterMatch })}
+              onClick={() => void updatePreferences({ phoneAfterMatch: !phoneAfterMatch })}
+              disabled={!preferencesReady}
               aria-pressed={phoneAfterMatch}
               aria-label="Prikaži telefon samo posle dogovorene zamene"
               className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${

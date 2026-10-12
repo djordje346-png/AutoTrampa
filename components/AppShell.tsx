@@ -23,11 +23,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      <main id="sadrzaj" className="min-h-screen w-full pb-28 md:pb-24">
+      <Footer />
+      <main id="sadrzaj" className="min-h-screen w-full pb-28 md:pb-24 lg:pb-8">
         {children}
       </main>
 
-      <Footer />
       {promptOpen && <AuthOverlay />}
       <PhoneGateHost />
       <Toaster />
