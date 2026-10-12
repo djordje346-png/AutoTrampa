@@ -802,11 +802,11 @@ export default function FeedPage() {
                     className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900"
                   >
                     <div className="aspect-[16/9] w-full bg-hover-surface" />
-                    <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+                    <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4 desktop:px-4 desktop:py-3">
                       <div className="h-5 w-3/4 rounded bg-hover-surface" />
                       <div className="h-3 w-1/2 rounded bg-hover-surface" />
                       <div className="mt-1 h-3 w-2/3 rounded bg-hover-surface" />
-                      <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+                      <div className="mt-auto flex items-center justify-between gap-2 pt-3 desktop:pt-2.5">
                         <div className="h-5 w-20 rounded bg-hover-surface" />
                         <div className="h-5 w-24 rounded-full bg-hover-surface" />
                       </div>
@@ -844,7 +844,7 @@ export default function FeedPage() {
                 </div>
 
                 {/* Info */}
-                <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
+                <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3">
                   {/* Title and specs reserve consistent space so cards align in each row. */}
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
@@ -854,7 +854,7 @@ export default function FeedPage() {
                     </Link>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400">
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400 desktop:mt-2">
                       <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
                       <span className="text-app-muted/60" aria-hidden="true">·</span>
                       <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
@@ -870,7 +870,7 @@ export default function FeedPage() {
                    * the difference sits right next to it. No budget badge here —
                    * the budget only reorders the feed, it does not mark listings.
                    */}
-                  <div className="mt-auto pt-3.5">
+                  <div className="mt-auto pt-3.5 desktop:pt-2.5">
                     <div className="flex items-center justify-between gap-2">
                       <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
                       {tl && (

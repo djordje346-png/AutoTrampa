@@ -88,7 +88,7 @@ export function DesktopFeedOverview({
           onClick={() => setCarPickerOpen((open) => !open)}
           aria-expanded={carPickerOpen}
           aria-label={`Izabrano vozilo: ${selectedCar.brand} ${selectedCar.model}. Promeni vozilo`}
-          className="flex w-full min-w-0 items-center gap-3 rounded-xl text-left transition-colors hover:bg-elevated/70 dark:hover:bg-zinc-800/70"
+          className="flex w-full min-w-0 items-center gap-3 rounded-xl border border-surface bg-elevated p-2 text-left transition-colors hover:border-brand-500/30 hover:bg-hover-surface dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
         >
           <span className="h-14 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-zinc-950">
             {selectedCar.image ? (
