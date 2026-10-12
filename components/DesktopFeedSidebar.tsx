@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { CarFront, Check, ChevronDown, Fuel, Pencil, Plus, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
-import { FilterGroups } from '@/components/FilterPanel';
+import { DesktopCompactFilterGroups } from '@/components/FilterPanel';
 import { usePreferences } from '@/hooks/use-preferences';
 import { countActiveFilters, type SearchFilters, type TradeFilter } from '@/hooks/use-search-prefs';
 import { formatEuro } from '@/lib/cars';
@@ -31,8 +31,8 @@ interface DesktopFeedSidebarProps {
   showTrade: boolean;
 }
 
-const SECTION_TITLE = 'text-[10px] font-bold uppercase tracking-[0.14em] text-app-muted';
-const SURFACE = 'rounded-2xl border border-surface bg-card-surface p-4 dark:border-zinc-800 dark:bg-zinc-900';
+const SECTION_TITLE = 'text-[11px] font-bold text-app-primary dark:text-zinc-100';
+const SURFACE = 'rounded-xl border border-surface bg-card-surface p-3 dark:border-zinc-800 dark:bg-zinc-900';
 
 export function DesktopFeedSidebar({
   cars,
@@ -76,13 +76,13 @@ export function DesktopFeedSidebar({
   }
 
   return (
-    <aside className="hidden h-fit max-h-[calc(100vh-6rem)] w-64 flex-shrink-0 flex-col gap-3 overflow-y-auto overscroll-contain pb-2 lg:sticky lg:top-24 lg:flex">
+    <aside className="hidden h-fit max-h-[calc(100vh-6rem)] w-64 flex-shrink-0 flex-col gap-2 overflow-y-auto overscroll-contain pb-2 lg:sticky lg:top-24 lg:flex">
       <section className={SURFACE} aria-labelledby="desktop-my-car-title">
         <p id="desktop-my-car-title" className={SECTION_TITLE}>Moj auto</p>
 
         {selectedCar ? (
-          <div className="mt-3 flex min-w-0 items-center gap-3">
-            <div className="h-12 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-elevated">
+          <div className="mt-2 flex min-w-0 items-center gap-2 rounded-lg border border-surface bg-elevated p-2 dark:border-zinc-800">
+            <div className="h-10 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-card-surface">
               {selectedCar.image ? (
                 <img src={selectedCar.image} alt={`${selectedCar.brand} ${selectedCar.model}`} className="h-full w-full object-cover" />
               ) : (
@@ -90,14 +90,17 @@ export function DesktopFeedSidebar({
               )}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">
+              <p className="truncate text-[11px] font-bold text-app-primary dark:text-zinc-100">
                 {selectedCar.brand} {selectedCar.model}
               </p>
-              <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate text-[11px] text-app-muted">
+              <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate text-[9px] text-app-muted">
                 <span>{selectedCar.year}</span>
                 <span aria-hidden="true">·</span>
                 <Fuel size={11} className="flex-shrink-0" />
                 <span className="truncate">{fuelLabel(selectedCar.specs.fuelType)}</span>
+              </p>
+              <p className="mt-0.5 truncate text-[9px] text-app-muted">
+                {selectedCar.mileage.toLocaleString('sr-RS')} km · {selectedCar.specs.power}
               </p>
             </div>
           </div>
@@ -112,7 +115,7 @@ export function DesktopFeedSidebar({
           <button
             type="button"
             onClick={() => setCarPickerOpen((open) => !open)}
-            className="mt-3 flex w-full items-center justify-between rounded-xl border border-surface bg-elevated px-3 py-2 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300"
+            className="mt-2 flex w-full items-center justify-between rounded-lg border border-surface bg-card-surface px-2.5 py-2 text-[10px] font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300"
             aria-expanded={carPickerOpen}
           >
             Promeni auto
@@ -165,14 +168,14 @@ export function DesktopFeedSidebar({
       {showTrade && (
         <section className={SURFACE} aria-labelledby="desktop-trade-type-title">
           <p id="desktop-trade-type-title" className={SECTION_TITLE}>Tip zamene</p>
-          <div className="mt-3 grid grid-cols-2 gap-1.5">
+          <div className="mt-2 grid grid-cols-2 gap-1">
             {tradeOptions.map(({ key, label }) => (
               <button
                 type="button"
                 key={key}
                 onClick={() => onTradeChange(key)}
                 aria-pressed={filters.trade === key}
-                className={`min-h-9 rounded-xl border px-2 py-1.5 text-[10px] font-semibold leading-tight transition-colors ${
+                className={`min-h-8 rounded-full border px-2 py-1 text-[9px] font-semibold leading-tight transition-colors ${
                   filters.trade === key
                     ? 'border-brand-500 bg-brand-500 text-black'
                     : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300'
@@ -230,7 +233,7 @@ export function DesktopFeedSidebar({
       </section>
 
       <section className={SURFACE} aria-labelledby="desktop-filters-title">
-        <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="mb-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <p id="desktop-filters-title" className="text-sm font-bold text-app-primary dark:text-zinc-100">Filteri</p>
             {activeFilters > 0 && (
@@ -240,11 +243,11 @@ export function DesktopFeedSidebar({
           {activeFilters > 0 && (
             <button type="button" onClick={onResetFilters} className="flex items-center gap-1 text-[11px] font-semibold text-app-muted transition-colors hover:text-brand-text">
               <RotateCcw size={11} />
-              Očisti
+              Očisti sve
             </button>
           )}
         </div>
-        <FilterGroups filters={filters} update={updateFilters} showTrade={false} />
+        <DesktopCompactFilterGroups filters={filters} update={updateFilters} />
       </section>
     </aside>
   );

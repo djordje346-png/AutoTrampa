@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { CalendarDays, CarFront, ChevronDown, Fuel, Gauge, RotateCcw, SlidersHorizontal, Tag } from 'lucide-react';
 import { BRAND_NAMES } from '@/lib/car-brands';
 import { bodyLabel, fuelLabel } from '@/lib/labels';
 import { type BodyType, type FuelType } from '@/types';
@@ -39,6 +39,71 @@ const CHIP_ON = 'border-brand-500 bg-brand-500 text-black';
 const CHIP_OFF = 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-zinc-800';
 const NUM_INPUT =
   'h-10 w-full rounded-xl border border-surface bg-elevated px-3 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:text-zinc-100';
+
+/** Compact desktop-only controls matching the sidebar design; mobile keeps FilterGroups unchanged. */
+export function DesktopCompactFilterGroups({
+  filters,
+  update,
+}: Pick<FilterGroupsProps, 'filters' | 'update'>) {
+  const [open, setOpen] = useState<string | null>(null);
+  const rows = [
+    {
+      id: 'brand', label: 'Marka', value: filters.brand ?? 'Sve marke', icon: CarFront,
+      options: [{ value: null, label: 'Sve marke' }, ...BRAND_NAMES.map((value) => ({ value, label: value }))],
+      select: (value: string | null) => update({ brand: value }),
+    },
+    {
+      id: 'body', label: 'Karoserija', value: filters.bodyType ? bodyLabel(filters.bodyType) : 'Sve karoserije', icon: CarFront,
+      options: [{ value: null, label: 'Sve karoserije' }, ...BODY_TYPES.map((value) => ({ value, label: bodyLabel(value) }))],
+      select: (value: string | null) => update({ bodyType: value as BodyType | null }),
+    },
+    {
+      id: 'fuel', label: 'Gorivo', value: filters.fuelType ? fuelLabel(filters.fuelType) : 'Sve vrste goriva', icon: Fuel,
+      options: [{ value: null, label: 'Sve vrste goriva' }, ...FUEL_TYPES.map((value) => ({ value, label: fuelLabel(value) }))],
+      select: (value: string | null) => update({ fuelType: value as FuelType | null }),
+    },
+  ];
+
+  function range(label: string, min: number | null, max: number | null, key: 'price' | 'year' | 'km', icon: typeof Tag) {
+    const patch = key === 'price' ? { minKey: 'priceMin', maxKey: 'priceMax' } : key === 'year' ? { minKey: 'yearMin', maxKey: 'yearMax' } : { minKey: 'kmMin', maxKey: 'kmMax' };
+    const updateValue = (which: 'min' | 'max', raw: string) => {
+      const value = raw === '' ? null : Math.max(0, Number(raw));
+      update({ [which === 'min' ? patch.minKey : patch.maxKey]: value });
+    };
+    const Icon = icon;
+    return (
+      <div key={key} className="flex items-center gap-2 py-1.5">
+        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-zinc-950 dark:text-zinc-400"><Icon size={13} /></span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-semibold text-app-primary dark:text-zinc-100">{label}</p>
+          <div className="mt-1 flex items-center gap-1.5">
+            <input type="number" inputMode="numeric" min={0} placeholder="Od" aria-label={`${label}, od`} value={min ?? ''} onChange={(event) => updateValue('min', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[10px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
+            <span className="text-[10px] text-app-muted">–</span>
+            <input type="number" inputMode="numeric" min={0} placeholder="Do" aria-label={`${label}, do`} value={max ?? ''} onChange={(event) => updateValue('max', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[10px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="divide-y divide-surface dark:divide-zinc-800">
+      {rows.map(({ id, label, value, icon: Icon, options, select }) => (
+        <div key={id} className="relative py-1">
+          <button type="button" onClick={() => setOpen((current) => current === id ? null : id)} aria-expanded={open === id} className="flex w-full min-w-0 items-center gap-2 rounded-lg py-1.5 text-left transition-colors hover:bg-elevated dark:hover:bg-zinc-950">
+            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-zinc-950 dark:text-zinc-400"><Icon size={13} /></span>
+            <span className="min-w-0 flex-1"><span className="block text-[10px] font-semibold text-app-primary dark:text-zinc-100">{label}</span><span className="block truncate text-[9px] text-app-muted">{value}</span></span>
+            <ChevronDown size={13} className={`flex-shrink-0 text-app-muted transition-transform ${open === id ? 'rotate-180' : ''}`} />
+          </button>
+          {open === id && <div className="absolute left-8 right-0 top-full z-20 max-h-48 overflow-y-auto rounded-lg border border-surface bg-card-surface p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">{options.map((option) => <button type="button" key={option.value ?? 'all'} onClick={() => { select(option.value); setOpen(null); }} className="block w-full truncate rounded-md px-2 py-1.5 text-left text-[10px] text-app-secondary hover:bg-elevated hover:text-app-primary dark:text-zinc-300 dark:hover:bg-zinc-800">{option.label}</button>)}</div>}
+        </div>
+      ))}
+      {range('Cena (€)', filters.priceMin, filters.priceMax, 'price', Tag)}
+      {range('Godište', filters.yearMin, filters.yearMax, 'year', CalendarDays)}
+      {range('Kilometraža', filters.kmMin, filters.kmMax, 'km', Gauge)}
+    </div>
+  );
+}
 
 export function FilterGroups({ filters, update, showTrade }: FilterGroupsProps) {
   const [showAllBrands, setShowAllBrands] = useState(false);
