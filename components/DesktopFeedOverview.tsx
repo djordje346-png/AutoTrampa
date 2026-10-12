@@ -19,7 +19,7 @@ interface DesktopFeedOverviewProps {
   onOpenSwipe: () => void;
 }
 
-const SEGMENT = 'min-w-0 px-4 py-3 sm:px-5 desktop:px-5 desktop:py-3.5';
+const SEGMENT = 'min-w-0 px-4 py-3 sm:px-5 desktop:px-5 desktop:py-2.5';
 
 export function DesktopFeedOverview({
   cars,
@@ -82,15 +82,15 @@ export function DesktopFeedOverview({
   return (
     <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900 desktop:grid-cols-[minmax(0,1.25fr)_minmax(0,.75fr)_minmax(0,1fr)_minmax(190px,.8fr)]">
       <div className={`${SEGMENT} relative min-w-0`} ref={carPickerRef}>
-        <p className="mb-2 text-xs font-semibold text-app-secondary dark:text-zinc-400">Tvoj auto za zamenu</p>
+        <p className="mb-1.5 text-xs font-semibold text-app-secondary dark:text-zinc-400">Tvoj auto za zamenu</p>
         <button
           type="button"
           onClick={() => setCarPickerOpen((open) => !open)}
           aria-expanded={carPickerOpen}
           aria-label={`Izabrano vozilo: ${selectedCar.brand} ${selectedCar.model}. Promeni vozilo`}
-          className="flex w-full min-w-0 items-center gap-3 rounded-xl border border-surface bg-elevated p-2 text-left transition-colors hover:border-brand-500/30 hover:bg-hover-surface dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+          className="flex w-full min-w-0 items-center gap-3 rounded-xl border border-surface bg-transparent p-1.5 text-left transition-colors hover:border-brand-500/40 hover:bg-elevated/40 dark:border-zinc-800 dark:hover:bg-zinc-950/50"
         >
-          <span className="h-14 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-zinc-950">
+          <span className="h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-zinc-950">
             {selectedCar.image ? (
               <img src={selectedCar.image} alt="" className="h-full w-full object-cover" />
             ) : (
