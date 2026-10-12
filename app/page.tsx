@@ -18,6 +18,7 @@ import { usePreferences } from '@/hooks/use-preferences';
 import { useFilteredCars } from '@/hooks/use-filtered-cars';
 import { countActiveFilters, useSearchPrefs, type SearchFilters } from '@/hooks/use-search-prefs';
 import { useAuth } from '@/hooks/use-auth';
+import { useUser } from '@/hooks/use-user';
 import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
@@ -25,6 +26,7 @@ import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { FilterSheetBody } from '@/components/FilterPanel';
 import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
+import { useDesktopHeaderActions } from '@/components/DesktopHeaderActions';
 
 type ViewMode = 'grid' | 'swipe';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -43,12 +45,14 @@ export default function FeedPage() {
   const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
   const { saved, save } = useSaved();
   const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
+  const { user: profile, profileReady } = useUser();
   const { reviewedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const { setAction: setDesktopHeaderAction } = useDesktopHeaderActions();
   const [swipeIndex, setSwipeIndex] = useState(0);
   const { preferences } = usePreferences();
   const budget = preferences.budget;
@@ -60,6 +64,32 @@ export default function FeedPage() {
   const [sessionReviewedIds, setSessionReviewedIds] = useState<Set<string>>(new Set());
   const selectorRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number } | null>(null);
+
+  useEffect(() => {
+    setDesktopHeaderAction(
+      <div className="flex items-center rounded-lg border border-surface bg-elevated p-0.5 dark:border-zinc-800" aria-label="Način prikaza oglasa">
+        <button
+          type="button"
+          onClick={() => setViewMode('grid')}
+          className={`flex h-8 w-9 items-center justify-center rounded-md transition-all duration-200 ${viewMode === 'grid' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'}`}
+          aria-label="Prikaz mreže"
+          aria-pressed={viewMode === 'grid'}
+        >
+          <LayoutGrid size={15} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode('swipe')}
+          className={`flex h-8 w-9 items-center justify-center rounded-md transition-all duration-200 ${viewMode === 'swipe' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'}`}
+          aria-label="Svajp režim"
+          aria-pressed={viewMode === 'swipe'}
+        >
+          <Flame size={15} />
+        </button>
+      </div>,
+    );
+    return () => setDesktopHeaderAction(null);
+  }, [setDesktopHeaderAction, viewMode]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -113,6 +143,15 @@ export default function FeedPage() {
   function openOffer(car: Car) {
     if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => requestPhoneAction(() => setOfferCar(car)))) return;
     requestPhoneAction(() => setOfferCar(car));
+  }
+
+  function handleAddListing() {
+    const continueToListing = () => {
+      const savedPhone = profileReady && profile.id === userId ? profile.phone : null;
+      requestPhoneAction(() => setShowAddForm(true), savedPhone);
+    };
+    if (!requireAuth('Prijavi se i dodaj svoj oglas', continueToListing)) return;
+    continueToListing();
   }
 
   async function handleAddCar(form: MyGarageCar) {
@@ -235,7 +274,7 @@ export default function FeedPage() {
 
             <div className="flex items-center gap-2">
               {/* View mode toggle */}
-              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface dark:border-zinc-800">
+              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface dark:border-zinc-800 lg:hidden">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
@@ -259,7 +298,7 @@ export default function FeedPage() {
               {/* Tvoje Vozilo dropdown */}
               {showTrade && cars.length === 0 ? (
                 <button
-                  onClick={() => setShowAddForm(true)}
+                  onClick={handleAddListing}
                   className="flex flex-shrink-0 items-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-text transition-all hover:bg-brand-500/15"
                   aria-label="Dodaj auto u svoju garažu"
                 >
@@ -331,7 +370,7 @@ export default function FeedPage() {
                     </div>
                     <div className="border-t border-surface dark:border-zinc-800 p-2">
                       <button
-                        onClick={() => { setSelectorOpen(false); setShowAddForm(true); }}
+                        onClick={() => { setSelectorOpen(false); handleAddListing(); }}
                         className="w-full flex items-center justify-center gap-2 text-brand-text text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-zinc-800 hover:bg-hover-surface transition-all"
                       >
                         <Plus size={15} />
@@ -390,7 +429,7 @@ export default function FeedPage() {
             </p>
           </div>
           <button
-            onClick={() => setShowAddForm(true)}
+            onClick={handleAddListing}
             className="btn-primary flex-shrink-0 text-xs"
           >
             Dodaj auto
@@ -642,7 +681,7 @@ export default function FeedPage() {
               selectedId={selectedId}
               selectCar={selectCar}
               canAddCar={canAddCar}
-              onAddCar={() => setShowAddForm(true)}
+              onAddCar={handleAddListing}
               filters={filters}
               updateFilters={updateFilters}
               onTradeChange={(trade) => { updateFilters({ trade }); setSwipeIndex(0); }}

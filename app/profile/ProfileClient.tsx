@@ -8,6 +8,7 @@ import { SignedOutPage } from '@/components/SignedOut';
 import { useGarage } from '@/hooks/use-garage';
 import { useTheme } from '@/hooks/use-theme';
 import { useUser, initials } from '@/hooks/use-user';
+import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { usePreferences } from '@/hooks/use-preferences';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { estimateUsageBytes } from '@/lib/storage';
@@ -23,10 +24,10 @@ const BODY_TYPE_PREFS: BodyType[] = ['Sedan', 'SUV', 'Caravan', 'Coupe'];
 const STORAGE_BUDGET_BYTES = 5 * 1024 * 1024;
 
 export default function ProfileClient() {
-  const { logout, isLoggedIn, mounted: authReady } = useAuth();
+  const { logout, isLoggedIn, userId, mounted: authReady } = useAuth();
   const { cars, selectedCar, addCar, selectCar, canAddCar, limit: garageLimit, mounted } = useGarage();
   const { theme, toggleTheme } = useTheme();
-  const { user } = useUser();
+  const { user, profileReady } = useUser();
   const { preferences, update: updatePreferences, toggleBodyPref, mounted: preferencesReady } = usePreferences();
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -69,6 +70,10 @@ export default function ProfileClient() {
     selectCar(result.id ?? car.id);
     setShowAddForm(false);
     toast.success('Vozilo dodato u garažu.');
+  }
+
+  function openAddCarForm() {
+    requestPhoneAction(() => setShowAddForm(true), profileReady && user.id === userId ? user.phone : null);
   }
 
   if (authReady && !isLoggedIn) {
@@ -202,7 +207,7 @@ export default function ProfileClient() {
             </div>
           ) : (
             <button
-              onClick={() => setShowAddForm(true)}
+              onClick={openAddCarForm}
               className="w-full flex items-center justify-center gap-2 border border-dashed border-surface dark:border-zinc-800 hover:border-brand-500/50 hover:bg-brand-500/5 text-brand-text text-sm font-semibold rounded-xl py-3 transition-all duration-200"
             >
               <Plus size={16} strokeWidth={2.5} />

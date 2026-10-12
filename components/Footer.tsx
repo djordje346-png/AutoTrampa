@@ -6,6 +6,7 @@ import { CarFront, Chrome as Home, Heart, Warehouse, MessageCircle, User } from 
 import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
+import { useDesktopHeaderActions } from '@/components/DesktopHeaderActions';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Početna', icon: Home },
@@ -29,6 +30,7 @@ export default function Footer() {
   const { totalUnread, mounted: messagesReady } = useMessages({ poll: false });
   const { count: savedCount, mounted: savedReady } = useSaved();
   const { isLoggedIn, mounted: authReady } = useAuth();
+  const { action: desktopAction } = useDesktopHeaderActions();
 
   function badgeFor(href: string): number {
     // Unread messages sit behind sign-in; badging them for a visitor who would
@@ -44,7 +46,7 @@ export default function Footer() {
         aria-label="Glavna navigacija"
         className="sticky top-0 z-40 hidden border-b border-surface bg-card-surface/95 text-app-secondary shadow-sm backdrop-blur-xl lg:block"
       >
-        <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-8">
+        <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-8">
           <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-app-primary dark:text-zinc-100">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-black"><CarFront size={20} strokeWidth={2.2} /></span>
             <span className="text-base font-bold tracking-tight">AutoTrampa</span>
@@ -71,7 +73,7 @@ export default function Footer() {
               );
             })}
           </div>
-          <div aria-hidden="true" />
+          <div className="flex justify-end">{desktopAction}</div>
         </div>
       </nav>
       <nav

@@ -8,7 +8,11 @@ interface PhoneGateState {
 
 const phoneGateStore = createMemoryStore<PhoneGateState | null>(null);
 
-export function requestPhoneAction(resume: () => void) {
+export function requestPhoneAction(resume: () => void, phone?: string | null) {
+  if (phone?.trim()) {
+    resume();
+    return;
+  }
   phoneGateStore.set({ resume });
 }
 

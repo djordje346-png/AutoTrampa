@@ -13,7 +13,6 @@ import { getCarImages } from '@/types';
 import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
 import { bodyLabel, fuelLabel, transmissionLabel } from '@/lib/labels';
 import { userStore, shortName } from '@/hooks/use-user';
-import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
 
@@ -812,7 +811,7 @@ export default function CarFormComponent({
       onSave(car);
       return;
     }
-    requestPhoneAction(() => onSave(car));
+    onSave(car);
   }
 
   if (!mounted) {

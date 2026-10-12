@@ -11,13 +11,16 @@ import { MyGarageCar, getCarImages } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
+import { useUser } from '@/hooks/use-user';
+import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { SignedOutPage } from '@/components/SignedOut';
 import CarForm from '@/components/CarForm';
 import { ImageLightbox } from '@/components/ImageLightbox';
 
 export default function GarageClient() {
   const { cars, selectedId, selectCar, addCar, updateCar, removeCar, canAddCar, limit, mounted, ownerPhone } = useGarage();
-  const { isLoggedIn, mounted: authReady } = useAuth();
+  const { isLoggedIn, userId, mounted: authReady } = useAuth();
+  const { user: profile, profileReady } = useUser();
   const [showForm, setShowForm] = useState(false);
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
   const [previewCar, setPreviewCar] = useState<MyGarageCar | null>(null);
@@ -33,7 +36,7 @@ export default function GarageClient() {
       return;
     }
     setEditingCar(null);
-    setShowForm(true);
+    requestPhoneAction(() => setShowForm(true), profileReady && profile.id === userId ? profile.phone : null);
   }
 
   function openEditForm(car: MyGarageCar) {
