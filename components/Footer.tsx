@@ -15,10 +15,10 @@ const NAV_ITEMS = [
   { href: '/profile', label: 'Profil', icon: User },
 ] as const;
 
-function Badge({ count }: { count: number }) {
+function Badge({ count, desktop = false }: { count: number; desktop?: boolean }) {
   if (count <= 0) return null;
   return (
-    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ring-[hsl(var(--surface-card))]">
+    <span className={`absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ${desktop ? 'ring-[#24172E]' : 'ring-[hsl(var(--surface-card))]'}`}>
       {count > 9 ? '9+' : count}
     </span>
   );
@@ -42,47 +42,43 @@ export default function Footer() {
     <>
       <nav
         aria-label="Glavna navigacija"
-        className="sticky top-0 z-40 hidden border-b border-surface bg-card-surface text-app-secondary shadow-sm dark:border-zinc-800 dark:bg-zinc-950 lg:block"
+        className="sticky top-0 z-40 hidden border-b border-white/10 bg-[#24172E] text-zinc-200 shadow-sm lg:block"
       >
-        <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-8">
-          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-app-primary dark:text-zinc-100">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-black"><CarFront size={20} strokeWidth={2.2} /></span>
-            <span className="text-base font-bold tracking-tight">AutoTrampa</span>
-          </Link>
-          <div className="flex items-center justify-end gap-2">
-            {NAV_ITEMS.filter(({ href }) => href !== '/profile' && href !== '/messages').map(({ href, label }) => {
+        <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-8">
+          <div className="flex items-center justify-start gap-0 xl:gap-1">
+            {NAV_ITEMS.filter(({ href }) => href !== '/profile').map(({ href, label, icon: Icon }) => {
               const active = pathname === href;
+              const count = badgeFor(href);
               return (
                 <Link
                   key={href}
                   href={href}
                   aria-current={active ? 'page' : undefined}
-                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                    active ? 'bg-brand-500/10 text-brand-text' : 'text-app-muted hover:bg-elevated hover:text-app-primary'
+                  className={`relative flex items-center gap-2 rounded-lg px-1.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 xl:px-3 xl:text-sm ${
+                    active ? 'bg-white/10 text-brand-500' : 'text-zinc-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
+                  <span className="relative flex">
+                    <Icon size={17} strokeWidth={active ? 2.4 : 1.9} />
+                    <Badge count={count} desktop />
+                  </span>
                   {label}
                 </Link>
               );
             })}
-            <Link
-              href="/messages"
-              aria-label="Poruke"
-              aria-current={pathname === '/messages' ? 'page' : undefined}
-              className={`relative ml-1 flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/messages' ? 'border-brand-500/40 bg-brand-500/10 text-brand-text' : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:text-brand-text dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'}`}
-            >
-              <MessageCircle size={19} />
-              <Badge count={badgeFor('/messages')} />
-            </Link>
-            <Link
+          </div>
+          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center justify-self-center gap-2 text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-black"><CarFront size={20} strokeWidth={2.2} /></span>
+            <span className="text-base font-bold tracking-tight">AutoTrampa</span>
+          </Link>
+          <Link
               href="/profile"
               aria-label="Profil"
               aria-current={pathname === '/profile' ? 'page' : undefined}
-              className={`ml-1 flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'border-brand-500/40 bg-brand-500/10 text-brand-text' : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:text-brand-text dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'}`}
+              className={`ml-auto flex h-10 w-10 items-center justify-self-end rounded-full border border-white/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'bg-white/10 text-brand-500' : 'text-zinc-200 hover:border-white/50 hover:bg-white/10 hover:text-white'}`}
             >
               <User size={19} />
-            </Link>
-          </div>
+          </Link>
         </div>
       </nav>
       <nav
