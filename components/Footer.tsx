@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CarFront, Chrome as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
+import { Chrome as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
+import BrandLockup from '@/components/BrandLockup';
 import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
@@ -46,8 +47,7 @@ export default function Footer() {
       >
         <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-8">
           <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-white">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-black"><CarFront size={20} strokeWidth={2.2} /></span>
-            <span className="text-base font-bold tracking-tight">AutoTrampa</span>
+            <BrandLockup />
           </Link>
           <div className="flex items-center justify-end gap-0 xl:gap-1">
             {NAV_ITEMS.filter(({ href }) => href !== '/profile').map(({ href, label, icon: Icon }) => {

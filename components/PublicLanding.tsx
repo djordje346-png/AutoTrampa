@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import type { Car } from '@/types';
+import BrandLockup from '@/components/BrandLockup';
 import { carSubtitle } from '@/lib/car-row';
 import { formatEuro, formatKm } from '@/lib/cars';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -42,13 +43,10 @@ const MATCH_STEPS = [
   { icon: Sparkles, title: 'Preporuke', description: 'Zamene za tebe' },
 ] as const;
 
-function BrandMark() {
-  return (
-    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-black">
-      <CarFront size={20} strokeWidth={2.2} />
-    </span>
-  );
-}
+const landingNavClass = (active: boolean) =>
+  `relative flex items-center gap-2 rounded-lg px-1.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 xl:px-3 xl:text-sm ${
+    active ? 'bg-white/10 text-brand-500' : 'text-zinc-300 hover:bg-white/10 hover:text-white'
+  }`;
 
 function CarPhoto({
   src,
@@ -173,6 +171,7 @@ function ListingCard({ car }: { car: Car }) {
 
 export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn }: PublicLandingProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   // The shared marketplace hook also includes demo seed cars for signed-in
   // browsing. Public examples should always be real owner listings.
   const publicCars = cars.filter((car) => Boolean(car.ownerId));
@@ -185,44 +184,42 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
 
   return (
     <div className="min-h-screen overflow-hidden bg-white text-zinc-950">
-      <header className="relative z-30 border-b border-zinc-200 bg-white">
-        <div className="mx-auto flex h-[4.25rem] w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-[4.75rem] lg:px-8">
-          <Link href="/" aria-label="AutoTrampa — početna" className="flex shrink-0 items-center gap-2 text-zinc-950">
-            <BrandMark />
-            <span className="text-base font-bold tracking-tight sm:text-lg">AutoTrampa</span>
+      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <Link href="/" aria-label="AutoTrampa — početna" className="flex shrink-0 items-center gap-2 text-white">
+            <BrandLockup />
           </Link>
 
-          <nav aria-label="Glavni meni" className="hidden items-center gap-7 desktop:flex">
-            <a href="#kako-funkcionise" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
-            <Link href="/search" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Oglasi</Link>
-            <a href="#smart-match" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Zašto AutoTrampa</a>
-          </nav>
-
-          <div className="hidden items-center gap-3 desktop:flex">
-            <button type="button" onClick={onSignIn} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950">Prijavi se</button>
-            <button type="button" onClick={onAddCar} className="btn-primary whitespace-nowrap text-sm">Dodaj svoj auto <ArrowRight size={16} /></button>
+          <div className="hidden items-center justify-end gap-0 lg:flex xl:gap-1">
+            <nav aria-label="Glavni meni" className="flex items-center gap-0 xl:gap-1">
+              <a href="#kako-funkcionise" onClick={() => setActiveSection('how')} aria-current={activeSection === 'how' ? 'location' : undefined} className={landingNavClass(activeSection === 'how')}>Kako funkcioniše</a>
+              <Link href="/search" className={landingNavClass(false)}>Oglasi</Link>
+              <a href="#smart-match" onClick={() => setActiveSection('why')} aria-current={activeSection === 'why' ? 'location' : undefined} className={landingNavClass(activeSection === 'why')}>Zašto AutoTrampa</a>
+            </nav>
+            <button type="button" onClick={onSignIn} className={landingNavClass(false)}>Prijavi se</button>
+            <button type="button" onClick={onAddCar} className="btn-primary ml-2 whitespace-nowrap text-sm">Dodaj svoj auto <ArrowRight size={16} /></button>
           </div>
 
-          <div className="flex items-center gap-2 desktop:hidden">
-            <button type="button" onClick={onSignIn} className="rounded-lg px-2.5 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 sm:text-sm">Prijavi se</button>
+          <div className="flex items-center gap-2 lg:hidden">
+            <button type="button" onClick={onSignIn} className="rounded-lg px-2.5 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:text-sm">Prijavi se</button>
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
               aria-label={menuOpen ? 'Zatvori meni' : 'Otvori meni'}
               aria-expanded={menuOpen}
               aria-controls="public-mobile-menu"
-              className="flex h-10 w-10 items-center justify-center rounded-xl text-zinc-800 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-zinc-200 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               {menuOpen ? <X size={21} /> : <Menu size={21} />}
             </button>
           </div>
         </div>
         {menuOpen && (
-          <nav id="public-mobile-menu" aria-label="Mobilni meni" className="absolute inset-x-0 top-full border-b border-zinc-200 bg-white p-4 shadow-lg desktop:hidden">
+          <nav id="public-mobile-menu" aria-label="Mobilni meni" className="absolute inset-x-0 top-full border-b border-zinc-800 bg-zinc-900 p-4 shadow-lg lg:hidden">
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
-              <a href="#kako-funkcionise" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
-              <Link href="/search" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Oglasi</Link>
-              <a href="#smart-match" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Zašto AutoTrampa</a>
+              <a href="#kako-funkcionise" onClick={() => { setActiveSection('how'); closeMenu(); }} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
+              <Link href="/search" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Oglasi</Link>
+              <a href="#smart-match" onClick={() => { setActiveSection('why'); closeMenu(); }} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Zašto AutoTrampa</a>
               <button type="button" onClick={() => { closeMenu(); onAddCar(); }} className="btn-primary mt-2 w-full text-sm">Dodaj svoj auto <ArrowRight size={16} /></button>
             </div>
           </nav>
@@ -355,8 +352,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
       <footer className="border-t border-zinc-800 bg-zinc-900 text-zinc-400">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-6 desktop:px-8">
           <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-            <BrandMark />
-            <span className="font-bold tracking-tight">AutoTrampa</span>
+            <BrandLockup />
           </Link>
           <nav aria-label="Linkovi u podnožju" className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
             <a href="#kako-funkcionise" className="hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
