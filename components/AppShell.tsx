@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { DesktopFooter } from '@/components/DesktopFooter';
 import { Toaster } from '@/components/ui/sonner';
 import PhoneGateHost from '@/components/PhoneGateHost';
+import PublicHeader from '@/components/PublicHeader';
 
 /**
  * Browsing is public: listings render on the server so they can be shared and
@@ -15,8 +16,9 @@ import PhoneGateHost from '@/components/PhoneGateHost';
  */
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { promptOpen, isLoggedIn } = useAuth();
+  const { promptOpen, isLoggedIn, requireAuth } = useAuth();
   const isPublicLanding = pathname === '/' && !isLoggedIn;
+  const isPublicSearch = pathname === '/search' && !isLoggedIn;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-app text-app-primary dark:bg-zinc-950 dark:text-zinc-100">
@@ -27,7 +29,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      {!isPublicLanding && <Footer />}
+      {!isPublicLanding && <Footer hideDesktopHeader={isPublicSearch} />}
+      {isPublicSearch && (
+        <div className="hidden lg:block">
+          <PublicHeader
+            onAddCar={() => requireAuth('Prijavi se i dodaj svoj oglas', undefined, '/?intent=add-car')}
+            onSignIn={() => requireAuth('Prijavi se na AutoTrampu')}
+            onRegister={() => requireAuth('Napravi AutoTrampa nalog', undefined, undefined, 'register')}
+          />
+        </div>
+      )}
       <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : 'pb-28 md:pb-24 lg:pb-8'}`}>
         {children}
       </main>

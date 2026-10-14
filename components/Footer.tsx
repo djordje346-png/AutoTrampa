@@ -25,7 +25,7 @@ function Badge({ count, desktop = false }: { count: number; desktop?: boolean })
   );
 }
 
-export default function Footer() {
+export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeader?: boolean }) {
   const pathname = usePathname();
   const { totalUnread, mounted: messagesReady } = useMessages({ poll: false });
   const { count: savedCount, mounted: savedReady } = useSaved();
@@ -43,7 +43,7 @@ export default function Footer() {
     <>
       <nav
         aria-label="Glavna navigacija"
-        className="sticky top-0 z-40 hidden border-b border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm lg:block"
+        className={`sticky top-0 z-40 hidden border-b border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
       >
         <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-8">
           <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-white">
