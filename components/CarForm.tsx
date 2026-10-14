@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Image as ImageIcon, X } from 'lucide-react';
 import type {
   BodyType,
   CarForm as CarFormType,
@@ -10,13 +11,14 @@ import type {
   Transmission,
 } from '@/types';
 import { getCarImages } from '@/types';
-import { CAR_BRANDS, BRAND_NAMES } from '@/lib/car-brands';
+import { CAR_MAKES, getCarModels, isCataloguedModel } from '@/lib/car-catalog';
 import { bodyLabel, fuelLabel, transmissionLabel } from '@/lib/labels';
 import { userStore, shortName } from '@/hooks/use-user';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
 import { CitySelect } from '@/components/CitySelect';
 import { getSerbianPlace } from '@/lib/city-coordinates';
+import { VehicleCombobox } from '@/components/VehicleCombobox';
 
 const BODY_TYPES: BodyType[] = [
   'Sedan',
@@ -62,7 +64,8 @@ const EMPTY_FORM: CarFormType = {
 };
 
 const CURRENT_YEAR = new Date().getFullYear();
-const MIN_YEAR = 1950;
+const MIN_YEAR = 1886;
+type FormStep = 1 | 2 | 3;
 
 const DEFAULT_IMAGE =
   'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
@@ -104,6 +107,19 @@ function autoDescription(form: CarFormType): string {
     [form.power, form.fuelType].filter(Boolean).join(' '),
   ].filter(Boolean);
   return `${bits.join(' · ')}.`;
+}
+
+export function validateCarFormStep(
+  form: CarFormType,
+  step: FormStep,
+): Partial<Record<keyof CarFormType, string>> {
+  const errors = validateCarForm(form);
+  const keys: (keyof CarFormType)[] = step === 1
+    ? ['brand', 'model', 'year']
+    : step === 2
+      ? ['price', 'mileage', 'city']
+      : [];
+  return Object.fromEntries(keys.filter((key) => errors[key]).map((key) => [key, errors[key]])) as Partial<Record<keyof CarFormType, string>>;
 }
 
 export function validateCarForm(form: CarFormType): Partial<Record<keyof CarFormType, string>> {
@@ -196,6 +212,7 @@ interface CarFormFieldsProps {
   images: string[];
   setImages: (images: string[]) => void;
   errors: Partial<Record<keyof CarFormType, string>>;
+  step: FormStep;
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -213,7 +230,11 @@ function CarFormFields({
   images,
   setImages,
   errors,
+  step,
 }: CarFormFieldsProps) {
+  const [manualModelSelected, setManualModelSelected] = useState(false);
+  const [openEquipmentGroups, setOpenEquipmentGroups] = useState<Set<string>>(() => new Set(['safety']));
+
   function update<K extends keyof CarFormType>(
     key: K,
     value: CarFormType[K],
@@ -230,6 +251,7 @@ function CarFormFields({
       brand,
       model: '',
     });
+    setManualModelSelected(false);
   }
 
   function toggleEquipment(id: string) {
@@ -237,6 +259,15 @@ function CarFormFields({
       ? form.equipment.filter((e) => e !== id)
       : [...form.equipment, id];
     update('equipment', next);
+  }
+
+  function toggleEquipmentGroup(id: string) {
+    setOpenEquipmentGroups((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
   const inputClass =
@@ -249,123 +280,101 @@ function CarFormFields({
 
   const labelClass =
     'mb-2 block text-xs font-medium text-app-muted';
+  const modelOptions = getCarModels(form.brand);
+  const showManualModel = manualModelSelected || Boolean(
+    form.model.trim() && !isCataloguedModel(form.brand, form.model),
+  );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
 
-      {/* OSNOVNI PODACI */}
-      <section>
-        <div className="mb-4">
-          <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
-            Osnovni podaci
-          </h2>
+      {step === 1 && (
+        <>
+          <section>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:grid-cols-3">
+              <div>
+                <VehicleCombobox
+                  id="car-brand"
+                  label="Marka"
+                  value={form.brand}
+                  options={CAR_MAKES}
+                  placeholder="Pretraži marku"
+                  invalid={Boolean(errors.brand)}
+                  className={inputClass}
+                  onChange={updateBrand}
+                />
+                <FieldError message={errors.brand} />
+              </div>
+              <div>
+                {showManualModel ? (
+                  <>
+                    <label htmlFor="car-model-manual" className={labelClass}>Model *</label>
+                    <input
+                      id="car-model-manual"
+                      value={form.model}
+                      onChange={(event) => update('model', event.target.value)}
+                      placeholder="Unesi naziv modela"
+                      aria-invalid={Boolean(errors.model)}
+                      className={`${inputClass} ${errors.model ? errorRing : ''}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setManualModelSelected(false);
+                        update('model', '');
+                      }}
+                      className="mt-1.5 text-left text-[11px] font-medium text-brand-text hover:underline"
+                    >
+                      Izaberi model iz kataloga
+                    </button>
+                  </>
+                ) : (
+                  <VehicleCombobox
+                    id="car-model"
+                    label="Model"
+                    value={form.model}
+                    options={modelOptions}
+                    placeholder="Pretraži model"
+                    disabled={!form.brand}
+                    invalid={Boolean(errors.model)}
+                    className={inputClass}
+                    onChange={(model) => update('model', model)}
+                    onChooseOther={(searchText) => {
+                      setManualModelSelected(true);
+                      update('model', searchText);
+                    }}
+                  />
+                )}
+                <FieldError message={errors.model} />
+              </div>
+              <div>
+                <label htmlFor="car-year" className={labelClass}>Godina</label>
+                <input
+                  id="car-year"
+                  value={form.year}
+                  onChange={(event) => update('year', event.target.value.replace(/\D/g, '').slice(0, 4))}
+                  placeholder="npr. 2005"
+                  inputMode="numeric"
+                  aria-invalid={Boolean(errors.year)}
+                  className={`${inputClass} ${errors.year ? errorRing : ''}`}
+                />
+                <FieldError message={errors.year} />
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-x-1 text-[10px] text-app-muted">
+              <span>Podaci o vozilima:</span>
+              <a href="https://vehiclesdb.com" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2 hover:text-brand-text">VehiclesDB</a>
+              <span aria-hidden="true">·</span>
+              <a href="/attribution/vehiclesdb-2026.10.3.md" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-brand-text">Licenca i izvori</a>
+            </div>
+          </section>
+        </>
+      )}
 
-          <p className="mt-1 text-xs text-app-muted">
-            Unesite osnovne informacije o vozilu.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-          <div>
-            <label className={labelClass}>
-              Marka *
-            </label>
-
-            <select
-              value={form.brand}
-              onChange={(e) =>
-                updateBrand(e.target.value)
-              }
-              aria-invalid={Boolean(errors.brand)}
-              className={`${selectClass} ${errors.brand ? errorRing : ''}`}
-            >
-              <option value="">
-                Izaberi marku...
-              </option>
-
-              {BRAND_NAMES.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </select>
-            <FieldError message={errors.brand} />
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Model *
-            </label>
-
-            <select
-              value={form.model}
-              onChange={(e) =>
-                update('model', e.target.value)
-              }
-              disabled={!form.brand}
-              aria-invalid={Boolean(errors.model)}
-              className={`${selectClass} ${errors.model ? errorRing : ''}`}
-            >
-              <option value="">
-                {form.brand
-                  ? 'Izaberi model...'
-                  : 'Prvo izaberi marku'}
-              </option>
-
-              {form.brand &&
-                CAR_BRANDS[form.brand]?.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))}
-            </select>
-            <FieldError message={errors.model} />
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Generacija
-            </label>
-
-            <input
-              value={form.generation}
-              onChange={(e) =>
-                update('generation', e.target.value)
-              }
-              placeholder="npr. E60"
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Godina
-            </label>
-
-            <input
-              value={form.year}
-              onChange={(e) =>
-                update(
-                  'year',
-                  e.target.value
-                    .replace(/\D/g, '')
-                    .slice(0, 4),
-                )
-              }
-              placeholder="npr. 2005"
-              inputMode="numeric"
-              aria-invalid={Boolean(errors.year)}
-              className={`${inputClass} ${errors.year ? errorRing : ''}`}
-            />
-            <FieldError message={errors.year} />
-          </div>
-
-        </div>
-      </section>
-
+      {step === 2 && (
+      <>
       {/* CENA I LOKACIJA */}
-      <section className="border-t border-surface dark:border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-5 dark:border-zinc-800">
 
         <div className="mb-4">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
@@ -380,12 +389,13 @@ function CarFormFields({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="car-price" className={labelClass}>
               Cena (EUR) *
             </label>
 
             <div className="relative">
               <input
+                id="car-price"
                 value={form.price}
                 onChange={(e) =>
                   update(
@@ -407,12 +417,13 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="car-mileage" className={labelClass}>
               Kilometraža
             </label>
 
             <div className="relative">
               <input
+                id="car-mileage"
                 value={form.mileage}
                 onChange={(e) =>
                   update(
@@ -434,11 +445,12 @@ function CarFormFields({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="car-color" className={labelClass}>
               Boja
             </label>
 
             <input
+              id="car-color"
               value={form.color}
               onChange={(e) =>
                 update('color', e.target.value)
@@ -467,8 +479,13 @@ function CarFormFields({
         </div>
       </section>
 
+      </>
+      )}
+
+      {step === 1 && (
+      <>
       {/* KAROSERIJA */}
-      <section className="border-t border-surface dark:border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-5 dark:border-zinc-800">
 
         <div className="mb-4">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
@@ -511,7 +528,7 @@ function CarFormFields({
       </section>
 
       {/* MOTOR */}
-      <section className="border-t border-surface dark:border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-5 dark:border-zinc-800">
 
         <div className="mb-4">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
@@ -640,8 +657,13 @@ function CarFormFields({
         </div>
       </section>
 
+      </>
+      )}
+
+      {step === 2 && (
+      <>
       {/* OPIS */}
-      <section className="border-t border-surface dark:border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-5 dark:border-zinc-800">
 
         <div className="mb-4">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
@@ -666,8 +688,13 @@ function CarFormFields({
 
       </section>
 
+      </>
+      )}
+
+      {step === 3 && (
+      <>
       {/* FOTOGRAFIJE */}
-      <section className="border-t border-surface dark:border-zinc-800 pt-8">
+      <section className="border-t border-surface pt-5 dark:border-zinc-800">
 
         <div className="mb-4">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
@@ -702,51 +729,56 @@ function CarFormFields({
           </p>
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-2">
           {EQUIPMENT_CATEGORIES.map((category) => {
             const CatIcon = category.icon;
+            const isOpen = openEquipmentGroups.has(category.id);
+            const selectedCount = category.items.filter((item) => form.equipment.includes(item.id)).length;
             return (
-              <div key={category.id}>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                    <CatIcon size={14} className="text-brand-text" />
-                  </div>
-                  <p className="text-xs font-bold text-app-primary dark:text-zinc-100">{category.label}</p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {category.items.map((item) => {
-                    const active = form.equipment.includes(item.id);
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => toggleEquipment(item.id)}
-                        className={`
-                          flex items-center gap-1.5 rounded-xl border px-3 py-2
-                          text-xs font-medium transition-all
-                          ${
+              <section key={category.id} className="overflow-hidden rounded-xl border border-surface dark:border-zinc-800">
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  onClick={() => toggleEquipmentGroup(category.id)}
+                  className="flex min-h-12 w-full items-center gap-2.5 px-3 text-left transition-colors hover:bg-elevated"
+                >
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-brand-500/20 bg-brand-500/10 text-brand-text">
+                    <CatIcon size={14} />
+                  </span>
+                  <span className="min-w-0 flex-1 text-xs font-semibold text-app-primary dark:text-zinc-100">{category.label}</span>
+                  {selectedCount > 0 && <span className="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-text">{selectedCount} izabrano</span>}
+                  <ChevronDown size={15} className={`shrink-0 text-app-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isOpen && (
+                  <div className="flex flex-wrap gap-2 border-t border-surface p-3 dark:border-zinc-800">
+                    {category.items.map((item) => {
+                      const active = form.equipment.includes(item.id);
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => toggleEquipment(item.id)}
+                          className={`flex min-h-9 items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-all ${
                             active
                               ? 'border-brand-500 bg-brand-500 text-zinc-950'
-                              : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary'
-                          }
-                        `}
-                      >
-                        {active && (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 6 9 17l-5-5" />
-                          </svg>
-                        )}
-                        {item.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                              : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800'
+                          }`}
+                        >
+                          {active && <Check size={12} strokeWidth={3} />}
+                          {item.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
             );
           })}
         </div>
       </section>
+      </>
+      )}
 
     </div>
   );
@@ -772,15 +804,18 @@ export default function CarFormComponent({
   const [mounted, setMounted] =
     useState(false);
 
-  const [submitted, setSubmitted] =
-    useState(false);
+  const [step, setStep] = useState<FormStep>(1);
+  const [validatedStep, setValidatedStep] = useState<FormStep | null>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    setSubmitted(false);
+    setStep(1);
+    setValidatedStep(null);
     if (editingCar) {
       setForm(carToForm(editingCar));
       // Keep every photo on the car, not just the cover.
@@ -794,15 +829,51 @@ export default function CarFormComponent({
     }
   }, [editingCar]);
 
-  const errors = validateCarForm(form);
-  const isValid = Object.keys(errors).length === 0;
-  const visibleErrors = submitted ? errors : {};
+  const visibleErrors = validatedStep === step
+    ? validateCarFormStep(form, step)
+    : {};
+
+  useEffect(() => {
+    if (focusRequest === 0) return;
+    const frame = requestAnimationFrame(() => {
+      const firstInvalid = contentRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
+      firstInvalid?.focus();
+      firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [focusRequest]);
+
+  function scrollToTop() {
+    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function continueStep() {
+    const stepErrors = validateCarFormStep(form, step);
+    setValidatedStep(step);
+    if (Object.keys(stepErrors).length > 0) {
+      setFocusRequest((current) => current + 1);
+      return;
+    }
+    setValidatedStep(null);
+    setStep((current) => Math.min(current + 1, 3) as FormStep);
+    scrollToTop();
+  }
+
+  function previousStep() {
+    setValidatedStep(null);
+    setStep((current) => Math.max(current - 1, 1) as FormStep);
+    scrollToTop();
+  }
 
   function handleSave() {
-    setSubmitted(true);
-    if (!isValid) {
-      const firstInvalid = document.querySelector('[aria-invalid="true"]');
-      firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const errors = validateCarForm(form);
+    if (Object.keys(errors).length > 0) {
+      const targetStep: FormStep = errors.brand || errors.model || errors.year
+        ? 1
+        : 2;
+      setStep(targetStep);
+      setValidatedStep(targetStep);
+      setFocusRequest((current) => current + 1);
       return;
     }
 
@@ -824,7 +895,13 @@ export default function CarFormComponent({
 
   return createPortal(
     <div
-      className="fixed inset-0 flex h-[100dvh] w-screen flex-col overflow-hidden bg-app dark:bg-zinc-950"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="car-form-title"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && !event.defaultPrevented) onCancel();
+      }}
+      className="fixed inset-0 z-[2147483647] flex h-[100dvh] w-screen items-center justify-center overflow-hidden bg-black/55 p-0 backdrop-blur-[2px] sm:p-4"
       style={{
         position: 'fixed',
         inset: 0,
@@ -833,126 +910,117 @@ export default function CarFormComponent({
         zIndex: 2147483647,
       }}
     >
+      <div className="flex h-full w-full flex-col overflow-hidden bg-app dark:bg-zinc-950 sm:h-[90vh] sm:max-h-[900px] sm:max-w-[960px] sm:rounded-2xl sm:border sm:border-surface sm:shadow-2xl dark:sm:border-zinc-800">
+        <header className="safe-top shrink-0 border-b border-surface bg-app dark:border-zinc-800 dark:bg-zinc-950">
+          <div className="mx-auto w-full max-w-[880px] px-4 pb-3 pt-3 sm:px-6 sm:pt-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <h1 id="car-form-title" className="truncate text-base font-bold text-app-primary dark:text-zinc-100 sm:text-lg">
+                  {editingCar ? 'Izmeni automobil' : 'Dodaj oglas'}
+                </h1>
+                <p className="mt-0.5 text-xs text-app-muted">Korak {step} od 3</p>
+              </div>
+              <button
+                type="button"
+                onClick={onCancel}
+                aria-label="Zatvori"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
 
-      {/* HEADER */}
-      <header className="shrink-0 border-b border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 safe-top">
-
-        <div className="app-container flex h-16 items-center justify-between">
-
-          <div>
-            <h1 className="text-base font-bold text-app-primary dark:text-zinc-100 sm:text-lg">
-              {editingCar
-                ? 'Izmeni automobil'
-                : 'Dodaj oglas'}
-            </h1>
-
-            <p className="hidden text-xs text-app-muted sm:block">
-              Unesite podatke o vozilu
-            </p>
+            <ol aria-label="Napredak forme" className="mt-3 grid grid-cols-3 gap-2">
+              {([
+                [1, 'Vozilo'],
+                [2, 'Oglas'],
+                [3, 'Fotografije'],
+              ] as const).map(([stepNumber, label]) => {
+                const active = step === stepNumber;
+                const complete = step > stepNumber;
+                return (
+                  <li key={stepNumber} aria-current={active ? 'step' : undefined} className="min-w-0">
+                    <div className={`h-1 rounded-full ${active || complete ? 'bg-brand-500' : 'bg-hover-surface dark:bg-zinc-800'}`} />
+                    <div className={`mt-1.5 flex items-center gap-1.5 truncate text-[11px] font-semibold sm:text-xs ${active ? 'text-app-primary dark:text-zinc-100' : 'text-app-muted'}`}>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${active || complete ? 'bg-brand-500 text-zinc-950' : 'bg-hover-surface text-app-muted dark:bg-zinc-800'}`}>
+                        {complete ? <Check size={12} strokeWidth={3} /> : stepNumber}
+                      </span>
+                      <span className="truncate">{label}</span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
           </div>
+        </header>
 
-          <button
-            type="button"
-            onClick={onCancel}
-            aria-label="Zatvori"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
+        <main ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="mx-auto w-full max-w-[880px] px-4 py-4 sm:px-6 sm:py-5">
+            <div className="mb-4">
+              <h2 className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100 sm:text-xl">
+                {step === 1 ? 'Podaci o vozilu' : step === 2 ? 'Detalji oglasa' : 'Fotografije i oprema'}
+              </h2>
+              <p className="mt-1 text-sm text-app-muted">
+                {step === 1
+                  ? 'Izaberite vozilo i unesite njegove osnovne karakteristike.'
+                  : step === 2
+                    ? 'Dodajte cenu, lokaciju i informacije za vaš oglas.'
+                    : 'Dodajte fotografije i označite opremu koju vozilo poseduje.'}
+              </p>
+            </div>
 
-        </div>
-      </header>
-
-      {/* CONTENT */}
-      <div className="min-h-0 flex-1 overflow-y-auto">
-
-        <div className="app-container py-6 sm:py-8">
-
-          <div className="mb-7">
-
-            <h2 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100 sm:text-2xl">
-              {editingCar
-                ? 'Izmeni detalje vozila'
-                : 'Dodaj svoj automobil'}
-            </h2>
-
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-app-muted">
-              Popunite informacije o automobilu kako bi
-              vaš oglas bio što potpuniji.
-            </p>
-
+            <div className="rounded-2xl border border-surface bg-card-surface p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-5">
+              <CarFormFields
+                key={editingCar?.id ?? 'new-car-form'}
+                form={form}
+                setForm={setForm}
+                images={images}
+                setImages={setImages}
+                errors={visibleErrors}
+                step={step}
+              />
+            </div>
           </div>
+        </main>
 
-          <div className="rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-4 sm:p-6 lg:p-8">
-
-            <CarFormFields
-              form={form}
-              setForm={setForm}
-              images={images}
-              setImages={setImages}
-              errors={visibleErrors}
-            />
-
+        <footer className="safe-bottom shrink-0 border-t border-surface bg-app dark:border-zinc-800 dark:bg-zinc-950">
+          <div className="mx-auto flex w-full max-w-[880px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
+            {step === 1 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="h-11 flex-1 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98] dark:border-zinc-800 sm:flex-none sm:min-w-36"
+                >
+                  Otkaži
+                </button>
+                <button type="button" onClick={continueStep} className="btn-primary flex h-11 flex-1 items-center justify-center gap-2 text-sm sm:flex-none sm:min-w-40">
+                  Nastavi <ChevronRight size={16} aria-hidden="true" />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={previousStep}
+                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98] dark:border-zinc-800 sm:flex-none sm:min-w-36"
+                >
+                  <ChevronLeft size={16} aria-hidden="true" /> Nazad
+                </button>
+                {step === 2 ? (
+                  <button type="button" onClick={continueStep} className="btn-primary flex h-11 flex-1 items-center justify-center gap-2 text-sm sm:flex-none sm:min-w-40">
+                    Nastavi <ChevronRight size={16} aria-hidden="true" />
+                  </button>
+                ) : (
+                  <button type="button" onClick={handleSave} className="btn-primary flex h-11 flex-1 items-center justify-center gap-2 text-sm sm:flex-none sm:min-w-44">
+                    {editingCar ? 'Sačuvaj izmene' : 'Objavi oglas'}
+                  </button>
+                )}
+              </>
+            )}
           </div>
-
-          <div className="h-8" />
-
-        </div>
+        </footer>
       </div>
-
-      {/* ACTION BUTTONS */}
-      <div
-        className="shrink-0 border-t border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 safe-bottom"
-        style={{
-          position: 'relative',
-          zIndex: 2147483647,
-        }}
-      >
-
-        <div className="mx-auto flex w-full max-w-[420px] flex-col items-center gap-2.5 px-4 py-3 sm:px-6">
-
-          {/* OTKAŽI */}
-          <button
-            type="button"
-            onClick={onCancel}
-            className="h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98]"
-          >
-            Otkaži
-          </button>
-
-          {/* OBJAVI OGLAS */}
-          {submitted && !isValid && (
-            <p role="alert" className="w-full text-center text-xs font-medium text-tone-negative">
-              Popuni obavezna polja označena crvenim.
-            </p>
-          )}
-
-          <button
-            type="button"
-            onClick={handleSave}
-            aria-disabled={!isValid}
-            className="btn-primary h-11 w-full text-sm"
-          >
-            {editingCar
-              ? 'Sačuvaj izmene'
-              : 'Objavi oglas'}
-          </button>
-
-        </div>
-      </div>
-
     </div>,
     document.body,
   );

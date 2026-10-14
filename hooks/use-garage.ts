@@ -50,7 +50,8 @@ function carToRow(car: MyGarageCar, userId: string) {
     user_id: userId,
     brand: car.brand,
     model: car.model,
-    generation: car.generation,
+    // `-` is the app's display placeholder, not a real vehicle generation.
+    generation: car.generation === '-' ? null : car.generation,
     year: car.year,
     body_type: car.bodyType,
     color: car.color,

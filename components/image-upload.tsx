@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState, ChangeEvent } from 'react';
+import { useRef, useState } from 'react';
+import type { ChangeEvent, DragEvent as ReactDragEvent } from 'react';
 import { CloudUpload as UploadCloud, X, Star, Loader as Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -19,13 +20,12 @@ interface ImageUploadProps {
 
 export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadProps) {
   const [busy, setBusy] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    // Let the same file be picked again after a removal.
-    e.target.value = '';
+  async function addFiles(files: File[]) {
     if (files.length === 0) return;
+    if (busy) return;
 
     const room = maxImages - images.length;
     if (room <= 0) {
@@ -59,6 +59,19 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
     failures.forEach((message) => toast.error(message));
   }
 
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    // Let the same file be picked again after a removal.
+    e.target.value = '';
+    void addFiles(files);
+  }
+
+  function handleDrop(event: ReactDragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setDragActive(false);
+    void addFiles(Array.from(event.dataTransfer.files ?? []));
+  }
+
   function removeImage(index: number) {
     onChange(images.filter((_, i) => i !== index));
   }
@@ -73,7 +86,19 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
   const totalBytes = images.reduce((sum, img) => sum + dataUrlBytes(img), 0);
 
   return (
-    <div className="space-y-3">
+    <div
+      onDragOver={(event) => {
+        if (event.dataTransfer.types.includes('Files')) {
+          event.preventDefault();
+          setDragActive(true);
+        }
+      }}
+      onDragLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragActive(false);
+      }}
+      onDrop={handleDrop}
+      className={`space-y-3 rounded-xl transition-colors ${dragActive ? 'bg-brand-500/5 ring-2 ring-inset ring-brand-500/50' : ''}`}
+    >
       <div className="flex items-center justify-between gap-2">
         <label className="text-xs font-medium text-app-muted">Fotografije vozila</label>
         <span className="text-xs text-app-muted">
@@ -143,7 +168,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
             <span className="text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition group-hover:text-brand-text">
               {busy ? 'Obrada…' : 'Dodaj sliku'}
             </span>
-            <span className="mt-0.5 text-[9px] text-app-muted">JPG, PNG, WebP</span>
+            <span className="mt-0.5 text-[9px] text-app-muted">Prevuci ili izaberi · JPG, PNG, WebP</span>
           </label>
         )}
       </div>
