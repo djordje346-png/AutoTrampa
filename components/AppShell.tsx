@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
+import { usePathname } from 'next/navigation';
 import AuthOverlay from '@/components/AuthOverlay';
 import Footer from '@/components/Footer';
 import { DesktopFooter } from '@/components/DesktopFooter';
@@ -13,7 +14,9 @@ import PhoneGateHost from '@/components/PhoneGateHost';
  * see `requireAuth` in use-auth — not as a wall in front of the app.
  */
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { promptOpen } = useAuth();
+  const pathname = usePathname();
+  const { promptOpen, isLoggedIn } = useAuth();
+  const isPublicLanding = pathname === '/' && !isLoggedIn;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-app text-app-primary dark:bg-zinc-950 dark:text-zinc-100">
@@ -24,12 +27,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      <Footer />
-      <main id="sadrzaj" className="w-full flex-1 pb-28 md:pb-24 lg:pb-8">
+      {!isPublicLanding && <Footer />}
+      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : 'pb-28 md:pb-24 lg:pb-8'}`}>
         {children}
       </main>
 
-      <DesktopFooter />
+      {!isPublicLanding && <DesktopFooter />}
 
       {promptOpen && <AuthOverlay />}
       <PhoneGateHost />

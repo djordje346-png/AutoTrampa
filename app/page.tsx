@@ -28,6 +28,7 @@ import { FilterSheetBody } from '@/components/FilterPanel';
 import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
 import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
 import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
+import PublicLanding from '@/components/PublicLanding';
 
 type ViewMode = 'grid' | 'swipe';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -238,6 +239,25 @@ export default function FeedPage() {
     : filteredCars;
   const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center bg-white" role="status" aria-label="Učitavanje početne stranice">
+        <span className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-200 border-t-brand-500" />
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <PublicLanding
+        cars={marketplaceCars}
+        listingsReady={marketplaceReady}
+        onAddCar={handleAddListing}
+        onSignIn={() => requireAuth('Prijavi se na AutoTrampu')}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col">
