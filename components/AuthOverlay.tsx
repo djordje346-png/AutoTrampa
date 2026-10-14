@@ -10,7 +10,7 @@ import AuthScreen from '@/components/AuthScreen';
  * moment an action needs an account, and dismissible back to public browsing.
  */
 export default function AuthOverlay() {
-  const { promptReason, closePrompt } = useAuth();
+  const { promptReason, promptInitialTab, closePrompt } = useAuth();
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function AuthOverlay() {
             </div>
           </div>
         ) : null}
-        <AuthScreen compact={Boolean(promptReason)} />
+        <AuthScreen compact={Boolean(promptReason)} initialTab={promptInitialTab} />
       </div>
     </div>
   );

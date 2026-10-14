@@ -28,6 +28,7 @@ interface PublicLandingProps {
   listingsReady: boolean;
   onAddCar: () => void;
   onSignIn: () => void;
+  onRegister: () => void;
 }
 
 const HOW_IT_WORKS = [
@@ -169,7 +170,7 @@ function ListingCard({ car }: { car: Car }) {
   );
 }
 
-export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn }: PublicLandingProps) {
+export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn, onRegister }: PublicLandingProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   // The shared marketplace hook also includes demo seed cars for signed-in
@@ -185,20 +186,23 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
   return (
     <div className="min-h-screen overflow-hidden bg-white text-zinc-950">
       <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-          <Link href="/" aria-label="AutoTrampa — početna" className="flex shrink-0 items-center gap-2 text-white">
-            <BrandLockup />
-          </Link>
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-4 lg:px-8">
+          <div className="flex min-w-0 items-center gap-1 xl:gap-2">
+            <Link href="/" aria-label="AutoTrampa — početna" className="flex shrink-0 items-center gap-2 text-white">
+              <BrandLockup />
+            </Link>
+            <div className="hidden items-center gap-0 lg:flex">
+              <button type="button" onClick={onSignIn} className={landingNavClass(false)}>Prijavi se</button>
+              <button type="button" onClick={onRegister} className="btn-primary btn-primary-compact !rounded-xl ml-1 whitespace-nowrap text-xs">Registruj se</button>
+            </div>
+          </div>
 
-          <div className="hidden items-center justify-end gap-0 lg:flex xl:gap-1">
-            <nav aria-label="Glavni meni" className="flex items-center gap-0 xl:gap-1">
+          <nav aria-label="Glavni meni" className="hidden items-center justify-center gap-0 lg:flex xl:gap-1">
               <a href="#kako-funkcionise" onClick={() => setActiveSection('how')} aria-current={activeSection === 'how' ? 'location' : undefined} className={landingNavClass(activeSection === 'how')}>Kako funkcioniše</a>
               <Link href="/search" className={landingNavClass(false)}>Oglasi</Link>
               <a href="#smart-match" onClick={() => setActiveSection('why')} aria-current={activeSection === 'why' ? 'location' : undefined} className={landingNavClass(activeSection === 'why')}>Zašto AutoTrampa</a>
-            </nav>
-            <button type="button" onClick={onSignIn} className={landingNavClass(false)}>Prijavi se</button>
-            <button type="button" onClick={onSignIn} className="btn-primary btn-primary-compact !rounded-xl ml-2 whitespace-nowrap text-xs">Registruj se</button>
-          </div>
+          </nav>
+          <div className="hidden lg:block" aria-hidden="true" />
 
           <div className="flex items-center gap-2 lg:hidden">
             <button type="button" onClick={onSignIn} className="rounded-lg px-2.5 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:text-sm">Prijavi se</button>

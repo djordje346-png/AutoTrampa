@@ -15,6 +15,7 @@ interface AuthPrompt {
   reason: string;
   resume?: () => void;
   next?: string;
+  initialTab?: 'login' | 'register';
 }
 
 export type AuthResult =
@@ -25,8 +26,13 @@ const authStore = createMemoryStore<AuthState>({ user: null, ready: false, error
 const promptStore = createMemoryStore<AuthPrompt | null>(null);
 let authSubscriptionStarted = false;
 
-export function openAuthPrompt(reason?: string, resume?: () => void, next?: string) {
-  promptStore.set({ reason: reason ?? '', resume, next });
+export function openAuthPrompt(
+  reason?: string,
+  resume?: () => void,
+  next?: string,
+  initialTab: 'login' | 'register' = 'login',
+) {
+  promptStore.set({ reason: reason ?? '', resume, next, initialTab });
 }
 
 export function closeAuthPrompt() {
@@ -152,9 +158,9 @@ export function useAuth() {
   }, []);
 
   const requireAuth = useCallback(
-    (reason?: string, resume?: () => void, next?: string) => {
+    (reason?: string, resume?: () => void, next?: string, initialTab: 'login' | 'register' = 'login') => {
       if (auth.user) return true;
-      openAuthPrompt(reason, resume, next);
+      openAuthPrompt(reason, resume, next, initialTab);
       return false;
     },
     [auth.user],
@@ -174,6 +180,7 @@ export function useAuth() {
     logout,
     requireAuth,
     promptReason: prompt?.reason ?? null,
+    promptInitialTab: prompt?.initialTab ?? 'login',
     promptOpen: prompt !== null,
     closePrompt: closeAuthPrompt,
   };

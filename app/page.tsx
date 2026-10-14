@@ -83,6 +83,7 @@ export default function FeedPage() {
         listingsReady={marketplaceReady}
         onAddCar={handlePublicAddCar}
         onSignIn={() => requireAuth('Prijavi se na AutoTrampu')}
+        onRegister={() => requireAuth('Napravi AutoTrampa nalog', undefined, undefined, 'register')}
       />
     );
   }

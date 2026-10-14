@@ -12,11 +12,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 interface AuthScreenProps {
   /** Shrinks the hero when the overlay already explains why we are asking. */
   compact?: boolean;
+  initialTab?: Tab;
 }
 
-export default function AuthScreen({ compact = false }: AuthScreenProps) {
+export default function AuthScreen({ compact = false, initialTab = 'login' }: AuthScreenProps) {
   const { signIn, signUp, resetPassword } = useAuth();
-  const [tab, setTab] = useState<Tab>('login');
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
