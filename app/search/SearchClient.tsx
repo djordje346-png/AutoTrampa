@@ -170,9 +170,9 @@ export default function SearchClient() {
           />
         )}
 
-        <div className="min-w-0 flex-1 space-y-3 pb-4">
+        <div className={`min-w-0 flex-1 pb-4 ${isLoggedIn ? 'space-y-3' : 'grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5'}`}>
         {results.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className={`flex flex-col items-center justify-center py-20 text-center ${!isLoggedIn ? 'col-span-full' : ''}`}>
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
               <Search size={28} className="text-app-muted" />
             </div>
@@ -185,18 +185,22 @@ export default function SearchClient() {
             return (
               <article
                 key={car.id}
-                className="overflow-hidden rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 transition-all duration-200 hover:border-brand-500/30"
+                className={`overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900 ${
+                  isLoggedIn ? '' : 'flex h-full min-w-0 flex-col shadow-sm hover:shadow-md dark:shadow-black/20'
+                }`}
               >
-                <div className="flex flex-col sm:flex-row">
+                <div className={isLoggedIn ? 'flex flex-col sm:flex-row' : 'flex h-full min-w-0 flex-col'}>
                   <Link
                     href={`/car/${car.id}`}
-                    className="relative h-36 w-full flex-shrink-0 sm:h-auto sm:w-28"
+                    className={isLoggedIn
+                      ? 'relative h-36 w-full flex-shrink-0 sm:h-auto sm:w-28'
+                      : 'relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden'}
                     aria-label={`Detalji: ${car.year} ${car.brand} ${car.model}`}
                   >
                     <img
                       src={car.image}
                       alt={`${car.brand} ${car.model}`}
-                      className="h-full w-full object-cover"
+                      className={isLoggedIn ? 'h-full w-full object-cover' : 'absolute inset-0 h-full w-full object-cover'}
                     />
                     {tl && (
                       <span
@@ -212,13 +216,15 @@ export default function SearchClient() {
                     )}
                   </Link>
 
-                  <div className="min-w-0 flex-1 p-3">
+                  <div className={isLoggedIn
+                    ? 'min-w-0 flex-1 p-3'
+                    : 'flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3'}>
                     <div className="flex items-start justify-between gap-2">
                       <Link href={`/car/${car.id}`} className="min-w-0">
                         <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text">
                           {bodyLabel(car.bodyType)}
                         </p>
-                        <h3 className="truncate text-sm font-bold leading-tight text-app-primary dark:text-zinc-100 transition-colors hover:text-brand-text">
+                        <h3 className={`${isLoggedIn ? 'truncate text-sm' : 'line-clamp-2 min-h-10 text-base'} font-bold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100`}>
                           {car.year} {car.brand} {car.model}
                         </h3>
                         <p className="text-xs text-app-muted">{displayValue(car.generation)}</p>
@@ -252,7 +258,7 @@ export default function SearchClient() {
                       </span>
                     </div>
 
-                    <div className="mt-2.5 flex items-center gap-2">
+                    <div className={`${isLoggedIn ? 'mt-2.5' : 'mt-auto pt-3.5'} flex items-center gap-2`}>
                       <button
                         onClick={() => {
                           if (!isLoggedIn) {
@@ -270,14 +276,14 @@ export default function SearchClient() {
                           }
                           openOffer(car);
                         }}
-                        className="btn-primary btn-primary-compact flex-1 text-[11px]"
+                        className={`btn-primary btn-primary-compact flex min-w-0 items-center justify-center gap-1.5 whitespace-nowrap text-[10px] sm:text-[11px] ${isLoggedIn ? 'flex-1' : 'flex-1 !px-2'}`}
                       >
                         <ArrowLeftRight size={12} />
                         Pošalji ponudu
                       </button>
                       <Link
                         href={`/car/${car.id}`}
-                        className="flex items-center justify-center gap-1 rounded-lg bg-elevated px-3 py-2 text-[11px] font-semibold text-app-secondary dark:text-zinc-400 transition-all hover:bg-hover-surface"
+                        className={`flex min-w-0 flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-lg bg-elevated px-2 py-2 text-[10px] font-semibold text-app-secondary transition-all hover:bg-hover-surface dark:text-zinc-400 sm:text-[11px] ${isLoggedIn ? 'sm:flex-none sm:px-3' : ''}`}
                       >
                         Detalji
                         <ArrowRight size={11} />
