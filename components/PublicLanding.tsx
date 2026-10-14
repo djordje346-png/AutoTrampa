@@ -197,7 +197,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
               <a href="#smart-match" onClick={() => setActiveSection('why')} aria-current={activeSection === 'why' ? 'location' : undefined} className={landingNavClass(activeSection === 'why')}>Zašto AutoTrampa</a>
             </nav>
             <button type="button" onClick={onSignIn} className={landingNavClass(false)}>Prijavi se</button>
-            <button type="button" onClick={onAddCar} className="btn-primary ml-2 whitespace-nowrap text-sm">Dodaj svoj auto <ArrowRight size={16} /></button>
+            <button type="button" onClick={onSignIn} className="btn-primary btn-primary-compact !rounded-xl ml-2 whitespace-nowrap text-xs">Registruj se</button>
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
