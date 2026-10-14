@@ -10,12 +10,17 @@ import { useAuth } from '@/hooks/use-auth';
 /** Live listings, newest first, mixed with the local demo seed. */
 const LISTING_LIMIT = 300;
 
-export function useMarketplace() {
+export function useMarketplace(enabled = true) {
   const { userId } = useAuth();
   const [liveCars, setLiveCars] = useState<Car[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (!enabled) {
+      setReady(false);
+      return;
+    }
+
     let cancelled = false;
     async function load() {
       try {
@@ -38,7 +43,7 @@ export function useMarketplace() {
     setReady(false);
     void load();
     return () => { cancelled = true; };
-  }, [userId]);
+  }, [enabled, userId]);
 
   return { cars: [...liveCars, ...MARKETPLACE_CARS], ready };
 }

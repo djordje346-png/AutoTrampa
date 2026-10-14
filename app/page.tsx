@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart, HeartHandshake, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
@@ -43,8 +43,73 @@ const TRADE_FILTERS: { key: SearchFilters['trade']; label: string }[] = [
 
 export default function FeedPage() {
   const router = useRouter();
+  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace(authReady);
+  const [pendingAddCar, setPendingAddCar] = useState(false);
+
+  const resumeAddCar = useCallback(() => setPendingAddCar(true), []);
+  const handlePublicAddCar = useCallback(() => {
+    if (requireAuth('Prijavi se i dodaj svoj oglas', resumeAddCar, '/?intent=add-car')) resumeAddCar();
+  }, [requireAuth, resumeAddCar]);
+  const handlePendingAddCarHandled = useCallback(() => setPendingAddCar(false), []);
+
+  useEffect(() => {
+    if (!authReady || typeof window === 'undefined') return;
+
+    const url = new URL(window.location.href);
+    const pendingIntent = url.searchParams.get('intent');
+    const hasCallbackStatus = url.searchParams.has('auth');
+    if (pendingIntent !== 'add-car' && !hasCallbackStatus) return;
+
+    if (pendingIntent === 'add-car' && isLoggedIn) setPendingAddCar(true);
+    url.searchParams.delete('intent');
+    url.searchParams.delete('auth');
+    const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
+    router.replace(cleanUrl, { scroll: false });
+  }, [authReady, isLoggedIn, router]);
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center bg-white" role="status" aria-label="Učitavanje početne stranice">
+        <span className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-200 border-t-brand-500" />
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <PublicLanding
+        cars={marketplaceCars}
+        listingsReady={marketplaceReady}
+        onAddCar={handlePublicAddCar}
+        onSignIn={() => requireAuth('Prijavi se na AutoTrampu')}
+      />
+    );
+  }
+
+  return (
+    <AuthenticatedFeed
+      marketplaceCars={marketplaceCars}
+      marketplaceReady={marketplaceReady}
+      pendingAddCar={pendingAddCar}
+      onPendingAddCarHandled={handlePendingAddCarHandled}
+    />
+  );
+}
+
+function AuthenticatedFeed({
+  marketplaceCars,
+  marketplaceReady,
+  pendingAddCar,
+  onPendingAddCarHandled,
+}: {
+  marketplaceCars: Car[];
+  marketplaceReady: boolean;
+  pendingAddCar: boolean;
+  onPendingAddCarHandled: () => void;
+}) {
+  const router = useRouter();
   const { cars, selectedCar, selectedId, selectCar, addCar, canAddCar, limit, mounted } = useGarage();
-  const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
   const { saved, save } = useSaved();
   const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
   const { user: profile, profileReady } = useUser();
@@ -66,6 +131,19 @@ export default function FeedPage() {
   const [sessionReviewedIds, setSessionReviewedIds] = useState<Set<string>>(new Set());
   const selectorRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number } | null>(null);
+  const pendingAddCarHandled = useRef(false);
+
+  useEffect(() => {
+    if (!pendingAddCar) {
+      pendingAddCarHandled.current = false;
+      return;
+    }
+    if (pendingAddCarHandled.current || !profileReady || profile.id !== userId) return;
+
+    pendingAddCarHandled.current = true;
+    onPendingAddCarHandled();
+    requestPhoneAction(() => setShowAddForm(true), profile.phone);
+  }, [pendingAddCar, profile.id, profile.phone, profileReady, userId, onPendingAddCarHandled]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -239,25 +317,6 @@ export default function FeedPage() {
     : filteredCars;
   const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
-
-  if (!authReady) {
-    return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-white" role="status" aria-label="Učitavanje početne stranice">
-        <span className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-200 border-t-brand-500" />
-      </div>
-    );
-  }
-
-  if (!isLoggedIn) {
-    return (
-      <PublicLanding
-        cars={marketplaceCars}
-        listingsReady={marketplaceReady}
-        onAddCar={handleAddListing}
-        onSignIn={() => requireAuth('Prijavi se na AutoTrampu')}
-      />
-    );
-  }
 
   return (
     <div className="flex flex-col">

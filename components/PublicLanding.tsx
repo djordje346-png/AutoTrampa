@@ -50,12 +50,47 @@ function BrandMark() {
   );
 }
 
+function CarPhoto({
+  src,
+  alt,
+  className,
+  fallbackClassName,
+}: {
+  src: string;
+  alt: string;
+  className: string;
+  fallbackClassName: string;
+}) {
+  const [failedImage, setFailedImage] = useState<{ src: string; failed: boolean } | null>(null);
+  const failed = !src || (failedImage?.src === src && failedImage.failed);
+
+  if (failed) {
+    return (
+      <div
+        className={fallbackClassName}
+        role={alt ? 'img' : undefined}
+        aria-label={alt || undefined}
+        aria-hidden={!alt}
+      >
+        <CarFront size={34} strokeWidth={1.5} aria-hidden="true" />
+      </div>
+    );
+  }
+
+  return <img src={src} alt={alt} className={className} onError={() => setFailedImage({ src, failed: true })} />;
+}
+
 function CarPreview({ car, label }: { car?: Car; label: string }) {
   return (
     <div className="min-w-0 overflow-hidden rounded-2xl border border-white/70 bg-white shadow-lg shadow-black/10">
       <div className="relative aspect-[4/3] overflow-hidden bg-zinc-200">
         {car ? (
-          <img src={car.image} alt={`${car.brand} ${car.model}`} className="h-full w-full object-cover" />
+          <CarPhoto
+            src={car.image}
+            alt={`${car.brand} ${car.model}`}
+            className="h-full w-full object-cover"
+            fallbackClassName="flex h-full w-full items-center justify-center bg-zinc-200 text-zinc-400"
+          />
         ) : (
           <div className="flex h-full items-center justify-center text-zinc-400"><CarFront size={42} /></div>
         )}
@@ -63,10 +98,14 @@ function CarPreview({ car, label }: { car?: Car; label: string }) {
       <div className="px-3 py-2.5 sm:px-4 sm:py-3">
         <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-zinc-500 sm:text-[10px]">{label}</p>
         <p className="mt-0.5 truncate text-xs font-bold text-zinc-950 sm:text-sm">
-          {car ? `${car.brand} ${car.model}` : 'Tvoje vozilo'}
+          {car ? `${car.brand} ${car.model}` : label === 'Tvoj auto' ? 'Tvoj automobil' : 'Moguća zamena'}
         </p>
         <p className="mt-0.5 truncate text-[10px] text-zinc-500 sm:text-xs">
-          {car ? `${car.year} · ${fuelLabel(car.specs.fuelType)}` : 'Dodaj auto da pronađeš zamenu'}
+          {car
+            ? `${car.year} · ${fuelLabel(car.specs.fuelType)}`
+            : label === 'Tvoj auto'
+              ? 'Dodaj auto da pronađeš zamenu'
+              : 'Prikazujemo stvarne oglase vlasnika'}
         </p>
       </div>
     </div>
@@ -106,7 +145,12 @@ function ListingCard({ car }: { car: Car }) {
       className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
     >
       <div className="aspect-[16/10] overflow-hidden bg-zinc-100">
-        <img src={car.image} alt={`${car.brand} ${car.model}`} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+        <CarPhoto
+          src={car.image}
+          alt={`${car.brand} ${car.model}`}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          fallbackClassName="flex h-full w-full items-center justify-center bg-zinc-200 text-zinc-400"
+        />
       </div>
       <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
         <div className="flex items-start justify-between gap-2">
@@ -129,8 +173,11 @@ function ListingCard({ car }: { car: Car }) {
 
 export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn }: PublicLandingProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const popularCars = cars.slice(0, 3);
-  const heroCar = cars[0];
+  // The shared marketplace hook also includes demo seed cars for signed-in
+  // browsing. Public examples should always be real owner listings.
+  const publicCars = cars.filter((car) => Boolean(car.ownerId));
+  const popularCars = publicCars.slice(0, 3);
+  const heroCar = publicCars[0];
 
   function closeMenu() {
     setMenuOpen(false);
@@ -146,9 +193,9 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
           </Link>
 
           <nav aria-label="Glavni meni" className="hidden items-center gap-7 desktop:flex">
-            <a href="#kako-funkcionise" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950">Kako funkcioniše</a>
-            <Link href="/search" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950">Oglasi</Link>
-            <a href="#smart-match" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950">Zašto AutoTrampa</a>
+            <a href="#kako-funkcionise" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
+            <Link href="/search" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Oglasi</Link>
+            <a href="#smart-match" className="text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Zašto AutoTrampa</a>
           </nav>
 
           <div className="hidden items-center gap-3 desktop:flex">
@@ -173,9 +220,9 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
         {menuOpen && (
           <nav id="public-mobile-menu" aria-label="Mobilni meni" className="absolute inset-x-0 top-full border-b border-zinc-200 bg-white p-4 shadow-lg desktop:hidden">
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
-              <a href="#kako-funkcionise" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100">Kako funkcioniše</a>
-              <Link href="/search" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100">Oglasi</Link>
-              <a href="#smart-match" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100">Zašto AutoTrampa</a>
+              <a href="#kako-funkcionise" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
+              <Link href="/search" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Oglasi</Link>
+              <a href="#smart-match" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Zašto AutoTrampa</a>
               <button type="button" onClick={() => { closeMenu(); onAddCar(); }} className="btn-primary mt-2 w-full text-sm">Dodaj svoj auto <ArrowRight size={16} /></button>
             </div>
           </nav>
@@ -207,7 +254,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
                 <span className="inline-flex items-center gap-2"><MapPin size={17} className="text-zinc-800" /> Širom Srbije</span>
               </div>
             </div>
-            <SwapVisual cars={cars} />
+            <SwapVisual cars={publicCars} />
           </div>
         </section>
 
@@ -286,7 +333,14 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
 
         <section className="px-4 pb-8 sm:px-6 sm:pb-12 desktop:px-8">
           <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] bg-zinc-950 text-white">
-            {heroCar && <img src={heroCar.image} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-35" />}
+            {heroCar && (
+              <CarPhoto
+                src={heroCar.image}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover opacity-35"
+                fallbackClassName="absolute inset-0 bg-zinc-900"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/85 to-zinc-950/45" />
             <div className="relative flex flex-col items-start gap-5 px-5 py-8 sm:px-8 sm:py-10 desktop:flex-row desktop:items-center desktop:justify-between desktop:px-14 desktop:py-12">
               <div>
@@ -298,6 +352,20 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
           </div>
         </section>
       </main>
+      <footer className="border-t border-zinc-800 bg-zinc-900 text-zinc-400">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-6 desktop:px-8">
+          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+            <BrandMark />
+            <span className="font-bold tracking-tight">AutoTrampa</span>
+          </Link>
+          <nav aria-label="Linkovi u podnožju" className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <a href="#kako-funkcionise" className="hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
+            <Link href="/search" className="hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Oglasi</Link>
+            <a href="#smart-match" className="hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Smart Match</a>
+          </nav>
+          <p className="text-xs">AutoTrampa · Platforma za zamenu automobila</p>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -14,6 +14,7 @@ interface AuthState {
 interface AuthPrompt {
   reason: string;
   resume?: () => void;
+  next?: string;
 }
 
 export type AuthResult =
@@ -24,8 +25,8 @@ const authStore = createMemoryStore<AuthState>({ user: null, ready: false, error
 const promptStore = createMemoryStore<AuthPrompt | null>(null);
 let authSubscriptionStarted = false;
 
-export function openAuthPrompt(reason?: string, resume?: () => void) {
-  promptStore.set({ reason: reason ?? '', resume });
+export function openAuthPrompt(reason?: string, resume?: () => void, next?: string) {
+  promptStore.set({ reason: reason ?? '', resume, next });
 }
 
 export function closeAuthPrompt() {
@@ -82,10 +83,13 @@ export function useAuth() {
 
   const signInWithGoogle = useCallback(async (): Promise<AuthResult> => {
     try {
+      const callbackUrl = new URL('/auth/callback', window.location.origin);
+      const next = promptStore.get()?.next;
+      if (next) callbackUrl.searchParams.set('next', next);
       const { error } = await getSupabase().auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl.toString(),
         },
       });
       return error ? { ok: false, message: error.message } : { ok: true };
@@ -100,12 +104,15 @@ export function useAuth() {
     name: string,
   ): Promise<AuthResult> => {
     try {
+      const callbackUrl = new URL('/auth/callback', window.location.origin);
+      const next = promptStore.get()?.next;
+      if (next) callbackUrl.searchParams.set('next', next);
       const { data, error } = await getSupabase().auth.signUp({
         email,
         password,
         options: {
           data: { name },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl.toString(),
         },
       });
       if (error) return { ok: false, message: error.message };
@@ -145,9 +152,9 @@ export function useAuth() {
   }, []);
 
   const requireAuth = useCallback(
-    (reason?: string, resume?: () => void) => {
+    (reason?: string, resume?: () => void, next?: string) => {
       if (auth.user) return true;
-      openAuthPrompt(reason, resume);
+      openAuthPrompt(reason, resume, next);
       return false;
     },
     [auth.user],
