@@ -236,7 +236,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn 
               <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-zinc-600 shadow-sm sm:text-xs">
                 <span className="h-2 w-2 rounded-full bg-brand-500" /> Pametnija zamena automobila
               </p>
-              <h1 className="max-w-[12ch] text-[2.6rem] font-bold leading-[0.98] tracking-tight text-zinc-950 sm:text-5xl lg:text-6xl desktop:text-[4.25rem]">
+              <h1 className="max-w-[12ch] text-[2.6rem] font-bold leading-[0.98] tracking-tight text-zinc-950 sm:text-5xl lg:text-6xl desktop:max-w-none desktop:text-[3.75rem]">
                 Zameni auto.<br />Ne prodaj ga prvo.
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg">
