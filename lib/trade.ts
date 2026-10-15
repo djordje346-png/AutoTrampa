@@ -76,8 +76,8 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
       diff,
       label: 'Ravna zamena',
       short: 'Ravno',
-      color: 'text-tone-positive',
-      bg: 'bg-emerald-500/10 border-emerald-500/30',
+      color: 'text-brand-text',
+      bg: 'bg-brand-soft border-brand-soft',
     };
   }
 

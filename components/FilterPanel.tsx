@@ -34,8 +34,8 @@ const TRADE_OPTIONS: { key: SearchFilters['trade']; label: string }[] = [
 const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV', 'Coupe', 'Convertible'];
 const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'LPG', 'CNG', 'Hybrid', 'Electric'];
 
-const GROUP_TITLE = 'text-[11px] font-bold uppercase tracking-widest text-app-muted';
-const CHIP_BASE = 'rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors';
+const GROUP_TITLE = 'text-xs font-bold uppercase tracking-widest text-app-muted';
+const CHIP_BASE = 'rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors';
 const CHIP_ON = 'border-brand-500 bg-brand-500 text-black';
 const CHIP_OFF = 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-zinc-800';
 const NUM_INPUT =
@@ -76,11 +76,11 @@ export function DesktopCompactFilterGroups({
       <div key={key} className="flex items-center gap-2 py-1.5">
         <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-zinc-950 dark:text-zinc-400"><Icon size={13} /></span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold text-app-primary dark:text-zinc-100">{label}</p>
+          <p className="text-[11px] font-semibold text-app-primary dark:text-zinc-100">{label}</p>
           <div className="mt-1 flex items-center gap-1.5">
-            <input type="number" inputMode="numeric" min={0} placeholder="Od" aria-label={`${label}, od`} value={min ?? ''} onChange={(event) => updateValue('min', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[10px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
-            <span className="text-[10px] text-app-muted">–</span>
-            <input type="number" inputMode="numeric" min={0} placeholder="Do" aria-label={`${label}, do`} value={max ?? ''} onChange={(event) => updateValue('max', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[10px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
+            <input type="number" inputMode="numeric" min={0} placeholder="Od" aria-label={`${label}, od`} value={min ?? ''} onChange={(event) => updateValue('min', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[11px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
+            <span className="text-[11px] text-app-muted">–</span>
+            <input type="number" inputMode="numeric" min={0} placeholder="Do" aria-label={`${label}, do`} value={max ?? ''} onChange={(event) => updateValue('max', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[11px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
           </div>
         </div>
       </div>
@@ -93,10 +93,10 @@ export function DesktopCompactFilterGroups({
         <div key={id} className="relative py-1">
           <button type="button" onClick={() => setOpen((current) => current === id ? null : id)} aria-expanded={open === id} className="flex w-full min-w-0 items-center gap-2 rounded-lg py-1.5 text-left transition-colors hover:bg-elevated dark:hover:bg-zinc-950">
             <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-zinc-950 dark:text-zinc-400"><Icon size={13} /></span>
-            <span className="min-w-0 flex-1"><span className="block text-[10px] font-semibold text-app-primary dark:text-zinc-100">{label}</span><span className="block truncate text-[9px] text-app-muted">{value}</span></span>
+            <span className="min-w-0 flex-1"><span className="block text-[11px] font-semibold text-app-primary dark:text-zinc-100">{label}</span><span className="block truncate text-[11px] text-app-muted">{value}</span></span>
             <ChevronDown size={13} className={`flex-shrink-0 text-app-muted transition-transform ${open === id ? 'rotate-180' : ''}`} />
           </button>
-          {open === id && <div className="absolute left-8 right-0 top-full z-20 max-h-48 overflow-y-auto rounded-lg border border-surface bg-card-surface p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">{options.map((option) => <button type="button" key={option.value ?? 'all'} onClick={() => { select(option.value); setOpen(null); }} className="block w-full truncate rounded-md px-2 py-1.5 text-left text-[10px] text-app-secondary hover:bg-elevated hover:text-app-primary dark:text-zinc-300 dark:hover:bg-zinc-800">{option.label}</button>)}</div>}
+          {open === id && <div className="absolute left-8 right-0 top-full z-20 max-h-48 overflow-y-auto rounded-lg border border-surface bg-card-surface p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">{options.map((option) => <button type="button" key={option.value ?? 'all'} onClick={() => { select(option.value); setOpen(null); }} className="block w-full truncate rounded-md px-2 py-1.5 text-left text-[11px] text-app-secondary hover:bg-elevated hover:text-app-primary dark:text-zinc-300 dark:hover:bg-zinc-800">{option.label}</button>)}</div>}
         </div>
       ))}
       {range('Cena (€)', filters.priceMin, filters.priceMax, 'price', Tag)}

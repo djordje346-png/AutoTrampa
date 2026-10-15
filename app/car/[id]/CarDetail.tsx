@@ -262,7 +262,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             </div>
 
             <div className="mt-4 min-w-0">
-              <h1 className="break-words text-[1.65rem] font-black leading-[1.08] tracking-tight text-app-primary dark:text-zinc-100 sm:text-2xl lg:text-3xl">
+              <h1 className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl lg:text-4xl">
                 {carTitle(car)}
               </h1>
               {subtitle && <p className="mt-1 text-sm text-app-muted">{subtitle}</p>}
@@ -280,9 +280,9 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                 <div key={label} className="min-w-0 rounded-xl bg-elevated/70 p-2.5">
                   <div className="flex min-w-0 items-center gap-1">
                     <Icon size={13} className="shrink-0 text-brand-text" />
-                    <p className="truncate text-[9px] font-semibold uppercase leading-tight tracking-wider text-app-muted">{label}</p>
+                    <p className="truncate text-[11px] font-semibold uppercase leading-tight tracking-wider text-app-muted">{label}</p>
                   </div>
-                  <p className="mt-1 truncate pl-4 text-[11px] font-bold leading-tight text-app-primary dark:text-zinc-100">{value}</p>
+                  <p className="mt-1 truncate pl-4 text-[13px] font-semibold leading-tight text-app-primary dark:text-zinc-100">{value}</p>
                 </div>
               ))}
             </div>
@@ -290,7 +290,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(150px,1.15fr)] lg:items-center">
               <div className="min-w-0 rounded-2xl bg-elevated/70 px-4 py-3 lg:px-3">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena vozila</p>
-                <p className="mt-0.5 truncate tabular-nums text-2xl font-black tracking-tight text-app-primary dark:text-zinc-100 xl:text-3xl">{formatEuro(car.price)}</p>
+                <p className="mt-0.5 truncate font-sans text-2xl font-bold tracking-tight tabular-nums text-app-primary dark:text-zinc-100 xl:text-3xl">{formatEuro(car.price)}</p>
               </div>
 
               {isOwner ? (
@@ -348,7 +348,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {isOwner ? (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Moj oglas</p>
-                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Oglas je objavljen sa tvog naloga</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Oglas je objavljen sa tvog naloga</h2>
                 <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
                   Podatke i fotografije možeš da izmeniš dugmetom „Uredi oglas”.
                 </p>
@@ -356,13 +356,13 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             ) : (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
-                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O vlasniku</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">O vlasniku</h2>
                 <div className="mt-4 flex min-w-0 items-center gap-3">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-zinc-950">
                     <span className="text-base font-black">{car.owner.name[0]}</span>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
+                    <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
                     <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
@@ -385,7 +385,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
 
             <section className={CARD}>
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Preuzimanje vozila</p>
-              <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Lokacija</h2>
+              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Lokacija</h2>
               <div className="mt-4 flex items-start gap-3 rounded-2xl bg-elevated p-4">
                 <MapPin size={18} className="mt-0.5 shrink-0 text-brand-text" />
                 <div className="min-w-0">
@@ -406,7 +406,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Dogovor o zameni</p>
-                  <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100 sm:text-xl">Šta vlasnik traži?</h2>
+                  <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100 sm:text-2xl">Šta vlasnik traži?</h2>
                   <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
                     Vlasnik prima ponude za zamenu. Predstavi automobil koji nudiš, a detalje dogovorite direktno kroz ponudu.
                   </p>
@@ -416,7 +416,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
 
             <section className={CARD}>
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Opis oglasa</p>
-              <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O automobilu</h2>
+              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">O automobilu</h2>
               <p className="mt-4 whitespace-pre-line break-words text-sm leading-7 text-app-secondary dark:text-zinc-400 sm:text-base">
                 {car.description}
               </p>
@@ -425,7 +425,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             <section className="overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
               <div className="border-b border-surface px-5 py-5 dark:border-zinc-800 sm:px-6">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Tehnički podaci</p>
-                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Motor i performanse</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Motor i performanse</h2>
               </div>
               <div className="divide-y divide-surface dark:divide-zinc-800">
                 {engineDetails.map(({ label, value }) => (
@@ -440,7 +440,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {car.equipment && car.equipment.length > 0 && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Komfor i bezbednost</p>
-                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Oprema vozila</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Oprema vozila</h2>
                 <div className="mt-5 space-y-5">
                   {EQUIPMENT_CATEGORIES.map((category) => {
                     const items = category.items.filter((item) => car.equipment!.includes(item.id));
@@ -473,7 +473,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {car.modifications && car.modifications.length > 0 && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Dodatno</p>
-                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Modifikacije</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Modifikacije</h2>
                 <ul className="mt-4 space-y-3">
                   {car.modifications.map((mod) => (
                     <li key={mod} className="flex items-start gap-2.5 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
@@ -493,7 +493,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {garageMounted && authReady && isLoggedIn && !isOwner && !selectedCar && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Poređenje zamene</p>
-                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Dodaj svoj auto</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Dodaj svoj auto</h2>
                 <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
                   Doplata je razlika između vrednosti tvog i ovog vozila. Kada dodaš svoj auto u
                   garažu, ovde ćeš videti koliko ko doplaćuje.
@@ -511,7 +511,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {garageMounted && showTrade && tl && selectedCar && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Za prijavljene korisnike</p>
-                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Poređenje zamene</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Poređenje zamene</h2>
                 <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3">
                   <div className="min-w-0 rounded-2xl bg-elevated p-3 text-center sm:p-4">
                     <p className="text-[10px] text-app-muted">Tvoj auto</p>

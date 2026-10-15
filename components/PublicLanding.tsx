@@ -148,12 +148,12 @@ function ListingCard({ car }: { car: Car }) {
       <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-bold text-zinc-950 sm:text-base">{carTitle(car)}</h3>
-            <p className="mt-0.5 truncate text-xs text-zinc-500">{carSubtitle(car)}</p>
+            <h3 className="truncate text-base font-semibold text-zinc-950 sm:text-lg">{carTitle(car)}</h3>
+            <p className="mt-0.5 truncate text-xs text-[#52525B]">{carSubtitle(car)}</p>
           </div>
-          <span className="shrink-0 text-sm font-bold text-zinc-950 sm:text-base">{formatEuro(car.price)}</span>
+          <span className="shrink-0 font-sans text-[22px] font-bold tabular-nums text-zinc-950">{formatEuro(car.price)}</span>
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-zinc-500">
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[#52525B]">
           <span>{formatKm(car.mileage)}</span>
           <span>{fuelLabel(car.specs.fuelType)}</span>
           <span>{transmissionLabel(car.specs.transmission)}</span>

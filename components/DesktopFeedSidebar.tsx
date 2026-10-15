@@ -32,7 +32,7 @@ interface DesktopFeedSidebarProps {
   showTrade: boolean;
 }
 
-const SECTION_TITLE = 'text-[11px] font-bold text-app-primary dark:text-zinc-100';
+const SECTION_TITLE = 'text-xs font-bold text-app-primary dark:text-zinc-100';
 const SURFACE = 'rounded-xl border border-surface bg-card-surface p-3 dark:border-zinc-800 dark:bg-zinc-900';
 
 export function DesktopFeedSidebar({
@@ -105,16 +105,16 @@ export function DesktopFeedSidebar({
               )}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[11px] font-bold text-app-primary dark:text-zinc-100">
+              <p className="truncate text-xs font-semibold text-app-primary dark:text-zinc-100">
                 {selectedCar.brand} {selectedCar.model}
               </p>
-              <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate text-[9px] text-app-muted">
+              <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate text-[11px] text-app-muted">
                 <span>{formatYear(selectedCar.year)}</span>
                 <span aria-hidden="true">·</span>
                 <Fuel size={11} className="flex-shrink-0" />
                 <span className="truncate">{fuelLabel(selectedCar.specs.fuelType)}</span>
               </p>
-              <p className="mt-0.5 truncate text-[9px] text-app-muted">
+              <p className="mt-0.5 truncate text-[11px] text-app-muted">
                 {formatKm(selectedCar.mileage)} · {selectedCar.specs.power}
               </p>
             </div>

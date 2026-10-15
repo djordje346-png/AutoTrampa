@@ -943,13 +943,13 @@ function AuthenticatedFeed({
                   {/* Title and specs reserve consistent space so cards align in each row. */}
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
+                      <h2 className="line-clamp-2 min-h-10 text-base font-semibold leading-snug text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
                         {carTitle(car)}
                       </h2>
                     </Link>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400 desktop:mt-2">
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-xs text-app-secondary dark:text-zinc-400 desktop:mt-2">
                       <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
                       <span className="text-app-muted/60" aria-hidden="true">·</span>
                       <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
@@ -967,7 +967,7 @@ function AuthenticatedFeed({
                    */}
                   <div className="mt-auto pt-3.5 desktop:pt-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                      <p className="shrink-0 font-sans text-[22px] font-bold tracking-tight tabular-nums text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
                       {tl && (
                         <span className={`inline-flex min-w-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none ${tl.bg} ${tl.color}`}>
                           <span className="truncate">{tl.label}</span>

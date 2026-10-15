@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* LIGHT THEME (default) */
-    --background: 0 0% 100%;
+    --background: 60 13% 96%;
     --foreground: 240 10% 10%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 10%;
@@ -13,7 +13,9 @@
     --popover-foreground: 240 10% 10%;
     --primary: 56.16 100% 49.02%;
     --brand-text: 56.16 100% 25%;
-    --brand-hover: 54 100% 45%;
+    --brand-hover: 56.24 100% 44.9%;
+    --brand-soft: 58 100% 90%;
+    --brand-soft-border: 56 77% 80%;
     --primary-foreground: 0 0% 0%;
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 10% 10%;
@@ -25,18 +27,18 @@
     --destructive-foreground: 0 0% 100%;
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 56.16 100% 49.02%;
+    --ring: 56.16 100% 25%;
     --radius: 0.75rem;
 
     /* semantic surface tokens (light defaults) */
-    --surface-base: 0 0% 96%;
+    --surface-base: 60 13% 96%;
     --surface-card: 0 0% 100%;
-    --surface-elevated: 240 5% 92%;
-    --surface-hover: 240 5% 88%;
-    --surface-border: 240 6% 88%;
+    --surface-elevated: 240 5% 96%;
+    --surface-hover: 240 5% 92%;
+    --surface-border: 240 5% 90%;
     --text-primary: 240 10% 10%;
-    --text-secondary: 240 4% 35%;
-    --text-muted: 240 4% 55%;
+    --text-secondary: 240 5% 34%;
+    --text-muted: 240 4% 46%;
     --on-accent: 0 0% 0%;
 
     /* Semantic state colours. The 400-level Tailwind shades are readable on a
@@ -64,7 +66,9 @@
     --popover-foreground: 240 5% 96%;
     --primary: 56.16 100% 49.02%;
     --brand-text: 56.16 100% 49.02%;
-    --brand-hover: 54 100% 45%;
+    --brand-hover: 56.24 100% 44.9%;
+    --brand-soft: 56 70% 19%;
+    --brand-soft-border: 56 70% 30%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 14%;
     --secondary-foreground: 0 0% 96%;
@@ -176,6 +180,12 @@
   }
   .bg-surface-border {
     background-color: hsl(var(--surface-border));
+  }
+  .bg-brand-soft {
+    background-color: hsl(var(--brand-soft));
+  }
+  .border-brand-soft {
+    border-color: hsl(var(--brand-soft-border));
   }
   .text-app-primary {
     color: hsl(var(--text-primary));
@@ -295,7 +305,7 @@
 }
 
 .btn-primary-compact {
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   padding: 0.5rem 0.75rem;
 }
 

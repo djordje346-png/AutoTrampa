@@ -224,13 +224,13 @@ export default function SearchClient() {
                         <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text">
                           {bodyLabel(car.bodyType)}
                         </p>
-                        <h3 className={`${isLoggedIn ? 'truncate text-sm' : 'line-clamp-2 min-h-10 text-base'} font-bold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100`}>
+                        <h3 className={`${isLoggedIn ? 'truncate text-sm' : 'line-clamp-2 min-h-10 text-base sm:text-lg'} font-semibold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100`}>
                           {carTitle(car)}
                         </h3>
                         <p className="text-xs text-app-muted">{displayValue(car.generation)}</p>
                       </Link>
                       <div className="flex flex-shrink-0 items-start gap-2">
-                        <p className="text-sm font-bold text-app-primary">{formatEuro(car.price)}</p>
+                        <p className={`${isLoggedIn ? 'text-sm font-semibold' : 'font-sans text-[22px] font-bold tabular-nums'} text-app-primary dark:text-zinc-100`}>{formatEuro(car.price)}</p>
                         <button
                           onClick={() => void likeCar(car)}
                           disabled={isLiking(car.id)}

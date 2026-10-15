@@ -71,7 +71,7 @@ const config: Config = {
           300: '#FAEB00',
           400: 'hsl(var(--brand-text))',
           500: '#FAEB00',
-          600: '#E3D400',
+          600: '#E5D700',
           700: '#625900',
         },
       },
