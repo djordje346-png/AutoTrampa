@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info } from 'lucide-react';
+import { ArrowLeft, HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info, Pencil } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel, vehicleConditionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
-import { getCarImages, type Car } from '@/types';
+import { getCarImages, type Car, type MyGarageCar } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
-import { useGarage } from '@/hooks/use-garage';
+import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
 import { useSwipes } from '@/hooks/use-swipes';
@@ -19,6 +19,7 @@ import { ImageLightbox } from '@/components/ImageLightbox';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import { toast } from 'sonner';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
+import CarForm from '@/components/CarForm';
 
 /** Shared card chrome, so every block on the page has the same padding. */
 const CARD = 'rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6';
@@ -30,14 +31,19 @@ const CHIP = 'flex min-h-11 items-center justify-center gap-2 rounded-xl border 
  * `page.tsx`), so this component always receives a car and never has to show a
  * client-side "loading" or "not found" state.
  */
-export default function CarDetail({ car }: { car: Car }) {
+export default function CarDetail({ car: listing }: { car: Car }) {
   const router = useRouter();
-  const { selectedCar, mounted: garageMounted } = useGarage();
+  const [editedListing, setEditedListing] = useState<MyGarageCar | null>(null);
+  const [ownEditOpen, setOwnEditOpen] = useState(false);
+  const car = editedListing ?? listing;
+  const { cars: garageCars, selectedCar, updateCar, mounted: garageMounted } = useGarage();
   const { save } = useSaved();
-  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
   const { recordSwipe } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
-  const showTrade = authReady && isLoggedIn && selectedCar !== null;
+  const isOwner = Boolean(authReady && userId && car.ownerId && car.ownerId === userId);
+  const ownerGarageCar = isOwner ? garageCars.find((garageCar) => garageCar.id === car.id) ?? null : null;
+  const showTrade = authReady && isLoggedIn && !isOwner && selectedCar !== null;
   const location = [displayValue(car.city), displayValue(car.country)].filter(Boolean).join(', ');
   const [offerOpen, setOfferOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
@@ -67,16 +73,18 @@ export default function CarDetail({ car }: { car: Car }) {
   }
 
   // Only meaningful with a car of your own to compare against.
-  const tl = selectedCar ? getTradeLabel(selectedCar, car) : null;
+  const tl = selectedCar && !isOwner ? getTradeLabel(selectedCar, car) : null;
   /**
    * Body listings carry no phone number by design, so the call button has to
    * explain itself instead of silently disappearing.
    */
-  const contactNote = car.owner.phone
+  const contactNote = isOwner || !authReady
     ? null
-    : !authReady || !isLoggedIn
-      ? 'Prijavi se da vidiš kako da stupiš u kontakt sa vlasnikom.'
-      : 'Vlasnik nije ostavio broj telefona. Pošalji ponudu i dogovorite se kroz poruke.';
+    : car.owner.phone
+      ? null
+      : !isLoggedIn
+        ? 'Prijavi se da vidiš kako da stupiš u kontakt sa vlasnikom.'
+        : 'Vlasnik nije ostavio broj telefona. Pošalji ponudu i dogovorite se kroz poruke.';
   const carImages = getCarImages(car);
   // "E60 · Sapphire Black", or nothing when the form left both fields empty.
   const subtitle = carSubtitle(car);
@@ -101,6 +109,7 @@ export default function CarDetail({ car }: { car: Car }) {
   ];
 
   function handleOfferClick() {
+    if (isOwner) return;
     const continueToOffer = () => requestPhoneAction(() => {
       if (!selectedCar) {
         toast.error('Prvo dodaj svoj auto u garažu.', {
@@ -126,6 +135,33 @@ export default function CarDetail({ car }: { car: Car }) {
     }
     continueToOffer();
   }
+
+  function handleOwnListingEdit() {
+    if (!garageMounted) return;
+    if (!ownerGarageCar) {
+      router.push('/garage');
+      return;
+    }
+    setOwnEditOpen(true);
+  }
+
+  async function handleOwnListingSave(updatedCar: MyGarageCar) {
+    const result = await updateCar(updatedCar);
+    if (!result.ok) {
+      toast.error(garageErrorMessage(result.error, 'update'));
+      return;
+    }
+    setEditedListing(updatedCar);
+    setActiveImage(0);
+    setOwnEditOpen(false);
+    toast.success('Oglas je ažuriran.');
+  }
+
+  const ownerActionLabel = !garageMounted
+    ? 'Učitavanje…'
+    : ownerGarageCar
+      ? 'Uredi oglas'
+      : 'Otvori garažu';
 
   return (
     <div className="min-h-screen pb-28 md:pb-10">
@@ -163,15 +199,17 @@ export default function CarDetail({ car }: { car: Car }) {
               </button>
 
               <div className="flex gap-2">
-                <button
-                  onClick={() => void likeCar(car)}
-                  disabled={isLiking(car.id)}
-                  aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-                  title="Lajkuj i sačuvaj za match"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-colors hover:text-brand-300 disabled:opacity-60"
-                >
-                  <HeartHandshake size={17} />
-                </button>
+                {authReady && !isOwner && (
+                  <button
+                    onClick={() => void likeCar(car)}
+                    disabled={isLiking(car.id)}
+                    aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
+                    title="Lajkuj i sačuvaj za match"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-colors hover:text-brand-300 disabled:opacity-60"
+                  >
+                    <HeartHandshake size={17} />
+                  </button>
+                )}
                 <button
                   onClick={shareCar}
                   aria-label="Podeli oglas"
@@ -209,7 +247,7 @@ export default function CarDetail({ car }: { car: Car }) {
             <section className={`flex min-w-0 flex-col ${CARD}`}>
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-text">
-                Oglas za zamenu
+                {isOwner ? 'Tvoj oglas' : 'Oglas za zamenu'}
               </span>
               {showTrade && tl && (
                 <span className={`rounded-full border px-3 py-1 text-[11px] font-bold ${tl.bg} ${tl.color}`}>
@@ -255,49 +293,51 @@ export default function CarDetail({ car }: { car: Car }) {
                 <p className="mt-0.5 truncate tabular-nums text-2xl font-black tracking-tight text-app-primary dark:text-zinc-100 xl:text-3xl">{formatEuro(car.price)}</p>
               </div>
 
-              <div className="grid min-w-0 gap-2">
+              {isOwner ? (
                 <button
-                  onClick={handleOfferClick}
-                  className="btn-primary hidden h-12 min-h-12 w-full min-w-0 px-3 py-0 text-xs md:inline-flex"
+                  onClick={handleOwnListingEdit}
+                  disabled={!garageMounted}
+                  className="btn-primary hidden h-12 min-h-12 w-full min-w-0 px-3 py-0 text-xs disabled:cursor-wait disabled:opacity-60 md:inline-flex"
                 >
-                  <ArrowLeftRight size={15} className="shrink-0" />
-                  <span className="truncate">Pošalji ponudu</span>
+                  <Pencil size={15} className="shrink-0" />
+                  <span className="truncate">{ownerActionLabel}</span>
                 </button>
-                {car.owner.phone ? (
-                  <a
-                    href={`tel:${car.owner.phone}`}
-                    aria-label={`Pozovi ${car.owner.name}`}
-                    className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-hover-surface hover:text-brand-text active:scale-[0.98] dark:border-zinc-800"
-                  >
-                    <Phone size={15} className="shrink-0" />
-                    <span className="truncate">Pozovi</span>
-                  </a>
-                ) : (
+              ) : authReady ? (
+                <div className="grid min-w-0 gap-2">
                   <button
-                    type="button"
-                    disabled
-                    aria-disabled="true"
-                    title="Vlasnik nije ostavio broj telefona — kontakt ide preko ponude"
-                    className="inline-flex h-12 min-h-12 w-full min-w-0 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary opacity-55 shadow-sm dark:border-zinc-800"
+                    onClick={handleOfferClick}
+                    className="btn-primary hidden h-12 min-h-12 w-full min-w-0 px-3 py-0 text-xs md:inline-flex"
                   >
-                    <Phone size={15} className="shrink-0" />
-                    <span className="truncate">Pozovi</span>
+                    <ArrowLeftRight size={15} className="shrink-0" />
+                    <span className="truncate">Pošalji ponudu</span>
                   </button>
-                )}
-              </div>
+                  {car.owner.phone ? (
+                    <a
+                      href={`tel:${car.owner.phone}`}
+                      aria-label={`Pozovi ${car.owner.name}`}
+                      className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-hover-surface hover:text-brand-text active:scale-[0.98] dark:border-zinc-800"
+                    >
+                      <Phone size={15} className="shrink-0" />
+                      <span className="truncate">Pozovi</span>
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      aria-disabled="true"
+                      title="Vlasnik nije ostavio broj telefona — kontakt ide preko ponude"
+                      className="inline-flex h-12 min-h-12 w-full min-w-0 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary opacity-55 shadow-sm dark:border-zinc-800"
+                    >
+                      <Phone size={15} className="shrink-0" />
+                      <span className="truncate">Pozovi</span>
+                    </button>
+                  )}
+                </div>
+              ) : <div aria-hidden="true" className="hidden h-12 md:block" />}
             </div>
 
-            {/*
-              * Matching full-width actions: send the offer (primary yellow)
-              * and call the owner (secondary). Saving moved to the gallery heart,
-              * which is where every other screen in the app keeps it.
-              *
-              * Real listings never carry a phone number — it lives in the private
-              * `profiles` row and is not selected for the public feed — so the
-              * call button stays in place but disabled, explaining the situation,
-              * rather than vanishing and leaving the row looking lopsided.
-              */}
-            {contactNote && (
+            {/* Keep the missing-phone explanation only on other users' listings. */}
+            {!isOwner && contactNote && (
               <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-app-muted">
                 <Info size={12} className="mt-0.5 shrink-0" />
                 {contactNote}
@@ -305,33 +345,43 @@ export default function CarDetail({ car }: { car: Car }) {
             )}
             </section>
 
-            <section className={CARD}>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
-              <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O vlasniku</h2>
-              <div className="mt-4 flex min-w-0 items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-zinc-950">
-                  <span className="text-base font-black">{car.owner.name[0]}</span>
+            {isOwner ? (
+              <section className={CARD}>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Moj oglas</p>
+                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Oglas je objavljen sa tvog naloga</h2>
+                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+                  Podatke i fotografije možeš da izmeniš dugmetom „Uredi oglas”.
+                </p>
+              </section>
+            ) : (
+              <section className={CARD}>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
+                <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">O vlasniku</h2>
+                <div className="mt-4 flex min-w-0 items-center gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-zinc-950">
+                    <span className="text-base font-black">{car.owner.name[0]}</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
+                    <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
+                    <Star size={13} className="fill-brand-500 text-brand-500" />
+                    <span className="text-xs font-bold text-app-primary dark:text-zinc-100">{car.owner.rating.toFixed(1)}</span>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
-                  <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
+                <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 dark:border-zinc-800">
+                  <span className="text-sm text-app-muted">Ocena vlasnika</span>
+                  <span className="text-sm font-semibold text-app-secondary dark:text-zinc-400">{car.owner.rating.toFixed(1)} / 5</span>
                 </div>
-                <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
-                  <Star size={13} className="fill-brand-500 text-brand-500" />
-                  <span className="text-xs font-bold text-app-primary dark:text-zinc-100">{car.owner.rating.toFixed(1)}</span>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 dark:border-zinc-800">
-                <span className="text-sm text-app-muted">Ocena vlasnika</span>
-                <span className="text-sm font-semibold text-app-secondary dark:text-zinc-400">{car.owner.rating.toFixed(1)} / 5</span>
-              </div>
-              {car.owner.phone && (
-                <a href={`tel:${car.owner.phone}`} className={`mt-4 w-full hover:text-brand-text ${CHIP}`}>
-                  <Phone size={16} />
-                  Pozovi vlasnika
-                </a>
-              )}
-            </section>
+                {car.owner.phone && (
+                  <a href={`tel:${car.owner.phone}`} className={`mt-4 w-full hover:text-brand-text ${CHIP}`}>
+                    <Phone size={16} />
+                    Pozovi vlasnika
+                  </a>
+                )}
+              </section>
+            )}
 
             <section className={CARD}>
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Preuzimanje vozila</p>
@@ -440,7 +490,7 @@ export default function CarDetail({ car }: { car: Car }) {
               * block, because "why is there no doplata here" is the first
               * question a new user has.
               */}
-            {garageMounted && authReady && isLoggedIn && !selectedCar && (
+            {garageMounted && authReady && isLoggedIn && !isOwner && !selectedCar && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Poređenje zamene</p>
                 <h2 className="mt-1 text-lg font-bold text-app-primary dark:text-zinc-100">Dodaj svoj auto</h2>
@@ -485,23 +535,38 @@ export default function CarDetail({ car }: { car: Car }) {
       </section>
 
       {/* Mobile action bar, sitting above the fixed bottom navigation. */}
-      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 border-t border-surface bg-app/95 px-4 py-3 shadow-lg backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/95">
-        <div className="mx-auto flex w-full max-w-md gap-2 pb-4">
-          <button onClick={handleOfferClick} className="btn-primary min-h-12 min-w-0 flex-1 text-sm">
-            <ArrowLeftRight size={16} className="shrink-0" />
-            <span className="truncate">Pošalji ponudu</span>
-          </button>
-          {car.owner.phone && (
-            <a
-              href={`tel:${car.owner.phone}`}
-              aria-label={`Pozovi ${car.owner.name}`}
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-zinc-800"
-            >
-              <Phone size={17} />
-            </a>
-          )}
+      {authReady && (
+        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 border-t border-surface bg-app/95 px-4 py-3 shadow-lg backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/95">
+          <div className="mx-auto flex w-full max-w-md gap-2 pb-4">
+            {isOwner ? (
+              <button
+                onClick={handleOwnListingEdit}
+                disabled={!garageMounted}
+                className="btn-primary min-h-12 min-w-0 flex-1 text-sm disabled:cursor-wait disabled:opacity-60"
+              >
+                <Pencil size={16} className="shrink-0" />
+                <span className="truncate">{ownerActionLabel}</span>
+              </button>
+            ) : (
+              <>
+                <button onClick={handleOfferClick} className="btn-primary min-h-12 min-w-0 flex-1 text-sm">
+                  <ArrowLeftRight size={16} className="shrink-0" />
+                  <span className="truncate">Pošalji ponudu</span>
+                </button>
+                {car.owner.phone && (
+                  <a
+                    href={`tel:${car.owner.phone}`}
+                    aria-label={`Pozovi ${car.owner.name}`}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-zinc-800"
+                  >
+                    <Phone size={17} />
+                  </a>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {lightboxOpen && (
         <ImageLightbox
@@ -510,6 +575,14 @@ export default function CarDetail({ car }: { car: Car }) {
           onIndexChange={setActiveImage}
           onClose={() => setLightboxOpen(false)}
           altPrefix={`${car.brand} ${car.model}`}
+        />
+      )}
+
+      {isOwner && ownEditOpen && ownerGarageCar && (
+        <CarForm
+          editingCar={ownerGarageCar}
+          onSave={handleOwnListingSave}
+          onCancel={() => setOwnEditOpen(false)}
         />
       )}
 
