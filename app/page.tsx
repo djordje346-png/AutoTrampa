@@ -696,7 +696,7 @@ function AuthenticatedFeed({
             {swipeIndex < swipeCars.length && swipeCar ? (
               <>
                 {/* Progress dots */}
-                <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm lg:mb-3 lg:max-w-5xl">
+                <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm lg:mb-3 lg:max-w-2xl">
                   {swipeCars.map((_, i) => (
                     <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
                       i === swipeIndex ? 'w-6 bg-brand-400' : i < swipeIndex ? 'w-1.5 bg-brand-400/40' : 'w-1.5 bg-elevated'
@@ -705,20 +705,19 @@ function AuthenticatedFeed({
                 </div>
 
                 {/* Card stack */}
-                <div className="relative w-full max-w-sm lg:max-w-5xl">
+                <div className="relative w-full max-w-sm lg:max-w-2xl">
                   {/* Next card peeking behind */}
                   {swipeCars[swipeIndex + 1] && (
-                    <div className="absolute inset-0 grid grid-cols-1 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-lg dark:border-zinc-800 dark:bg-zinc-900 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
-                      <div className="relative h-72 sm:h-80 lg:h-[min(58vh,520px)]">
+                    <div className="absolute inset-0 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-lg dark:border-zinc-800 dark:bg-zinc-900" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
+                      <div className="relative h-72 sm:h-80 lg:h-[min(40vh,380px)]">
                         <img src={swipeCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
                       </div>
-                      <div className="hidden border-l border-surface dark:border-zinc-800 lg:block" />
                     </div>
                   )}
 
                   {/* Active card */}
                   <div
-                    className="relative grid w-full grid-cols-1 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-zinc-800 dark:bg-zinc-900 lg:max-w-5xl lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]"
+                    className="relative w-full overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-zinc-800 dark:bg-zinc-900 lg:max-w-2xl"
                     style={{
                       transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
                       transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
@@ -731,7 +730,7 @@ function AuthenticatedFeed({
                     onPointerCancel={handlePointerUp}
                   >
                     {/* Image */}
-                    <div className="relative h-72 sm:h-80 lg:h-[min(58vh,520px)]">
+                    <div className="relative h-72 sm:h-80 lg:h-[min(40vh,380px)]">
                       <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover pointer-events-none" draggable={false} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent pointer-events-none" />
 
@@ -760,7 +759,7 @@ function AuthenticatedFeed({
                     </div>
 
                     {/* Info */}
-                    <div className="p-5 lg:flex lg:flex-col lg:justify-center lg:p-7 xl:p-8">
+                    <div className="p-5 lg:p-6">
                       <div className="flex items-start justify-between mb-2 gap-2">
                         <div className="min-w-0">
                           <h2 className="text-lg font-black text-app-primary dark:text-zinc-100 tracking-tight truncate">{carTitle(swipeCar)}</h2>
