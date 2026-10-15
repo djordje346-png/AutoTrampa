@@ -1,6 +1,7 @@
 export type BodyType = 'Sedan' | 'Caravan' | 'Hatchback' | 'SUV' | 'Coupe' | 'Convertible';
-export type FuelType = 'Diesel' | 'Petrol' | 'Hybrid' | 'Electric';
+export type FuelType = 'Diesel' | 'Petrol' | 'Hybrid' | 'Electric' | 'LPG' | 'CNG';
 export type Transmission = 'Manual' | 'Automatic' | 'Semi-Auto';
+export type VehicleCondition = 'good' | 'minor_work' | 'major_work' | 'not_running';
 
 export interface CarSpec {
   engine: string;
@@ -8,8 +9,8 @@ export interface CarSpec {
   cylinders: number;
   power: string;
   torque: string;
-  fuelType: FuelType;
-  transmission: Transmission;
+  fuelType: FuelType | null;
+  transmission: Transmission | null;
   drivetrain: string;
   topSpeed: string;
   acceleration: string;
@@ -29,10 +30,10 @@ export interface Car {
   brand: string;
   model: string;
   generation: string;
-  year: number;
-  bodyType: BodyType;
+  year: number | null;
+  bodyType: BodyType | null;
   color: string;
-  mileage: number;
+  mileage: number | null;
   price: number;
   city: string;
   country: string;
@@ -43,6 +44,7 @@ export interface Car {
   description: string;
   modifications?: string[];
   equipment?: string[];
+  condition?: VehicleCondition | null;
 }
 
 export interface MyGarageCar extends Car {
@@ -61,9 +63,10 @@ export interface CarForm {
   model: string;
   generation: string;
   year: string;
-  bodyType: BodyType;
+  bodyType: BodyType | '';
   color: string;
   mileage: string;
+  mileageUnknown: boolean;
   price: string;
   city: string;
   image: string;
@@ -71,8 +74,9 @@ export interface CarForm {
   displacement: string;
   power: string;
   torque: string;
-  fuelType: FuelType;
-  transmission: Transmission;
+  fuelType: FuelType | '';
+  transmission: Transmission | '';
+  condition: VehicleCondition | '';
   equipment: string[];
   description: string;
 }

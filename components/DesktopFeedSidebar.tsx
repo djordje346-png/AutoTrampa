@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { DesktopCompactFilterGroups } from '@/components/FilterPanel';
 import { usePreferences } from '@/hooks/use-preferences';
 import { countActiveFilters, type SearchFilters, type TradeFilter } from '@/hooks/use-search-prefs';
-import { formatEuro } from '@/lib/cars';
+import { formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { fuelLabel } from '@/lib/labels';
 import { displayValue } from '@/lib/car-row';
 import { getSerbianPlace } from '@/lib/city-coordinates';
@@ -109,13 +109,13 @@ export function DesktopFeedSidebar({
                 {selectedCar.brand} {selectedCar.model}
               </p>
               <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate text-[9px] text-app-muted">
-                <span>{selectedCar.year}</span>
+                <span>{formatYear(selectedCar.year)}</span>
                 <span aria-hidden="true">·</span>
                 <Fuel size={11} className="flex-shrink-0" />
                 <span className="truncate">{fuelLabel(selectedCar.specs.fuelType)}</span>
               </p>
               <p className="mt-0.5 truncate text-[9px] text-app-muted">
-                {selectedCar.mileage.toLocaleString('sr-RS')} km · {selectedCar.specs.power}
+                {formatKm(selectedCar.mileage)} · {selectedCar.specs.power}
               </p>
             </div>
           </div>
@@ -159,7 +159,7 @@ export function DesktopFeedSidebar({
                     <span className="block truncate text-[11px] font-semibold text-app-primary dark:text-zinc-100">
                       {car.brand} {car.model} {displayValue(car.generation)}
                     </span>
-                    <span className="block text-[10px] text-app-muted">{car.year} · {formatEuro(car.price)}</span>
+                    <span className="block text-[10px] text-app-muted">{formatYear(car.year)} · {formatEuro(car.price)}</span>
                   </span>
                   {active && <Check size={14} className="flex-shrink-0 text-brand-text" />}
                 </button>

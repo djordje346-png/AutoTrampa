@@ -19,7 +19,7 @@ import type { Car } from '@/types';
 import BrandLockup from '@/components/BrandLockup';
 import PublicHeader from '@/components/PublicHeader';
 import { carSubtitle } from '@/lib/car-row';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 
 interface PublicLandingProps {
@@ -95,7 +95,7 @@ function CarPreview({ car, label }: { car?: Car; label: string }) {
         </p>
         <p className="mt-0.5 truncate text-[10px] text-zinc-500 sm:text-xs">
           {car
-            ? `${car.year} · ${fuelLabel(car.specs.fuelType)}`
+            ? `${formatYear(car.year)} · ${fuelLabel(car.specs.fuelType)}`
             : label === 'Tvoj auto'
               ? 'Dodaj auto da pronađeš zamenu'
               : 'Prikazujemo stvarne oglase vlasnika'}
@@ -148,7 +148,7 @@ function ListingCard({ car }: { car: Car }) {
       <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-bold text-zinc-950 sm:text-base">{car.year} {car.brand} {car.model}</h3>
+            <h3 className="truncate text-sm font-bold text-zinc-950 sm:text-base">{carTitle(car)}</h3>
             <p className="mt-0.5 truncate text-xs text-zinc-500">{carSubtitle(car)}</p>
           </div>
           <span className="shrink-0 text-sm font-bold text-zinc-950 sm:text-base">{formatEuro(car.price)}</span>

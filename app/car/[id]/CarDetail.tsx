@@ -4,9 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info } from 'lucide-react';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
-import { fuelLabel, transmissionLabel } from '@/lib/labels';
+import { fuelLabel, transmissionLabel, vehicleConditionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { getCarImages, type Car } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
@@ -46,7 +46,7 @@ export default function CarDetail({ car }: { car: Car }) {
   const currentCar = car;
 
   async function shareCar() {
-    const title = `${currentCar.year} ${currentCar.brand} ${currentCar.model} — ${formatEuro(currentCar.price)}`;
+    const title = `${carTitle(currentCar)} — ${formatEuro(currentCar.price)}`;
     const url = typeof window !== 'undefined' ? window.location.href : '';
 
     if (typeof navigator !== 'undefined' && navigator.share) {
@@ -80,20 +80,21 @@ export default function CarDetail({ car }: { car: Car }) {
   const carImages = getCarImages(car);
   // "E60 · Sapphire Black", or nothing when the form left both fields empty.
   const subtitle = carSubtitle(car);
+  const condition = vehicleConditionLabel(car.condition);
 
   const specs = [
     { icon: Gauge, label: 'Kilometraža', value: formatKm(car.mileage) },
     { icon: Fuel, label: 'Gorivo', value: fuelLabel(car.specs.fuelType) },
     { icon: Settings2, label: 'Menjač', value: transmissionLabel(car.specs.transmission) },
-    { icon: Calendar, label: 'Godina', value: String(car.year) },
+    { icon: Calendar, label: 'Godina', value: formatYear(car.year) },
     { icon: Zap, label: 'Snaga', value: car.specs.power },
-    { icon: Eye, label: 'Pogon', value: car.specs.drivetrain },
+    { icon: Eye, label: 'Pogon', value: displayValue(car.specs.drivetrain) || 'Nije navedeno' },
   ];
 
   const engineDetails = [
     { label: 'Motor', value: car.specs.engine },
     { label: 'Zapremina', value: car.specs.displacement },
-    { label: 'Cilindri', value: String(car.specs.cylinders) },
+    { label: 'Cilindri', value: car.specs.cylinders > 0 ? String(car.specs.cylinders) : 'Nije navedeno' },
     { label: 'Obrtni moment', value: car.specs.torque },
     { label: 'Maks. brzina', value: car.specs.topSpeed },
     { label: '0–100 km/h', value: car.specs.acceleration },
@@ -224,9 +225,10 @@ export default function CarDetail({ car }: { car: Car }) {
 
             <div className="mt-4 min-w-0">
               <h1 className="break-words text-[1.65rem] font-black leading-[1.08] tracking-tight text-app-primary dark:text-zinc-100 sm:text-2xl lg:text-3xl">
-                {car.year} {car.brand} {car.model}
+                {carTitle(car)}
               </h1>
               {subtitle && <p className="mt-1 text-sm text-app-muted">{subtitle}</p>}
+              {condition && <p className="mt-2 inline-flex rounded-full border border-surface bg-elevated px-3 py-1 text-xs font-semibold text-app-secondary dark:border-zinc-800 dark:text-zinc-300">Stanje: {condition}</p>}
               {location && (
                 <p className="mt-2 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
                   <MapPin size={15} className="shrink-0 text-app-muted" />

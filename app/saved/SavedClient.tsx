@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart, HeartHandshake, X, MapPin, Gauge, Fuel, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { carTitle, formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel } from '@/lib/labels';
 import { carSubtitle } from '@/lib/car-row';
@@ -175,7 +175,7 @@ export default function SavedClient() {
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
                       <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
-                        {car.year} {car.brand} {car.model}
+                    {carTitle(car)}
                       </h2>
                     </Link>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>

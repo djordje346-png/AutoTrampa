@@ -54,6 +54,7 @@ function carToRow(car: MyGarageCar, userId: string) {
     generation: car.generation === '-' ? null : car.generation,
     year: car.year,
     body_type: car.bodyType,
+    condition: car.condition ?? null,
     color: car.color,
     mileage: car.mileage,
     price: car.price,

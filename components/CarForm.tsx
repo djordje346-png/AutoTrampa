@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Image as ImageIcon, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type {
   BodyType,
   CarForm as CarFormType,
   FuelType,
   MyGarageCar,
   Transmission,
+  VehicleCondition,
 } from '@/types';
 import { getCarImages } from '@/types';
 import { CAR_MAKES, getCarModels, isCataloguedModel } from '@/lib/car-catalog';
@@ -32,6 +33,8 @@ const BODY_TYPES: BodyType[] = [
 const FUEL_TYPES: FuelType[] = [
   'Diesel',
   'Petrol',
+  'LPG',
+  'CNG',
   'Hybrid',
   'Electric',
 ];
@@ -47,9 +50,10 @@ const EMPTY_FORM: CarFormType = {
   model: '',
   generation: '',
   year: '',
-  bodyType: 'Sedan',
+  bodyType: '',
   color: '',
   mileage: '',
+  mileageUnknown: false,
   price: '',
   city: '',
   image: '',
@@ -57,8 +61,9 @@ const EMPTY_FORM: CarFormType = {
   displacement: '',
   power: '',
   torque: '',
-  fuelType: 'Diesel',
-  transmission: 'Manual',
+  fuelType: '',
+  transmission: '',
+  condition: '',
   equipment: [],
   description: '',
 };
@@ -67,7 +72,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const MIN_YEAR = 1886;
 type FormStep = 1 | 2 | 3;
 
-const DEFAULT_IMAGE =
+const LEGACY_DEFAULT_IMAGE =
   'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
 
 function carToForm(car: MyGarageCar): CarFormType {
@@ -75,10 +80,11 @@ function carToForm(car: MyGarageCar): CarFormType {
     brand: car.brand,
     model: car.model,
     generation: car.generation === '-' ? '' : car.generation,
-    year: String(car.year),
-    bodyType: car.bodyType,
+    year: car.year == null ? '' : String(car.year),
+    bodyType: car.bodyType ?? '',
     color: car.color === '-' ? '' : car.color,
-    mileage: String(car.mileage),
+    mileage: car.mileage == null ? '' : String(car.mileage),
+    mileageUnknown: car.mileage == null,
     price: String(car.price),
     city: car.city === '-' ? '' : car.city,
     image: car.image,
@@ -91,8 +97,9 @@ function carToForm(car: MyGarageCar): CarFormType {
       car.specs.power === '-' ? '' : car.specs.power,
     torque:
       car.specs.torque === '-' ? '' : car.specs.torque,
-    fuelType: car.specs.fuelType,
-    transmission: car.specs.transmission,
+    fuelType: car.specs.fuelType ?? '',
+    transmission: car.specs.transmission ?? '',
+    condition: car.condition ?? '',
     equipment: car.equipment || [],
     description: car.description || '',
   };
@@ -115,7 +122,7 @@ export function validateCarFormStep(
 ): Partial<Record<keyof CarFormType, string>> {
   const errors = validateCarForm(form);
   const keys: (keyof CarFormType)[] = step === 1
-    ? ['brand', 'model', 'year']
+    ? ['brand', 'model', 'year', 'bodyType', 'fuelType', 'transmission']
     : step === 2
       ? ['price', 'mileage', 'city']
       : [];
@@ -133,15 +140,27 @@ export function validateCarForm(form: CarFormType): Partial<Record<keyof CarForm
   else if (!Number.isFinite(price) || price <= 0) errors.price = 'Cena mora biti veća od nule.';
   else if (price > 1_000_000) errors.price = 'Cena deluje nerealno.';
 
-  if (form.year.trim()) {
+  if (!form.year.trim()) {
+    errors.year = 'Unesi godište vozila.';
+  } else {
     const year = parseInt(form.year, 10);
     if (!Number.isFinite(year) || year < MIN_YEAR || year > CURRENT_YEAR + 1) {
       errors.year = `Godište mora biti između ${MIN_YEAR} i ${CURRENT_YEAR + 1}.`;
     }
   }
 
-  if (form.mileage.trim() && parseInt(form.mileage, 10) > 2_000_000) {
-    errors.mileage = 'Kilometraža deluje nerealno.';
+  if (!form.bodyType) errors.bodyType = 'Izaberi tip karoserije.';
+  if (!form.fuelType) errors.fuelType = 'Izaberi gorivo.';
+  if (!form.transmission) errors.transmission = 'Izaberi menjač.';
+
+  if (!form.mileageUnknown) {
+    if (!form.mileage.trim()) errors.mileage = 'Unesi kilometražu ili označi da nije poznata.';
+    else {
+      const mileage = parseInt(form.mileage, 10);
+      if (!Number.isFinite(mileage) || mileage < 0 || mileage > 2_000_000) {
+        errors.mileage = 'Unesi kilometražu do 2.000.000 km ili označi da nije poznata.';
+      }
+    }
   }
 
   return errors;
@@ -154,10 +173,9 @@ export function formToMyGarageCar(
   /** Existing car when editing — fields the form does not expose are kept. */
   base?: MyGarageCar | null,
 ): MyGarageCar {
-  const mainImage =
-    imagesList && imagesList.length > 0
-      ? imagesList[0]
-      : form.image || DEFAULT_IMAGE;
+  const carImages = (imagesList?.length ? imagesList : form.image ? [form.image] : [])
+    .filter((image) => image && image !== LEGACY_DEFAULT_IMAGE);
+  const mainImage = carImages[0] ?? '';
 
   const user = userStore.get();
 
@@ -166,15 +184,15 @@ export function formToMyGarageCar(
     brand: form.brand,
     model: form.model,
     generation: form.generation || '-',
-    year: parseInt(form.year, 10) || 2000,
-    bodyType: form.bodyType,
+    year: parseInt(form.year, 10) || null,
+    bodyType: form.bodyType as BodyType,
     color: form.color || '-',
-    mileage: parseInt(form.mileage, 10) || 0,
+    mileage: form.mileageUnknown ? null : parseInt(form.mileage, 10),
     price: parseInt(form.price, 10) || 0,
     city: form.city || '-',
     country: base?.country ?? 'Serbia',
     image: mainImage,
-    images: imagesList && imagesList.length > 0 ? imagesList : [mainImage],
+    images: carImages,
 
     specs: {
       engine: form.engine || '-',
@@ -182,9 +200,9 @@ export function formToMyGarageCar(
       cylinders: base?.specs.cylinders ?? 0,
       power: form.power || '-',
       torque: form.torque || '-',
-      fuelType: form.fuelType,
-      transmission: form.transmission,
-      drivetrain: base?.specs.drivetrain ?? 'RWD',
+      fuelType: form.fuelType as FuelType,
+      transmission: form.transmission as Transmission,
+      drivetrain: base?.specs.drivetrain ?? '-',
       topSpeed: base?.specs.topSpeed ?? '-',
       acceleration: base?.specs.acceleration ?? '-',
     },
@@ -203,6 +221,7 @@ export function formToMyGarageCar(
     buildNotes: base?.buildNotes ?? [],
     estimatedValue: parseInt(form.price, 10) || 0,
     equipment: form.equipment,
+    condition: form.condition ? form.condition as VehicleCondition : null,
   };
 }
 
@@ -271,31 +290,32 @@ function CarFormFields({
   }
 
   const inputClass =
-    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10';
+    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 lg:h-10';
 
   const selectClass =
-    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-50';
+    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-50 lg:h-10';
 
   const errorRing = 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/10';
 
   const labelClass =
-    'mb-2 block text-xs font-medium text-app-muted';
+    'mb-2 block text-xs font-medium text-app-muted lg:mb-1.5';
   const modelOptions = getCarModels(form.brand);
+  const hasEngineDetails = Boolean(form.engine || form.displacement || form.power || form.torque);
   const showManualModel = manualModelSelected || Boolean(
     form.model.trim() && !isCataloguedModel(form.brand, form.model),
   );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 lg:space-y-3.5">
 
       {step === 1 && (
         <>
           <section>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 desktop:grid-cols-3 lg:gap-3">
               <div>
                 <VehicleCombobox
                   id="car-brand"
-                  label="Marka"
+                  label="Marka *"
                   value={form.brand}
                   options={CAR_MAKES}
                   placeholder="Pretraži marku"
@@ -331,7 +351,7 @@ function CarFormFields({
                 ) : (
                   <VehicleCombobox
                     id="car-model"
-                    label="Model"
+                    label="Model *"
                     value={form.model}
                     options={modelOptions}
                     placeholder="Pretraži model"
@@ -348,9 +368,10 @@ function CarFormFields({
                 <FieldError message={errors.model} />
               </div>
               <div>
-                <label htmlFor="car-year" className={labelClass}>Godina</label>
+                <label htmlFor="car-year" className={labelClass}>Godište *</label>
                 <input
                   id="car-year"
+                  required
                   value={form.year}
                   onChange={(event) => update('year', event.target.value.replace(/\D/g, '').slice(0, 4))}
                   placeholder="npr. 2005"
@@ -359,6 +380,36 @@ function CarFormFields({
                   className={`${inputClass} ${errors.year ? errorRing : ''}`}
                 />
                 <FieldError message={errors.year} />
+              </div>
+              <div>
+                <label htmlFor="car-fuel" className={labelClass}>Gorivo *</label>
+                <select
+                  id="car-fuel"
+                  required
+                  value={form.fuelType}
+                  onChange={(event) => update('fuelType', event.target.value as FuelType | '')}
+                  aria-invalid={Boolean(errors.fuelType)}
+                  className={`${selectClass} ${errors.fuelType ? errorRing : ''}`}
+                >
+                  <option value="">Izaberi gorivo</option>
+                  {FUEL_TYPES.map((fuel) => <option key={fuel} value={fuel}>{fuelLabel(fuel)}</option>)}
+                </select>
+                <FieldError message={errors.fuelType} />
+              </div>
+              <div>
+                <label htmlFor="car-transmission" className={labelClass}>Menjač *</label>
+                <select
+                  id="car-transmission"
+                  required
+                  value={form.transmission}
+                  onChange={(event) => update('transmission', event.target.value as Transmission | '')}
+                  aria-invalid={Boolean(errors.transmission)}
+                  className={`${selectClass} ${errors.transmission ? errorRing : ''}`}
+                >
+                  <option value="">Izaberi menjač</option>
+                  {TRANSMISSIONS.map((transmission) => <option key={transmission} value={transmission}>{transmissionLabel(transmission)}</option>)}
+                </select>
+                <FieldError message={errors.transmission} />
               </div>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-x-1 text-[10px] text-app-muted">
@@ -374,9 +425,9 @@ function CarFormFields({
       {step === 2 && (
       <>
       {/* CENA I LOKACIJA */}
-      <section className="border-t border-surface pt-5 dark:border-zinc-800">
+      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
 
-        <div className="mb-4">
+        <div className="mb-3 lg:mb-2">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
             Cena i lokacija
           </h2>
@@ -386,16 +437,17 @@ function CarFormFields({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 desktop:grid-cols-3 lg:gap-3">
 
           <div>
             <label htmlFor="car-price" className={labelClass}>
-              Cena (EUR) *
+              Cena vozila (EUR) *
             </label>
 
             <div className="relative">
               <input
                 id="car-price"
+                required
                 value={form.price}
                 onChange={(e) =>
                   update(
@@ -414,33 +466,45 @@ function CarFormFields({
               </span>
             </div>
             <FieldError message={errors.price} />
+            <p className="mt-1 text-[10px] leading-relaxed text-app-muted">Okvirna vrednost oglasa za poređenje i obračun doplate.</p>
           </div>
 
           <div>
             <label htmlFor="car-mileage" className={labelClass}>
-              Kilometraža
+              Kilometraža {form.mileageUnknown ? '(nepoznata)' : '*'}
             </label>
 
             <div className="relative">
               <input
                 id="car-mileage"
+                required={!form.mileageUnknown}
                 value={form.mileage}
+                disabled={form.mileageUnknown}
                 onChange={(e) =>
                   update(
                     'mileage',
                     e.target.value.replace(/\D/g, ''),
                   )
                 }
-                placeholder="198000"
+                placeholder={form.mileageUnknown ? 'Nije navedena' : 'npr. 198000'}
                 inputMode="numeric"
                 aria-invalid={Boolean(errors.mileage)}
-                className={`${inputClass} pr-14 ${errors.mileage ? errorRing : ''}`}
+                className={`${inputClass} pr-14 disabled:cursor-not-allowed disabled:opacity-60 ${errors.mileage ? errorRing : ''}`}
               />
 
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-app-muted">
                 KM
               </span>
             </div>
+            <label className="mt-2 inline-flex cursor-pointer items-center gap-2 text-[11px] text-app-muted">
+              <input
+                type="checkbox"
+                checked={form.mileageUnknown}
+                onChange={(event) => setForm({ ...form, mileageUnknown: event.target.checked, mileage: event.target.checked ? '' : form.mileage })}
+                className="h-4 w-4 rounded border-surface accent-brand-500"
+              />
+              Ne znam tačnu kilometražu
+            </label>
             <FieldError message={errors.mileage} />
           </div>
 
@@ -476,6 +540,22 @@ function CarFormFields({
             <FieldError message={errors.city} />
           </div>
 
+          <div>
+            <label htmlFor="car-condition" className={labelClass}>Stanje vozila <span className="font-normal">(opciono)</span></label>
+            <select
+              id="car-condition"
+              value={form.condition}
+              onChange={(event) => update('condition', event.target.value as VehicleCondition | '')}
+              className={selectClass}
+            >
+              <option value="">Nije navedeno</option>
+              <option value="good">Bez većih ulaganja</option>
+              <option value="minor_work">Potrebna manja ulaganja</option>
+              <option value="major_work">Potrebna veća ulaganja</option>
+              <option value="not_running">Neispravan / za popravku</option>
+            </select>
+          </div>
+
         </div>
       </section>
 
@@ -485,11 +565,11 @@ function CarFormFields({
       {step === 1 && (
       <>
       {/* KAROSERIJA */}
-      <section className="border-t border-surface pt-5 dark:border-zinc-800">
+      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
 
         <div className="mb-4">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
-            Tip karoserije
+            Tip karoserije *
           </h2>
 
           <p className="mt-1 text-xs text-app-muted">
@@ -506,6 +586,7 @@ function CarFormFields({
               <button
                 key={type}
                 type="button"
+                aria-pressed={active}
                 onClick={() =>
                   update('bodyType', type)
                 }
@@ -525,22 +606,18 @@ function CarFormFields({
           })}
 
         </div>
+        <FieldError message={errors.bodyType} />
       </section>
 
       {/* MOTOR */}
-      <section className="border-t border-surface pt-5 dark:border-zinc-800">
-
-        <div className="mb-4">
-          <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
-            Specifikacije motora
-          </h2>
-
-          <p className="mt-1 text-xs text-app-muted">
-            Dodajte detalje motora i performansi.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+        <details>
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-app-secondary marker:hidden dark:text-zinc-300">
+            <span>Dodatne specifikacije motora <span className="font-normal text-app-muted">(opciono{hasEngineDetails ? ' · podaci uneti' : ''})</span></span>
+            <ChevronDown size={16} className="shrink-0 text-app-muted" />
+          </summary>
+          <p className="mb-3 mt-1 text-xs text-app-muted">Unesi snagu i zapreminu ako ih znaš.</p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 
           <div>
             <label className={labelClass}>
@@ -605,56 +682,8 @@ function CarFormFields({
             />
           </div>
 
-          <div>
-            <label className={labelClass}>
-              Gorivo
-            </label>
-
-            <select
-              value={form.fuelType}
-              onChange={(e) =>
-                update(
-                  'fuelType',
-                  e.target.value as FuelType,
-                )
-              }
-              className={selectClass}
-            >
-              {FUEL_TYPES.map((fuel) => (
-                <option key={fuel} value={fuel}>
-                  {fuelLabel(fuel)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Menjač
-            </label>
-
-            <select
-              value={form.transmission}
-              onChange={(e) =>
-                update(
-                  'transmission',
-                  e.target.value as Transmission,
-                )
-              }
-              className={selectClass}
-            >
-              {TRANSMISSIONS.map((transmission) => (
-                <option
-                  key={transmission}
-                  value={transmission}
-                >
-                  {transmissionLabel(transmission)}
-                </option>
-              ))}
-            </select>
-          </div>
-
         </div>
+        </details>
       </section>
 
       </>
@@ -663,23 +692,23 @@ function CarFormFields({
       {step === 2 && (
       <>
       {/* OPIS */}
-      <section className="border-t border-surface pt-5 dark:border-zinc-800">
+      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
 
-        <div className="mb-4">
+        <div className="mb-3 lg:mb-2">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
             Opis
           </h2>
 
           <p className="mt-1 text-xs text-app-muted">
-            Opišite stanje vozila. Ako ostavite prazno, opis se generiše automatski.
+            Opišite servisnu istoriju, poznate nedostatke ili ulaganja. Ako ostavite prazno, prikazaće se sažetak podataka o vozilu.
           </p>
         </div>
 
         <textarea
           value={form.description}
           onChange={(e) => update('description', e.target.value.slice(0, 600))}
-          rows={4}
-          placeholder="Redovno servisiran, bez ulaganja, prvi vlasnik..."
+          rows={3}
+          placeholder="Npr. redovno održavan; potrebno je ulaganje u gume; posedujem servisne račune..."
           className="w-full resize-y rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 py-3 text-sm leading-relaxed text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10"
         />
         <p className="mt-1.5 text-right text-[11px] text-app-muted">
@@ -694,19 +723,19 @@ function CarFormFields({
       {step === 3 && (
       <>
       {/* FOTOGRAFIJE */}
-      <section className="border-t border-surface pt-5 dark:border-zinc-800">
+      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
 
-        <div className="mb-4">
+        <div className="mb-3 lg:mb-2">
           <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
             Fotografije
           </h2>
 
           <p className="mt-1 text-xs text-app-muted">
-            Dodajte do 20 fotografija.
+            Obavezna je najmanje jedna fotografija. Preporuka za dobar oglas: 4–6 fotografija.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 p-4">
+        <div className="rounded-2xl border border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 p-3 lg:p-3">
           <ImageUpload
             images={images}
             onChange={setImages}
@@ -717,18 +746,13 @@ function CarFormFields({
       </section>
 
       {/* OPREMA */}
-      <section className="border-t border-surface dark:border-zinc-800 pt-8">
-
-        <div className="mb-4">
-          <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
-            Oprema vozila
-          </h2>
-
-          <p className="mt-1 text-xs text-app-muted">
-            Štiklirajte opremu koju vaše vozilo poseduje.
-          </p>
-        </div>
-
+      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+        <details>
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-app-secondary dark:text-zinc-300">
+            <span>Oprema vozila <span className="font-normal text-app-muted">(opciono{form.equipment.length ? ` · ${form.equipment.length} izabrano` : ''})</span></span>
+            <ChevronDown size={16} className="shrink-0 text-app-muted" />
+          </summary>
+          <p className="mb-3 mt-1 text-xs text-app-muted">Označi samo opremu koju vozilo zaista poseduje.</p>
         <div className="space-y-2">
           {EQUIPMENT_CATEGORIES.map((category) => {
             const CatIcon = category.icon;
@@ -776,6 +800,7 @@ function CarFormFields({
             );
           })}
         </div>
+        </details>
       </section>
       </>
       )}
@@ -801,6 +826,8 @@ export default function CarFormComponent({
   const [images, setImages] =
     useState<string[]>([]);
 
+  const [photoError, setPhotoError] = useState('');
+
   const [mounted, setMounted] =
     useState(false);
 
@@ -820,13 +847,14 @@ export default function CarFormComponent({
       setForm(carToForm(editingCar));
       // Keep every photo on the car, not just the cover.
       const existing = getCarImages(editingCar).filter(
-        (img) => img && img !== DEFAULT_IMAGE,
+        (img) => img && img !== LEGACY_DEFAULT_IMAGE,
       );
       setImages(existing);
     } else {
       setForm(EMPTY_FORM);
       setImages([]);
     }
+    setPhotoError('');
   }, [editingCar]);
 
   const visibleErrors = validatedStep === step
@@ -868,7 +896,7 @@ export default function CarFormComponent({
   function handleSave() {
     const errors = validateCarForm(form);
     if (Object.keys(errors).length > 0) {
-      const targetStep: FormStep = errors.brand || errors.model || errors.year
+      const targetStep: FormStep = errors.brand || errors.model || errors.year || errors.bodyType || errors.fuelType || errors.transmission
         ? 1
         : 2;
       setStep(targetStep);
@@ -876,6 +904,13 @@ export default function CarFormComponent({
       setFocusRequest((current) => current + 1);
       return;
     }
+
+    if (images.length === 0) {
+      setPhotoError('Dodaj bar jednu stvarnu fotografiju svog vozila pre objave.');
+      contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    setPhotoError('');
 
     const id =
       editingCar?.id ||
@@ -910,7 +945,7 @@ export default function CarFormComponent({
         zIndex: 2147483647,
       }}
     >
-      <div className="flex h-full w-full flex-col overflow-hidden bg-app dark:bg-zinc-950 sm:h-[90vh] sm:max-h-[900px] sm:max-w-[960px] sm:rounded-2xl sm:border sm:border-surface sm:shadow-2xl dark:sm:border-zinc-800">
+      <div className="flex h-full w-full flex-col overflow-hidden bg-app dark:bg-zinc-950 sm:h-[94dvh] sm:max-h-[800px] sm:max-w-[960px] sm:rounded-2xl sm:border sm:border-surface sm:shadow-2xl dark:sm:border-zinc-800">
         <header className="safe-top shrink-0 border-b border-surface bg-app dark:border-zinc-800 dark:bg-zinc-950">
           <div className="mx-auto w-full max-w-[880px] px-4 pb-3 pt-3 sm:px-6 sm:pt-4">
             <div className="flex items-center justify-between gap-4">
@@ -955,8 +990,8 @@ export default function CarFormComponent({
         </header>
 
         <main ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="mx-auto w-full max-w-[880px] px-4 py-4 sm:px-6 sm:py-5">
-            <div className="mb-4">
+          <div className="mx-auto w-full max-w-[880px] px-4 py-3 sm:px-6 sm:py-4 lg:py-3">
+            <div className="mb-3 lg:mb-2">
               <h2 className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100 sm:text-xl">
                 {step === 1 ? 'Podaci o vozilu' : step === 2 ? 'Detalji oglasa' : 'Fotografije i oprema'}
               </h2>
@@ -969,16 +1004,20 @@ export default function CarFormComponent({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-surface bg-card-surface p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-5">
+            <div className="rounded-2xl border border-surface bg-card-surface p-3.5 dark:border-zinc-800 dark:bg-zinc-900 sm:p-4">
               <CarFormFields
                 key={editingCar?.id ?? 'new-car-form'}
                 form={form}
                 setForm={setForm}
                 images={images}
-                setImages={setImages}
+                setImages={(nextImages) => {
+                  setImages(nextImages);
+                  if (nextImages.length > 0) setPhotoError('');
+                }}
                 errors={visibleErrors}
                 step={step}
               />
+              {step === 3 && photoError && <p role="alert" className="mt-3 text-xs font-semibold text-tone-negative">{photoError}</p>}
             </div>
           </div>
         </main>

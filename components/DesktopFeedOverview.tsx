@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { CarFront, Check, ChevronDown, Flame, Pencil, Plus, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePreferences } from '@/hooks/use-preferences';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { fuelLabel } from '@/lib/labels';
 import { displayValue } from '@/lib/car-row';
 import type { MyGarageCar } from '@/types';
@@ -102,7 +102,7 @@ export function DesktopFeedOverview({
               {selectedCar.brand} {selectedCar.model} {displayValue(selectedCar.generation)}
             </span>
             <span className="mt-1 block truncate text-xs text-app-secondary dark:text-zinc-400">
-              {selectedCar.year} · {fuelLabel(selectedCar.specs.fuelType)} · {formatKm(selectedCar.mileage)}
+              {formatYear(selectedCar.year)} · {fuelLabel(selectedCar.specs.fuelType)} · {formatKm(selectedCar.mileage)}
             </span>
           </span>
           <ChevronDown size={17} className={`mr-1 flex-shrink-0 text-app-muted transition-transform ${carPickerOpen ? 'rotate-180' : ''}`} />
@@ -130,7 +130,7 @@ export function DesktopFeedOverview({
                     <span className="block truncate text-xs font-semibold text-app-primary dark:text-zinc-100">
                       {car.brand} {car.model} {displayValue(car.generation)}
                     </span>
-                    <span className="mt-0.5 block text-[11px] text-app-muted">{car.year} · {formatEuro(car.price)}</span>
+                    <span className="mt-0.5 block text-[11px] text-app-muted">{formatYear(car.year)} · {formatEuro(car.price)}</span>
                   </span>
                   {active && <Check size={16} className="flex-shrink-0 text-brand-text" />}
                 </button>

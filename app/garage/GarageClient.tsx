@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Wrench, Zap, TrendingUp, Settings, Gauge, Activity, MapPin, Plus, CreditCard as Edit3, Trash2, X, Check, Fuel, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { fuelLabel, transmissionLabel, bodyLabel } from '@/lib/labels';
 import { carSubtitle } from '@/lib/car-row';
 import { MyGarageCar, getCarImages } from '@/types';
@@ -198,7 +198,7 @@ export default function GarageClient() {
               <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
                 <div className="min-w-0">
                   <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary dark:text-zinc-100">
-                    {car.year} {car.brand} {car.model}
+                    {carTitle(car)}
                   </h2>
                   <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
@@ -293,7 +293,7 @@ export default function GarageClient() {
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <p className="text-brand-text text-[10px] font-bold uppercase tracking-widest mb-0.5">
-                  {previewCar.year} · {bodyLabel(previewCar.bodyType)}
+                  {formatYear(previewCar.year)} · {bodyLabel(previewCar.bodyType)}
                 </p>
                 <h2 className="text-xl font-black text-white tracking-tight">
                   {previewCar.brand} {previewCar.model} {previewCar.generation}

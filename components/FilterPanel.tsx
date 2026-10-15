@@ -32,7 +32,7 @@ const TRADE_OPTIONS: { key: SearchFilters['trade']; label: string }[] = [
 ];
 
 const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV', 'Coupe', 'Convertible'];
-const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'Hybrid', 'Electric'];
+const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'LPG', 'CNG', 'Hybrid', 'Electric'];
 
 const GROUP_TITLE = 'text-[11px] font-bold uppercase tracking-widest text-app-muted';
 const CHIP_BASE = 'rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors';

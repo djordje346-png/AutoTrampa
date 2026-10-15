@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, HeartHandshake, ArrowLeftRight, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { carTitle, formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, bodyLabel } from '@/lib/labels';
 import { useGarage } from '@/hooks/use-garage';
@@ -195,7 +195,7 @@ export default function SearchClient() {
                     className={isLoggedIn
                       ? 'relative h-36 w-full flex-shrink-0 sm:h-auto sm:w-28'
                       : 'relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden'}
-                    aria-label={`Detalji: ${car.year} ${car.brand} ${car.model}`}
+                    aria-label={`Detalji: ${carTitle(car)}`}
                   >
                     <img
                       src={car.image}
@@ -225,7 +225,7 @@ export default function SearchClient() {
                           {bodyLabel(car.bodyType)}
                         </p>
                         <h3 className={`${isLoggedIn ? 'truncate text-sm' : 'line-clamp-2 min-h-10 text-base'} font-bold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100`}>
-                          {car.year} {car.brand} {car.model}
+                          {carTitle(car)}
                         </h3>
                         <p className="text-xs text-app-muted">{displayValue(car.generation)}</p>
                       </Link>

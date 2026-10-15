@@ -107,7 +107,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-3 gap-2.5 lg:grid-cols-6">
         {images.map((imgUrl, index) => (
           <div
             key={`${index}-${imgUrl.slice(-24)}`}
@@ -149,7 +149,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
 
         {images.length < maxImages && (
           <label
-            className={`group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-surface dark:border-zinc-800 bg-elevated p-2 text-center transition hover:border-brand-500/50 hover:bg-brand-500/5 ${
+            className={`group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-surface dark:border-zinc-800 bg-elevated p-2 text-center transition hover:border-brand-500/50 hover:bg-brand-500/5 lg:aspect-auto lg:min-h-32 ${
               busy ? 'pointer-events-none opacity-60' : ''
             }`}
           >
@@ -174,8 +174,8 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
       </div>
 
       <p className="text-[11px] leading-relaxed text-app-muted">
-        Slike se automatski smanjuju na {MAX_IMAGE_DIMENSION} px i čuvaju lokalno u pregledaču.
-        Prva slika je naslovna.
+        Prva slika je naslovna. Najkorisnije su fotografije spolja, enterijera, instrument table i poznatih oštećenja.
+        Slike se optimizuju pri izboru i čuvaju uz oglas nakon objave.
       </p>
     </div>
   );

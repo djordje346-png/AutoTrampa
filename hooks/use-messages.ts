@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/use-auth';
 import { userStore } from '@/hooks/use-user';
+import { carTitle } from '@/lib/cars';
 
 export interface ChatMessage {
   id: string;
@@ -48,7 +49,7 @@ interface ConversationRow {
     brand: string;
     model: string;
     generation: string | null;
-    year: number;
+    year: number | null;
     image: string | null;
     owner_name: string | null;
   } | null;
@@ -66,7 +67,7 @@ function mapConversation(row: ConversationRow, userId: string): Conversation | n
   return {
     id: row.id,
     carId: row.car_id,
-    carTitle: `${row.car.year} ${row.car.brand} ${row.car.model} ${row.car.generation ?? ''}`.trim(),
+    carTitle: [carTitle(row.car), row.car.generation && row.car.generation !== '-' ? row.car.generation : ''].filter(Boolean).join(' '),
     carImage: row.car.image ?? '',
     ownerName: isBuyer ? row.car.owner_name ?? 'Korisnik' : row.buyer_name || 'Korisnik',
     ownerPhone: '',

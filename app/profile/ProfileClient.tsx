@@ -10,7 +10,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { useUser, initials } from '@/hooks/use-user';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { usePreferences } from '@/hooks/use-preferences';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { estimateUsageBytes } from '@/lib/storage';
 import { BodyType, MyGarageCar } from '@/types';
 import { bodyLabel } from '@/lib/labels';
@@ -191,7 +191,7 @@ export default function ProfileClient() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-app-primary dark:text-zinc-100 truncate">{activeCar.brand} {activeCar.model} {activeCar.generation}</p>
-                <p className="text-xs text-app-muted">{activeCar.year} · {formatKm(activeCar.mileage)}</p>
+                <p className="text-xs text-app-muted">{formatYear(activeCar.year)} · {formatKm(activeCar.mileage)}</p>
                 <p className="text-brand-text text-xs font-bold mt-0.5 dark:text-zinc-400">{formatEuro(activeCar.price)}</p>
               </div>
               <div className="flex items-center gap-1 bg-brand-500/10 border border-brand-500/30 rounded-full px-2 py-0.5">

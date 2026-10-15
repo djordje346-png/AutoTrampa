@@ -18,6 +18,7 @@ export const PUBLIC_CAR_ROW_COLUMNS = [
   'generation',
   'year',
   'body_type',
+  'condition',
   'color',
   'mileage',
   'price',
@@ -47,6 +48,7 @@ export interface CarRow {
   generation: string | null;
   year: number | null;
   body_type: string | null;
+  condition: string | null;
   color: string | null;
   mileage: number | null;
   price: number | string | null;
@@ -73,8 +75,8 @@ const EMPTY_SPECS: CarSpec = {
   cylinders: 0,
   power: '-',
   torque: '-',
-  fuelType: 'Diesel',
-  transmission: 'Manual',
+  fuelType: null,
+  transmission: null,
   drivetrain: '-',
   topSpeed: '-',
   acceleration: '-',
@@ -156,10 +158,10 @@ function baseFields(row: CarRow) {
     brand: row.brand ?? '',
     model: row.model ?? '',
     generation: row.generation ?? '-',
-    year: toNumber(row.year),
-    bodyType: (row.body_type ?? 'Sedan') as BodyType,
+    year: row.year != null && row.year > 0 ? row.year : null,
+    bodyType: (row.body_type ?? null) as BodyType | null,
     color: row.color ?? '-',
-    mileage: toNumber(row.mileage),
+    mileage: row.mileage,
     price: toNumber(row.price),
     city: row.city ?? '-',
     country: row.country ?? 'Serbia',
@@ -176,6 +178,7 @@ function baseFields(row: CarRow) {
     description: row.description ?? '',
     modifications: rowList(row.modifications),
     equipment: row.equipment ? stringArray(row.equipment) : undefined,
+    condition: (row.condition ?? null) as Car['condition'],
   };
 }
 

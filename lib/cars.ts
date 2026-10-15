@@ -8,13 +8,21 @@ export function formatEuro(amount: number): string {
   }).format(amount);
 }
 
+export function formatYear(year: number | null | undefined): string {
+  return year != null && year > 0 ? String(year) : 'Nije navedeno';
+}
+
+export function carTitle(car: Pick<Car, 'year' | 'brand' | 'model'>): string {
+  return [car.year != null && car.year > 0 ? car.year : null, car.brand, car.model].filter(Boolean).join(' ');
+}
+
 /**
  * Always formatted with an explicit locale: a bare toLocaleString() resolves
  * differently on the Node server than in a Serbian browser, which shows up as
  * a hydration mismatch on every mileage figure.
  */
-export function formatKm(km: number): string {
-  return `${new Intl.NumberFormat('sr-RS').format(km)} km`;
+export function formatKm(km: number | null | undefined): string {
+  return km == null ? 'Nije navedena' : `${new Intl.NumberFormat('sr-RS').format(km)} km`;
 }
 
 export const MY_CAR: MyGarageCar = {

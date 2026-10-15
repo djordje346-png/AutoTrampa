@@ -32,10 +32,10 @@ export function filterCars(
     if (filters.fuelType && car.specs.fuelType !== filters.fuelType) return false;
     if (filters.priceMin != null && car.price < filters.priceMin) return false;
     if (filters.priceMax != null && car.price > filters.priceMax) return false;
-    if (filters.yearMin != null && car.year < filters.yearMin) return false;
-    if (filters.yearMax != null && car.year > filters.yearMax) return false;
-    if (filters.kmMin != null && car.mileage < filters.kmMin) return false;
-    if (filters.kmMax != null && car.mileage > filters.kmMax) return false;
+    if (filters.yearMin != null && (car.year == null || car.year < filters.yearMin)) return false;
+    if (filters.yearMax != null && (car.year == null || car.year > filters.yearMax)) return false;
+    if (filters.kmMin != null && (car.mileage == null || car.mileage < filters.kmMin)) return false;
+    if (filters.kmMax != null && (car.mileage == null || car.mileage > filters.kmMax)) return false;
 
     if (q) {
       const haystack = `${car.brand} ${car.model} ${car.generation} ${car.city}`.toLowerCase();
@@ -61,7 +61,11 @@ export function filterCars(
       sorted.sort((a, b) => b.price - a.price);
       break;
     case 'year-desc':
-      sorted.sort((a, b) => b.year - a.year);
+      sorted.sort((a, b) => {
+        if (a.year == null) return b.year == null ? 0 : 1;
+        if (b.year == null) return -1;
+        return b.year - a.year;
+      });
       break;
     case 'trade':
       // "Best trade" needs both sides; without a car the order stays as-is.

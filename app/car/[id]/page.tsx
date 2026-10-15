@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MARKETPLACE_CARS, formatEuro, formatKm } from '@/lib/cars';
 import { fetchListing, listingTitle } from '@/lib/listings';
+import { fuelLabel } from '@/lib/labels';
 import type { Car } from '@/types';
 import CarDetail from './CarDetail';
 
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!car) return { title: 'Oglas nije pronađen' };
 
   const title = listingTitle(car);
-  const description = `${title} · ${formatEuro(car.price)} · ${formatKm(car.mileage)} · ${car.specs.fuelType} · ${car.city}. Ponudi zamenu na AutoTrampi.`;
+  const description = `${title} · ${formatEuro(car.price)} · ${formatKm(car.mileage)} · ${fuelLabel(car.specs.fuelType)} · ${car.city}. Ponudi zamenu na AutoTrampi.`;
 
   return {
     title,

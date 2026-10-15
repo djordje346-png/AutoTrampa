@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart, HeartHandshake, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
-import { formatEuro, formatKm } from '@/lib/cars';
+import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
@@ -415,7 +415,7 @@ function AuthenticatedFeed({
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-bold text-app-primary dark:text-zinc-100 truncate">{[car.brand, car.model, displayValue(car.generation)].filter(Boolean).join(' ')}</p>
-                              <p className="text-[10px] text-app-muted dark:text-zinc-400">{car.year} · {formatEuro(car.price)}</p>
+                              <p className="text-[10px] text-app-muted dark:text-zinc-400">{formatYear(car.year)} · {formatEuro(car.price)}</p>
                             </div>
                             {isActive && (
                               <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0">
@@ -726,7 +726,7 @@ function AuthenticatedFeed({
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-2 gap-2">
                         <div className="min-w-0">
-                          <h2 className="text-lg font-black text-app-primary dark:text-zinc-100 tracking-tight truncate">{swipeCar.year} {swipeCar.brand} {swipeCar.model}</h2>
+                          <h2 className="text-lg font-black text-app-primary dark:text-zinc-100 tracking-tight truncate">{carTitle(swipeCar)}</h2>
                           <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
                         </div>
                         <p className="text-app-primary font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
@@ -901,7 +901,7 @@ function AuthenticatedFeed({
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
                       <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
-                        {car.year} {car.brand} {car.model}
+                        {carTitle(car)}
                       </h2>
                     </Link>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
