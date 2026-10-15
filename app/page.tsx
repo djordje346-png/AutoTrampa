@@ -3,7 +3,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -314,6 +314,38 @@ function AuthenticatedFeed({
     : filteredCars;
   const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
+  const keyboardSwipeActions = useRef<{ skip: () => void; like: () => void }>({
+    skip: () => undefined,
+    like: () => undefined,
+  });
+  keyboardSwipeActions.current = {
+    skip: () => { void handleSwipeSkip(); },
+    like: () => { void handleSwipeLike(); },
+  };
+
+  useEffect(() => {
+    if (viewMode !== 'swipe' || !swipeCar || offerCar || showAddForm || filtersOpen || selectorOpen) return;
+
+    function handleSwipeKeyDown(event: KeyboardEvent) {
+      if (window.innerWidth < 1024 || event.altKey || event.ctrlKey || event.metaKey || event.defaultPrevented) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable || target.closest('input, textarea, select, [role="dialog"]'))
+      ) return;
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        keyboardSwipeActions.current.skip();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        keyboardSwipeActions.current.like();
+      }
+    }
+
+    window.addEventListener('keydown', handleSwipeKeyDown);
+    return () => window.removeEventListener('keydown', handleSwipeKeyDown);
+  }, [viewMode, swipeCar, offerCar, showAddForm, filtersOpen, selectorOpen]);
 
   return (
     <div className="flex flex-col">
@@ -637,14 +669,22 @@ function AuthenticatedFeed({
       {viewMode === 'swipe' && filteredCars.length > 0 && (
         <div className="fixed inset-0 z-[60] bg-app dark:bg-zinc-950 flex flex-col safe-top safe-bottom">
           {/* Swipe header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-surface dark:border-zinc-800">
-            <div className="flex items-center gap-2">
+          <div className="relative flex items-center justify-between px-4 py-3 border-b border-surface dark:border-zinc-800 lg:px-8">
+            <button
+              onClick={exitSwipeMode}
+              className="hidden h-10 items-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary lg:inline-flex dark:border-zinc-800"
+              aria-label="Nazad na oglase"
+            >
+              <ArrowLeft size={17} />
+              <span className="text-sm font-semibold">Nazad na oglase</span>
+            </button>
+            <div className="flex items-center gap-2 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               <Flame size={18} className="text-brand-text" />
               <span className="text-sm font-bold text-app-primary dark:text-zinc-100">Svajp režim</span>
             </div>
             <button
               onClick={exitSwipeMode}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary hover:text-app-primary transition-all duration-200"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary hover:text-app-primary transition-all duration-200 lg:hidden"
               aria-label="Izađi iz svajp režima"
             >
               <X size={18} />
@@ -652,11 +692,11 @@ function AuthenticatedFeed({
           </div>
 
           {/* Swipe content */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden lg:py-3">
             {swipeIndex < swipeCars.length && swipeCar ? (
               <>
                 {/* Progress dots */}
-                <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm">
+                <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm lg:mb-3 lg:max-w-5xl">
                   {swipeCars.map((_, i) => (
                     <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
                       i === swipeIndex ? 'w-6 bg-brand-400' : i < swipeIndex ? 'w-1.5 bg-brand-400/40' : 'w-1.5 bg-elevated'
@@ -665,19 +705,20 @@ function AuthenticatedFeed({
                 </div>
 
                 {/* Card stack */}
-                <div className="relative w-full max-w-sm">
+                <div className="relative w-full max-w-sm lg:max-w-5xl">
                   {/* Next card peeking behind */}
                   {swipeCars[swipeIndex + 1] && (
-                    <div className="absolute inset-0 bg-card-surface dark:bg-zinc-900 rounded-3xl overflow-hidden border border-surface dark:border-zinc-800 shadow-lg" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
-                      <div className="relative h-72 sm:h-80">
+                    <div className="absolute inset-0 grid grid-cols-1 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-lg dark:border-zinc-800 dark:bg-zinc-900 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
+                      <div className="relative h-72 sm:h-80 lg:h-[min(58vh,520px)]">
                         <img src={swipeCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
                       </div>
+                      <div className="hidden border-l border-surface dark:border-zinc-800 lg:block" />
                     </div>
                   )}
 
                   {/* Active card */}
                   <div
-                    className="relative bg-card-surface dark:bg-zinc-900 rounded-3xl overflow-hidden border border-surface dark:border-zinc-800 shadow-xl select-none touch-none"
+                    className="relative grid w-full grid-cols-1 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-zinc-800 dark:bg-zinc-900 lg:max-w-5xl lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]"
                     style={{
                       transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
                       transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
@@ -690,7 +731,7 @@ function AuthenticatedFeed({
                     onPointerCancel={handlePointerUp}
                   >
                     {/* Image */}
-                    <div className="relative h-72 sm:h-80">
+                    <div className="relative h-72 sm:h-80 lg:h-[min(58vh,520px)]">
                       <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover pointer-events-none" draggable={false} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent pointer-events-none" />
 
@@ -719,7 +760,7 @@ function AuthenticatedFeed({
                     </div>
 
                     {/* Info */}
-                    <div className="p-5">
+                    <div className="p-5 lg:flex lg:flex-col lg:justify-center lg:p-7 xl:p-8">
                       <div className="flex items-start justify-between mb-2 gap-2">
                         <div className="min-w-0">
                           <h2 className="text-lg font-black text-app-primary dark:text-zinc-100 tracking-tight truncate">{carTitle(swipeCar)}</h2>
@@ -749,10 +790,10 @@ function AuthenticatedFeed({
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex items-center gap-5 mt-6">
+                <div className="flex items-center gap-5 mt-6 lg:mt-4 lg:gap-7">
                   <button
                     onClick={() => void handleSwipeSkip()}
-                    className="w-14 h-14 rounded-full bg-rose-500/10 border-2 border-tone-negative flex items-center justify-center text-tone-negative-ring hover:bg-rose-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+                    className="w-14 h-14 rounded-full bg-rose-500/10 border-2 border-tone-negative flex items-center justify-center text-tone-negative-ring hover:bg-rose-500/20 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
                     aria-label="Preskoči"
                   >
                     <X size={28} strokeWidth={3} />
@@ -760,13 +801,20 @@ function AuthenticatedFeed({
                   <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {swipeCars.length}</span>
                   <button
                     onClick={() => void handleSwipeLike()}
-                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-tone-positive flex items-center justify-center text-tone-positive-ring hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200"
+                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-tone-positive flex items-center justify-center text-tone-positive-ring hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
                     aria-label="Sviđa mi se"
                   >
                     <Heart size={28} strokeWidth={3} />
                   </button>
                 </div>
-                <p className="text-[10px] text-app-muted mt-3 opacity-70">Prevuci desno = LIKE · levo = PRESKOK</p>
+                <p className="text-[10px] text-app-muted mt-3 opacity-70 lg:hidden">Prevuci desno = LIKE · levo = PRESKOK</p>
+                <p className="hidden items-center gap-2 text-xs text-app-muted opacity-80 lg:flex">
+                  <kbd className="rounded-md border border-surface bg-elevated px-2 py-1 font-semibold dark:border-zinc-800">←</kbd>
+                  Preskoči
+                  <span className="mx-1">·</span>
+                  <kbd className="rounded-md border border-surface bg-elevated px-2 py-1 font-semibold dark:border-zinc-800">→</kbd>
+                  Sviđa mi se
+                </p>
               </>
             ) : (
               /* All done screen */
