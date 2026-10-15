@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
@@ -24,6 +25,7 @@ const BODY_TYPE_PREFS: BodyType[] = ['Sedan', 'SUV', 'Caravan', 'Coupe'];
 const STORAGE_BUDGET_BYTES = 5 * 1024 * 1024;
 
 export default function ProfileClient() {
+  const router = useRouter();
   const { logout, isLoggedIn, userId, mounted: authReady } = useAuth();
   const { cars, selectedCar, addCar, selectCar, canAddCar, limit: garageLimit, mounted } = useGarage();
   const { theme, toggleTheme } = useTheme();
@@ -48,6 +50,15 @@ export default function ProfileClient() {
   async function savePreference(patch: Parameters<typeof updatePreferences>[0]) {
     const result = await updatePreferences(patch);
     if (!result.ok) toast.error(result.message || 'Preference nisu sačuvane. Pokušaj ponovo.');
+  }
+
+  async function handleLogout() {
+    const result = await logout();
+    if (!result.ok) {
+      toast.error(result.message || 'Odjava nije uspela. Pokušaj ponovo.');
+      return;
+    }
+    router.replace('/');
   }
 
   function commitBudgetDraft() {
@@ -458,7 +469,7 @@ export default function ProfileClient() {
 
       <div className="app-container mb-6">
         <button
-          onClick={logout}
+          onClick={() => void handleLogout()}
           className="w-full flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500/15 text-tone-negative font-semibold py-3.5 rounded-xl text-sm border border-rose-500/20 transition-all duration-200"
         >
           <LogOut size={16} />
