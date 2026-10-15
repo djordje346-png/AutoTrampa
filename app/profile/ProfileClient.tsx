@@ -5,7 +5,7 @@ import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { SignedOutPage } from '@/components/SignedOut';
-import { useGarage } from '@/hooks/use-garage';
+import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
 import { useTheme } from '@/hooks/use-theme';
 import { useUser, initials } from '@/hooks/use-user';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
@@ -60,11 +60,7 @@ export default function ProfileClient() {
   async function handleAddCar(car: MyGarageCar) {
     const result = await addCar(car);
     if (!result.ok) {
-      toast.error(
-        result.error === 'limit'
-          ? `Dostignut limit od ${garageLimit} vozila u garaži.`
-          : 'Vozilo nije sačuvano.',
-      );
+      toast.error(garageErrorMessage(result.error, 'add', garageLimit));
       return;
     }
     selectCar(result.id ?? car.id);

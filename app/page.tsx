@@ -9,7 +9,7 @@ import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { Car, MyGarageCar } from '@/types';
-import { useGarage } from '@/hooks/use-garage';
+import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { useSaved } from '@/hooks/use-saved';
 import { useSwipes } from '@/hooks/use-swipes';
@@ -215,11 +215,7 @@ function AuthenticatedFeed({
   async function handleAddCar(form: MyGarageCar) {
     const result = await addCar(form);
     if (!result.ok) {
-      toast.error(
-        result.error === 'limit'
-          ? `Dostignut limit od ${limit} vozila u garaži.`
-          : 'Vozilo nije sačuvano.',
-      );
+      toast.error(garageErrorMessage(result.error, 'add', limit));
       return;
     }
     selectCar(result.id ?? form.id);

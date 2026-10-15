@@ -5,7 +5,7 @@ import { TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { BottomSheet } from '@/components/BottomSheet';
 import { useUser, shortName, type UserProfile } from '@/hooks/use-user';
-import { useGarage } from '@/hooks/use-garage';
+import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
 import { isValidPhoneNumber, normalizePhoneNumber } from '@/lib/phone';
 import { CitySelect } from '@/components/CitySelect';
 
@@ -61,7 +61,7 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
 
     // Garage cars carry the owner's details onto their listing, so they have to
     // follow the profile rather than keep whatever was true when they were added.
-    await Promise.all(
+    const carResults = await Promise.all(
       cars.map((car) =>
         updateCar({
           ...car,
@@ -74,7 +74,14 @@ export function ProfileEditSheet({ open, onClose }: ProfileEditSheetProps) {
       ),
     );
 
-    toast.success('Profil sačuvan.');
+    const failedCarUpdate = carResults.find((carResult) => !carResult.ok);
+    if (failedCarUpdate && !failedCarUpdate.ok) {
+      toast.warning('Profil je sačuvan, ali podaci na jednom ili više oglasa nisu ažurirani.', {
+        description: garageErrorMessage(failedCarUpdate.error, 'update'),
+      });
+    } else {
+      toast.success('Profil sačuvan.');
+    }
     onClose();
   }
 

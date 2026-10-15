@@ -19,11 +19,115 @@ const selectedStore = createPersistentStore<string>(
   (raw) => (typeof raw === 'string' && raw ? raw : null),
 );
 
-export type GarageError = 'limit' | 'duplicate' | 'network';
+export type GarageError =
+  | 'limit'
+  | 'duplicate'
+  | 'permission'
+  | 'invalid-data'
+  | 'image-too-large'
+  | 'storage'
+  | 'network'
+  | 'not-found'
+  | 'unauthorized'
+  | 'unknown';
+export type GarageOperation = 'add' | 'update' | 'remove';
 export type GarageResult =
   | { ok: true; id?: string }
   | { ok: false; error: GarageError }
   | { ok: false; error: 'storage'; storage: { ok: false; reason: StorageFailure } };
+
+type ErrorDetails = {
+  code?: string;
+  message?: string;
+  name?: string;
+  status?: number;
+  statusCode?: number;
+};
+
+function errorDetails(error: unknown): ErrorDetails {
+  if (!error || typeof error !== 'object') {
+    return { message: typeof error === 'string' ? error : undefined };
+  }
+
+  const value = error as Record<string, unknown>;
+  return {
+    code: typeof value.code === 'string' ? value.code : undefined,
+    message: typeof value.message === 'string' ? value.message : undefined,
+    name: typeof value.name === 'string' ? value.name : undefined,
+    status: typeof value.status === 'number' ? value.status : undefined,
+    statusCode: typeof value.statusCode === 'number' ? value.statusCode : undefined,
+  };
+}
+
+/** Keep diagnostics useful without logging vehicle data, user IDs, or raw server messages. */
+function reportGarageFailure(operation: string, error: unknown) {
+  const details = errorDetails(error);
+  console.error('Supabase operacija nad garažom nije uspela.', {
+    operation,
+    code: details.code,
+    status: details.status ?? details.statusCode,
+    errorType: details.name,
+  });
+}
+
+function classifyGarageError(error: unknown, fallback: GarageError = 'unknown'): GarageError {
+  const { code, message, name, status, statusCode } = errorDetails(error);
+  const combinedMessage = `${message ?? ''} ${typeof error === 'string' ? error : ''}`.toLowerCase();
+  const httpStatus = status ?? statusCode;
+
+  if (combinedMessage.includes('garage_limit_reached')) return 'limit';
+  if (httpStatus === 413 || /payload too large|maximum size|file size limit/.test(combinedMessage)) {
+    return 'image-too-large';
+  }
+  if (httpStatus === 401) return 'unauthorized';
+  if (httpStatus === 403 || code === '42501' || code === 'PGRST301') return 'permission';
+  if (code === '23505') return 'duplicate';
+  if (['22001', '22P02', '23502', '23503', '23514'].includes(code ?? '')) return 'invalid-data';
+  if (name?.toLowerCase().includes('storage') || statusCode !== undefined) return 'storage';
+  if (httpStatus !== undefined && httpStatus >= 500) return 'network';
+  if (/failed to fetch|fetch failed|network|load failed|connection/.test(combinedMessage)) return 'network';
+
+  return fallback;
+}
+
+export function garageErrorMessage(error: GarageError, operation: GarageOperation = 'add', limit = GARAGE_LIMIT) {
+  const savedAction = operation === 'update' ? 'Izmene nisu sačuvane.' : 'Vozilo nije sačuvano.';
+
+  switch (error) {
+    case 'limit':
+      return `Dostignut je limit od ${limit} vozila u garaži. Obriši vozilo da bi dodao novo.`;
+    case 'duplicate':
+      return 'Vozilo je već evidentirano. Osveži garažu i pokušaj ponovo.';
+    case 'permission':
+      return operation === 'remove'
+        ? 'Nemaš dozvolu da obrišeš ovo vozilo. Osveži stranicu i pokušaj ponovo.'
+        : `${savedAction} Nemaš dozvolu za ovu izmenu.`;
+    case 'invalid-data':
+      return `${savedAction} Proveri unete podatke o vozilu.`;
+    case 'image-too-large':
+      return 'Fotografija je prevelika. Izaberi manju fotografiju i pokušaj ponovo.';
+    case 'storage':
+      return 'Fotografija nije mogla da se sačuva. Proveri vezu i pokušaj ponovo.';
+    case 'network':
+      return `${operation === 'remove' ? 'Vozilo nije obrisano.' : savedAction} Proveri internet vezu i pokušaj ponovo.`;
+    case 'not-found':
+      return 'Vozilo više nije dostupno. Osveži garažu i pokušaj ponovo.';
+    case 'unauthorized':
+      return 'Sesija je istekla. Prijavi se ponovo pa pokušaj ponovo.';
+    default:
+      return operation === 'remove' ? 'Vozilo nije obrisano. Pokušaj ponovo.' : `${savedAction} Pokušaj ponovo.`;
+  }
+}
+
+async function cleanupUploadedImages(paths: string[]) {
+  if (paths.length === 0) return;
+  try {
+    const { error } = await getSupabase().storage.from('car-images').remove(paths);
+    if (error) reportGarageFailure('cleanup uploaded images', error);
+  } catch (error) {
+    reportGarageFailure('cleanup uploaded images', error);
+  }
+}
 
 /**
  * Adds the private owner details the row cannot carry: only the signed-in user
@@ -129,7 +233,8 @@ export function useGarage() {
         if (next.length > 0 && !next.some((car) => car.id === selectedStore.get())) {
           selectedStore.set(next[0].id);
         }
-      } catch {
+      } catch (error) {
+        reportGarageFailure('load garage', error);
         if (!cancelled) setCars([]);
       } finally {
         if (!cancelled) setLoading(false);
@@ -142,7 +247,7 @@ export function useGarage() {
   const selectCar = useCallback((id: string) => selectedStore.set(id), []);
 
   const addCar = useCallback(async (car: MyGarageCar): Promise<GarageResult> => {
-    if (!userId) return { ok: false, error: 'network' };
+    if (!userId) return { ok: false, error: 'unauthorized' };
     if (cars.length >= GARAGE_LIMIT) return { ok: false, error: 'limit' };
     let uploaded: string[] = [];
     try {
@@ -154,19 +259,23 @@ export function useGarage() {
         .select(PUBLIC_CAR_ROW_COLUMNS)
         .single();
       if (error || !data) {
-        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        if (error) reportGarageFailure('insert car', error);
+        else reportGarageFailure('insert car', new Error('Insert returned no row'));
+        await cleanupUploadedImages(uploaded);
         uploaded = [];
-        return { ok: false, error: 'network' };
+        return { ok: false, error: error ? classifyGarageError(error) : 'unknown' };
       }
       const insertedCar = data as unknown as CarRow;
       const { error: detailsError } = await getSupabase()
         .from('car_private_details')
         .insert(privateDetailsToRow({ ...prepared.car, id: insertedCar.id }, userId));
       if (detailsError) {
-        await getSupabase().from('cars').delete().eq('id', insertedCar.id).eq('user_id', userId);
-        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        reportGarageFailure('save private car details', detailsError);
+        const { error: rollbackError } = await getSupabase().from('cars').delete().eq('id', insertedCar.id).eq('user_id', userId);
+        if (rollbackError) reportGarageFailure('rollback car after private details failure', rollbackError);
+        await cleanupUploadedImages(uploaded);
         uploaded = [];
-        return { ok: false, error: 'network' };
+        return { ok: false, error: classifyGarageError(detailsError) };
       }
       uploaded = [];
       const saved = rowToGarageCar(
@@ -175,14 +284,15 @@ export function useGarage() {
       );
       setCars((previous) => [...previous, saved]);
       return { ok: true, id: saved.id };
-    } catch {
-      if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
-      return { ok: false, error: 'network' };
+    } catch (error) {
+      reportGarageFailure('add car', error);
+      await cleanupUploadedImages(uploaded);
+      return { ok: false, error: classifyGarageError(error) };
     }
   }, [cars.length, userId]);
 
   const updateCar = useCallback(async (car: MyGarageCar): Promise<GarageResult> => {
-    if (!userId) return { ok: false, error: 'network' };
+    if (!userId) return { ok: false, error: 'unauthorized' };
     let uploaded: string[] = [];
     try {
       const prepared = await prepareCar(car, userId);
@@ -191,9 +301,10 @@ export function useGarage() {
         .from('car_private_details')
         .upsert(privateDetailsToRow(car, userId), { onConflict: 'car_id' });
       if (detailsError) {
-        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        reportGarageFailure('update private car details', detailsError);
+        await cleanupUploadedImages(uploaded);
         uploaded = [];
-        return { ok: false, error: 'network' };
+        return { ok: false, error: classifyGarageError(detailsError) };
       }
       const { data, error } = await getSupabase()
         .from('cars')
@@ -203,9 +314,11 @@ export function useGarage() {
         .select('id')
         .maybeSingle();
       if (error || !data) {
-        if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
+        if (error) reportGarageFailure('update car', error);
+        else reportGarageFailure('update car', new Error('Update returned no row'));
+        await cleanupUploadedImages(uploaded);
         uploaded = [];
-        return { ok: false, error: 'network' };
+        return { ok: false, error: error ? classifyGarageError(error) : 'not-found' };
       }
       uploaded = [];
       const oldImages = cars.find((item) => item.id === car.id)?.images ?? [];
@@ -214,14 +327,15 @@ export function useGarage() {
       if (stale.length) void getSupabase().storage.from('car-images').remove(stale);
       setCars((previous) => previous.map((item) => (item.id === car.id ? prepared.car : item)));
       return { ok: true };
-    } catch {
-      if (uploaded.length) await getSupabase().storage.from('car-images').remove(uploaded);
-      return { ok: false, error: 'network' };
+    } catch (error) {
+      reportGarageFailure('update car', error);
+      await cleanupUploadedImages(uploaded);
+      return { ok: false, error: classifyGarageError(error) };
     }
   }, [cars, userId]);
 
   const removeCar = useCallback(async (id: string): Promise<GarageResult> => {
-    if (!userId) return { ok: false, error: 'network' };
+    if (!userId) return { ok: false, error: 'unauthorized' };
     try {
       const { data, error } = await getSupabase()
         .from('cars')
@@ -230,7 +344,11 @@ export function useGarage() {
         .eq('user_id', userId)
         .select('id')
         .maybeSingle();
-      if (error || !data) return { ok: false, error: 'network' };
+      if (error || !data) {
+        if (error) reportGarageFailure('delete car', error);
+        else reportGarageFailure('delete car', new Error('Delete returned no row'));
+        return { ok: false, error: error ? classifyGarageError(error) : 'not-found' };
+      }
       const next = cars.filter((car) => car.id !== id);
       setCars(next);
       const removed = cars.find((car) => car.id === id)?.images ?? [];
@@ -238,8 +356,9 @@ export function useGarage() {
       if (paths.length) void getSupabase().storage.from('car-images').remove(paths);
       if (selectedStore.get() === id) selectedStore.set(next[0]?.id ?? '');
       return { ok: true };
-    } catch {
-      return { ok: false, error: 'network' };
+    } catch (error) {
+      reportGarageFailure('delete car', error);
+      return { ok: false, error: classifyGarageError(error) };
     }
   }, [cars, userId]);
 

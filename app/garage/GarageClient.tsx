@@ -9,7 +9,7 @@ import { fuelLabel, transmissionLabel, bodyLabel } from '@/lib/labels';
 import { carSubtitle } from '@/lib/car-row';
 import { MyGarageCar, getCarImages } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
-import { useGarage } from '@/hooks/use-garage';
+import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
 import { useUser } from '@/hooks/use-user';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
@@ -48,11 +48,7 @@ export default function GarageClient() {
     const result = editingCar ? await updateCar(car) : await addCar(car);
 
     if (!result.ok) {
-      if (result.error === 'limit') {
-        toast.error(`Dostignut limit od ${limit} vozila u garaži.`);
-      } else {
-        toast.error('Vozilo nije sačuvano.');
-      }
+      toast.error(garageErrorMessage(result.error, editingCar ? 'update' : 'add', limit));
       return;
     }
 
@@ -66,7 +62,7 @@ export default function GarageClient() {
     if (!pendingDelete) return;
     const result = await removeCar(pendingDelete.id);
     if (!result.ok) {
-      toast.error('Vozilo nije obrisano.');
+      toast.error(garageErrorMessage(result.error, 'remove', limit));
     } else {
       toast.success(`${pendingDelete.brand} ${pendingDelete.model} obrisan iz garaže.`);
     }
