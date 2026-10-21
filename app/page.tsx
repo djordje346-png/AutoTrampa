@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
-import { fuelLabel, transmissionLabel } from '@/lib/labels';
+import { bodyLabel, fuelLabel, transmissionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { Car, MyGarageCar } from '@/types';
 import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
@@ -41,6 +41,51 @@ const TRADE_FILTERS: { key: SearchFilters['trade']; label: string }[] = [
   { key: 'cheaper', label: 'Vlasnik doplaćuje' },
   { key: 'expensive', label: 'Ja doplaćujem' },
 ];
+
+type AppliedFilterChip = { label: string; reset: Partial<SearchFilters> };
+
+function rangeFilterLabel(
+  label: string,
+  min: number | null,
+  max: number | null,
+  format: (value: number) => string,
+) {
+  const bounds = [
+    min !== null ? `od ${format(min)}` : null,
+    max !== null ? `do ${format(max)}` : null,
+  ].filter((bound): bound is string => bound !== null);
+
+  return `${label}: ${bounds.join(' · ')}`;
+}
+
+function getAppliedFilterChips(filters: SearchFilters): AppliedFilterChip[] {
+  const chips: AppliedFilterChip[] = [];
+
+  if (filters.query.trim()) chips.push({ label: `Pretraga: ${filters.query.trim()}`, reset: { query: '' } });
+  if (filters.brand) chips.push({ label: `Marka: ${filters.brand}`, reset: { brand: null } });
+  if (filters.bodyType) chips.push({ label: `Karoserija: ${bodyLabel(filters.bodyType)}`, reset: { bodyType: null } });
+  if (filters.fuelType) chips.push({ label: `Gorivo: ${fuelLabel(filters.fuelType)}`, reset: { fuelType: null } });
+  if (filters.priceMin !== null || filters.priceMax !== null) {
+    chips.push({
+      label: rangeFilterLabel('Cena', filters.priceMin, filters.priceMax, formatEuro),
+      reset: { priceMin: null, priceMax: null },
+    });
+  }
+  if (filters.yearMin !== null || filters.yearMax !== null) {
+    chips.push({
+      label: rangeFilterLabel('Godište', filters.yearMin, filters.yearMax, String),
+      reset: { yearMin: null, yearMax: null },
+    });
+  }
+  if (filters.kmMin !== null || filters.kmMax !== null) {
+    chips.push({
+      label: rangeFilterLabel('Kilometraža', filters.kmMin, filters.kmMax, formatKm),
+      reset: { kmMin: null, kmMax: null },
+    });
+  }
+
+  return chips;
+}
 
 export default function FeedPage() {
   const router = useRouter();
@@ -183,6 +228,7 @@ function AuthenticatedFeed({
 
   const activeFilters = countActiveFilters(filters);
   const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
+  const appliedFilterChips = getAppliedFilterChips(filters);
   const activeCarName = selectedCar
     ? [selectedCar.brand, selectedCar.model].filter(Boolean).join(' ')
     : '';
@@ -478,12 +524,14 @@ function AuthenticatedFeed({
         {/* Trade filter bar */}
         {showTrade && (
         <div className={`border-t border-surface dark:border-zinc-800/50 ${viewMode === 'grid' ? 'lg:hidden' : ''}`}>
-          <div className="app-container flex items-center gap-1.5 py-2 overflow-x-auto scrollbar-hide">
+          <div className="app-container flex items-center gap-2 overflow-x-auto py-2 scrollbar-hide" role="group" aria-label="Tip zamene">
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
+                type="button"
                 key={key}
                 onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
+                aria-pressed={filters.trade === key}
+                className={`inline-flex min-h-11 flex-shrink-0 items-center justify-center rounded-full px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
                   filters.trade === key
                     ? 'bg-brand-500 text-black'
                     : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
@@ -494,11 +542,12 @@ function AuthenticatedFeed({
             ))}
             {/* Below lg the sidebar is hidden, so the sheet is the only way in. */}
             <button
+              type="button"
               onClick={() => setFiltersOpen(true)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150 lg:hidden"
+              className="flex min-h-11 min-w-11 flex-shrink-0 items-center justify-center gap-1.5 rounded-full bg-elevated/70 px-3 text-xs font-semibold text-app-secondary transition-all duration-150 hover:bg-hover-surface hover:text-app-primary lg:hidden"
               aria-label={`Filteri${activeFilters > 0 ? ` (${activeFilters} aktivnih)` : ''}`}
             >
-              <SlidersHorizontal size={11} />
+              <SlidersHorizontal size={15} aria-hidden="true" />
               Filteri
               {activeFilters > 0 && (
                 <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-black">{activeFilters}</span>
@@ -563,7 +612,7 @@ function AuthenticatedFeed({
               type="button"
               onClick={() => setDesktopFiltersOpen(true)}
               aria-label={`Otvori napredne filtere${advancedFilterCount > 0 ? `, ${advancedFilterCount} aktivnih filtera` : ''}`}
-              className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+              className="inline-flex min-h-10 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
             >
               <SlidersHorizontal size={15} />
               Filteri
@@ -584,7 +633,7 @@ function AuthenticatedFeed({
                     type="button"
                     onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
                     aria-pressed={filters.trade === key}
-                    className={`inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
+                    className={`inline-flex min-h-10 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
                       filters.trade === key
                         ? 'border-brand-500 bg-brand-500 text-black shadow-sm shadow-brand-500/20'
                         : 'border-surface bg-card-surface text-app-secondary hover:-translate-y-px hover:border-brand-500/40 hover:bg-elevated hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'
@@ -895,7 +944,7 @@ function AuthenticatedFeed({
                 {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži oglase'}
               </h1>
               <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-app-muted">
-                <span>{marketplaceReady
+                <span aria-live="polite" aria-atomic="true">{marketplaceReady
                   ? `Pronađeno ${filteredCars.length} ${filteredCars.length === 1 ? 'oglas' : 'oglasa'}`
                   : 'Oglasi se učitavaju…'}</span>
                 {selectedCar && (
@@ -906,6 +955,24 @@ function AuthenticatedFeed({
                 )}
               </div>
             </div>
+
+            {appliedFilterChips.length > 0 && (
+              <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label="Aktivni filteri">
+                {appliedFilterChips.map(({ label, reset }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => { updateFilters(reset); setSwipeIndex(0); }}
+                    aria-label={`Ukloni filter ${label}`}
+                    title={`Ukloni filter ${label}`}
+                    className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-full border border-surface bg-card-surface px-3 text-xs font-medium text-app-secondary transition-colors hover:border-brand-500/40 hover:bg-elevated hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+                  >
+                    <span className="max-w-[min(70vw,22rem)] truncate">{label}</span>
+                    <X size={14} aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {!marketplaceReady && (
               /* Placeholder cards while the first request is in flight: real
@@ -949,7 +1016,7 @@ function AuthenticatedFeed({
                     type="button"
                     onClick={(event) => { event.preventDefault(); event.stopPropagation(); void likeCar(car); }}
                     disabled={isLiking(car.id)}
-                    className="pointer-events-auto absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:text-brand-300 disabled:opacity-60"
+                    className="pointer-events-auto absolute right-3 top-3 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:text-brand-300 disabled:opacity-60"
                     aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
                     title="Lajkuj i sačuvaj za match"
                   >

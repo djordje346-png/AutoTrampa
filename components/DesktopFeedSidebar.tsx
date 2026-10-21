@@ -130,7 +130,7 @@ export function DesktopFeedSidebar({
           <button
             type="button"
             onClick={() => setCarPickerOpen((open) => !open)}
-            className="mt-2 flex w-full items-center justify-between rounded-lg border border-surface bg-card-surface px-2.5 py-2 text-[10px] font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300"
+            className="mt-2 flex min-h-10 w-full items-center justify-between rounded-lg border border-surface bg-card-surface px-2.5 py-2 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300"
             aria-expanded={carPickerOpen}
           >
             Promeni auto
@@ -172,7 +172,7 @@ export function DesktopFeedSidebar({
           <button
             type="button"
             onClick={onAddCar}
-            className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-surface py-2 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/5 dark:border-zinc-800"
+            className="mt-2 flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-surface py-2 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/5 dark:border-zinc-800"
           >
             <Plus size={14} />
             Dodaj auto
@@ -190,7 +190,7 @@ export function DesktopFeedSidebar({
                 key={key}
                 onClick={() => onTradeChange(key)}
                 aria-pressed={filters.trade === key}
-                className={`min-h-8 rounded-full border px-2 py-1 text-[9px] font-semibold leading-tight transition-colors ${
+                className={`min-h-10 rounded-full border px-2 py-1.5 text-[10px] font-semibold leading-tight transition-colors ${
                   filters.trade === key
                     ? 'border-brand-500 bg-brand-500 text-black'
                     : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300'
@@ -217,7 +217,7 @@ export function DesktopFeedSidebar({
             <button
               type="button"
               onClick={() => setBudgetEditorOpen((open) => !open)}
-              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-brand-text dark:hover:bg-zinc-950"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-brand-text dark:hover:bg-zinc-950"
               aria-label={budgetEditorOpen ? 'Zatvori izmenu budžeta' : 'Izmeni budžet'}
               aria-expanded={budgetEditorOpen}
             >
@@ -238,9 +238,9 @@ export function DesktopFeedSidebar({
               onChange={(event) => setBudgetDraft(event.target.value)}
               placeholder="Iznos u €"
               aria-label="Budžet za doplatu u evrima"
-              className="h-9 min-w-0 flex-1 rounded-xl border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+              className="h-10 min-w-0 flex-1 rounded-xl border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
             />
-            <button type="submit" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500 text-black transition-colors hover:bg-brand-400" aria-label="Sačuvaj budžet">
+            <button type="submit" className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500 text-black transition-colors hover:bg-brand-400" aria-label="Sačuvaj budžet">
               <Check size={16} />
             </button>
           </form>
