@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil, Wallet } from 'lucide-react';
+import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, ChevronDown, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { SignedOutPage } from '@/components/SignedOut';
@@ -100,6 +100,7 @@ export default function ProfileClient() {
         <header className="app-page-header safe-top">
           <div className="app-container py-4">
             <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+            <p className="mt-1 text-xs text-app-muted">Nalog, vozila i podešavanja zamene</p>
           </div>
         </header>
         <div className="app-container pt-6 space-y-3">
@@ -115,6 +116,7 @@ export default function ProfileClient() {
       <header className="app-page-header safe-top">
         <div className="app-container py-4">
           <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Profil</h1>
+          <p className="mt-1 text-xs text-app-muted">Nalog, vozila i podešavanja zamene</p>
         </div>
       </header>
 
@@ -224,37 +226,6 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      {/* THEME TOGGLE */}
-      <div className="app-container mb-4">
-        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            {theme === 'dark' ? <Moon size={16} className="text-brand-text" /> : <Sun size={16} className="text-brand-text" />}
-            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Izgled</p>
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-app-primary dark:text-zinc-100">Tamna tema</p>
-              <p className="text-xs text-app-muted mt-0.5">Prebaci između tamne i svetle teme</p>
-            </div>
-            <button
-              onClick={toggleTheme}
-              className="relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 bg-elevated border border-surface dark:border-zinc-800"
-              aria-label="Promeni temu"
-            >
-              <span className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-transform duration-200 flex items-center justify-center ${
-                theme === 'dark' ? 'translate-x-5 bg-brand-500' : 'translate-x-0 bg-white'
-              }`}>
-                {theme === 'dark' ? (
-                  <Moon size={10} className="text-white" />
-                ) : (
-                  <Sun size={10} className="text-brand-text" />
-                )}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
           <div className="flex items-center gap-2 mb-4">
@@ -353,33 +324,68 @@ export default function ProfileClient() {
         </div>
       </div>
 
-      <div className="app-container mb-4">
-        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Lock size={16} className="text-brand-text" />
-            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Privatnost</p>
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1">
-              <p className="text-xs font-medium text-app-secondary">Prikaži telefon samo posle dogovorene zamene</p>
-              <p className="text-xs text-app-muted mt-0.5">Broj ostaje skriven na oglasu dok se ne dogovorite</p>
+      <section className="app-container mb-4" aria-labelledby="privacy-appearance-heading">
+        <div className="mb-2 px-1">
+          <h2 id="privacy-appearance-heading" className="text-sm font-bold text-app-primary dark:text-zinc-100">
+            Privatnost i izgled
+          </h2>
+          <p className="mt-0.5 text-xs text-app-muted">Podesi kako se prikazuju tvoji podaci i aplikacija.</p>
+        </div>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              {theme === 'dark' ? <Moon size={16} className="text-brand-text" /> : <Sun size={16} className="text-brand-text" />}
+              <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Izgled</p>
             </div>
-            <button
-              onClick={() => void updatePreferences({ phoneAfterMatch: !phoneAfterMatch })}
-              disabled={!preferencesReady}
-              aria-pressed={phoneAfterMatch}
-              aria-label="Prikaži telefon samo posle dogovorene zamene"
-              className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                phoneAfterMatch ? 'bg-brand-500' : 'bg-elevated'
-              }`}
-            >
-              <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                phoneAfterMatch ? 'translate-x-5' : 'translate-x-0'
-              }`} />
-            </button>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-app-primary dark:text-zinc-100">Tamna tema</p>
+                <p className="text-xs text-app-muted mt-0.5">Prebaci između tamne i svetle teme</p>
+              </div>
+              <button
+                onClick={toggleTheme}
+                className="relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 bg-elevated border border-surface dark:border-zinc-800"
+                aria-label="Promeni temu"
+              >
+                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-transform duration-200 flex items-center justify-center ${
+                  theme === 'dark' ? 'translate-x-5 bg-brand-500' : 'translate-x-0 bg-white'
+                }`}>
+                  {theme === 'dark' ? (
+                    <Moon size={10} className="text-white" />
+                  ) : (
+                    <Sun size={10} className="text-brand-text" />
+                  )}
+                </span>
+              </button>
+            </div>
+          </div>
+          <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Lock size={16} className="text-brand-text" />
+              <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Privatnost</p>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-app-secondary">Prikaži telefon samo posle dogovorene zamene</p>
+                <p className="text-xs text-app-muted mt-0.5">Broj ostaje skriven na oglasu dok se ne dogovorite</p>
+              </div>
+              <button
+                onClick={() => void updatePreferences({ phoneAfterMatch: !phoneAfterMatch })}
+                disabled={!preferencesReady}
+                aria-pressed={phoneAfterMatch}
+                aria-label="Prikaži telefon samo posle dogovorene zamene"
+                className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
+                  phoneAfterMatch ? 'bg-brand-500' : 'bg-elevated'
+                }`}
+              >
+                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                  phoneAfterMatch ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
@@ -441,30 +447,37 @@ export default function ProfileClient() {
       </div>
 
       <div className="app-container mb-4">
-        <div className="bg-card-surface dark:bg-zinc-900 rounded-2xl border border-surface dark:border-zinc-800 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Database size={16} className="text-brand-text" />
-            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Lokalni podaci</p>
-          </div>
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-app-secondary dark:text-zinc-400">Zauzeto u pregledaču</p>
-            <p className="text-xs font-bold text-app-primary dark:text-zinc-100">
+        <details className="group overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900">
+          <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 p-4 transition-colors hover:bg-hover-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 [&::-webkit-details-marker]:hidden">
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-elevated text-app-secondary dark:text-zinc-400">
+                <Database size={16} />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-bold text-app-primary dark:text-zinc-100">Lokalni podaci</span>
+                <span className="mt-0.5 block text-xs text-app-muted">Napredno podešavanje pregledača</span>
+              </span>
+            </span>
+            <span className="flex flex-shrink-0 items-center gap-2 text-xs font-semibold text-app-secondary dark:text-zinc-400">
               {(usedBytes / 1024 / 1024).toFixed(2)} MB / 5 MB
+              <ChevronDown size={16} />
+            </span>
+          </summary>
+          <div className="border-t border-surface px-4 pb-4 pt-3 dark:border-zinc-800">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-elevated">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  usedPercent > 85 ? 'bg-rose-500' : usedPercent > 60 ? 'bg-amber-500' : 'bg-emerald-500'
+                }`}
+                style={{ width: `${Math.max(2, usedPercent)}%` }}
+              />
+            </div>
+            <p className="mt-2 text-[11px] leading-relaxed text-app-muted">
+              Ovde su lokalna podešavanja i privremeni podaci aplikacije. Vozila i fotografije iz naloga
+              čuvaju se odvojeno od memorije pregledača.
             </p>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-elevated">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                usedPercent > 85 ? 'bg-rose-500' : usedPercent > 60 ? 'bg-amber-500' : 'bg-emerald-500'
-              }`}
-              style={{ width: `${Math.max(2, usedPercent)}%` }}
-            />
-          </div>
-          <p className="mt-2 text-[11px] leading-relaxed text-app-muted">
-            Fotografije se čuvaju lokalno u pregledaču. Kada se popuni, obriši nekoliko slika
-            ili vozila.
-          </p>
-        </div>
+        </details>
       </div>
 
       <div className="app-container mb-6">
@@ -518,9 +531,10 @@ export default function ProfileClient() {
               <div className="space-y-1.5">
                 <p className="font-bold text-brand-text">3. Gde se čuvaju moji podaci?</p>
                 <p className="text-app-muted">
-                  Nalog, garaža, sačuvani oglasi, razgovori i fotografije čuvaju se na tvom
-                  nalogu (Supabase), pa su dostupni sa svakog uređaja. U pregledaču ostaju
-                  samo lokalna podešavanja — tema, filteri i budžet.
+                  Nalog, garaža, sačuvani oglasi, razgovori i fotografije vezani su za tvoj nalog.
+                  Budžet, radijus pretrage i podešavanje doplate čuvaju se uz tvoj profil. Tema se
+                  pamti u ovom pregledaču, a izbor tipova karoserije i privatnosti za prijavljeni
+                  nalog čuva se odvojeno za taj nalog.
                 </p>
               </div>
             </>
