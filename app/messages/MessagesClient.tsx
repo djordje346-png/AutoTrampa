@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type RefObject } from 'react';
 import Link from 'next/link';
-import { MessageCircle, Send, ArrowLeft, CheckCheck, Phone, Trash2, TriangleAlert, ArrowLeftRight } from 'lucide-react';
+import { MessageCircle, Send, ArrowLeft, Check, Phone, Archive, TriangleAlert, ArrowLeftRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { useMessages, Conversation } from '@/hooks/use-messages';
+import { useMessages } from '@/hooks/use-messages';
+import type { ChatMessage, Conversation } from '@/hooks/use-messages';
 import { useAuth } from '@/hooks/use-auth';
 import { SignedOutPage } from '@/components/SignedOut';
 
@@ -35,6 +36,189 @@ function formatDayLabel(ts: number): string {
   return date.toLocaleDateString('sr-RS', { day: 'numeric', month: 'long' });
 }
 
+function MessageHistory({
+  messages,
+  scrollRef,
+}: {
+  messages: ChatMessage[];
+  scrollRef: RefObject<HTMLDivElement>;
+}) {
+  let lastDay = '';
+
+  return (
+    <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+      {messages.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-elevated">
+            <MessageCircle size={26} className="text-app-muted" />
+          </div>
+          <p className="text-sm font-medium text-app-secondary dark:text-zinc-400">Još nema poruka</p>
+          <p className="mt-1 text-xs text-app-muted">Pošalji prvu poruku ispod</p>
+        </div>
+      ) : (
+        messages.map((msg) => {
+          const day = formatDayLabel(msg.timestamp);
+          const showDay = day !== lastDay;
+          lastDay = day;
+          const mine = msg.sender === 'me';
+
+          return (
+            <div key={msg.id}>
+              {showDay && (
+                <div className="my-4 flex justify-center">
+                  <span className="rounded-full bg-elevated px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-app-muted">
+                    {day}
+                  </span>
+                </div>
+              )}
+              {msg.sender === 'system' ? (
+                <div className="flex justify-center">
+                  <div className="max-w-[90%] whitespace-pre-wrap rounded-2xl border border-brand-500/25 bg-brand-500/10 px-4 py-3 text-center text-xs leading-relaxed text-app-secondary dark:text-zinc-300">
+                    <p className="font-semibold text-brand-text">{msg.text}</p>
+                    <span className="mt-1 block text-[10px] text-app-muted">{formatMessageTime(msg.timestamp)}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
+                      mine
+                        ? 'rounded-br-md bg-brand-500 text-black'
+                        : 'rounded-bl-md bg-elevated text-app-primary dark:text-zinc-100'
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap break-words text-sm leading-snug">{msg.text}</p>
+                    <div className={`mt-1 flex items-center gap-1 ${mine ? 'justify-end text-black/60' : 'text-app-muted'}`}>
+                      <span className="text-[10px]">{formatMessageTime(msg.timestamp)}</span>
+                      {mine && <Check size={12} />}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+}
+
+function ConversationThread({
+  conversation,
+  input,
+  onInputChange,
+  sending,
+  onSend,
+  onArchive,
+  scrollRef,
+  fullScreen = false,
+  onBack,
+}: {
+  conversation: Conversation;
+  input: string;
+  onInputChange: (value: string) => void;
+  sending: boolean;
+  onSend: () => void;
+  onArchive: () => void;
+  scrollRef: RefObject<HTMLDivElement>;
+  fullScreen?: boolean;
+  onBack?: () => void;
+}) {
+  return (
+    <section
+      aria-label={`Razgovor sa ${conversation.ownerName}`}
+      className={fullScreen
+        ? 'fixed inset-0 z-[60] flex flex-col bg-app dark:bg-zinc-950'
+        : 'flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900'}
+    >
+      <header className={`flex flex-shrink-0 items-center gap-3 border-b border-surface px-4 py-3 dark:border-zinc-800 ${fullScreen ? 'safe-top' : ''}`}>
+        {onBack && (
+          <button
+            onClick={onBack}
+            aria-label="Nazad na razgovore"
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-app-primary"
+          >
+            <ArrowLeft size={18} />
+          </button>
+        )}
+
+        <Link
+          href={`/car/${conversation.carId}`}
+          className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl bg-elevated"
+          aria-label={`Otvori oglas ${conversation.carTitle}`}
+        >
+          <img src={conversation.carImage} alt="" className="h-full w-full object-cover" />
+        </Link>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{conversation.ownerName}</p>
+          <p className="truncate text-xs text-app-muted">{conversation.carTitle}</p>
+        </div>
+
+        {conversation.ownerPhone && (
+          <a
+            href={`tel:${conversation.ownerPhone}`}
+            aria-label={`Pozovi ${conversation.ownerName}`}
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-brand-text dark:text-zinc-400"
+          >
+            <Phone size={16} />
+          </a>
+        )}
+        <button
+          onClick={onArchive}
+          aria-label="Arhiviraj razgovor"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:bg-rose-500/10 hover:text-tone-negative dark:text-zinc-400"
+        >
+          <Archive size={16} />
+        </button>
+      </header>
+
+      <div className="mx-4 mt-3 flex flex-shrink-0 items-center gap-3 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2.5">
+        <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-brand-text">
+          <ArrowLeftRight size={16} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-app-muted">Ponuda za zamenu</p>
+          <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">{conversation.tradeSummary}</p>
+        </div>
+        <Link
+          href={`/car/${conversation.carId}`}
+          className="flex-shrink-0 rounded-lg px-2 py-1.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/10"
+        >
+          Oglas
+        </Link>
+      </div>
+
+      <MessageHistory messages={conversation.messages} scrollRef={scrollRef} />
+
+      <div className={`flex flex-shrink-0 items-center gap-2 border-t border-surface bg-app px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950 ${fullScreen ? 'safe-bottom' : ''}`}>
+        <input
+          value={input}
+          onChange={(event) => onInputChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              onSend();
+            }
+          }}
+          maxLength={1000}
+          placeholder="Napiši poruku..."
+          aria-label="Poruka"
+          className="min-w-0 flex-1 rounded-full border border-surface bg-elevated px-4 py-2.5 text-sm text-app-primary transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none dark:border-zinc-800 dark:text-zinc-100"
+        />
+        <button
+          onClick={onSend}
+          disabled={!input.trim() || sending}
+          aria-label="Pošalji poruku"
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-500 text-black transition-all duration-200 hover:bg-brand-600 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Send size={17} />
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export default function MessagesClient() {
   const { conversations, sendMessage, markRead, deleteConversation, totalUnread, mounted } =
     useMessages({ poll: true });
@@ -44,26 +228,37 @@ export default function MessagesClient() {
   const [sending, setSending] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Conversation | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [desktopLayout, setDesktopLayout] = useState(false);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
 
   const activeConv = conversations.find(c => c.id === activeId) || null;
   const messageCount = activeConv?.messages.length ?? 0;
 
   useEffect(() => {
-    if (messageCount > 0 && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (messageCount <= 0) return;
+    [mobileScrollRef.current, desktopScrollRef.current].forEach((element) => {
+      if (element) element.scrollTop = element.scrollHeight;
+    });
   }, [messageCount, activeId]);
 
-  // The chat view covers the whole screen, so keep the page behind it still.
   useEffect(() => {
-    if (!activeId) return;
+    const media = window.matchMedia('(min-width: 1200px)');
+    const updateLayout = () => setDesktopLayout(media.matches);
+    updateLayout();
+    media.addEventListener('change', updateLayout);
+    return () => media.removeEventListener('change', updateLayout);
+  }, []);
+
+  // Lock the page only while the mobile full-screen chat is open.
+  useEffect(() => {
+    if (!activeId || desktopLayout) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = previous;
     };
-  }, [activeId]);
+  }, [activeId, desktopLayout]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -143,6 +338,96 @@ export default function MessagesClient() {
     </div>
   );
 
+  const desktopConversationList = (
+    <aside className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900">
+      <header className="flex flex-shrink-0 items-center justify-between border-b border-surface px-4 py-4 dark:border-zinc-800">
+        <div>
+          <h1 className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
+          <p className="mt-0.5 text-xs text-app-muted">
+            {conversations.length === 0
+              ? 'Razgovori o zameni'
+              : `${conversations.length} ${conversations.length === 1 ? 'razgovor' : 'razgovora'}`}
+          </p>
+        </div>
+        {totalUnread > 0 && (
+          <span className="flex h-7 min-w-[28px] items-center justify-center rounded-full bg-brand-500 px-2 text-xs font-bold text-black">
+            {totalUnread}
+          </span>
+        )}
+      </header>
+
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
+        {conversations.length === 0 ? (
+          <div className="flex h-full min-h-64 flex-col items-center justify-center px-4 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-elevated">
+              <MessageCircle size={23} className="text-app-muted" />
+            </div>
+            <p className="text-sm font-semibold text-app-primary dark:text-zinc-100">Nema razgovora</p>
+            <p className="mt-1 text-xs leading-relaxed text-app-muted">Pošalji ponudu za trampu da započneš razgovor.</p>
+            <Link href="/" className="mt-4 text-xs font-semibold text-brand-text hover:underline">
+              Pronađi zamenu
+            </Link>
+          </div>
+        ) : (
+          conversations.map((conversation) => {
+            const lastMessage = conversation.messages[conversation.messages.length - 1];
+            const active = conversation.id === activeId;
+            return (
+              <div
+                key={conversation.id}
+                className={`flex items-start gap-1 rounded-xl border p-2 transition-colors ${
+                  active
+                    ? 'border-brand-500/50 bg-brand-500/5'
+                    : 'border-transparent hover:border-surface hover:bg-hover-surface dark:hover:border-zinc-800'
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => openConversation(conversation)}
+                  aria-pressed={active}
+                  className="flex min-w-0 flex-1 items-start gap-2.5 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                >
+                  <span className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg bg-elevated">
+                    <img src={conversation.carImage} alt="" className="h-full w-full object-cover" />
+                    {conversation.unread > 0 && (
+                      <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-brand-500 dark:border-zinc-900" />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between gap-1">
+                      <span className={`truncate text-xs ${conversation.unread ? 'font-bold text-app-primary dark:text-zinc-100' : 'font-semibold text-app-primary dark:text-zinc-100'}`}>
+                        {conversation.ownerName}
+                      </span>
+                      <span className="flex-shrink-0 text-[11px] text-app-muted">{formatTime(conversation.lastUpdated)}</span>
+                    </span>
+                    <span className="mt-0.5 block truncate text-[11px] text-app-muted">{conversation.carTitle}</span>
+                    <span className={`mt-1 block truncate text-xs ${conversation.unread ? 'font-medium text-app-secondary dark:text-zinc-300' : 'text-app-muted'}`}>
+                      {lastMessage
+                        ? `${lastMessage.sender === 'me' ? 'Ti: ' : ''}${lastMessage.text}`
+                        : 'Još nema poruka'}
+                    </span>
+                    <span className="mt-1.5 flex min-w-0 items-center gap-1 text-[11px] font-semibold text-brand-text">
+                      <ArrowLeftRight size={12} className="flex-shrink-0" />
+                      <span className="truncate">{conversation.tradeSummary}</span>
+                    </span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPendingDelete(conversation)}
+                  aria-label={`Arhiviraj razgovor sa ${conversation.ownerName}`}
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-rose-500/10 hover:text-tone-negative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                >
+                  <Archive size={15} />
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </aside>
+  );
+
   if (authReady && !isLoggedIn) {
     return (
       <SignedOutPage
@@ -173,150 +458,35 @@ export default function MessagesClient() {
 
   /* ---------------------------------------------------------------- CHAT */
   if (activeConv) {
-    let lastDay = '';
-
     return (
       <>
-        {/* Full-screen overlay: the composer would otherwise sit under the
-            fixed bottom navigation. */}
-        <div className="fixed inset-0 z-[60] flex flex-col bg-app dark:bg-zinc-950">
-          <header className="flex flex-shrink-0 items-center gap-3 border-b border-surface dark:border-zinc-800 px-4 py-3 safe-top">
-            <button
-              onClick={() => setActiveId(null)}
-              aria-label="Nazad na razgovore"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-app-primary"
-            >
-              <ArrowLeft size={18} />
-            </button>
-
-            <Link
-              href={`/car/${activeConv.carId}`}
-              className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl bg-elevated"
-              aria-label={`Otvori oglas ${activeConv.carTitle}`}
-            >
-              <img src={activeConv.carImage} alt="" className="h-full w-full object-cover" />
-            </Link>
-
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{activeConv.ownerName}</p>
-              <p className="truncate text-xs text-app-muted">{activeConv.carTitle}</p>
-            </div>
-
-            {activeConv.ownerPhone && (
-              <a
-                href={`tel:${activeConv.ownerPhone}`}
-                aria-label={`Pozovi ${activeConv.ownerName}`}
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary dark:text-zinc-400 transition-colors hover:text-brand-text"
-              >
-                <Phone size={16} />
-              </a>
-            )}
-            <button
-              onClick={() => setPendingDelete(activeConv)}
-              aria-label="Arhiviraj razgovor"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-rose-500 dark:text-zinc-400"
-            >
-              <Trash2 size={16} />
-            </button>
-          </header>
-
-          <Link
-            href={`/car/${activeConv.carId}`}
-            className="mx-4 mt-3 flex flex-shrink-0 items-center justify-between rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 transition-colors hover:bg-brand-500/15"
-          >
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-text">
-              <ArrowLeftRight size={12} />
-              {activeConv.tradeSummary}
-            </span>
-            <span className="text-[10px] text-app-muted">Pogledaj oglas</span>
-          </Link>
-
-          <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
-            {activeConv.messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-elevated">
-                  <MessageCircle size={26} className="text-app-muted" />
-                </div>
-                <p className="text-sm font-medium text-app-secondary dark:text-zinc-400">Još nema poruka</p>
-                <p className="mt-1 text-xs text-app-muted">Pošalji prvu poruku ispod</p>
-              </div>
-            ) : (
-              activeConv.messages.map(msg => {
-                const day = formatDayLabel(msg.timestamp);
-                const showDay = day !== lastDay;
-                lastDay = day;
-                const mine = msg.sender === 'me';
-
-                return (
-                  <div key={msg.id}>
-                    {showDay && (
-                      <div className="my-4 flex justify-center">
-                        <span className="rounded-full bg-elevated px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-app-muted">
-                          {day}
-                        </span>
-                      </div>
-                    )}
-                    {msg.sender === 'system' ? (
-                      <div className="flex justify-center">
-                        <div className="max-w-[90%] whitespace-pre-wrap rounded-2xl border border-brand-500/25 bg-brand-500/10 px-4 py-3 text-center text-xs leading-relaxed text-app-secondary dark:text-zinc-300">
-                          <p className="font-semibold text-brand-text">{msg.text}</p>
-                          <span className="mt-1 block text-[9px] text-app-muted">{formatMessageTime(msg.timestamp)}</span>
-                        </div>
-                      </div>
-                    ) : (
-                    <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                      <div
-                        className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
-                          mine
-                            ? 'rounded-br-md bg-brand-500 text-black'
-                            : 'rounded-bl-md bg-elevated text-app-primary dark:text-zinc-100'
-                        }`}
-                      >
-                        <p className="whitespace-pre-wrap break-words text-sm leading-snug">
-                          {msg.text}
-                        </p>
-                        <div
-                          className={`mt-1 flex items-center gap-1 ${
-                            mine ? 'justify-end text-white/70' : 'text-app-muted'
-                          }`}
-                        >
-                          <span className="text-[9px]">{formatMessageTime(msg.timestamp)}</span>
-                          {mine && <CheckCheck size={11} className="text-white/80" />}
-                        </div>
-                      </div>
-                    </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-
-          </div>
-
-          <div className="flex flex-shrink-0 items-center gap-2 border-t border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 px-4 py-3 safe-bottom">
-            <input
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  void handleSend();
-                }
-              }}
-              maxLength={1000}
-              placeholder="Napiši poruku..."
-              aria-label="Poruka"
-              className="flex-1 rounded-full border border-surface dark:border-zinc-800 bg-elevated px-4 py-2.5 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none"
+        <div className="hidden desktop:block app-container py-6">
+          <div className="grid h-[calc(100dvh-11rem)] min-h-[500px] max-h-[820px] grid-cols-[minmax(300px,340px)_minmax(0,1fr)] gap-4">
+            {desktopConversationList}
+            <ConversationThread
+              conversation={activeConv}
+              input={input}
+              onInputChange={setInput}
+              sending={sending}
+              onSend={() => void handleSend()}
+              onArchive={() => setPendingDelete(activeConv)}
+              scrollRef={desktopScrollRef}
             />
-            <button
-              onClick={() => void handleSend()}
-              disabled={!input.trim() || sending}
-              aria-label="Pošalji poruku"
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-500 text-black transition-all duration-200 hover:bg-brand-600 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Send size={17} />
-            </button>
           </div>
+        </div>
+
+        <div className="desktop:hidden">
+          <ConversationThread
+            conversation={activeConv}
+            input={input}
+            onInputChange={setInput}
+            sending={sending}
+            onSend={() => void handleSend()}
+            onArchive={() => setPendingDelete(activeConv)}
+            scrollRef={mobileScrollRef}
+            fullScreen
+            onBack={() => setActiveId(null)}
+          />
         </div>
 
         {deleteDialog}
@@ -326,7 +496,33 @@ export default function MessagesClient() {
 
   /* ------------------------------------------------------------ INBOX */
   return (
-    <div className="flex flex-col">
+    <>
+    <div className="hidden desktop:block app-container py-6">
+      <div className="grid h-[calc(100dvh-11rem)] min-h-[500px] max-h-[820px] grid-cols-[minmax(300px,340px)_minmax(0,1fr)] gap-4">
+        {desktopConversationList}
+        <section className="flex h-full min-h-0 flex-col items-center justify-center rounded-2xl border border-dashed border-surface bg-card-surface px-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-elevated text-brand-text">
+            <MessageCircle size={26} />
+          </div>
+          <h2 className="text-lg font-semibold text-app-primary dark:text-zinc-100">
+            {conversations.length > 0 ? 'Izaberi razgovor' : 'Tvoj sledeći dogovor počinje ovde'}
+          </h2>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-app-muted">
+            {conversations.length > 0
+              ? 'Izaberi razgovor sa leve strane da nastaviš dogovor o zameni.'
+              : 'Pošalji ponudu za zamenu i ovde ćeš razgovarati sa vlasnikom.'}
+          </p>
+          {conversations.length === 0 && (
+            <Link href="/" className="btn-primary mt-5 text-sm">
+              <ArrowLeftRight size={16} />
+              Pronađi zamenu
+            </Link>
+          )}
+        </section>
+      </div>
+    </div>
+
+    <div className="desktop:hidden flex flex-col">
       <header className="app-page-header safe-top">
         <div className="app-container flex items-center justify-between py-4">
           <div>
@@ -382,7 +578,7 @@ export default function MessagesClient() {
                   <div className="min-w-0 flex-1">
                     <div className="mb-0.5 flex items-center justify-between gap-2">
                       <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{conv.ownerName}</p>
-                      <span className="flex-shrink-0 text-[10px] text-app-muted">
+                      <span className="flex-shrink-0 text-[11px] text-app-muted">
                         {formatTime(conv.lastUpdated)}
                       </span>
                     </div>
@@ -397,7 +593,7 @@ export default function MessagesClient() {
                           ? (lastMsg.sender === 'me' ? 'Ti: ' : '') + lastMsg.text
                           : 'Još nema poruka'}
                       </p>
-                      <span className="flex-shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-text">
+                      <span className="flex-shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[11px] font-semibold text-brand-text">
                         {conv.tradeSummary}
                       </span>
                     </div>
@@ -406,7 +602,7 @@ export default function MessagesClient() {
 
                 <div className="flex flex-shrink-0 flex-col items-center gap-1.5">
                   {conv.unread > 0 && (
-                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white">
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
                       {conv.unread}
                     </span>
                   )}
@@ -415,7 +611,7 @@ export default function MessagesClient() {
                     aria-label={`Arhiviraj razgovor sa ${conv.ownerName}`}
                     className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-rose-500/10 hover:text-tone-negative"
                   >
-                    <Trash2 size={14} />
+                    <Archive size={14} />
                   </button>
                 </div>
               </div>
@@ -424,8 +620,9 @@ export default function MessagesClient() {
         )}
       </div>
 
-      {deleteDialog}
     </div>
+    {deleteDialog}
+    </>
   );
 }
 
