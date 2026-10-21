@@ -223,7 +223,7 @@ export function DesktopFeedOverview({
           Smart Match
           <Flame size={16} className="ml-auto" />
         </button>
-        <p className="mt-2 text-center text-[11px] leading-snug text-app-muted">Pregledaj predloge jedan po jedan</p>
+        <p className="mt-2 text-center text-[11px] leading-snug text-app-muted">Zamene odabrane za tvoj auto</p>
       </div>
     </section>
   );

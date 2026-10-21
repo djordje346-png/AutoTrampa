@@ -165,7 +165,9 @@ function baseFields(row: CarRow) {
     price: toNumber(row.price),
     city: row.city ?? '-',
     country: row.country ?? 'Serbia',
-    image: row.image ?? '',
+    // The form stores the user-selected cover first in `images`. Prefer that
+    // ordered value so the feed and detail view agree on the cover photo.
+    image: images?.[0] ?? row.image ?? '',
     images,
     specs: { ...EMPTY_SPECS, ...((row.specs ?? {}) as Partial<CarSpec>) },
     owner: {

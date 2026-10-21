@@ -28,6 +28,7 @@ import { FilterSheetBody } from '@/components/FilterPanel';
 import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
 import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
 import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
+import { FeedCardPhoto } from '@/components/FeedCardPhoto';
 import PublicLanding from '@/components/PublicLanding';
 
 type ViewMode = 'grid' | 'swipe';
@@ -182,6 +183,9 @@ function AuthenticatedFeed({
 
   const activeFilters = countActiveFilters(filters);
   const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
+  const activeCarName = selectedCar
+    ? [selectedCar.brand, selectedCar.model].filter(Boolean).join(' ')
+    : '';
 
   useEffect(() => {
     if (viewMode === 'swipe') {
@@ -580,10 +584,10 @@ function AuthenticatedFeed({
                     type="button"
                     onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
                     aria-pressed={filters.trade === key}
-                    className={`min-h-9 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition-all duration-150 ${
+                    className={`inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
                       filters.trade === key
                         ? 'border-brand-500 bg-brand-500 text-black shadow-sm shadow-brand-500/20'
-                        : 'border-surface bg-card-surface text-app-secondary hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'
+                        : 'border-surface bg-card-surface text-app-secondary hover:-translate-y-px hover:border-brand-500/40 hover:bg-elevated hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'
                     }`}
                   >
                     {label}
@@ -886,6 +890,23 @@ function AuthenticatedFeed({
           )}
 
           <div className="min-w-0 flex-1">
+            <div className="mb-3 min-w-0">
+              <h1 className="truncate text-base font-bold leading-tight text-app-primary dark:text-zinc-100 sm:text-lg">
+                {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži oglase'}
+              </h1>
+              <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-app-muted">
+                <span>{marketplaceReady
+                  ? `Pronađeno ${filteredCars.length} ${filteredCars.length === 1 ? 'oglas' : 'oglasa'}`
+                  : 'Oglasi se učitavaju…'}</span>
+                {selectedCar && (
+                  <>
+                    <span className="hidden text-app-muted/60 sm:inline" aria-hidden="true">·</span>
+                    <span className="basis-full sm:basis-auto">Prikazane doplate su procenjene prema vrednosti tvog vozila.</span>
+                  </>
+                )}
+              </div>
+            </div>
+
             {!marketplaceReady && (
               /* Placeholder cards while the first request is in flight: real
                  listings arrive after the demo seed and sort to the front, so
@@ -915,22 +936,20 @@ function AuthenticatedFeed({
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 hover:border-brand-500/30 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
+              <article key={car.id} className="group/card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/30 desktop:hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
+                <Link
+                  href={`/car/${car.id}`}
+                  aria-label={`Otvori oglas: ${carTitle(car)}`}
+                  className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                />
                 {/* Image */}
-                <div className="relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
-                  <Link href={`/car/${car.id}`} className="absolute inset-0 block">
-                    <img src={car.image} alt={`${car.brand} ${car.model}`} className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                    {!car.ownerId && (
-                      <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
-                        Demo
-                      </span>
-                    )}
-                  </Link>
+                <div className="relative z-10 w-full flex-shrink-0 pointer-events-none">
+                  <FeedCardPhoto car={car} />
                   <button
-                    onClick={() => void likeCar(car)}
+                    type="button"
+                    onClick={(event) => { event.preventDefault(); event.stopPropagation(); void likeCar(car); }}
                     disabled={isLiking(car.id)}
-                    className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-all duration-200 hover:text-brand-300 disabled:opacity-60"
+                    className="pointer-events-auto absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:text-brand-300 disabled:opacity-60"
                     aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
                     title="Lajkuj i sačuvaj za match"
                   >
@@ -939,14 +958,12 @@ function AuthenticatedFeed({
                 </div>
 
                 {/* Info */}
-                <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3">
+                <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3">
                   {/* Title and specs reserve consistent space so cards align in each row. */}
                   <div className="min-w-0">
-                    <Link href={`/car/${car.id}`}>
-                      <h2 className="line-clamp-2 min-h-10 text-base font-semibold leading-snug text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
-                        {carTitle(car)}
-                      </h2>
-                    </Link>
+                    <h2 className="line-clamp-2 min-h-10 text-[17px] font-bold leading-snug text-app-primary dark:text-zinc-100">
+                      {carTitle(car)}
+                    </h2>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
                     <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-xs text-app-secondary dark:text-zinc-400 desktop:mt-2">
@@ -967,7 +984,7 @@ function AuthenticatedFeed({
                    */}
                   <div className="mt-auto pt-3.5 desktop:pt-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 font-sans text-[22px] font-bold tracking-tight tabular-nums text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                      <p className="shrink-0 font-sans text-[23px] font-bold tracking-tight tabular-nums text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
                       {tl && (
                         <span className={`inline-flex min-w-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none ${tl.bg} ${tl.color}`}>
                           <span className="truncate">{tl.label}</span>

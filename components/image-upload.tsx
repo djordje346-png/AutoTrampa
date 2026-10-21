@@ -174,7 +174,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
       </div>
 
       <p className="text-[11px] leading-relaxed text-app-muted">
-        Prva slika je naslovna. Najkorisnije su fotografije spolja, enterijera, instrument table i poznatih oštećenja.
+        Prva slika je naslovna. Za najbolji prikaz oglasa, izaberi jasnu fotografiju spoljašnjosti vozila kao prvu sliku. Najkorisnije su i fotografije enterijera, instrument table i poznatih oštećenja.
         Slike se optimizuju pri izboru i čuvaju uz oglas nakon objave.
       </p>
     </div>
