@@ -311,7 +311,7 @@ function CarFormFields({
       {step === 1 && (
         <>
           <section>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 desktop:grid-cols-3 lg:gap-3">
               <div>
                 <VehicleCombobox
                   id="car-brand"
@@ -437,7 +437,7 @@ function CarFormFields({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 desktop:grid-cols-3 lg:gap-3">
 
           <div>
             <label htmlFor="car-price" className={labelClass}>
@@ -989,7 +989,7 @@ export default function CarFormComponent({
           </div>
         </header>
 
-        <div ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <main ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           <div className="mx-auto w-full max-w-[880px] px-4 py-3 sm:px-6 sm:py-4 lg:py-3">
             <div className="mb-3 lg:mb-2">
               <h2 className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100 sm:text-xl">
@@ -1020,7 +1020,7 @@ export default function CarFormComponent({
               {step === 3 && photoError && <p role="alert" className="mt-3 text-xs font-semibold text-tone-negative">{photoError}</p>}
             </div>
           </div>
-        </div>
+        </main>
 
         <footer className="safe-bottom shrink-0 border-t border-surface bg-app dark:border-zinc-800 dark:bg-zinc-950">
           <div className="mx-auto flex w-full max-w-[880px] items-center justify-between gap-3 px-4 py-3 sm:px-6">

@@ -11,6 +11,7 @@ import {
   MapPin,
   Search,
   Send,
+  ShieldCheck,
   Sparkles,
   UsersRound,
 } from 'lucide-react';
@@ -18,7 +19,7 @@ import type { Car } from '@/types';
 import BrandLockup from '@/components/BrandLockup';
 import PublicHeader from '@/components/PublicHeader';
 import { carSubtitle } from '@/lib/car-row';
-import { carTitle, formatEuro, formatKm } from '@/lib/cars';
+import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
 
 interface PublicLandingProps {
@@ -69,43 +70,45 @@ function CarPhoto({
     );
   }
 
-  return (
-    <img
-      src={src}
-      alt={alt}
-      width={640}
-      height={400}
-      loading="lazy"
-      decoding="async"
-      className={className}
-      onError={() => setFailedImage({ src, failed: true })}
-    />
-  );
+  return <img src={src} alt={alt} className={className} onError={() => setFailedImage({ src, failed: true })} />;
 }
 
-function CarPreview({ label }: { label: string }) {
+function CarPreview({ car, label }: { car?: Car; label: string }) {
   return (
     <div className="min-w-0 overflow-hidden rounded-2xl border border-white/70 bg-white shadow-lg shadow-black/10">
-      <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-100 via-white to-zinc-200">
-        <div aria-hidden="true" className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-brand-500/15 blur-2xl" />
-        <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-white/80 bg-white/90 text-zinc-800 shadow-md shadow-zinc-900/10 sm:h-16 sm:w-16">
-          <CarFront size={32} strokeWidth={1.7} aria-hidden="true" />
-        </div>
+      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-200">
+        {car ? (
+          <CarPhoto
+            src={car.image}
+            alt={`${car.brand} ${car.model}`}
+            className="h-full w-full object-cover"
+            fallbackClassName="flex h-full w-full items-center justify-center bg-zinc-200 text-zinc-400"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-zinc-400"><CarFront size={42} /></div>
+        )}
       </div>
       <div className="px-3 py-2.5 sm:px-4 sm:py-3">
         <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-zinc-500 sm:text-[10px]">{label}</p>
         <p className="mt-0.5 truncate text-xs font-bold text-zinc-950 sm:text-sm">
-          {label === 'Tvoj auto' ? 'Dodaj svoj auto' : 'Pregledaj ponude'}
+          {car ? `${car.brand} ${car.model}` : label === 'Tvoj auto' ? 'Tvoj automobil' : 'Moguća zamena'}
         </p>
         <p className="mt-0.5 truncate text-[10px] text-zinc-500 sm:text-xs">
-          {label === 'Tvoj auto' ? 'Početna tačka za preporuke' : 'Stvarni oglasi vlasnika'}
+          {car
+            ? `${formatYear(car.year)} · ${fuelLabel(car.specs.fuelType)}`
+            : label === 'Tvoj auto'
+              ? 'Dodaj auto da pronađeš zamenu'
+              : 'Prikazujemo stvarne oglase vlasnika'}
         </p>
       </div>
     </div>
   );
 }
 
-function SwapVisual() {
+function SwapVisual({ cars }: { cars: Car[] }) {
+  const first = cars[0];
+  const second = cars[1];
+
   return (
     <div className="relative overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-gradient-to-br from-zinc-100 via-white to-zinc-200 p-3 shadow-xl shadow-zinc-900/10 sm:p-5 lg:p-6">
       <div aria-hidden="true" className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-500/20 blur-3xl" />
@@ -114,12 +117,12 @@ function SwapVisual() {
         <span className="rounded-full border border-zinc-200 bg-white/80 px-2.5 py-1 text-[10px] font-medium text-zinc-600 sm:text-xs">Uz doplatu ili bez nje</span>
       </div>
       <div className="relative grid grid-cols-[minmax(0,1fr)_2.5rem_minmax(0,1fr)] items-center gap-1.5 sm:grid-cols-[minmax(0,1fr)_3.25rem_minmax(0,1fr)] sm:gap-2">
-        <CarPreview label="Tvoj auto" />
+        <CarPreview car={first} label="Tvoj auto" />
         <div className="z-10 flex h-9 w-9 items-center justify-center rounded-full bg-brand-500 text-zinc-950 shadow-md shadow-brand-500/30 sm:h-12 sm:w-12">
           <ArrowLeftRight size={20} strokeWidth={2.4} className="sm:hidden" />
           <ArrowLeftRight size={25} strokeWidth={2.4} className="hidden sm:block" />
         </div>
-        <CarPreview label="Moguća zamena" />
+        <CarPreview car={second} label="Moguća zamena" />
       </div>
       <div className="relative mx-auto mt-3 w-fit rounded-full border border-brand-500/50 bg-brand-500/20 px-3 py-1.5 text-[10px] font-bold text-zinc-900 sm:mt-4 sm:px-4 sm:text-xs">
         Doplata se dogovara direktno
@@ -165,13 +168,14 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
   // The shared marketplace hook also includes demo seed cars for signed-in
   // browsing. Public examples should always be real owner listings.
   const publicCars = cars.filter((car) => Boolean(car.ownerId));
-  const landingCars = publicCars.slice(0, 3);
+  const popularCars = publicCars.slice(0, 3);
+  const heroCar = publicCars[0];
 
   return (
     <div className="min-h-screen overflow-hidden bg-white text-zinc-950">
       <PublicHeader onAddCar={onAddCar} onSignIn={onSignIn} onRegister={onRegister} />
 
-      <div>
+      <main>
         <section className="relative border-b border-zinc-200 bg-gradient-to-b from-zinc-50 to-white">
           <div className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 sm:py-12 lg:gap-10 lg:py-16 desktop:grid-cols-[0.92fr_1.08fr] desktop:px-8 desktop:py-20">
             <div className="max-w-2xl">
@@ -191,12 +195,12 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
                 </Link>
               </div>
               <div className="mt-7 hidden flex-wrap gap-x-5 gap-y-3 text-xs font-medium text-zinc-600 sm:flex">
-                <span className="inline-flex items-center gap-2"><CarFront size={17} className="text-zinc-800" /> Oglasi vlasnika</span>
+                <span className="inline-flex items-center gap-2"><ShieldCheck size={17} className="text-zinc-800" /> Provereni oglasi</span>
                 <span className="inline-flex items-center gap-2"><UsersRound size={17} className="text-zinc-800" /> Direktno sa vlasnicima</span>
                 <span className="inline-flex items-center gap-2"><MapPin size={17} className="text-zinc-800" /> Širom Srbije</span>
               </div>
             </div>
-            <SwapVisual />
+            <SwapVisual cars={publicCars} />
           </div>
         </section>
 
@@ -226,21 +230,21 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
           <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:py-14 desktop:px-8">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-zinc-500">Aktuelna ponuda</p>
-                <h2 className="mt-1.5 text-2xl font-bold tracking-tight sm:text-3xl">Oglasi za istraživanje</h2>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-zinc-500">Oglasi za istraživanje</p>
+                <h2 className="mt-1.5 text-2xl font-bold tracking-tight sm:text-3xl">Popularne zamene</h2>
                 <span className="mt-2 block h-1 w-12 rounded-full bg-brand-500" />
               </div>
               <Link href="/search" className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:text-zinc-950">
                 Pogledaj sve oglase <ArrowRight size={16} />
               </Link>
             </div>
-            {!listingsReady && landingCars.length === 0 ? (
+            {!listingsReady && popularCars.length === 0 ? (
               <div className="grid gap-4 md:grid-cols-2 desktop:grid-cols-3">
                 {[0, 1, 2].map((index) => <div key={index} className="aspect-[16/10] animate-pulse rounded-2xl bg-zinc-200" />)}
               </div>
-            ) : landingCars.length > 0 ? (
+            ) : popularCars.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2 desktop:grid-cols-3">
-                {landingCars.map((car) => <ListingCard key={car.id} car={car} />)}
+                {popularCars.map((car) => <ListingCard key={car.id} car={car} />)}
               </div>
             ) : (
               <p className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Novi oglasi uskoro stižu.</p>
@@ -275,8 +279,15 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
 
         <section className="px-4 pb-8 sm:px-6 sm:pb-12 desktop:px-8">
           <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] bg-zinc-950 text-white">
-            <div aria-hidden="true" className="absolute -right-16 -top-24 h-80 w-80 rounded-full bg-brand-500/10 blur-3xl" />
-            <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/95 to-zinc-900/80" />
+            {heroCar && (
+              <CarPhoto
+                src={heroCar.image}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover opacity-35"
+                fallbackClassName="absolute inset-0 bg-zinc-900"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/85 to-zinc-950/45" />
             <div className="relative flex flex-col items-start gap-5 px-5 py-8 sm:px-8 sm:py-10 desktop:flex-row desktop:items-center desktop:justify-between desktop:px-14 desktop:py-12">
               <div>
                 <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Koji auto trenutno voziš?</h2>
@@ -286,7 +297,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
             </div>
           </div>
         </section>
-      </div>
+      </main>
       <footer className="border-t border-zinc-800 bg-zinc-900 text-zinc-400">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-6 desktop:px-8">
           <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
