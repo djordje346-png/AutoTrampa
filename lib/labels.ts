@@ -1,4 +1,5 @@
 import type { BodyType, FuelType, Transmission, VehicleCondition } from '@/types';
+import { BODY_TYPE_LABELS } from '@/lib/body-types';
 
 /**
  * The data model keeps English keys (they are stable identifiers used in
@@ -20,14 +21,7 @@ export const TRANSMISSION_LABELS: Record<Transmission, string> = {
   'Semi-Auto': 'Poluautomatik',
 };
 
-export const BODY_LABELS: Record<BodyType, string> = {
-  Sedan: 'Limuzina',
-  Caravan: 'Karavan',
-  Hatchback: 'Hečbek',
-  SUV: 'SUV',
-  Coupe: 'Kupe',
-  Convertible: 'Kabriolet',
-};
+export const BODY_LABELS: Record<BodyType, string> = BODY_TYPE_LABELS;
 
 export const VEHICLE_CONDITION_LABELS: Record<VehicleCondition, string> = {
   good: 'Bez većih ulaganja',

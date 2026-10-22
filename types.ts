@@ -1,4 +1,4 @@
-export type BodyType = 'Sedan' | 'Caravan' | 'Hatchback' | 'SUV' | 'Coupe' | 'Convertible';
+export type BodyType = 'Sedan' | 'Caravan' | 'Hatchback' | 'SUV' | 'Coupe' | 'Convertible' | 'MPV' | 'Pickup' | 'Van';
 export type FuelType = 'Diesel' | 'Petrol' | 'Hybrid' | 'Electric' | 'LPG' | 'CNG';
 export type Transmission = 'Manual' | 'Automatic' | 'Semi-Auto';
 export type VehicleCondition = 'good' | 'minor_work' | 'major_work' | 'not_running';

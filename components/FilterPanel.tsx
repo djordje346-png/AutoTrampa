@@ -5,6 +5,7 @@ import { CalendarDays, CarFront, ChevronDown, Fuel, Gauge, RotateCcw, SlidersHor
 import { BRAND_NAMES } from '@/lib/car-brands';
 import { bodyLabel, fuelLabel } from '@/lib/labels';
 import { type BodyType, type FuelType } from '@/types';
+import { BODY_TYPES } from '@/lib/body-types';
 import { countActiveFilters, type SearchFilters } from '@/hooks/use-search-prefs';
 
 /**
@@ -31,7 +32,6 @@ const TRADE_OPTIONS: { key: SearchFilters['trade']; label: string }[] = [
   { key: 'expensive', label: 'Ja doplaćujem' },
 ];
 
-const BODY_TYPES: BodyType[] = ['Sedan', 'Caravan', 'Hatchback', 'SUV', 'Coupe', 'Convertible'];
 const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'LPG', 'CNG', 'Hybrid', 'Electric'];
 
 const GROUP_TITLE = 'text-xs font-bold uppercase tracking-widest text-app-muted';
@@ -55,7 +55,7 @@ export function DesktopCompactFilterGroups({
     },
     {
       id: 'body', label: 'Karoserija', value: filters.bodyType ? bodyLabel(filters.bodyType) : 'Sve karoserije', icon: CarFront,
-      options: [{ value: null, label: 'Sve karoserije' }, ...BODY_TYPES.map((value) => ({ value, label: bodyLabel(value) }))],
+      options: [{ value: null, label: 'Sve karoserije' }, ...BODY_TYPES.map(({ value, label }) => ({ value, label }))],
       select: (value: string | null) => update({ bodyType: value as BodyType | null }),
     },
     {
@@ -161,13 +161,13 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
       <section>
         <p className={GROUP_TITLE}>Karoserija</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {BODY_TYPES.map((type) => (
+          {BODY_TYPES.map(({ value: type, label }) => (
             <button
               key={type}
               onClick={() => update({ bodyType: filters.bodyType === type ? null : type })}
               className={`${CHIP_BASE} ${filters.bodyType === type ? CHIP_ON : CHIP_OFF}`}
             >
-              {bodyLabel(type)}
+              {label}
             </button>
           ))}
         </div>

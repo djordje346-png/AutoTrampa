@@ -13,22 +13,14 @@ import type {
 } from '@/types';
 import { getCarImages } from '@/types';
 import { CAR_MAKES, getCarModels, isCataloguedModel } from '@/lib/car-catalog';
-import { bodyLabel, fuelLabel, transmissionLabel } from '@/lib/labels';
+import { fuelLabel, transmissionLabel } from '@/lib/labels';
+import { BodyTypePicker } from '@/components/BodyTypePicker';
 import { userStore, shortName } from '@/hooks/use-user';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { ImageUpload } from '@/components/image-upload';
 import { CitySelect } from '@/components/CitySelect';
 import { getSerbianPlace } from '@/lib/city-coordinates';
 import { VehicleCombobox } from '@/components/VehicleCombobox';
-
-const BODY_TYPES: BodyType[] = [
-  'Sedan',
-  'Caravan',
-  'Hatchback',
-  'SUV',
-  'Coupe',
-  'Convertible',
-];
 
 const FUEL_TYPES: FuelType[] = [
   'Diesel',
@@ -234,10 +226,10 @@ interface CarFormFieldsProps {
   step: FormStep;
 }
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ message, id }: { message?: string; id?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="mt-1.5 text-xs font-medium text-tone-negative">
+    <p id={id} role="alert" className="mt-1.5 text-xs font-medium text-tone-negative">
       {message}
     </p>
   );
@@ -568,7 +560,7 @@ function CarFormFields({
       <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
 
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-app-primary dark:text-app-primary">
+          <h2 id="car-body-type-label" className="text-base font-semibold text-app-primary dark:text-app-primary">
             Tip karoserije *
           </h2>
 
@@ -577,36 +569,12 @@ function CarFormFields({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-
-          {BODY_TYPES.map((type) => {
-            const active = form.bodyType === type;
-
-            return (
-              <button
-                key={type}
-                type="button"
-                aria-pressed={active}
-                onClick={() =>
-                  update('bodyType', type)
-                }
-                className={`
-                  min-h-10 rounded-xl border px-3 py-2
-                  text-xs font-medium transition-all
-                  ${
-                    active
-                      ? 'border-brand-500 bg-brand-500 text-app-primary'
-                      : 'border-surface dark:border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary'
-                  }
-                `}
-              >
-                {bodyLabel(type)}
-              </button>
-            );
-          })}
-
-        </div>
-        <FieldError message={errors.bodyType} />
+        <BodyTypePicker
+          value={form.bodyType}
+          onChange={(type) => update('bodyType', type)}
+          error={errors.bodyType}
+        />
+        <FieldError id="car-body-type-error" message={errors.bodyType} />
       </section>
 
       {/* MOTOR */}

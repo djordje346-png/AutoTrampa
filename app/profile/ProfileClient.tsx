@@ -13,13 +13,14 @@ import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { usePreferences } from '@/hooks/use-preferences';
 import { formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { estimateUsageBytes } from '@/lib/storage';
-import { BodyType, MyGarageCar } from '@/types';
+import { MyGarageCar } from '@/types';
 import { bodyLabel } from '@/lib/labels';
+import { BODY_TYPES } from '@/lib/body-types';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { ProfileEditSheet } from '@/components/ProfileEditSheet';
 
-const BODY_TYPE_PREFS: BodyType[] = ['Sedan', 'SUV', 'Caravan', 'Coupe'];
+const BODY_TYPE_PREFS = BODY_TYPES.map(({ value }) => value);
 
 /** Browsers give roughly 5 MB per origin to localStorage. */
 const STORAGE_BUDGET_BYTES = 5 * 1024 * 1024;
