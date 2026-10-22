@@ -60,6 +60,8 @@ const config: Config = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        'secondary-accent': 'hsl(var(--secondary-accent) / <alpha-value>)',
+        'brand-dark': 'hsl(var(--surface-brand-dark) / <alpha-value>)',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -69,10 +71,10 @@ const config: Config = {
         },
         brand: {
           300: '#FAEB00',
-          400: 'hsl(var(--brand-text))',
+          400: 'hsl(var(--brand-hover))',
           500: '#FAEB00',
-          600: '#E5D700',
-          700: '#625900',
+          600: 'hsl(var(--brand-hover))',
+          700: 'hsl(var(--brand-pressed))',
         },
       },
       keyframes: {

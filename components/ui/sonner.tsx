@@ -28,8 +28,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
             'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
           cancelButton:
             'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
-          error: 'group-[.toaster]:border-rose-500/40',
-          success: 'group-[.toaster]:border-emerald-500/40',
+          error: 'group-[.toaster]:border-tone-negative',
+          success: 'group-[.toaster]:border-tone-positive',
         },
       }}
       {...props}

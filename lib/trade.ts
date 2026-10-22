@@ -11,10 +11,8 @@ export interface TradeLabel {
   diff: number;
   /** Full sentence for badges, e.g. "Vlasnik doplaćuje 700 €". */
   label: string;
-  /** Compact form for tight spots, e.g. "+700 €". */
+  /** Compact form for tight spots, with the active-car perspective included. */
   short: string;
-  color: string;
-  bg: string;
 }
 
 interface Priced {
@@ -75,9 +73,7 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
       tone: 'even',
       diff,
       label: 'Ravna zamena',
-      short: 'Ravno',
-      color: 'text-brand-text',
-      bg: 'bg-brand-soft border-brand-soft',
+      short: 'Ravna zamena',
     };
   }
 
@@ -86,9 +82,7 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
       tone: 'you-add',
       diff,
       label: `Tvoja doplata ${formatEuro(diff)}`,
-      short: `+${formatEuro(diff)}`,
-      color: 'text-tone-negative',
-      bg: 'bg-rose-500/10 border-rose-500/30',
+      short: `Ti +${formatEuro(diff)}`,
     };
   }
 
@@ -96,8 +90,6 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
     tone: 'they-add',
     diff,
     label: `Vlasnik doplaćuje ${formatEuro(Math.abs(diff))}`,
-    short: `−${formatEuro(Math.abs(diff))}`,
-    color: 'text-tone-info',
-    bg: 'bg-sky-500/10 border-sky-500/30',
+    short: `Tebi +${formatEuro(Math.abs(diff))}`,
   };
 }

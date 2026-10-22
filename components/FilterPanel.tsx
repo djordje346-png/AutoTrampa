@@ -36,10 +36,10 @@ const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'LPG', 'CNG', 'Hybrid', 'Ele
 
 const GROUP_TITLE = 'text-xs font-bold uppercase tracking-widest text-app-muted';
 const CHIP_BASE = 'rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors';
-const CHIP_ON = 'border-brand-500 bg-brand-500 text-black';
-const CHIP_OFF = 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-zinc-800';
+const CHIP_ON = 'border-brand-500 bg-brand-500 text-on-accent';
+const CHIP_OFF = 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-surface';
 const NUM_INPUT =
-  'h-10 w-full rounded-xl border border-surface bg-elevated px-3 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:text-zinc-100';
+  'h-10 w-full rounded-xl border border-surface bg-elevated px-3 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:border-brand-500 dark:border-surface dark:text-app-primary';
 
 /** Compact desktop-only controls matching the sidebar design; mobile keeps FilterGroups unchanged. */
 export function DesktopCompactFilterGroups({
@@ -74,13 +74,13 @@ export function DesktopCompactFilterGroups({
     const Icon = icon;
     return (
       <div key={key} className="flex items-center gap-2 py-1.5">
-        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-zinc-950 dark:text-zinc-400"><Icon size={13} /></span>
+        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-app dark:text-app-secondary"><Icon size={13} /></span>
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold text-app-primary dark:text-zinc-100">{label}</p>
+          <p className="text-[11px] font-semibold text-app-primary dark:text-app-primary">{label}</p>
           <div className="mt-1 flex items-center gap-1.5">
-            <input type="number" inputMode="numeric" min={0} placeholder="Od" aria-label={`${label}, od`} value={min ?? ''} onChange={(event) => updateValue('min', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[11px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
+            <input type="number" inputMode="numeric" min={0} placeholder="Od" aria-label={`${label}, od`} value={min ?? ''} onChange={(event) => updateValue('min', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[11px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-surface dark:bg-app dark:text-app-primary" />
             <span className="text-[11px] text-app-muted">–</span>
-            <input type="number" inputMode="numeric" min={0} placeholder="Do" aria-label={`${label}, do`} value={max ?? ''} onChange={(event) => updateValue('max', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[11px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100" />
+            <input type="number" inputMode="numeric" min={0} placeholder="Do" aria-label={`${label}, do`} value={max ?? ''} onChange={(event) => updateValue('max', event.target.value)} className="h-7 min-w-0 w-full rounded-md border border-surface bg-card-surface px-2 text-[11px] text-app-primary outline-none placeholder:text-app-muted focus:border-brand-500 dark:border-surface dark:bg-app dark:text-app-primary" />
           </div>
         </div>
       </div>
@@ -88,15 +88,15 @@ export function DesktopCompactFilterGroups({
   }
 
   return (
-    <div className="divide-y divide-surface dark:divide-zinc-800">
+    <div className="divide-y divide-surface dark:divide-surface">
       {rows.map(({ id, label, value, icon: Icon, options, select }) => (
         <div key={id} className="relative py-1">
-          <button type="button" onClick={() => setOpen((current) => current === id ? null : id)} aria-expanded={open === id} className="flex w-full min-w-0 items-center gap-2 rounded-lg py-1.5 text-left transition-colors hover:bg-elevated dark:hover:bg-zinc-950">
-            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-zinc-950 dark:text-zinc-400"><Icon size={13} /></span>
-            <span className="min-w-0 flex-1"><span className="block text-[11px] font-semibold text-app-primary dark:text-zinc-100">{label}</span><span className="block truncate text-[11px] text-app-muted">{value}</span></span>
+          <button type="button" onClick={() => setOpen((current) => current === id ? null : id)} aria-expanded={open === id} className="flex w-full min-w-0 items-center gap-2 rounded-lg py-1.5 text-left transition-colors hover:bg-elevated dark:hover:bg-brand-dark">
+            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-elevated text-app-secondary dark:bg-app dark:text-app-secondary"><Icon size={13} /></span>
+            <span className="min-w-0 flex-1"><span className="block text-[11px] font-semibold text-app-primary dark:text-app-primary">{label}</span><span className="block truncate text-[11px] text-app-muted">{value}</span></span>
             <ChevronDown size={13} className={`flex-shrink-0 text-app-muted transition-transform ${open === id ? 'rotate-180' : ''}`} />
           </button>
-          {open === id && <div className="absolute left-8 right-0 top-full z-20 max-h-48 overflow-y-auto rounded-lg border border-surface bg-card-surface p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">{options.map((option) => <button type="button" key={option.value ?? 'all'} onClick={() => { select(option.value); setOpen(null); }} className="block w-full truncate rounded-md px-2 py-1.5 text-left text-[11px] text-app-secondary hover:bg-elevated hover:text-app-primary dark:text-zinc-300 dark:hover:bg-zinc-800">{option.label}</button>)}</div>}
+          {open === id && <div className="absolute left-8 right-0 top-full z-20 max-h-48 overflow-y-auto rounded-lg border border-surface bg-card-surface p-1 shadow-lg dark:border-surface dark:bg-card-surface">{options.map((option) => <button type="button" key={option.value ?? 'all'} onClick={() => { select(option.value); setOpen(null); }} className="block w-full truncate rounded-md px-2 py-1.5 text-left text-[11px] text-app-secondary hover:bg-elevated hover:text-app-primary dark:text-app-secondary dark:hover:bg-elevated">{option.label}</button>)}</div>}
         </div>
       ))}
       {range('Cena (€)', filters.priceMin, filters.priceMax, 'price', Tag)}
@@ -277,11 +277,11 @@ export function FilterSidebar({ className = '', onReset, ...groups }: FilterPane
 
   return (
     <aside className={`hidden lg:block ${className}`}>
-      <div className="rounded-2xl border border-surface bg-card-surface p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-2xl border border-surface bg-card-surface p-4 dark:border-surface dark:bg-card-surface">
         <div className="mb-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={15} className="text-brand-text" />
-            <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Filteri</p>
+            <p className="text-sm font-bold text-app-primary dark:text-app-primary">Filteri</p>
             {active > 0 && (
               <span className="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-bold text-brand-text">
                 {active}

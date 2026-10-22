@@ -135,7 +135,7 @@ export function VehicleCombobox({
             setOpen(false);
             setQuery('');
           }}
-          className={`${className} pl-10 pr-10 disabled:cursor-not-allowed disabled:opacity-50 ${invalid ? 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/10' : ''}`}
+          className={`${className} pl-10 pr-10 disabled:cursor-not-allowed disabled:opacity-50 ${invalid ? 'border-tone-negative focus:border-tone-negative focus:ring-ring/15' : ''}`}
         />
         <button
           type="button"
@@ -163,7 +163,7 @@ export function VehicleCombobox({
           id={listId}
           role="listbox"
           aria-label={label}
-          className="absolute inset-x-0 top-full z-[100] mt-1 max-h-64 overflow-y-auto overscroll-contain rounded-xl border border-surface bg-card-surface p-1 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+          className="absolute inset-x-0 top-full z-[100] mt-1 max-h-64 overflow-y-auto overscroll-contain rounded-xl border border-surface bg-card-surface p-1 shadow-xl dark:border-surface dark:bg-card-surface"
         >
           {visibleOptions.length > 0 ? visibleOptions.map((option, index) => {
             const isOther = option === OTHER_OPTION;
@@ -182,8 +182,8 @@ export function VehicleCombobox({
                 onClick={() => choose(option)}
                 className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
                   active || selected
-                    ? 'bg-brand-500/10 text-app-primary dark:text-zinc-100'
-                    : 'text-app-secondary hover:bg-elevated dark:text-zinc-400 dark:hover:bg-zinc-800'
+                    ? 'bg-brand-500/10 text-app-primary dark:text-app-primary'
+                    : 'text-app-secondary hover:bg-elevated dark:text-app-secondary dark:hover:bg-elevated'
                 }`}
               >
                 <span className="min-w-0 truncate">

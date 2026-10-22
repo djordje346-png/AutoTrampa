@@ -16,6 +16,7 @@ import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
+import TradeBadge from '@/components/TradeBadge';
 import { Car } from '@/types';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
@@ -78,12 +79,12 @@ export default function SavedClient() {
       <div className="flex flex-col">
         <header className="app-page-header safe-top">
           <div className="app-container py-4">
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Sačuvano</h1>
           </div>
         </header>
         <div className="app-container space-y-3 pt-6">
-          <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
-          <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
+          <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-card-surface" />
+          <div className="h-56 animate-pulse rounded-2xl bg-card-surface dark:bg-card-surface" />
         </div>
       </div>
     );
@@ -94,7 +95,7 @@ export default function SavedClient() {
       <header className="app-page-header safe-top">
         <div className="app-container flex items-center justify-between gap-3 py-4">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Sačuvano</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Sačuvano</h1>
             <p className="mt-0.5 text-xs text-app-muted">
               {savedCars.length === 0
                 ? 'Tvoja lista želja'
@@ -104,7 +105,7 @@ export default function SavedClient() {
           {savedCars.length > 0 && (
             <button
               onClick={() => setConfirmClear(true)}
-              className="flex-shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-app-muted transition-colors hover:bg-rose-500/10 hover:text-tone-negative"
+              className="flex-shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-app-muted transition-colors hover:bg-tone-negative-surface hover:text-tone-negative"
             >
               Obriši sve
             </button>
@@ -118,9 +119,9 @@ export default function SavedClient() {
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated/60">
               <BookmarkX size={36} className="text-app-muted" />
             </div>
-            <p className="text-base font-semibold text-app-secondary dark:text-zinc-400">Nema sačuvanih oglasa</p>
+            <p className="text-base font-semibold text-app-secondary dark:text-app-secondary">Nema sačuvanih oglasa</p>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-muted">
-              Pritisni <Heart size={13} className="mx-0.5 inline text-tone-negative" /> ikonu na bilo kom
+              Pritisni <Heart size={13} className="mx-0.5 inline text-secondary-accent" /> ikonu na bilo kom
               oglasu da ga sačuvaš ovde.
             </p>
             <Link
@@ -136,7 +137,7 @@ export default function SavedClient() {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
             return (
               /* Same card as the feed, with the remove button in place of detail links. */
-              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900">
+              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-surface dark:bg-card-surface">
                 <div className="relative aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
                   <Link href={`/car/${car.id}`} className="block h-full w-full">
                     <img
@@ -174,13 +175,13 @@ export default function SavedClient() {
                 <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100">
+                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-app-primary">
                     {carTitle(car)}
                       </h2>
                     </Link>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400">
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-app-secondary">
                       <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
                       <span className="text-app-muted/60" aria-hidden="true">·</span>
                       <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
@@ -191,11 +192,9 @@ export default function SavedClient() {
 
                   <div className="mt-auto pt-3.5">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                      <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
                       {tl && (
-                        <span className={`inline-flex min-w-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none ${tl.bg} ${tl.color}`}>
-                          <span className="truncate">{tl.label}</span>
-                        </span>
+                        <TradeBadge trade={tl} />
                       )}
                     </div>
 
@@ -208,7 +207,7 @@ export default function SavedClient() {
                     </button>
                     <Link
                       href={`/car/${car.id}`}
-                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
+                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-surface"
                     >
                       Pogledaj oglas
                     </Link>
@@ -231,26 +230,26 @@ export default function SavedClient() {
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setConfirmClear(false)}
           />
-          <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
+          <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-6 shadow-2xl">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-tone-negative-surface">
               <TriangleAlert size={22} className="text-tone-negative" />
             </div>
-            <h3 id="clear-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
+            <h3 id="clear-title" className="text-center text-base font-bold text-app-primary dark:text-app-primary">
               Obrisati celu listu?
             </h3>
-            <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+            <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
               {savedCars.length} sačuvanih oglasa biće uklonjeno.
             </p>
             <div className="mt-6 flex gap-2">
               <button
                 onClick={() => setConfirmClear(false)}
-                className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+                className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
               >
                 Odustani
               </button>
               <button
                 onClick={clearAll}
-                className="flex-1 rounded-xl bg-rose-500 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-400"
+                className="flex-1 rounded-xl bg-tone-negative py-3 text-sm font-bold text-on-tone-negative transition-opacity hover:opacity-90"
               >
                 Obriši sve
               </button>

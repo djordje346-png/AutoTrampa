@@ -290,12 +290,12 @@ function CarFormFields({
   }
 
   const inputClass =
-    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 lg:h-10';
+    'h-11 w-full rounded-xl border border-surface dark:border-surface bg-elevated px-3.5 text-sm text-app-primary dark:text-app-primary outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 lg:h-10';
 
   const selectClass =
-    'h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 text-sm text-app-primary dark:text-zinc-100 outline-none transition-all hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-50 lg:h-10';
+    'h-11 w-full rounded-xl border border-surface dark:border-surface bg-elevated px-3.5 text-sm text-app-primary dark:text-app-primary outline-none transition-all hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-50 lg:h-10';
 
-  const errorRing = 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/10';
+  const errorRing = 'border-tone-negative focus:border-tone-negative focus:ring-ring/15';
 
   const labelClass =
     'mb-2 block text-xs font-medium text-app-muted lg:mb-1.5';
@@ -425,10 +425,10 @@ function CarFormFields({
       {step === 2 && (
       <>
       {/* CENA I LOKACIJA */}
-      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+      <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
 
         <div className="mb-3 lg:mb-2">
-          <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
+          <h2 className="text-base font-semibold text-app-primary dark:text-app-primary">
             Cena i lokacija
           </h2>
 
@@ -565,10 +565,10 @@ function CarFormFields({
       {step === 1 && (
       <>
       {/* KAROSERIJA */}
-      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+      <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
 
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
+          <h2 className="text-base font-semibold text-app-primary dark:text-app-primary">
             Tip karoserije *
           </h2>
 
@@ -595,8 +595,8 @@ function CarFormFields({
                   text-xs font-medium transition-all
                   ${
                     active
-                      ? 'border-brand-500 bg-brand-500 text-zinc-950'
-                      : 'border-surface dark:border-zinc-800 bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary'
+                      ? 'border-brand-500 bg-brand-500 text-app-primary'
+                      : 'border-surface dark:border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary'
                   }
                 `}
               >
@@ -610,9 +610,9 @@ function CarFormFields({
       </section>
 
       {/* MOTOR */}
-      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+      <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
         <details>
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-app-secondary marker:hidden dark:text-zinc-300">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-app-secondary marker:hidden dark:text-app-secondary">
             <span>Dodatne specifikacije motora <span className="font-normal text-app-muted">(opciono{hasEngineDetails ? ' · podaci uneti' : ''})</span></span>
             <ChevronDown size={16} className="shrink-0 text-app-muted" />
           </summary>
@@ -692,10 +692,10 @@ function CarFormFields({
       {step === 2 && (
       <>
       {/* OPIS */}
-      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+      <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
 
         <div className="mb-3 lg:mb-2">
-          <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
+          <h2 className="text-base font-semibold text-app-primary dark:text-app-primary">
             Opis
           </h2>
 
@@ -709,7 +709,7 @@ function CarFormFields({
           onChange={(e) => update('description', e.target.value.slice(0, 600))}
           rows={3}
           placeholder="Npr. redovno održavan; potrebno je ulaganje u gume; posedujem servisne račune..."
-          className="w-full resize-y rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3.5 py-3 text-sm leading-relaxed text-app-primary dark:text-zinc-100 outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10"
+          className="w-full resize-y rounded-xl border border-surface dark:border-surface bg-elevated px-3.5 py-3 text-sm leading-relaxed text-app-primary dark:text-app-primary outline-none transition-all placeholder:text-app-muted hover:border-brand-500/40 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10"
         />
         <p className="mt-1.5 text-right text-[11px] text-app-muted">
           {form.description.length}/600
@@ -723,10 +723,10 @@ function CarFormFields({
       {step === 3 && (
       <>
       {/* FOTOGRAFIJE */}
-      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+      <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
 
         <div className="mb-3 lg:mb-2">
-          <h2 className="text-base font-semibold text-app-primary dark:text-zinc-100">
+          <h2 className="text-base font-semibold text-app-primary dark:text-app-primary">
             Fotografije
           </h2>
 
@@ -735,7 +735,7 @@ function CarFormFields({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-surface dark:border-zinc-800 bg-app dark:bg-zinc-950 p-3 lg:p-3">
+        <div className="rounded-2xl border border-surface dark:border-surface bg-app dark:bg-app p-3 lg:p-3">
           <ImageUpload
             images={images}
             onChange={setImages}
@@ -746,9 +746,9 @@ function CarFormFields({
       </section>
 
       {/* OPREMA */}
-      <section className="border-t border-surface pt-4 dark:border-zinc-800 lg:pt-3">
+      <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
         <details>
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-app-secondary dark:text-zinc-300">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-app-secondary dark:text-app-secondary">
             <span>Oprema vozila <span className="font-normal text-app-muted">(opciono{form.equipment.length ? ` · ${form.equipment.length} izabrano` : ''})</span></span>
             <ChevronDown size={16} className="shrink-0 text-app-muted" />
           </summary>
@@ -759,7 +759,7 @@ function CarFormFields({
             const isOpen = openEquipmentGroups.has(category.id);
             const selectedCount = category.items.filter((item) => form.equipment.includes(item.id)).length;
             return (
-              <section key={category.id} className="overflow-hidden rounded-xl border border-surface dark:border-zinc-800">
+              <section key={category.id} className="overflow-hidden rounded-xl border border-surface dark:border-surface">
                 <button
                   type="button"
                   aria-expanded={isOpen}
@@ -769,12 +769,12 @@ function CarFormFields({
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-brand-500/20 bg-brand-500/10 text-brand-text">
                     <CatIcon size={14} />
                   </span>
-                  <span className="min-w-0 flex-1 text-xs font-semibold text-app-primary dark:text-zinc-100">{category.label}</span>
+                  <span className="min-w-0 flex-1 text-xs font-semibold text-app-primary dark:text-app-primary">{category.label}</span>
                   {selectedCount > 0 && <span className="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-text">{selectedCount} izabrano</span>}
                   <ChevronDown size={15} className={`shrink-0 text-app-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isOpen && (
-                  <div className="flex flex-wrap gap-2 border-t border-surface p-3 dark:border-zinc-800">
+                  <div className="flex flex-wrap gap-2 border-t border-surface p-3 dark:border-surface">
                     {category.items.map((item) => {
                       const active = form.equipment.includes(item.id);
                       return (
@@ -785,8 +785,8 @@ function CarFormFields({
                           onClick={() => toggleEquipment(item.id)}
                           className={`flex min-h-9 items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-all ${
                             active
-                              ? 'border-brand-500 bg-brand-500 text-zinc-950'
-                              : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800'
+                              ? 'border-brand-500 bg-brand-500 text-app-primary'
+                              : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:border-surface'
                           }`}
                         >
                           {active && <Check size={12} strokeWidth={3} />}
@@ -945,12 +945,12 @@ export default function CarFormComponent({
         zIndex: 2147483647,
       }}
     >
-      <div className="flex h-full w-full flex-col overflow-hidden bg-app dark:bg-zinc-950 sm:h-[94dvh] sm:max-h-[800px] sm:max-w-[960px] sm:rounded-2xl sm:border sm:border-surface sm:shadow-2xl dark:sm:border-zinc-800">
-        <header className="safe-top shrink-0 border-b border-surface bg-app dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="flex h-full w-full flex-col overflow-hidden bg-app dark:bg-app sm:h-[94dvh] sm:max-h-[800px] sm:max-w-[960px] sm:rounded-2xl sm:border sm:border-surface sm:shadow-2xl dark:sm:border-surface">
+        <header className="safe-top shrink-0 border-b border-surface bg-app dark:border-surface dark:bg-app">
           <div className="mx-auto w-full max-w-[880px] px-4 pb-3 pt-3 sm:px-6 sm:pt-4">
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0">
-                <h1 id="car-form-title" className="truncate text-base font-bold text-app-primary dark:text-zinc-100 sm:text-lg">
+                <h1 id="car-form-title" className="truncate text-base font-bold text-app-primary dark:text-app-primary sm:text-lg">
                   {editingCar ? 'Izmeni automobil' : 'Dodaj oglas'}
                 </h1>
                 <p className="mt-0.5 text-xs text-app-muted">Korak {step} od 3</p>
@@ -959,7 +959,7 @@ export default function CarFormComponent({
                 type="button"
                 onClick={onCancel}
                 aria-label="Zatvori"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:border-zinc-800"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:border-surface"
               >
                 <X size={18} aria-hidden="true" />
               </button>
@@ -975,9 +975,9 @@ export default function CarFormComponent({
                 const complete = step > stepNumber;
                 return (
                   <li key={stepNumber} aria-current={active ? 'step' : undefined} className="min-w-0">
-                    <div className={`h-1 rounded-full ${active || complete ? 'bg-brand-500' : 'bg-hover-surface dark:bg-zinc-800'}`} />
-                    <div className={`mt-1.5 flex items-center gap-1.5 truncate text-[11px] font-semibold sm:text-xs ${active ? 'text-app-primary dark:text-zinc-100' : 'text-app-muted'}`}>
-                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${active || complete ? 'bg-brand-500 text-zinc-950' : 'bg-hover-surface text-app-muted dark:bg-zinc-800'}`}>
+                    <div className={`h-1 rounded-full ${active || complete ? 'bg-brand-500' : 'bg-hover-surface dark:bg-elevated'}`} />
+                    <div className={`mt-1.5 flex items-center gap-1.5 truncate text-[11px] font-semibold sm:text-xs ${active ? 'text-app-primary dark:text-app-primary' : 'text-app-muted'}`}>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${active || complete ? 'bg-brand-500 text-app-primary' : 'bg-hover-surface text-app-muted dark:bg-elevated'}`}>
                         {complete ? <Check size={12} strokeWidth={3} /> : stepNumber}
                       </span>
                       <span className="truncate">{label}</span>
@@ -992,7 +992,7 @@ export default function CarFormComponent({
         <main ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           <div className="mx-auto w-full max-w-[880px] px-4 py-3 sm:px-6 sm:py-4 lg:py-3">
             <div className="mb-3 lg:mb-2">
-              <h2 className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100 sm:text-xl">
+              <h2 className="text-lg font-bold tracking-tight text-app-primary dark:text-app-primary sm:text-xl">
                 {step === 1 ? 'Podaci o vozilu' : step === 2 ? 'Detalji oglasa' : 'Fotografije i oprema'}
               </h2>
               <p className="mt-1 text-sm text-app-muted">
@@ -1004,7 +1004,7 @@ export default function CarFormComponent({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-surface bg-card-surface p-3.5 dark:border-zinc-800 dark:bg-zinc-900 sm:p-4">
+            <div className="rounded-2xl border border-surface bg-card-surface p-3.5 dark:border-surface dark:bg-card-surface sm:p-4">
               <CarFormFields
                 key={editingCar?.id ?? 'new-car-form'}
                 form={form}
@@ -1022,14 +1022,14 @@ export default function CarFormComponent({
           </div>
         </main>
 
-        <footer className="safe-bottom shrink-0 border-t border-surface bg-app dark:border-zinc-800 dark:bg-zinc-950">
+        <footer className="safe-bottom shrink-0 border-t border-surface bg-app dark:border-surface dark:bg-app">
           <div className="mx-auto flex w-full max-w-[880px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
             {step === 1 ? (
               <>
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="h-11 flex-1 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98] dark:border-zinc-800 sm:flex-none sm:min-w-36"
+                  className="h-11 flex-1 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98] dark:border-surface sm:flex-none sm:min-w-36"
                 >
                   Otkaži
                 </button>
@@ -1042,7 +1042,7 @@ export default function CarFormComponent({
                 <button
                   type="button"
                   onClick={previousStep}
-                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98] dark:border-zinc-800 sm:flex-none sm:min-w-36"
+                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-sm font-semibold text-app-secondary transition-all hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary active:scale-[0.98] dark:border-surface sm:flex-none sm:min-w-36"
                 >
                   <ChevronLeft size={16} aria-hidden="true" /> Nazad
                 </button>

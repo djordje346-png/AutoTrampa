@@ -24,7 +24,7 @@ export default function GoogleSignInButton() {
         type="button"
         onClick={handleSignIn}
         disabled={pending}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-surface bg-card-surface px-6 py-3 text-sm font-semibold text-app-primary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-brand-500/60 hover:bg-elevated active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-surface bg-card-surface px-6 py-3 text-sm font-semibold text-app-primary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-brand-500/60 hover:bg-elevated active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 dark:border-surface dark:bg-card-surface dark:text-app-primary dark:hover:bg-elevated"
       >
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-500/10">
           <GoogleMark />

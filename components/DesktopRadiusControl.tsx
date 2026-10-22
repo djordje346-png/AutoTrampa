@@ -34,7 +34,7 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
   return (
     <div className="flex h-9 min-w-0 flex-shrink-0 items-center gap-1.5" title={city ? `Centar pretrage: ${city.name}` : 'Dodaj grad svom autu u garaži'}>
       <MapPin size={14} className="flex-shrink-0 text-app-secondary" aria-hidden="true" />
-      <label htmlFor="desktop-search-radius" className="whitespace-nowrap text-[11px] font-semibold text-app-secondary dark:text-zinc-300">Radius</label>
+      <label htmlFor="desktop-search-radius" className="whitespace-nowrap text-[11px] font-semibold text-app-secondary dark:text-app-secondary">Radius</label>
       <input
         id="desktop-search-radius"
         type="range"

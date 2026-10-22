@@ -52,7 +52,7 @@ function MessageHistory({
           <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-elevated">
             <MessageCircle size={26} className="text-app-muted" />
           </div>
-          <p className="text-sm font-medium text-app-secondary dark:text-zinc-400">Još nema poruka</p>
+          <p className="text-sm font-medium text-app-secondary dark:text-app-secondary">Još nema poruka</p>
           <p className="mt-1 text-xs text-app-muted">Pošalji prvu poruku ispod</p>
         </div>
       ) : (
@@ -73,7 +73,7 @@ function MessageHistory({
               )}
               {msg.sender === 'system' ? (
                 <div className="flex justify-center">
-                  <div className="max-w-[90%] whitespace-pre-wrap rounded-2xl border border-brand-500/25 bg-brand-500/10 px-4 py-3 text-center text-xs leading-relaxed text-app-secondary dark:text-zinc-300">
+                  <div className="max-w-[90%] whitespace-pre-wrap rounded-2xl border border-brand-500/25 bg-brand-500/10 px-4 py-3 text-center text-xs leading-relaxed text-app-secondary dark:text-app-secondary">
                     <p className="font-semibold text-brand-text">{msg.text}</p>
                     <span className="mt-1 block text-[10px] text-app-muted">{formatMessageTime(msg.timestamp)}</span>
                   </div>
@@ -83,12 +83,12 @@ function MessageHistory({
                   <div
                     className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${
                       mine
-                        ? 'rounded-br-md bg-brand-500 text-black'
-                        : 'rounded-bl-md bg-elevated text-app-primary dark:text-zinc-100'
+                        ? 'rounded-br-md bg-brand-500 text-on-accent'
+                        : 'rounded-bl-md bg-elevated text-app-primary dark:text-app-primary'
                     }`}
                   >
                     <p className="whitespace-pre-wrap break-words text-sm leading-snug">{msg.text}</p>
-                    <div className={`mt-1 flex items-center gap-1 ${mine ? 'justify-end text-black/60' : 'text-app-muted'}`}>
+                    <div className={`mt-1 flex items-center gap-1 ${mine ? 'justify-end text-primary-foreground/60' : 'text-app-muted'}`}>
                       <span className="text-[10px]">{formatMessageTime(msg.timestamp)}</span>
                       {mine && <Check size={12} />}
                     </div>
@@ -128,10 +128,10 @@ function ConversationThread({
     <section
       aria-label={`Razgovor sa ${conversation.ownerName}`}
       className={fullScreen
-        ? 'fixed inset-0 z-[60] flex flex-col bg-app dark:bg-zinc-950'
-        : 'flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900'}
+        ? 'fixed inset-0 z-[60] flex flex-col bg-app dark:bg-app'
+        : 'flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface'}
     >
-      <header className={`flex flex-shrink-0 items-center gap-3 border-b border-surface px-4 py-3 dark:border-zinc-800 ${fullScreen ? 'safe-top' : ''}`}>
+      <header className={`flex flex-shrink-0 items-center gap-3 border-b border-surface px-4 py-3 dark:border-surface ${fullScreen ? 'safe-top' : ''}`}>
         {onBack && (
           <button
             onClick={onBack}
@@ -151,7 +151,7 @@ function ConversationThread({
         </Link>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{conversation.ownerName}</p>
+          <p className="truncate text-sm font-bold text-app-primary dark:text-app-primary">{conversation.ownerName}</p>
           <p className="truncate text-xs text-app-muted">{conversation.carTitle}</p>
         </div>
 
@@ -159,7 +159,7 @@ function ConversationThread({
           <a
             href={`tel:${conversation.ownerPhone}`}
             aria-label={`Pozovi ${conversation.ownerName}`}
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-brand-text dark:text-zinc-400"
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-brand-text dark:text-app-secondary"
           >
             <Phone size={16} />
           </a>
@@ -167,7 +167,7 @@ function ConversationThread({
         <button
           onClick={onArchive}
           aria-label="Arhiviraj razgovor"
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:bg-rose-500/10 hover:text-tone-negative dark:text-zinc-400"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:bg-tone-negative-surface hover:text-tone-negative dark:text-app-secondary"
         >
           <Archive size={16} />
         </button>
@@ -179,7 +179,7 @@ function ConversationThread({
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-app-muted">Ponuda za zamenu</p>
-          <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">{conversation.tradeSummary}</p>
+          <p className="truncate text-sm font-semibold text-app-primary dark:text-app-primary">{conversation.tradeSummary}</p>
         </div>
         <Link
           href={`/car/${conversation.carId}`}
@@ -191,7 +191,7 @@ function ConversationThread({
 
       <MessageHistory messages={conversation.messages} scrollRef={scrollRef} />
 
-      <div className={`flex flex-shrink-0 items-center gap-2 border-t border-surface bg-app px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950 ${fullScreen ? 'safe-bottom' : ''}`}>
+      <div className={`flex flex-shrink-0 items-center gap-2 border-t border-surface bg-app px-4 py-3 dark:border-surface dark:bg-app ${fullScreen ? 'safe-bottom' : ''}`}>
         <input
           value={input}
           onChange={(event) => onInputChange(event.target.value)}
@@ -204,13 +204,13 @@ function ConversationThread({
           maxLength={1000}
           placeholder="Napiši poruku..."
           aria-label="Poruka"
-          className="min-w-0 flex-1 rounded-full border border-surface bg-elevated px-4 py-2.5 text-sm text-app-primary transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none dark:border-zinc-800 dark:text-zinc-100"
+          className="min-w-0 flex-1 rounded-full border border-surface bg-elevated px-4 py-2.5 text-sm text-app-primary transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none dark:border-surface dark:text-app-primary"
         />
         <button
           onClick={onSend}
           disabled={!input.trim() || sending}
           aria-label="Pošalji poruku"
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-500 text-black transition-all duration-200 hover:bg-brand-600 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-500 text-on-accent transition-all duration-200 hover:bg-brand-600 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Send size={17} />
         </button>
@@ -310,26 +310,26 @@ export default function MessagesClient() {
       aria-labelledby="delete-conv-title"
     >
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPendingDelete(null)} />
-      <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
+      <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-6 shadow-2xl">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-tone-negative-surface">
           <TriangleAlert size={22} className="text-tone-negative" />
         </div>
-        <h3 id="delete-conv-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
+        <h3 id="delete-conv-title" className="text-center text-base font-bold text-app-primary dark:text-app-primary">
           Arhivirati razgovor?
         </h3>
-        <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+        <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
           Razgovor sa {pendingDelete.ownerName} biće sakriven samo sa tvog naloga.
         </p>
         <div className="mt-6 flex gap-2">
           <button
             onClick={() => setPendingDelete(null)}
-            className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+            className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
           >
             Odustani
           </button>
           <button
             onClick={() => void confirmDelete()}
-            className="flex-1 rounded-xl bg-rose-500 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-400"
+            className="flex-1 rounded-xl bg-tone-negative py-3 text-sm font-bold text-on-tone-negative transition-opacity hover:opacity-90"
           >
             {archiving ? 'Arhiviram…' : 'Arhiviraj'}
           </button>
@@ -339,10 +339,10 @@ export default function MessagesClient() {
   );
 
   const desktopConversationList = (
-    <aside className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900">
-      <header className="flex flex-shrink-0 items-center justify-between border-b border-surface px-4 py-4 dark:border-zinc-800">
+    <aside className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-surface dark:bg-card-surface">
+      <header className="flex flex-shrink-0 items-center justify-between border-b border-surface px-4 py-4 dark:border-surface">
         <div>
-          <h1 className="text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
+          <h1 className="text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">Poruke</h1>
           <p className="mt-0.5 text-xs text-app-muted">
             {conversations.length === 0
               ? 'Razgovori o zameni'
@@ -350,7 +350,7 @@ export default function MessagesClient() {
           </p>
         </div>
         {totalUnread > 0 && (
-          <span className="flex h-7 min-w-[28px] items-center justify-center rounded-full bg-brand-500 px-2 text-xs font-bold text-black">
+          <span className="flex h-7 min-w-[28px] items-center justify-center rounded-full bg-brand-500 px-2 text-xs font-bold text-on-accent">
             {totalUnread}
           </span>
         )}
@@ -362,7 +362,7 @@ export default function MessagesClient() {
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-elevated">
               <MessageCircle size={23} className="text-app-muted" />
             </div>
-            <p className="text-sm font-semibold text-app-primary dark:text-zinc-100">Nema razgovora</p>
+            <p className="text-sm font-semibold text-app-primary dark:text-app-primary">Nema razgovora</p>
             <p className="mt-1 text-xs leading-relaxed text-app-muted">Pošalji ponudu za trampu da započneš razgovor.</p>
             <Link href="/" className="mt-4 text-xs font-semibold text-brand-text hover:underline">
               Pronađi zamenu
@@ -378,7 +378,7 @@ export default function MessagesClient() {
                 className={`flex items-start gap-1 rounded-xl border p-2 transition-colors ${
                   active
                     ? 'border-brand-500/50 bg-brand-500/5'
-                    : 'border-transparent hover:border-surface hover:bg-hover-surface dark:hover:border-zinc-800'
+                    : 'border-transparent hover:border-surface hover:bg-hover-surface dark:hover:border-surface'
                 }`}
               >
                 <button
@@ -390,18 +390,18 @@ export default function MessagesClient() {
                   <span className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg bg-elevated">
                     <img src={conversation.carImage} alt="" className="h-full w-full object-cover" />
                     {conversation.unread > 0 && (
-                      <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-brand-500 dark:border-zinc-900" />
+                      <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-brand-500 dark:border-surface" />
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center justify-between gap-1">
-                      <span className={`truncate text-xs ${conversation.unread ? 'font-bold text-app-primary dark:text-zinc-100' : 'font-semibold text-app-primary dark:text-zinc-100'}`}>
+                      <span className={`truncate text-xs ${conversation.unread ? 'font-bold text-app-primary dark:text-app-primary' : 'font-semibold text-app-primary dark:text-app-primary'}`}>
                         {conversation.ownerName}
                       </span>
                       <span className="flex-shrink-0 text-[11px] text-app-muted">{formatTime(conversation.lastUpdated)}</span>
                     </span>
                     <span className="mt-0.5 block truncate text-[11px] text-app-muted">{conversation.carTitle}</span>
-                    <span className={`mt-1 block truncate text-xs ${conversation.unread ? 'font-medium text-app-secondary dark:text-zinc-300' : 'text-app-muted'}`}>
+                    <span className={`mt-1 block truncate text-xs ${conversation.unread ? 'font-medium text-app-secondary dark:text-app-secondary' : 'text-app-muted'}`}>
                       {lastMessage
                         ? `${lastMessage.sender === 'me' ? 'Ti: ' : ''}${lastMessage.text}`
                         : 'Još nema poruka'}
@@ -416,7 +416,7 @@ export default function MessagesClient() {
                   type="button"
                   onClick={() => setPendingDelete(conversation)}
                   aria-label={`Arhiviraj razgovor sa ${conversation.ownerName}`}
-                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-rose-500/10 hover:text-tone-negative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-tone-negative-surface hover:text-tone-negative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                   <Archive size={15} />
                 </button>
@@ -444,13 +444,13 @@ export default function MessagesClient() {
       <div className="flex flex-col">
         <header className="app-page-header safe-top">
           <div className="app-container py-4">
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Poruke</h1>
           </div>
         </header>
         <div className="app-container space-y-3 pt-6">
-          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
-          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
-          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-zinc-900" />
+          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-card-surface" />
+          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-card-surface" />
+          <div className="h-20 animate-pulse rounded-2xl bg-card-surface dark:bg-card-surface" />
         </div>
       </div>
     );
@@ -500,11 +500,11 @@ export default function MessagesClient() {
     <div className="hidden desktop:block app-container py-6">
       <div className="grid h-[calc(100dvh-11rem)] min-h-[500px] max-h-[820px] grid-cols-[minmax(300px,340px)_minmax(0,1fr)] gap-4">
         {desktopConversationList}
-        <section className="flex h-full min-h-0 flex-col items-center justify-center rounded-2xl border border-dashed border-surface bg-card-surface px-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="flex h-full min-h-0 flex-col items-center justify-center rounded-2xl border border-dashed border-surface bg-card-surface px-8 text-center dark:border-surface dark:bg-card-surface">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-elevated text-brand-text">
             <MessageCircle size={26} />
           </div>
-          <h2 className="text-lg font-semibold text-app-primary dark:text-zinc-100">
+          <h2 className="text-lg font-semibold text-app-primary dark:text-app-primary">
             {conversations.length > 0 ? 'Izaberi razgovor' : 'Tvoj sledeći dogovor počinje ovde'}
           </h2>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-app-muted">
@@ -526,7 +526,7 @@ export default function MessagesClient() {
       <header className="app-page-header safe-top">
         <div className="app-container flex items-center justify-between py-4">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Poruke</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Poruke</h1>
             <p className="mt-0.5 text-xs text-app-muted">
               {conversations.length === 0
                 ? 'Razgovori o zameni'
@@ -534,7 +534,7 @@ export default function MessagesClient() {
             </p>
           </div>
           {totalUnread > 0 && (
-            <div className="flex h-6 min-w-[24px] items-center justify-center rounded-full bg-rose-500 px-1.5">
+            <div className="flex h-6 min-w-[24px] items-center justify-center rounded-full bg-brand-500 px-1.5 text-on-accent">
               <span className="text-xs font-bold text-white">{totalUnread}</span>
             </div>
           )}
@@ -547,7 +547,7 @@ export default function MessagesClient() {
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated/60">
               <MessageCircle size={36} className="text-app-muted" />
             </div>
-            <p className="text-base font-semibold text-app-secondary dark:text-zinc-400">Nema razgovora</p>
+            <p className="text-base font-semibold text-app-secondary dark:text-app-secondary">Nema razgovora</p>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-muted">
               Pošalji ponudu za trampu sa Početne da započneš razgovor sa drugim vlasnicima.
             </p>
@@ -565,7 +565,7 @@ export default function MessagesClient() {
             return (
               <div
                 key={conv.id}
-                className="group flex items-center gap-3 rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-3 transition-all duration-200 hover:bg-hover-surface"
+                className="group flex items-center gap-3 rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-3 transition-all duration-200 hover:bg-hover-surface"
               >
                 <button
                   onClick={() => openConversation(conv)}
@@ -577,7 +577,7 @@ export default function MessagesClient() {
 
                   <div className="min-w-0 flex-1">
                     <div className="mb-0.5 flex items-center justify-between gap-2">
-                      <p className="truncate text-sm font-bold text-app-primary dark:text-zinc-100">{conv.ownerName}</p>
+                      <p className="truncate text-sm font-bold text-app-primary dark:text-app-primary">{conv.ownerName}</p>
                       <span className="flex-shrink-0 text-[11px] text-app-muted">
                         {formatTime(conv.lastUpdated)}
                       </span>
@@ -586,7 +586,7 @@ export default function MessagesClient() {
                     <div className="flex items-center justify-between gap-2">
                       <p
                         className={`truncate text-xs ${
-                          conv.unread > 0 ? 'font-medium text-app-primary dark:text-zinc-100' : 'text-app-muted'
+                          conv.unread > 0 ? 'font-medium text-app-primary dark:text-app-primary' : 'text-app-muted'
                         }`}
                       >
                         {lastMsg
@@ -602,14 +602,14 @@ export default function MessagesClient() {
 
                 <div className="flex flex-shrink-0 flex-col items-center gap-1.5">
                   {conv.unread > 0 && (
-                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-on-accent">
                       {conv.unread}
                     </span>
                   )}
                   <button
                     onClick={() => setPendingDelete(conv)}
                     aria-label={`Arhiviraj razgovor sa ${conv.ownerName}`}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-rose-500/10 hover:text-tone-negative"
+                    className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-tone-negative-surface hover:text-tone-negative"
                   >
                     <Archive size={14} />
                   </button>

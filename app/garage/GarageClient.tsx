@@ -80,14 +80,14 @@ export default function GarageClient() {
       <div className="flex flex-col">
         <header className="app-page-header safe-top">
           <div className="app-container py-4">
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Garaža</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Garaža</h1>
             <p className="text-xs text-app-muted mt-0.5">Tvoja kolekcija vozila</p>
           </div>
         </header>
         {/* Same grid as the loaded state, so nothing jumps when cars arrive. */}
         <div className="app-container grid grid-cols-1 gap-4 pt-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-72 animate-pulse rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900" />
+            <div key={i} className="h-72 animate-pulse rounded-2xl border border-surface bg-card-surface dark:border-surface dark:bg-card-surface" />
           ))}
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function GarageClient() {
       <header className="app-page-header safe-top">
         <div className="app-container flex items-center justify-between py-4">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Garaža</h1>
+            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Garaža</h1>
             <p className="text-xs text-app-muted mt-0.5">{cars.length} / {limit} vozila u garaži</p>
           </div>
           <button
@@ -123,12 +123,12 @@ export default function GarageClient() {
           * saying once there is a listing to be unreachable about.
         */}
         {cars.length > 0 && !ownerPhone.trim() && (
-          <div className="flex flex-col gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 rounded-2xl border border-tone-warn-surface bg-tone-warn-surface p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-2.5">
               <TriangleAlert size={16} className="mt-0.5 shrink-0 text-tone-warn" />
               <div>
-                <p className="text-sm font-bold text-app-primary dark:text-zinc-100">Kupci ne mogu da te pozovu</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-app-secondary dark:text-zinc-400">
+                <p className="text-sm font-bold text-app-primary dark:text-app-primary">Kupci ne mogu da te pozovu</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-app-secondary dark:text-app-secondary">
                   Broj telefona nije unet, pa na tvojim oglasima stoji onemogućeno dugme „Pozovi“.
                   Dodaj broj u profilu da te dobiju jednim klikom.
                 </p>
@@ -144,8 +144,8 @@ export default function GarageClient() {
         )}
 
         {cars.length === 0 && (
-          <div className="rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 px-5 py-8 text-center">
-            <h2 className="text-base font-bold text-app-primary dark:text-zinc-100">Garaža je prazna</h2>
+          <div className="rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface px-5 py-8 text-center">
+            <h2 className="text-base font-bold text-app-primary dark:text-app-primary">Garaža je prazna</h2>
             <p className="mt-1 text-sm text-app-muted">Dodaj auto da bi pratio njegovu vrednost i specifikacije.</p>
             <button onClick={openAddForm} className="btn-primary mt-5">Dodaj auto</button>
           </div>
@@ -163,7 +163,7 @@ export default function GarageClient() {
           const images = getCarImages(car);
 
           return (
-            <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900">
+            <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-surface dark:bg-card-surface">
               <Link
                 href={`/car/${car.id}`}
                 aria-label={`Otvori oglas: ${car.brand} ${car.model}`}
@@ -177,7 +177,7 @@ export default function GarageClient() {
                   </span>
                 )}
                 {isSelected && (
-                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-950">
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-app-primary">
                     <Check size={11} strokeWidth={3} />
                     Aktivno
                   </span>
@@ -187,14 +187,14 @@ export default function GarageClient() {
 
               <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
                 <div className="min-w-0">
-                  <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary dark:text-zinc-100">
+                  <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary dark:text-app-primary">
                     <Link href={`/car/${car.id}`} className="rounded-sm transition-colors hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                     {carTitle(car)}
                     </Link>
                   </h2>
                   <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
-                  <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-zinc-400">
+                  <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-app-secondary">
                     <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
                     <span className="text-app-muted/60" aria-hidden="true">·</span>
                     <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
@@ -207,7 +207,7 @@ export default function GarageClient() {
 
                 <div className="mt-auto pt-3.5">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                    <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
                     <span className="inline-flex min-w-0 items-center gap-1 truncate text-[11px] font-semibold text-app-muted">
                       <TrendingUp size={12} className="shrink-0 text-brand-text" />
                       <span className="truncate">{formatEuro(car.estimatedValue)}</span>
@@ -217,7 +217,7 @@ export default function GarageClient() {
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <button
                       onClick={() => openEditForm(car)}
-                      className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 text-sm font-semibold text-app-secondary transition-colors hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 dark:border-zinc-800"
+                      className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 text-sm font-semibold text-app-secondary transition-colors hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 dark:border-surface"
                     >
                       <Edit3 size={14} className="shrink-0" />
                       Uredi
@@ -225,7 +225,7 @@ export default function GarageClient() {
                     <button
                       onClick={() => setPendingDelete(car)}
                       aria-label={`Obriši ${car.brand} ${car.model} iz garaže`}
-                      className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-rose-500/25 bg-rose-500/5 px-3 text-sm font-semibold text-tone-negative transition-colors hover:bg-rose-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50 focus-visible:ring-offset-2"
+                      className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-tone-negative-surface bg-tone-negative-surface px-3 text-sm font-semibold text-tone-negative transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       <Trash2 size={14} className="shrink-0" />
                       Obriši
@@ -257,27 +257,27 @@ export default function GarageClient() {
           aria-labelledby="delete-title"
         >
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPendingDelete(null)} />
-          <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6 shadow-2xl">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10">
+          <div className="relative w-full max-w-sm rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-6 shadow-2xl">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-tone-negative-surface">
               <TriangleAlert size={22} className="text-tone-negative" />
             </div>
-            <h3 id="delete-title" className="text-center text-base font-bold text-app-primary dark:text-zinc-100">
+            <h3 id="delete-title" className="text-center text-base font-bold text-app-primary dark:text-app-primary">
               Obrisati vozilo?
             </h3>
-            <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+            <p className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
               {pendingDelete.brand} {pendingDelete.model} {pendingDelete.generation} će biti trajno
               uklonjen iz garaže, zajedno sa fotografijama.
             </p>
             <div className="mt-6 flex gap-2">
               <button
                 onClick={() => setPendingDelete(null)}
-                className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+                className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
               >
                 Odustani
               </button>
               <button
                 onClick={confirmRemove}
-                className="flex-1 rounded-xl bg-rose-500 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-400"
+                className="flex-1 rounded-xl bg-tone-negative py-3 text-sm font-bold text-on-tone-negative transition-opacity hover:opacity-90"
               >
                 Obriši
               </button>

@@ -72,7 +72,7 @@ export default function AuthOverlay() {
           type="button"
           onClick={closePrompt}
           aria-label="Zatvori prijavu"
-          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 shadow-sm transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:hover:text-white"
+          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-surface bg-card-surface text-app-secondary shadow-sm transition-colors hover:bg-elevated hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-surface dark:bg-elevated dark:text-app-secondary dark:hover:bg-elevated dark:hover:text-app-primary"
         >
           <X size={18} aria-hidden="true" />
         </button>

@@ -48,25 +48,25 @@ export default function PhoneGateModal({
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="phone-gate-title" aria-describedby="phone-gate-description">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl border border-surface bg-card-surface p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl border border-surface bg-card-surface p-6 shadow-2xl dark:border-surface dark:bg-card-surface">
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/10">
           <Phone size={21} className="text-brand-text" />
         </div>
-        <h2 id="phone-gate-title" className="text-center text-lg font-bold text-app-primary dark:text-zinc-100">Dodaj broj telefona</h2>
-        <p id="phone-gate-description" className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+        <h2 id="phone-gate-title" className="text-center text-lg font-bold text-app-primary dark:text-app-primary">Dodaj broj telefona</h2>
+        <p id="phone-gate-description" className="mt-2 text-center text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
           Broj koristimo kao kontakt podatak u vezi sa oglasima i ponudama. Neće biti javno prikazan bez tvoje dozvole.
         </p>
 
         {loadError ? (
           <>
-            <p role="alert" className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs leading-relaxed text-tone-negative">
+            <p role="alert" className="mt-4 rounded-xl border border-tone-negative-surface bg-tone-negative-surface p-3 text-xs leading-relaxed text-tone-negative">
               Profil nije učitan: {loadError}
             </p>
             <button type="button" onClick={onRetry} className="btn-primary mt-4 w-full">Pokušaj ponovo</button>
           </>
         ) : (
           <>
-            <label htmlFor="phone-gate-input" className="mb-1.5 mt-5 block text-xs font-medium text-app-secondary dark:text-zinc-400">Broj telefona</label>
+            <label htmlFor="phone-gate-input" className="mb-1.5 mt-5 block text-xs font-medium text-app-secondary dark:text-app-secondary">Broj telefona</label>
             <div className="relative">
               <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
               <input
@@ -80,7 +80,7 @@ export default function PhoneGateModal({
                 onChange={(event) => setPhone(event.target.value)}
                 placeholder="+381 64 123 4567"
                 aria-invalid={Boolean(error)}
-                className={`w-full rounded-xl border bg-elevated py-3 pl-10 pr-4 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:ring-2 focus:ring-brand-500/10 dark:text-zinc-100 ${error ? 'border-rose-500/70' : 'border-surface focus:border-brand-500 dark:border-zinc-800'}`}
+                className={`w-full rounded-xl border bg-elevated py-3 pl-10 pr-4 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:ring-2 focus:ring-ring/15 dark:text-app-primary ${error ? 'border-tone-negative' : 'border-surface focus:border-brand-500 dark:border-surface'}`}
               />
             </div>
             {error && <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-tone-negative"><TriangleAlert size={12} />{error}</p>}
@@ -97,7 +97,7 @@ export default function PhoneGateModal({
             type="button"
             onClick={onCancel}
             disabled={saving}
-            className={`${loadError ? 'w-full' : 'flex-1'} rounded-xl border border-surface px-4 py-3 text-sm font-semibold text-app-secondary transition-colors hover:bg-elevated disabled:opacity-60 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800`}
+            className={`${loadError ? 'w-full' : 'flex-1'} rounded-xl border border-surface px-4 py-3 text-sm font-semibold text-app-secondary transition-colors hover:bg-elevated disabled:opacity-60 dark:border-surface dark:text-app-secondary dark:hover:bg-elevated`}
           >
             Otkaži
           </button>

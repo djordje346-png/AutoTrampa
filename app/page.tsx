@@ -23,6 +23,7 @@ import { toast } from 'sonner';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
+import TradeBadge from '@/components/TradeBadge';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { FilterSheetBody } from '@/components/FilterPanel';
 import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
@@ -71,8 +72,8 @@ export default function FeedPage() {
 
   if (!authReady) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-white" role="status" aria-label="Učitavanje početne stranice">
-        <span className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-200 border-t-brand-500" />
+      <div className="flex min-h-[70vh] items-center justify-center bg-card-surface" role="status" aria-label="Učitavanje početne stranice">
+        <span className="h-8 w-8 animate-spin rounded-full border-2 border-surface border-t-brand-500" />
       </div>
     );
   }
@@ -358,17 +359,17 @@ function AuthenticatedFeed({
         <header className="app-container py-3">
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <div className="flex-shrink-0 lg:hidden">
-              <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">AutoTrampa</h1>
+              <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">AutoTrampa</h1>
               <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
             </div>
 
             <div className="flex items-center gap-2">
               {/* View mode toggle */}
-              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface dark:border-zinc-800 lg:hidden">
+              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface dark:border-surface lg:hidden">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
+                    viewMode === 'grid' ? 'bg-brand-500 text-on-accent' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
                   }`}
                   aria-label="Prikaz mreže"
                 >
@@ -377,7 +378,7 @@ function AuthenticatedFeed({
                 <button
                   onClick={() => setViewMode('swipe')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'swipe' ? 'bg-brand-500 text-black' : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
+                    viewMode === 'swipe' ? 'bg-brand-500 text-on-accent' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
                   }`}
                   aria-label="Svajp režim"
                 >
@@ -399,7 +400,7 @@ function AuthenticatedFeed({
               <div className={`relative flex-shrink-0 ${viewMode === 'grid' ? 'lg:hidden' : ''}`} ref={selectorRef}>
                 <button
                   onClick={() => setSelectorOpen(p => !p)}
-                  className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface dark:border-zinc-800"
+                  className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface dark:border-surface"
                   aria-label="Izaberi vozilo"
                 >
                   {mounted && selectedCar ? (
@@ -411,7 +412,7 @@ function AuthenticatedFeed({
                       </div>
                       <div className="text-left min-w-0 max-w-[80px]">
                         <p className="text-[8px] text-app-muted font-medium uppercase tracking-widest leading-none mb-0.5">Moj auto</p>
-                        <p className="text-[11px] font-bold text-app-primary dark:text-zinc-100 truncate leading-tight">
+                        <p className="text-[11px] font-bold text-app-primary dark:text-app-primary truncate leading-tight">
                           {selectedCar.brand} {selectedCar.model}
                         </p>
                       </div>
@@ -426,9 +427,9 @@ function AuthenticatedFeed({
                 </button>
 
                 {selectorOpen && mounted && selectedCar && (
-                  <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface dark:bg-zinc-900 border border-surface dark:border-zinc-800 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
-                    <div className="px-4 py-3 border-b border-surface dark:border-zinc-800">
-                      <p className="text-xs font-bold text-app-primary dark:text-zinc-100">Moja vozila</p>
+                  <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card-surface dark:bg-card-surface border border-surface dark:border-surface rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-surface dark:border-surface">
+                      <p className="text-xs font-bold text-app-primary dark:text-app-primary">Moja vozila</p>
                       <p className="text-[10px] text-app-muted mt-0.5">Izaberi vozilo za trampu</p>
                     </div>
                     <div className="max-h-64 overflow-y-auto p-2 space-y-1">
@@ -446,8 +447,8 @@ function AuthenticatedFeed({
                               {car.image && <img src={car.image} alt={car.model} className="w-full h-full object-cover" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-app-primary dark:text-zinc-100 truncate">{[car.brand, car.model, displayValue(car.generation)].filter(Boolean).join(' ')}</p>
-                              <p className="text-[10px] text-app-muted dark:text-zinc-400">{formatYear(car.year)} · {formatEuro(car.price)}</p>
+                              <p className="text-xs font-bold text-app-primary dark:text-app-primary truncate">{[car.brand, car.model, displayValue(car.generation)].filter(Boolean).join(' ')}</p>
+                              <p className="text-[10px] text-app-muted dark:text-app-secondary">{formatYear(car.year)} · {formatEuro(car.price)}</p>
                             </div>
                             {isActive && (
                               <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0">
@@ -458,10 +459,10 @@ function AuthenticatedFeed({
                         );
                       })}
                     </div>
-                    <div className="border-t border-surface dark:border-zinc-800 p-2">
+                    <div className="border-t border-surface dark:border-surface p-2">
                       <button
                         onClick={() => { setSelectorOpen(false); handleAddListing(); }}
-                        className="w-full flex items-center justify-center gap-2 text-brand-text text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-zinc-800 hover:bg-hover-surface transition-all"
+                        className="w-full flex items-center justify-center gap-2 text-brand-text text-xs font-semibold rounded-xl py-2.5 border border-dashed border-surface dark:border-surface hover:bg-hover-surface transition-all"
                       >
                         <Plus size={15} />
                         Dodaj vozilo
@@ -477,7 +478,7 @@ function AuthenticatedFeed({
 
         {/* Trade filter bar */}
         {showTrade && (
-        <div className={`border-t border-surface dark:border-zinc-800/50 ${viewMode === 'grid' ? 'lg:hidden' : ''}`}>
+        <div className={`border-t border-surface dark:border-surface/50 ${viewMode === 'grid' ? 'lg:hidden' : ''}`}>
           <div className="app-container flex items-center gap-1.5 py-2 overflow-x-auto scrollbar-hide">
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
@@ -485,7 +486,7 @@ function AuthenticatedFeed({
                 onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                   filters.trade === key
-                    ? 'bg-brand-500 text-black'
+                    ? 'bg-brand-500 text-on-accent'
                     : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
                 }`}
               >
@@ -501,7 +502,7 @@ function AuthenticatedFeed({
               <SlidersHorizontal size={11} />
               Filteri
               {activeFilters > 0 && (
-                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-black">{activeFilters}</span>
+                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-on-accent">{activeFilters}</span>
               )}
             </button>
           </div>
@@ -513,7 +514,7 @@ function AuthenticatedFeed({
         <div className="app-container mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-brand-text">Dodaj svoj auto da vidiš doplatu</p>
-            <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
+            <p className="mt-0.5 text-xs text-app-secondary dark:text-app-secondary">
               Doplata je razlika između tvog i tuđeg vozila. Bez auta u garaži nemamo sa čime da je
               uporedimo, pa je trenutno ne prikazujemo.
             </p>
@@ -531,7 +532,7 @@ function AuthenticatedFeed({
         <div className="app-container mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-brand-text">Koliko je doplata za tebe?</p>
-            <p className="mt-0.5 text-xs text-app-secondary dark:text-zinc-400">
+            <p className="mt-0.5 text-xs text-app-secondary dark:text-app-secondary">
               Dodaj svoj auto u garažu i svaki oglas ti pokazuje razliku u ceni.
             </p>
           </div>
@@ -558,23 +559,23 @@ function AuthenticatedFeed({
             />
           )}
 
-          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-2 dark:border-zinc-800">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-2 dark:border-surface">
             <button
               type="button"
               onClick={() => setDesktopFiltersOpen(true)}
               aria-label={`Otvori napredne filtere${advancedFilterCount > 0 ? `, ${advancedFilterCount} aktivnih filtera` : ''}`}
-              className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+              className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-surface dark:bg-card-surface dark:text-app-primary"
             >
               <SlidersHorizontal size={15} />
               Filteri
               {advancedFilterCount > 0 && (
-                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[11px] font-bold text-black">
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[11px] font-bold text-on-accent">
                   {advancedFilterCount}
                 </span>
               )}
             </button>
 
-            <span className="hidden h-6 w-px bg-surface dark:bg-zinc-800 sm:block" aria-hidden="true" />
+            <span className="hidden h-6 w-px bg-surface dark:bg-elevated sm:block" aria-hidden="true" />
 
             {showTrade && (
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5" aria-label="Tip zamene">
@@ -586,8 +587,8 @@ function AuthenticatedFeed({
                     aria-pressed={filters.trade === key}
                     className={`inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
                       filters.trade === key
-                        ? 'border-brand-500 bg-brand-500 text-black shadow-sm shadow-brand-500/20'
-                        : 'border-surface bg-card-surface text-app-secondary hover:-translate-y-px hover:border-brand-500/40 hover:bg-elevated hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300'
+                        ? 'border-brand-500 bg-brand-500 text-on-accent shadow-sm shadow-brand-500/20'
+                        : 'border-surface bg-card-surface text-app-secondary hover:-translate-y-px hover:border-brand-500/40 hover:bg-elevated hover:shadow-sm dark:border-surface dark:bg-card-surface dark:text-app-secondary'
                     }`}
                   >
                     {label}
@@ -607,7 +608,7 @@ function AuthenticatedFeed({
             )}
 
             {isLoggedIn && selectedCar && (
-              <div className="ml-auto flex flex-shrink-0 items-center border-l border-surface pl-3 dark:border-zinc-800">
+              <div className="ml-auto flex flex-shrink-0 items-center border-l border-surface pl-3 dark:border-surface">
                 <DesktopRadiusControl selectedCar={selectedCar} />
               </div>
             )}
@@ -621,7 +622,7 @@ function AuthenticatedFeed({
           <div className="w-14 h-14 rounded-full bg-elevated flex items-center justify-center mb-3">
             <SlidersHorizontal size={24} className="text-app-muted" />
           </div>
-          <p className="text-app-secondary dark:text-zinc-400 font-semibold text-sm">Nema vozila po ovom filteru</p>
+          <p className="text-app-secondary dark:text-app-secondary font-semibold text-sm">Nema vozila po ovom filteru</p>
           <button onClick={() => { resetFilters(); setSwipeIndex(0); }} className="mt-2 text-brand-text text-xs font-semibold">Poništi filtere</button>
         </div>
       )}
@@ -641,7 +642,7 @@ function AuthenticatedFeed({
         />
         <button
           onClick={() => setFiltersOpen(false)}
-          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
         >
           Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
         </button>
@@ -663,7 +664,7 @@ function AuthenticatedFeed({
         <button
           type="button"
           onClick={() => setDesktopFiltersOpen(false)}
-          className="mt-6 w-full rounded-xl bg-brand-500 py-3 text-sm font-semibold text-black transition-colors hover:bg-brand-400"
+          className="mt-6 w-full rounded-xl bg-brand-500 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-brand-600"
         >
           Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
         </button>
@@ -671,12 +672,12 @@ function AuthenticatedFeed({
 
       {/* SWIPE MODE — FULLSCREEN */}
       {viewMode === 'swipe' && filteredCars.length > 0 && (
-        <div className="fixed inset-0 z-[60] bg-app dark:bg-zinc-950 flex flex-col safe-top safe-bottom">
+        <div className="fixed inset-0 z-[60] bg-app dark:bg-app flex flex-col safe-top safe-bottom">
           {/* Swipe header */}
-          <div className="relative flex items-center justify-between px-4 py-3 border-b border-surface dark:border-zinc-800 lg:px-8">
+          <div className="relative flex items-center justify-between px-4 py-3 border-b border-surface dark:border-surface lg:px-8">
             <button
               onClick={exitSwipeMode}
-              className="hidden h-10 items-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary lg:inline-flex dark:border-zinc-800"
+              className="hidden h-10 items-center gap-2 rounded-xl border border-surface bg-elevated px-4 text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary lg:inline-flex dark:border-surface"
               aria-label="Nazad na oglase"
             >
               <ArrowLeft size={17} />
@@ -684,7 +685,7 @@ function AuthenticatedFeed({
             </button>
             <div className="flex items-center gap-2 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               <Flame size={18} className="text-brand-text" />
-              <span className="text-sm font-bold text-app-primary dark:text-zinc-100">Svajp režim</span>
+              <span className="text-sm font-bold text-app-primary dark:text-app-primary">Svajp režim</span>
             </div>
             <button
               onClick={exitSwipeMode}
@@ -712,7 +713,7 @@ function AuthenticatedFeed({
                 <div className="relative w-full max-w-sm lg:max-w-2xl">
                   {/* Next card peeking behind */}
                   {swipeCars[swipeIndex + 1] && (
-                    <div className="absolute inset-0 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-lg dark:border-zinc-800 dark:bg-zinc-900" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
+                    <div className="absolute inset-0 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-lg dark:border-surface dark:bg-card-surface" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
                       <div className="relative h-72 sm:h-80 lg:h-[min(40vh,380px)]">
                         <img src={swipeCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
                       </div>
@@ -721,7 +722,7 @@ function AuthenticatedFeed({
 
                   {/* Active card */}
                   <div
-                    className="relative w-full overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-zinc-800 dark:bg-zinc-900 lg:max-w-2xl"
+                    className="relative w-full overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-surface dark:bg-card-surface lg:max-w-2xl"
                     style={{
                       transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
                       transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
@@ -740,7 +741,7 @@ function AuthenticatedFeed({
 
                       {/* LIKE badge */}
                       <div
-                        className="absolute top-8 left-6 -rotate-12 border-4 border-emerald-400 text-tone-positive font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
+                        className="absolute top-8 left-6 -rotate-12 border-4 border-tone-positive text-tone-positive font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
                         style={{ opacity: Math.max(0, Math.min(1, dragX / 100)) }}
                       >
                         LIKE
@@ -748,7 +749,7 @@ function AuthenticatedFeed({
 
                       {/* SKIP badge */}
                       <div
-                        className="absolute top-8 right-6 rotate-12 border-4 border-rose-500 text-rose-500 font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
+                        className="absolute top-8 right-6 rotate-12 border-4 border-tone-negative text-tone-negative font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
                         style={{ opacity: Math.max(0, Math.min(1, -dragX / 100)) }}
                       >
                         PRESKOK
@@ -756,9 +757,7 @@ function AuthenticatedFeed({
 
                       {/* Trade label */}
                       {swipeTl && (
-                        <div className={`absolute bottom-3 left-3 rounded-full border px-3 py-1.5 text-sm font-bold ${swipeTl.bg} ${swipeTl.color}`}>
-                          {swipeTl.label}
-                        </div>
+                        <TradeBadge trade={swipeTl} className="absolute bottom-3 left-3 px-3 py-2 text-sm" />
                       )}
                     </div>
 
@@ -766,25 +765,25 @@ function AuthenticatedFeed({
                     <div className="p-5 lg:p-6">
                       <div className="flex items-start justify-between mb-2 gap-2">
                         <div className="min-w-0">
-                          <h2 className="text-lg font-black text-app-primary dark:text-zinc-100 tracking-tight truncate">{carTitle(swipeCar)}</h2>
+                          <h2 className="text-lg font-black text-app-primary dark:text-app-primary tracking-tight truncate">{carTitle(swipeCar)}</h2>
                           <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
                         </div>
                         <p className="text-app-primary font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
                       </div>
 
                       <div className="flex items-center gap-2 mt-3 flex-wrap">
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-zinc-400"><Gauge size={12} className="text-app-muted" />{formatKm(swipeCar.mileage)}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-zinc-400"><Fuel size={12} className="text-app-muted" />{fuelLabel(swipeCar.specs.fuelType)}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-zinc-400 ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><Gauge size={12} className="text-app-muted" />{formatKm(swipeCar.mileage)}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><Fuel size={12} className="text-app-muted" />{fuelLabel(swipeCar.specs.fuelType)}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
                       </div>
 
-                      <p className="text-xs text-app-secondary dark:text-zinc-400 mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
+                      <p className="text-xs text-app-secondary dark:text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
 
-                      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface dark:border-zinc-800">
+                      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface dark:border-surface">
                         <button onClick={() => openOffer(swipeCar)} className="btn-primary btn-primary-compact flex-1 text-sm">
                           <ArrowLeftRight size={15} /> Pošalji ponudu
                         </button>
-                        <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary dark:text-zinc-400 text-sm font-semibold rounded-xl py-2.5 transition-all">
+                        <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary dark:text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
                           Detalji
                         </Link>
                       </div>
@@ -796,7 +795,7 @@ function AuthenticatedFeed({
                 <div className="flex items-center gap-5 mt-6 lg:mt-4 lg:gap-7">
                   <button
                     onClick={() => void handleSwipeSkip()}
-                    className="w-14 h-14 rounded-full bg-rose-500/10 border-2 border-tone-negative flex items-center justify-center text-tone-negative-ring hover:bg-rose-500/20 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
+                    className="w-14 h-14 rounded-full bg-tone-negative-surface border-2 border-tone-negative flex items-center justify-center text-tone-negative-ring hover:opacity-80 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
                     aria-label="Preskoči"
                   >
                     <X size={28} strokeWidth={3} />
@@ -804,7 +803,7 @@ function AuthenticatedFeed({
                   <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {swipeCars.length}</span>
                   <button
                     onClick={() => void handleSwipeLike()}
-                    className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-tone-positive flex items-center justify-center text-tone-positive-ring hover:bg-emerald-500/20 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
+                    className="w-14 h-14 rounded-full bg-tone-positive-surface border-2 border-tone-positive flex items-center justify-center text-tone-positive-ring hover:opacity-80 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
                     aria-label="Sviđa mi se"
                   >
                     <Heart size={28} strokeWidth={3} />
@@ -812,21 +811,21 @@ function AuthenticatedFeed({
                 </div>
                 <p className="text-[10px] text-app-muted mt-3 opacity-70 lg:hidden">Prevuci desno = LIKE · levo = PRESKOK</p>
                 <p className="hidden items-center gap-2 text-xs text-app-muted opacity-80 lg:flex">
-                  <kbd className="rounded-md border border-surface bg-elevated px-2 py-1 font-semibold dark:border-zinc-800">←</kbd>
+                  <kbd className="rounded-md border border-surface bg-elevated px-2 py-1 font-semibold dark:border-surface">←</kbd>
                   Preskoči
                   <span className="mx-1">·</span>
-                  <kbd className="rounded-md border border-surface bg-elevated px-2 py-1 font-semibold dark:border-zinc-800">→</kbd>
+                  <kbd className="rounded-md border border-surface bg-elevated px-2 py-1 font-semibold dark:border-surface">→</kbd>
                   Sviđa mi se
                 </p>
               </>
             ) : (
               /* All done screen */
               <div className="flex flex-col items-center text-center py-8">
-                <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
+                <div className="w-20 h-20 rounded-full bg-tone-positive-surface flex items-center justify-center mb-4">
                   <CheckCircle size={40} className="text-tone-positive" />
                 </div>
-                <h2 className="text-xl font-bold text-app-primary dark:text-zinc-100 mb-2">Sve pregledano!</h2>
-                <p className="text-sm text-app-secondary dark:text-zinc-400 mb-1">Pregledao si sve oglase.</p>
+                <h2 className="text-xl font-bold text-app-primary dark:text-app-primary mb-2">Sve pregledano!</h2>
+                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">Pregledao si sve oglase.</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
                   <button onClick={async () => {
@@ -837,7 +836,7 @@ function AuthenticatedFeed({
                     }
                     setSwipeIndex(0);
                     setSessionReviewedIds(new Set());
-                  }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-zinc-100 font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
+                  }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ponovi preskočene
                   </button>
                   <button onClick={exitSwipeMode} className="btn-primary text-sm">
@@ -853,13 +852,13 @@ function AuthenticatedFeed({
             <div className="absolute inset-0 z-[70] flex items-center justify-center pointer-events-none">
               <div className="flex items-center gap-10">
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-tone-negative flex items-center justify-center animate-pulse">
+                  <div className="w-16 h-16 rounded-full bg-tone-negative-surface border-2 border-tone-negative flex items-center justify-center animate-pulse">
                     <X size={32} className="text-tone-negative-ring" strokeWidth={3} />
                   </div>
                   <p className="text-xs font-bold text-tone-negative uppercase tracking-wider">← Preskoči</p>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-tone-positive flex items-center justify-center animate-pulse">
+                  <div className="w-16 h-16 rounded-full bg-tone-positive-surface border-2 border-tone-positive flex items-center justify-center animate-pulse">
                     <Heart size={32} className="text-tone-positive" fill="currentColor" />
                   </div>
                   <p className="text-xs font-bold text-tone-positive uppercase tracking-wider">Like →</p>
@@ -891,7 +890,7 @@ function AuthenticatedFeed({
 
           <div className="min-w-0 flex-1">
             <div className="mb-3 min-w-0">
-              <h1 className="truncate text-base font-bold leading-tight text-app-primary dark:text-zinc-100 sm:text-lg">
+              <h1 className="truncate text-base font-bold leading-tight text-app-primary dark:text-app-primary sm:text-lg">
                 {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži oglase'}
               </h1>
               <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-app-muted">
@@ -915,7 +914,7 @@ function AuthenticatedFeed({
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-zinc-800 dark:bg-zinc-900"
+                    className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface dark:border-surface dark:bg-card-surface"
                   >
                     <div className="aspect-[16/9] w-full bg-hover-surface" />
                     <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4 desktop:px-4 desktop:py-3">
@@ -936,7 +935,7 @@ function AuthenticatedFeed({
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="group/card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/30 desktop:hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
+              <article key={car.id} className="group/card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/30 desktop:hover:shadow-lg dark:border-surface dark:bg-card-surface dark:shadow-black/20">
                 <Link
                   href={`/car/${car.id}`}
                   aria-label={`Otvori oglas: ${carTitle(car)}`}
@@ -961,12 +960,12 @@ function AuthenticatedFeed({
                 <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3">
                   {/* Title and specs reserve consistent space so cards align in each row. */}
                   <div className="min-w-0">
-                    <h2 className="line-clamp-2 min-h-10 text-[17px] font-bold leading-snug text-app-primary dark:text-zinc-100">
+                    <h2 className="line-clamp-2 min-h-10 text-[17px] font-bold leading-snug text-app-primary dark:text-app-primary">
                       {carTitle(car)}
                     </h2>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-xs text-app-secondary dark:text-zinc-400 desktop:mt-2">
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-xs text-app-secondary dark:text-app-secondary desktop:mt-2">
                       <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
                       <span className="text-app-muted/60" aria-hidden="true">·</span>
                       <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
@@ -984,11 +983,9 @@ function AuthenticatedFeed({
                    */}
                   <div className="mt-auto pt-3.5 desktop:pt-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 font-sans text-[23px] font-bold tracking-tight tabular-nums text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                      <p className="shrink-0 font-sans text-[23px] font-bold tracking-tight tabular-nums text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
                       {tl && (
-                        <span className={`inline-flex min-w-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none ${tl.bg} ${tl.color}`}>
-                          <span className="truncate">{tl.label}</span>
-                        </span>
+                        <TradeBadge trade={tl} />
                       )}
                     </div>
 

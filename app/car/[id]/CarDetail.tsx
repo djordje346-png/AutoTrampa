@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info, Pencil } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
+import TradeBadge from '@/components/TradeBadge';
 import { fuelLabel, transmissionLabel, vehicleConditionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { getCarImages, type Car, type MyGarageCar } from '@/types';
@@ -22,9 +23,9 @@ import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import CarForm from '@/components/CarForm';
 
 /** Shared card chrome, so every block on the page has the same padding. */
-const CARD = 'rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6';
+const CARD = 'rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-surface dark:bg-card-surface sm:p-6';
 /** Action chip used for the secondary buttons (save, call). */
-const CHIP = 'flex min-h-11 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface dark:border-zinc-800';
+const CHIP = 'flex min-h-11 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface dark:border-surface';
 
 /**
  * The listing view. The listing itself is resolved on the server (see
@@ -171,7 +172,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
       >
         {/* Keep the listing, owner and location cards together in one desktop column. */}
         <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-start lg:gap-5 xl:gap-6">
-          <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-zinc-800 sm:aspect-[16/10] lg:col-start-1 lg:row-start-1 lg:aspect-square xl:aspect-[4/3]">
+          <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-surface sm:aspect-[16/10] lg:col-start-1 lg:row-start-1 lg:aspect-square xl:aspect-[4/3]">
             <div
               className="flex h-full cursor-zoom-in transition-transform duration-300 ease-out"
               style={{ transform: `translateX(-${activeImage * 100}%)` }}
@@ -236,7 +237,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                     onClick={() => setActiveImage(i)}
                     aria-label={`Prikaži sliku ${i + 1}`}
                     aria-current={i === activeImage}
-                    className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-6 bg-brand-500' : 'w-1.5 bg-white/70 hover:bg-white'}`}
+                    className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-6 bg-brand-500' : 'w-1.5 bg-white/70 hover:bg-card-surface'}`}
                   />
                 ))}
               </div>
@@ -250,9 +251,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                 {isOwner ? 'Tvoj oglas' : 'Oglas za zamenu'}
               </span>
               {showTrade && tl && (
-                <span className={`rounded-full border px-3 py-1 text-[11px] font-bold ${tl.bg} ${tl.color}`}>
-                  {tl.label}
-                </span>
+                <TradeBadge trade={tl} />
               )}
               {!car.ownerId && (
                 <span className="rounded-full border border-surface bg-elevated px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-app-muted">
@@ -262,27 +261,27 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             </div>
 
             <div className="mt-4 min-w-0">
-              <h1 className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-app-primary dark:text-zinc-100 sm:text-3xl lg:text-4xl">
+              <h1 className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-app-primary dark:text-app-primary sm:text-3xl lg:text-4xl">
                 {carTitle(car)}
               </h1>
               {subtitle && <p className="mt-1 text-sm text-app-muted">{subtitle}</p>}
-              {condition && <p className="mt-2 inline-flex rounded-full border border-surface bg-elevated px-3 py-1 text-xs font-semibold text-app-secondary dark:border-zinc-800 dark:text-zinc-300">Stanje: {condition}</p>}
+              {condition && <p className="mt-2 inline-flex rounded-full border border-surface bg-elevated px-3 py-1 text-xs font-semibold text-app-secondary dark:border-surface dark:text-app-secondary">Stanje: {condition}</p>}
               {location && (
-                <p className="mt-2 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-zinc-400">
+                <p className="mt-2 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-app-secondary">
                   <MapPin size={15} className="shrink-0 text-app-muted" />
                   {location}
                 </p>
               )}
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-2 border-y border-surface py-3 dark:border-zinc-800 sm:grid-cols-3">
+            <div className="mt-4 grid grid-cols-2 gap-2 border-y border-surface py-3 dark:border-surface sm:grid-cols-3">
               {specs.map(({ icon: Icon, label, value }) => (
                 <div key={label} className="min-w-0 rounded-xl bg-elevated/70 p-2.5">
                   <div className="flex min-w-0 items-center gap-1">
                     <Icon size={13} className="shrink-0 text-brand-text" />
                     <p className="truncate text-[11px] font-semibold uppercase leading-tight tracking-wider text-app-muted">{label}</p>
                   </div>
-                  <p className="mt-1 truncate pl-4 text-[13px] font-semibold leading-tight text-app-primary dark:text-zinc-100">{value}</p>
+                  <p className="mt-1 truncate pl-4 text-[13px] font-semibold leading-tight text-app-primary dark:text-app-primary">{value}</p>
                 </div>
               ))}
             </div>
@@ -290,7 +289,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(150px,1.15fr)] lg:items-center">
               <div className="min-w-0 rounded-2xl bg-elevated/70 px-4 py-3 lg:px-3">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena vozila</p>
-                <p className="mt-0.5 truncate font-sans text-2xl font-bold tracking-tight tabular-nums text-app-primary dark:text-zinc-100 xl:text-3xl">{formatEuro(car.price)}</p>
+                <p className="mt-0.5 truncate font-sans text-2xl font-bold tracking-tight tabular-nums text-app-primary dark:text-app-primary xl:text-3xl">{formatEuro(car.price)}</p>
               </div>
 
               {isOwner ? (
@@ -315,7 +314,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                     <a
                       href={`tel:${car.owner.phone}`}
                       aria-label={`Pozovi ${car.owner.name}`}
-                      className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-hover-surface hover:text-brand-text active:scale-[0.98] dark:border-zinc-800"
+                      className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-hover-surface hover:text-brand-text active:scale-[0.98] dark:border-surface"
                     >
                       <Phone size={15} className="shrink-0" />
                       <span className="truncate">Pozovi</span>
@@ -326,7 +325,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                       disabled
                       aria-disabled="true"
                       title="Vlasnik nije ostavio broj telefona — kontakt ide preko ponude"
-                      className="inline-flex h-12 min-h-12 w-full min-w-0 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary opacity-55 shadow-sm dark:border-zinc-800"
+                      className="inline-flex h-12 min-h-12 w-full min-w-0 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary opacity-55 shadow-sm dark:border-surface"
                     >
                       <Phone size={15} className="shrink-0" />
                       <span className="truncate">Pozovi</span>
@@ -348,31 +347,31 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {isOwner ? (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Moj oglas</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Oglas je objavljen sa tvog naloga</h2>
-                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Oglas je objavljen sa tvog naloga</h2>
+                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
                   Podatke i fotografije možeš da izmeniš dugmetom „Uredi oglas”.
                 </p>
               </section>
             ) : (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">O vlasniku</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">O vlasniku</h2>
                 <div className="mt-4 flex min-w-0 items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-zinc-950">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-on-accent">
                     <span className="text-base font-black">{car.owner.name[0]}</span>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">{car.owner.name}</p>
+                    <p className="truncate text-sm font-semibold text-app-primary dark:text-app-primary">{car.owner.name}</p>
                     <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
                     <Star size={13} className="fill-brand-500 text-brand-500" />
-                    <span className="text-xs font-bold text-app-primary dark:text-zinc-100">{car.owner.rating.toFixed(1)}</span>
+                    <span className="text-xs font-bold text-app-primary dark:text-app-primary">{car.owner.rating.toFixed(1)}</span>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 dark:border-zinc-800">
+                <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 dark:border-surface">
                   <span className="text-sm text-app-muted">Ocena vlasnika</span>
-                  <span className="text-sm font-semibold text-app-secondary dark:text-zinc-400">{car.owner.rating.toFixed(1)} / 5</span>
+                  <span className="text-sm font-semibold text-app-secondary dark:text-app-secondary">{car.owner.rating.toFixed(1)} / 5</span>
                 </div>
                 {car.owner.phone && (
                   <a href={`tel:${car.owner.phone}`} className={`mt-4 w-full hover:text-brand-text ${CHIP}`}>
@@ -385,11 +384,11 @@ export default function CarDetail({ car: listing }: { car: Car }) {
 
             <section className={CARD}>
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Preuzimanje vozila</p>
-              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Lokacija</h2>
+              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Lokacija</h2>
               <div className="mt-4 flex items-start gap-3 rounded-2xl bg-elevated p-4">
                 <MapPin size={18} className="mt-0.5 shrink-0 text-brand-text" />
                 <div className="min-w-0">
-                  <p className="break-words text-sm font-semibold text-app-primary dark:text-zinc-100">
+                  <p className="break-words text-sm font-semibold text-app-primary dark:text-app-primary">
                     {location || 'Lokacija nije navedena'}
                   </p>
                 </div>
@@ -406,8 +405,8 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Dogovor o zameni</p>
-                  <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100 sm:text-2xl">Šta vlasnik traži?</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+                  <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary sm:text-2xl">Šta vlasnik traži?</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
                     Vlasnik prima ponude za zamenu. Predstavi automobil koji nudiš, a detalje dogovorite direktno kroz ponudu.
                   </p>
                 </div>
@@ -416,22 +415,22 @@ export default function CarDetail({ car: listing }: { car: Car }) {
 
             <section className={CARD}>
               <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Opis oglasa</p>
-              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">O automobilu</h2>
-              <p className="mt-4 whitespace-pre-line break-words text-sm leading-7 text-app-secondary dark:text-zinc-400 sm:text-base">
+              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">O automobilu</h2>
+              <p className="mt-4 whitespace-pre-line break-words text-sm leading-7 text-app-secondary dark:text-app-secondary sm:text-base">
                 {car.description}
               </p>
             </section>
 
-            <section className="overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-              <div className="border-b border-surface px-5 py-5 dark:border-zinc-800 sm:px-6">
+            <section className="overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface">
+              <div className="border-b border-surface px-5 py-5 dark:border-surface sm:px-6">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Tehnički podaci</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Motor i performanse</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Motor i performanse</h2>
               </div>
-              <div className="divide-y divide-surface dark:divide-zinc-800">
+              <div className="divide-y divide-surface dark:divide-surface">
                 {engineDetails.map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between gap-4 px-5 py-3.5 sm:px-6">
                     <span className="text-sm text-app-muted">{label}</span>
-                    <span className="text-right text-sm font-semibold text-app-secondary dark:text-zinc-400">{value}</span>
+                    <span className="text-right text-sm font-semibold text-app-secondary dark:text-app-secondary">{value}</span>
                   </div>
                 ))}
               </div>
@@ -440,7 +439,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {car.equipment && car.equipment.length > 0 && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Komfor i bezbednost</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Oprema vozila</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Oprema vozila</h2>
                 <div className="mt-5 space-y-5">
                   {EQUIPMENT_CATEGORIES.map((category) => {
                     const items = category.items.filter((item) => car.equipment!.includes(item.id));
@@ -450,13 +449,13 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                       <div key={category.id}>
                         <div className="mb-2 flex items-center gap-2">
                           <CatIcon size={14} className="text-brand-text" />
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-app-secondary dark:text-zinc-400">{category.label}</p>
+                          <p className="text-[11px] font-bold uppercase tracking-wider text-app-secondary dark:text-app-secondary">{category.label}</p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {items.map((item) => (
                             <span
                               key={item.id}
-                              className="inline-flex items-center gap-1.5 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs font-medium text-app-secondary dark:border-zinc-800 dark:text-zinc-400"
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs font-medium text-app-secondary dark:border-surface dark:text-app-secondary"
                             >
                               <Check size={12} className="text-brand-text" />
                               {item.label}
@@ -473,10 +472,10 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {car.modifications && car.modifications.length > 0 && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Dodatno</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Modifikacije</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Modifikacije</h2>
                 <ul className="mt-4 space-y-3">
                   {car.modifications.map((mod) => (
-                    <li key={mod} className="flex items-start gap-2.5 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+                    <li key={mod} className="flex items-start gap-2.5 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400" />
                       {mod}
                     </li>
@@ -493,8 +492,8 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {garageMounted && authReady && isLoggedIn && !isOwner && !selectedCar && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Poređenje zamene</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Dodaj svoj auto</h2>
-                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Dodaj svoj auto</h2>
+                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
                   Doplata je razlika između vrednosti tvog i ovog vozila. Kada dodaš svoj auto u
                   garažu, ovde ćeš videti koliko ko doplaćuje.
                 </p>
@@ -511,22 +510,22 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {garageMounted && showTrade && tl && selectedCar && (
               <section className={CARD}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Za prijavljene korisnike</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-zinc-100">Poređenje zamene</h2>
+                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Poređenje zamene</h2>
                 <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3">
                   <div className="min-w-0 rounded-2xl bg-elevated p-3 text-center sm:p-4">
                     <p className="text-[10px] text-app-muted">Tvoj auto</p>
-                    <p className="mt-1 truncate text-sm font-semibold text-app-primary dark:text-zinc-100">{selectedCar.brand} {selectedCar.model}</p>
-                    <p className="mt-1 text-sm font-bold text-app-primary dark:text-zinc-100">{formatEuro(selectedCar.price)}</p>
+                    <p className="mt-1 truncate text-sm font-semibold text-app-primary dark:text-app-primary">{selectedCar.brand} {selectedCar.model}</p>
+                    <p className="mt-1 text-sm font-bold text-app-primary dark:text-app-primary">{formatEuro(selectedCar.price)}</p>
                   </div>
                   <ArrowLeftRight size={18} className="text-app-muted" />
                   <div className="min-w-0 rounded-2xl bg-elevated p-3 text-center sm:p-4">
                     <p className="text-[10px] text-app-muted">Ovaj auto</p>
-                    <p className="mt-1 truncate text-sm font-semibold text-app-primary dark:text-zinc-100">{car.brand} {car.model}</p>
-                    <p className="mt-1 text-sm font-bold text-app-primary dark:text-zinc-100">{formatEuro(car.price)}</p>
+                    <p className="mt-1 truncate text-sm font-semibold text-app-primary dark:text-app-primary">{car.brand} {car.model}</p>
+                    <p className="mt-1 text-sm font-bold text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
                   </div>
                 </div>
-                <div className={`mt-3 rounded-xl border px-4 py-2.5 text-center text-sm font-semibold ${tl.bg} ${tl.color}`}>
-                  {tl.label}
+                <div className="mt-3 flex justify-center">
+                  <TradeBadge trade={tl} className="rounded-xl px-4 py-2.5 text-sm" />
                 </div>
               </section>
             )}
@@ -536,7 +535,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
 
       {/* Mobile action bar, sitting above the fixed bottom navigation. */}
       {authReady && (
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 border-t border-surface bg-app/95 px-4 py-3 shadow-lg backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/95">
+        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 border-t border-surface bg-app/95 px-4 py-3 shadow-lg backdrop-blur md:hidden dark:border-surface dark:bg-background/95">
           <div className="mx-auto flex w-full max-w-md gap-2 pb-4">
             {isOwner ? (
               <button
@@ -557,7 +556,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                   <a
                     href={`tel:${car.owner.phone}`}
                     aria-label={`Pozovi ${car.owner.name}`}
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-zinc-800"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-surface"
                   >
                     <Phone size={17} />
                   </a>

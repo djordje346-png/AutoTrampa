@@ -89,9 +89,9 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
   }
 
   const inputBase =
-    'w-full rounded-xl border bg-white py-3 pl-10 text-sm text-zinc-950 outline-none transition-colors placeholder:text-zinc-400 focus-visible:border-brand-700 focus-visible:ring-4 focus-visible:ring-brand-500/15 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500';
-  const inputOk = 'border-zinc-200 dark:border-zinc-700';
-  const inputBad = 'border-rose-500/70 focus-visible:border-rose-500 focus-visible:ring-rose-500/15';
+    'w-full rounded-xl border bg-card-surface py-3 pl-10 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15 dark:bg-app dark:text-app-primary dark:placeholder:text-app-muted';
+  const inputOk = 'border-surface dark:border-surface';
+  const inputBad = 'border-tone-negative focus-visible:border-tone-negative focus-visible:ring-ring';
 
   function fieldClass(field: Field, extra = 'pr-4') {
     return `${inputBase} ${extra} ${errors[field] ? inputBad : inputOk}`;
@@ -109,7 +109,7 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
     : null;
 
   return (
-    <section className="relative mx-auto max-h-[calc(100dvh-2rem)] w-full max-w-[460px] overflow-y-auto overscroll-contain rounded-[1.75rem] border border-white/80 bg-white text-zinc-950 shadow-2xl shadow-zinc-950/25 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 sm:max-h-[calc(100dvh-3rem)]">
+    <section className="relative mx-auto max-h-[calc(100dvh-2rem)] w-full max-w-[460px] overflow-y-auto overscroll-contain rounded-[1.75rem] border border-surface bg-card-surface text-app-primary shadow-2xl shadow-zinc-950/25 dark:border-surface dark:bg-card-surface dark:text-app-primary sm:max-h-[calc(100dvh-3rem)]">
       <div className="p-5 sm:p-8">
         <div className="mb-5 flex justify-center sm:mb-6">
           <span className="inline-flex items-center gap-2" translate="no">
@@ -118,31 +118,31 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
         </div>
 
         <header className="mb-6 text-center sm:mb-7">
-          <h1 id="auth-dialog-title" className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-[1.75rem]">
+          <h1 id="auth-dialog-title" className="text-2xl font-bold tracking-tight text-app-primary dark:text-app-primary sm:text-[1.75rem]">
             {title}
           </h1>
-          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
             {subtitle}
           </p>
         </header>
 
         {visibleContextReason ? (
-          <p className="mb-5 rounded-xl border border-brand-500/40 bg-brand-500/10 px-3.5 py-2.5 text-center text-sm font-semibold leading-snug text-zinc-800 dark:text-zinc-100">
+          <p className="mb-5 rounded-xl border border-brand-500/40 bg-brand-500/10 px-3.5 py-2.5 text-center text-sm font-semibold leading-snug text-app-primary dark:text-app-primary">
             {visibleContextReason}
           </p>
         ) : null}
 
-        <div className="mb-5 flex rounded-xl border border-zinc-200 bg-zinc-100/80 p-1 dark:border-zinc-700 dark:bg-zinc-800/80" role="group" aria-label="Izbor prijave">
+        <div className="mb-5 flex rounded-xl border border-surface bg-elevated/80 p-1 dark:border-surface dark:bg-elevated/80" role="group" aria-label="Izbor prijave">
           {(['login', 'register'] as const).map((key) => (
             <button
               key={key}
               type="button"
               aria-pressed={tab === key}
               onClick={() => switchTab(key)}
-              className={`min-h-11 flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900 ${
+              className={`min-h-11 flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:focus-visible:ring-offset-card ${
                 tab === key
-                  ? 'bg-brand-500 text-zinc-950 shadow-sm'
-                  : 'text-zinc-600 hover:bg-white hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:hover:text-white'
+                  ? 'bg-brand-500 text-app-primary shadow-sm'
+                  : 'text-app-secondary hover:bg-card-surface hover:text-app-primary dark:text-app-secondary dark:hover:bg-elevated dark:hover:text-white'
               }`}
             >
               {key === 'login' ? 'Prijavi se' : 'Registruj se'}
@@ -153,11 +153,11 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
         <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
           {tab === 'register' && (
             <div>
-              <label htmlFor="auth-name" className="mb-1.5 block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+              <label htmlFor="auth-name" className="mb-1.5 block text-xs font-semibold text-app-secondary dark:text-app-secondary">
                 Ime i prezime
               </label>
               <div className="relative">
-                <User size={17} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
+                <User size={17} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted dark:text-app-secondary" />
                 <input
                   id="auth-name"
                   name="name"
@@ -176,11 +176,11 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
           )}
 
           <div>
-            <label htmlFor="auth-email" className="mb-1.5 block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="auth-email" className="mb-1.5 block text-xs font-semibold text-app-secondary dark:text-app-secondary">
               Email adresa
             </label>
             <div className="relative">
-              <Mail size={17} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
+              <Mail size={17} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted dark:text-app-secondary" />
               <input
                 id="auth-email"
                 name="email"
@@ -201,11 +201,11 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
           </div>
 
           <div>
-            <label htmlFor="auth-password" className="mb-1.5 block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="auth-password" className="mb-1.5 block text-xs font-semibold text-app-secondary dark:text-app-secondary">
               Lozinka
             </label>
             <div className="relative">
-              <Lock size={17} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
+              <Lock size={17} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted dark:text-app-secondary" />
               <input
                 id="auth-password"
                 name="password"
@@ -223,7 +223,7 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Sakrij lozinku' : 'Prikaži lozinku'}
                 aria-pressed={showPassword}
-                className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-app-secondary dark:hover:bg-elevated dark:hover:text-app-primary"
               >
                 {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
               </button>
@@ -247,7 +247,7 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
           <button
             type="submit"
             disabled={submitting}
-            className="btn-primary min-h-12 w-full text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900"
+            className="btn-primary min-h-12 w-full text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:focus-visible:ring-offset-card"
           >
             {submitting ? 'Obrađujem…' : tab === 'login' ? 'Prijavi se' : 'Napravi nalog'}
             {!submitting && <ArrowRight size={17} strokeWidth={2.5} aria-hidden="true" />}
@@ -255,30 +255,30 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
         </form>
 
         <div className="relative my-5" aria-hidden="true">
-          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-zinc-200 dark:border-zinc-700" /></div>
-          <div className="relative flex justify-center"><span className="bg-white px-3 text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">ili</span></div>
+          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-surface dark:border-surface" /></div>
+          <div className="relative flex justify-center"><span className="bg-card-surface px-3 text-[11px] font-medium uppercase tracking-[0.12em] text-app-muted dark:bg-card-surface dark:text-app-secondary">ili</span></div>
         </div>
 
         <GoogleSignInButton />
 
         {notice && (
-          <p role="status" aria-live="polite" className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-sm leading-relaxed text-tone-positive">
+          <p role="status" aria-live="polite" className="mt-4 rounded-xl border border-tone-positive-surface bg-tone-positive-surface px-3.5 py-3 text-sm leading-relaxed text-tone-positive">
             {notice}
           </p>
         )}
 
-        <p className="mt-5 text-center text-sm text-zinc-600 dark:text-zinc-300">
+        <p className="mt-5 text-center text-sm text-app-secondary dark:text-app-secondary">
           {tab === 'login' ? 'Nemaš nalog? ' : 'Već imaš nalog? '}
           <button
             type="button"
             onClick={() => switchTab(tab === 'login' ? 'register' : 'login')}
-            className="min-h-10 rounded-md px-1 font-semibold text-brand-text transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700"
+            className="min-h-10 rounded-md px-1 font-semibold text-brand-text transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {tab === 'login' ? 'Registruj se' : 'Prijavi se'}
           </button>
         </p>
 
-        <p className="mx-auto mt-3 max-w-sm text-center text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <p className="mx-auto mt-3 max-w-sm text-center text-[11px] leading-relaxed text-app-muted dark:text-app-secondary">
           Registracijom prihvataš Uslove korišćenja i Politiku privatnosti.
         </p>
       </div>

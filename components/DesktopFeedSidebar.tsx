@@ -32,8 +32,8 @@ interface DesktopFeedSidebarProps {
   showTrade: boolean;
 }
 
-const SECTION_TITLE = 'text-xs font-bold text-app-primary dark:text-zinc-100';
-const SURFACE = 'rounded-xl border border-surface bg-card-surface p-3 dark:border-zinc-800 dark:bg-zinc-900';
+const SECTION_TITLE = 'text-xs font-bold text-app-primary dark:text-app-primary';
+const SURFACE = 'rounded-xl border border-surface bg-card-surface p-3 dark:border-surface dark:bg-card-surface';
 
 export function DesktopFeedSidebar({
   cars,
@@ -96,7 +96,7 @@ export function DesktopFeedSidebar({
         <p id="desktop-my-car-title" className={SECTION_TITLE}>Moj auto</p>
 
         {selectedCar ? (
-          <div className="mt-2 flex min-w-0 items-center gap-2 rounded-lg border border-surface bg-elevated p-2 dark:border-zinc-800">
+          <div className="mt-2 flex min-w-0 items-center gap-2 rounded-lg border border-surface bg-elevated p-2 dark:border-surface">
             <div className="h-10 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-card-surface">
               {selectedCar.image ? (
                 <img src={selectedCar.image} alt={`${selectedCar.brand} ${selectedCar.model}`} className="h-full w-full object-cover" />
@@ -105,7 +105,7 @@ export function DesktopFeedSidebar({
               )}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-app-primary dark:text-zinc-100">
+              <p className="truncate text-xs font-semibold text-app-primary dark:text-app-primary">
                 {selectedCar.brand} {selectedCar.model}
               </p>
               <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate text-[11px] text-app-muted">
@@ -120,8 +120,8 @@ export function DesktopFeedSidebar({
             </div>
           </div>
         ) : (
-          <div className="mt-3 rounded-xl bg-elevated p-3 dark:bg-zinc-950">
-            <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Nemaš dodat auto</p>
+          <div className="mt-3 rounded-xl bg-elevated p-3 dark:bg-app">
+            <p className="text-xs font-semibold text-app-primary dark:text-app-primary">Nemaš dodat auto</p>
             <p className="mt-1 text-[11px] leading-relaxed text-app-muted">Dodaj vozilo da vidiš kako se vrednosti uklapaju.</p>
           </div>
         )}
@@ -130,7 +130,7 @@ export function DesktopFeedSidebar({
           <button
             type="button"
             onClick={() => setCarPickerOpen((open) => !open)}
-            className="mt-2 flex w-full items-center justify-between rounded-lg border border-surface bg-card-surface px-2.5 py-2 text-[10px] font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300"
+            className="mt-2 flex w-full items-center justify-between rounded-lg border border-surface bg-card-surface px-2.5 py-2 text-[10px] font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-surface dark:text-app-secondary"
             aria-expanded={carPickerOpen}
           >
             Promeni auto
@@ -150,13 +150,13 @@ export function DesktopFeedSidebar({
                     selectCar(car.id);
                     setCarPickerOpen(false);
                   }}
-                  className={`flex w-full min-w-0 items-center gap-2 rounded-xl p-2 text-left transition-colors ${active ? 'bg-brand-500/10' : 'hover:bg-elevated dark:hover:bg-zinc-950'}`}
+                  className={`flex w-full min-w-0 items-center gap-2 rounded-xl p-2 text-left transition-colors ${active ? 'bg-brand-500/10' : 'hover:bg-elevated dark:hover:bg-brand-dark'}`}
                 >
                   <span className="h-9 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-elevated">
                     {car.image && <img src={car.image} alt="" className="h-full w-full object-cover" />}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[11px] font-semibold text-app-primary dark:text-zinc-100">
+                    <span className="block truncate text-[11px] font-semibold text-app-primary dark:text-app-primary">
                       {car.brand} {car.model} {displayValue(car.generation)}
                     </span>
                     <span className="block text-[10px] text-app-muted">{formatYear(car.year)} · {formatEuro(car.price)}</span>
@@ -172,7 +172,7 @@ export function DesktopFeedSidebar({
           <button
             type="button"
             onClick={onAddCar}
-            className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-surface py-2 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/5 dark:border-zinc-800"
+            className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-surface py-2 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/5 dark:border-surface"
           >
             <Plus size={14} />
             Dodaj auto
@@ -192,8 +192,8 @@ export function DesktopFeedSidebar({
                 aria-pressed={filters.trade === key}
                 className={`min-h-8 rounded-full border px-2 py-1 text-[9px] font-semibold leading-tight transition-colors ${
                   filters.trade === key
-                    ? 'border-brand-500 bg-brand-500 text-black'
-                    : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-zinc-800 dark:text-zinc-300'
+                    ? 'border-brand-500 bg-brand-500 text-on-accent'
+                    : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-surface dark:text-app-secondary'
                 }`}
               >
                 {label}
@@ -207,7 +207,7 @@ export function DesktopFeedSidebar({
         <p id="desktop-preferences-title" className={SECTION_TITLE}>Tvoje preference</p>
         <div className="mt-3 flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Budžet za doplatu</p>
+            <p className="text-xs font-semibold text-app-primary dark:text-app-primary">Budžet za doplatu</p>
             <p className="mt-1 truncate text-sm font-bold text-brand-text">
               {!preferencesReady ? 'Učitavanje…' : preferences.noTopUp ? 'Bez doplate' : preferences.budget == null ? 'Nije postavljen' : `do ${formatEuro(preferences.budget)}`}
             </p>
@@ -217,7 +217,7 @@ export function DesktopFeedSidebar({
             <button
               type="button"
               onClick={() => setBudgetEditorOpen((open) => !open)}
-              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-brand-text dark:hover:bg-zinc-950"
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-brand-text dark:hover:bg-brand-dark"
               aria-label={budgetEditorOpen ? 'Zatvori izmenu budžeta' : 'Izmeni budžet'}
               aria-expanded={budgetEditorOpen}
             >
@@ -238,17 +238,17 @@ export function DesktopFeedSidebar({
               onChange={(event) => setBudgetDraft(event.target.value)}
               placeholder="Iznos u €"
               aria-label="Budžet za doplatu u evrima"
-              className="h-9 min-w-0 flex-1 rounded-xl border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+              className="h-9 min-w-0 flex-1 rounded-xl border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-surface dark:bg-app dark:text-app-primary"
             />
-            <button type="submit" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500 text-black transition-colors hover:bg-brand-400" aria-label="Sačuvaj budžet">
+            <button type="submit" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500 text-on-accent transition-colors hover:bg-brand-600" aria-label="Sačuvaj budžet">
               <Check size={16} />
             </button>
           </form>
         )}
 
-        <div className="mt-3 border-t border-surface pt-3 dark:border-zinc-800">
+        <div className="mt-3 border-t border-surface pt-3 dark:border-surface">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold text-app-primary dark:text-zinc-100">Radius pretrage</p>
+            <p className="text-xs font-semibold text-app-primary dark:text-app-primary">Radius pretrage</p>
             <span className="rounded-full bg-brand-500/10 px-2 py-0.5 text-xs font-bold text-brand-text">
               {preferencesReady ? `${radiusDraft >= 200 ? "200+" : radiusDraft} km` : 'Učitavanje…'}
             </span>
@@ -286,7 +286,7 @@ export function DesktopFeedSidebar({
       <section className={SURFACE} aria-labelledby="desktop-filters-title">
         <div className="mb-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <p id="desktop-filters-title" className="text-sm font-bold text-app-primary dark:text-zinc-100">Filteri</p>
+            <p id="desktop-filters-title" className="text-sm font-bold text-app-primary dark:text-app-primary">Filteri</p>
             {activeFilters > 0 && (
               <span className="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-bold text-brand-text">{activeFilters}</span>
             )}

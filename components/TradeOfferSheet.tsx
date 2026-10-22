@@ -7,6 +7,7 @@ import { BottomSheet } from '@/components/BottomSheet';
 import { toast } from 'sonner';
 import { formatEuro } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
+import TradeBadge from '@/components/TradeBadge';
 import { displayValue } from '@/lib/car-row';
 import { useMessages } from '@/hooks/use-messages';
 import type { Car, MyGarageCar } from '@/types';
@@ -73,13 +74,13 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
     >
       {sent ? (
         <div className="flex flex-col items-center py-4">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-tone-positive-surface">
             <CheckCircle size={36} className="text-tone-positive" />
           </div>
-          <h3 className="mb-2 text-lg font-bold text-app-primary dark:text-zinc-100">Ponuda poslata!</h3>
-          <p className="mb-1 text-center text-sm text-app-secondary dark:text-zinc-400">
+          <h3 className="mb-2 text-lg font-bold text-app-primary dark:text-app-primary">Ponuda poslata!</h3>
+          <p className="mb-1 text-center text-sm text-app-secondary dark:text-app-secondary">
             Tvoja ponuda za{' '}
-            <span className="font-medium text-app-primary dark:text-zinc-100">
+            <span className="font-medium text-app-primary dark:text-app-primary">
               {car.brand} {car.model}
             </span>{' '}
             je poslata korisniku {car.owner.name}.
@@ -88,7 +89,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
           <div className="flex w-full gap-2">
             <button
               onClick={onClose}
-              className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+              className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
             >
               Zatvori
             </button>
@@ -107,7 +108,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
           <div className="mb-5 flex items-center gap-3">
             <div className="min-w-0 flex-1 rounded-xl bg-elevated p-3 text-center">
               <p className="mb-1 text-xs text-app-muted">Tvoj auto</p>
-              <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
+              <p className="truncate text-sm font-semibold text-app-primary dark:text-app-primary">
                 {myCar.brand} {myCar.model}
               </p>
               <p className="text-sm font-bold text-brand-text">{formatEuro(myCar.price)}</p>
@@ -115,17 +116,15 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
             <ArrowLeftRight size={20} className="flex-shrink-0 text-app-muted" />
             <div className="min-w-0 flex-1 rounded-xl bg-elevated p-3 text-center">
               <p className="mb-1 text-xs text-app-muted">Njegov auto</p>
-              <p className="truncate text-sm font-semibold text-app-primary dark:text-zinc-100">
+              <p className="truncate text-sm font-semibold text-app-primary dark:text-app-primary">
                 {car.brand} {car.model}
               </p>
               <p className="text-sm font-bold text-brand-text">{formatEuro(car.price)}</p>
             </div>
           </div>
 
-          <div
-            className={`mb-5 rounded-xl border px-4 py-2.5 text-center text-sm font-semibold ${trade.bg} ${trade.color}`}
-          >
-            {trade.label}
+          <div className="mb-5 flex justify-center">
+            <TradeBadge trade={trade} className="w-full justify-center rounded-xl px-4 py-2.5 text-sm" />
           </div>
 
           <label htmlFor="offer-message" className="sr-only">
@@ -136,7 +135,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
             value={message}
             onChange={e => setMessage(e.target.value.slice(0, 500))}
             placeholder="Dodaj poruku uz ponudu... (opciono)"
-            className="h-24 w-full resize-none rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-4 py-3 text-sm text-app-primary dark:text-zinc-100 transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none"
+            className="h-24 w-full resize-none rounded-xl border border-surface dark:border-surface bg-elevated px-4 py-3 text-sm text-app-primary dark:text-app-primary transition-colors placeholder:text-app-muted focus:border-brand-500 focus:outline-none"
           />
 
           <button

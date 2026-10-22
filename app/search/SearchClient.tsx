@@ -21,6 +21,7 @@ import { displayValue } from '@/lib/car-row';
 import { BottomSheet } from '@/components/BottomSheet';
 import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
+import TradeBadge from '@/components/TradeBadge';
 import { Car } from '@/types';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
@@ -73,7 +74,7 @@ export default function SearchClient() {
       <header className="app-page-header safe-top">
         <div className="app-container pt-4 pb-3">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">Pretraga</h1>
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Pretraga</h1>
           {mounted && showTrade && selectedCar && (
             <Link
               href="/garage"
@@ -91,13 +92,13 @@ export default function SearchClient() {
             value={filters.query}
             onChange={e => updateFilters({ query: e.target.value })}
             placeholder="Marka, model, grad..."
-            className="w-full bg-elevated border border-surface dark:border-zinc-800 rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary dark:text-zinc-100 placeholder:text-app-muted focus:outline-none focus:border-brand-500 transition-colors"
+            className="w-full bg-elevated border border-surface dark:border-surface rounded-xl pl-9 pr-9 py-2.5 text-sm text-app-primary dark:text-app-primary placeholder:text-app-muted focus:outline-none focus:border-brand-500 transition-colors"
           />
           {filters.query && (
             <button
               onClick={() => updateFilters({ query: '' })}
               aria-label="Obriši pretragu"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-app-muted hover:text-app-secondary dark:text-zinc-400 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-app-muted hover:text-app-secondary dark:text-app-secondary transition-colors"
             >
               <X size={15} />
             </button>
@@ -108,12 +109,12 @@ export default function SearchClient() {
           {isLoggedIn && (
             <button
               onClick={() => setFiltersOpen(true)}
-              className="flex-shrink-0 flex items-center gap-1.5 rounded-full border border-surface bg-elevated px-3 py-1.5 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-zinc-800 lg:hidden"
+              className="flex-shrink-0 flex items-center gap-1.5 rounded-full border border-surface bg-elevated px-3 py-1.5 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 dark:border-surface lg:hidden"
             >
               <SlidersHorizontal size={12} />
               Filteri
               {countActiveFilters(filters) > 0 && (
-                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-black">
+                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-on-accent">
                   {countActiveFilters(filters)}
                 </span>
               )}
@@ -133,7 +134,7 @@ export default function SearchClient() {
               className={`flex-shrink-0 whitespace-nowrap text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
                 (filters.sortBy === key || (filters.sortBy === 'trade' && !showTrade && key === 'price-asc'))
                   ? 'text-brand-text bg-brand-500/10'
-                  : 'text-app-muted hover:text-app-secondary dark:text-zinc-400'
+                  : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
               }`}
             >
               {label}
@@ -176,7 +177,7 @@ export default function SearchClient() {
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
               <Search size={28} className="text-app-muted" />
             </div>
-            <p className="text-app-secondary dark:text-zinc-400 font-medium">Nema pronađenih vozila</p>
+            <p className="text-app-secondary dark:text-app-secondary font-medium">Nema pronađenih vozila</p>
             <p className="text-app-muted text-sm mt-1">Pokušaj sa drugim terminom</p>
           </div>
         ) : (
@@ -185,7 +186,7 @@ export default function SearchClient() {
             return (
               <article
                 key={car.id}
-                className={`overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-zinc-800 dark:bg-zinc-900 ${
+                className={`overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-surface dark:bg-card-surface ${
                   isLoggedIn ? '' : 'flex h-full min-w-0 flex-col shadow-sm hover:shadow-md dark:shadow-black/20'
                 }`}
               >
@@ -203,11 +204,7 @@ export default function SearchClient() {
                       className={isLoggedIn ? 'h-full w-full object-cover' : 'absolute inset-0 h-full w-full object-cover'}
                     />
                     {tl && (
-                      <span
-                        className={`absolute bottom-1 left-1 rounded-full border px-1.5 py-0.5 text-[9px] font-bold ${tl.bg} ${tl.color}`}
-                      >
-                        {tl.short}
-                      </span>
+                      <TradeBadge trade={tl} compact className="absolute bottom-1 left-1" />
                     )}
                     {!car.ownerId && (
                       <span className="absolute left-1 top-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
@@ -224,13 +221,13 @@ export default function SearchClient() {
                         <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text">
                           {bodyLabel(car.bodyType)}
                         </p>
-                        <h3 className={`${isLoggedIn ? 'truncate text-sm' : 'line-clamp-2 min-h-10 text-base sm:text-lg'} font-semibold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-zinc-100`}>
+                        <h3 className={`${isLoggedIn ? 'truncate text-sm' : 'line-clamp-2 min-h-10 text-base sm:text-lg'} font-semibold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-app-primary`}>
                           {carTitle(car)}
                         </h3>
                         <p className="text-xs text-app-muted">{displayValue(car.generation)}</p>
                       </Link>
                       <div className="flex flex-shrink-0 items-start gap-2">
-                        <p className={`${isLoggedIn ? 'text-sm font-semibold' : 'font-sans text-[22px] font-bold tabular-nums'} text-app-primary dark:text-zinc-100`}>{formatEuro(car.price)}</p>
+                        <p className={`${isLoggedIn ? 'text-sm font-semibold' : 'font-sans text-[22px] font-bold tabular-nums'} text-app-primary dark:text-app-primary`}>{formatEuro(car.price)}</p>
                         <button
                           onClick={() => void likeCar(car)}
                           disabled={isLiking(car.id)}
@@ -244,15 +241,15 @@ export default function SearchClient() {
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-2.5">
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-zinc-400">
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-app-secondary">
                         <Gauge size={11} className="text-app-muted" />
                         {formatKm(car.mileage)}
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-zinc-400">
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-app-secondary">
                         <Fuel size={11} className="text-app-muted" />
                         {car.specs.displacement} {fuelLabel(car.specs.fuelType)}
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-zinc-400">
+                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-app-secondary">
                         <MapPin size={11} className="text-app-muted" />
                         {car.city}
                       </span>
@@ -283,7 +280,7 @@ export default function SearchClient() {
                       </button>
                       <Link
                         href={`/car/${car.id}`}
-                        className={`flex min-w-0 flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-lg bg-elevated px-2 py-2 text-[10px] font-semibold text-app-secondary transition-all hover:bg-hover-surface dark:text-zinc-400 sm:text-[11px] ${isLoggedIn ? 'sm:flex-none sm:px-3' : ''}`}
+                        className={`flex min-w-0 flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-lg bg-elevated px-2 py-2 text-[10px] font-semibold text-app-secondary transition-all hover:bg-hover-surface dark:text-app-secondary sm:text-[11px] ${isLoggedIn ? 'sm:flex-none sm:px-3' : ''}`}
                       >
                         Detalji
                         <ArrowRight size={11} />
@@ -312,7 +309,7 @@ export default function SearchClient() {
         />
         <button
           onClick={() => setFiltersOpen(false)}
-          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
         >
           Prikaži {results.length} {results.length === 1 ? 'oglas' : 'oglasa'}
         </button>

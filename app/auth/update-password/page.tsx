@@ -59,27 +59,27 @@ export default function UpdatePasswordPage() {
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-5 py-12">
-      <section className="w-full max-w-sm rounded-2xl border border-surface dark:border-zinc-800 bg-card-surface dark:bg-zinc-900 p-6">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500 text-zinc-950">
+      <section className="w-full max-w-sm rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-6">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500 text-app-primary">
           <LockKeyhole size={21} />
         </div>
-        <h1 className="text-xl font-bold text-app-primary dark:text-zinc-100">Promeni lozinku</h1>
+        <h1 className="text-xl font-bold text-app-primary dark:text-app-primary">Promeni lozinku</h1>
 
         {!mounted || !callbackChecked ? (
-          <p className="mt-3 text-sm text-app-secondary dark:text-zinc-400">Proveravam link…</p>
+          <p className="mt-3 text-sm text-app-secondary dark:text-app-secondary">Proveravam link…</p>
         ) : saved ? (
           <div className="mt-4 space-y-4">
             <p role="status" className="text-sm text-tone-positive">Lozinka je promenjena.</p>
             <Link href="/profile" className="btn-primary text-sm">Nastavi u profil</Link>
           </div>
         ) : !isLoggedIn ? (
-          <p role="alert" className="mt-3 text-sm text-app-secondary dark:text-zinc-400">{message || 'Link je istekao ili nije važeći. Zatraži novi link za promenu lozinke.'}</p>
+          <p role="alert" className="mt-3 text-sm text-app-secondary dark:text-app-secondary">{message || 'Link je istekao ili nije važeći. Zatraži novi link za promenu lozinke.'}</p>
         ) : (
           <form onSubmit={submit} className="mt-4 space-y-3">
-            <label className="block text-xs font-medium text-app-secondary dark:text-zinc-400" htmlFor="new-password">Nova lozinka</label>
-            <input id="new-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3 text-sm text-app-primary dark:text-zinc-100 outline-none focus:border-brand-500" />
-            <label className="block text-xs font-medium text-app-secondary dark:text-zinc-400" htmlFor="confirm-password">Ponovi lozinku</label>
-            <input id="confirm-password" type="password" autoComplete="new-password" required minLength={8} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} className="h-11 w-full rounded-xl border border-surface dark:border-zinc-800 bg-elevated px-3 text-sm text-app-primary dark:text-zinc-100 outline-none focus:border-brand-500" />
+            <label className="block text-xs font-medium text-app-secondary dark:text-app-secondary" htmlFor="new-password">Nova lozinka</label>
+            <input id="new-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="h-11 w-full rounded-xl border border-surface dark:border-surface bg-elevated px-3 text-sm text-app-primary dark:text-app-primary outline-none focus:border-brand-500" />
+            <label className="block text-xs font-medium text-app-secondary dark:text-app-secondary" htmlFor="confirm-password">Ponovi lozinku</label>
+            <input id="confirm-password" type="password" autoComplete="new-password" required minLength={8} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} className="h-11 w-full rounded-xl border border-surface dark:border-surface bg-elevated px-3 text-sm text-app-primary dark:text-app-primary outline-none focus:border-brand-500" />
             {message && <p role="alert" className="text-sm text-tone-negative">{message}</p>}
             <button disabled={busy} className="btn-primary w-full text-sm">{busy ? 'Čuvam…' : 'Sačuvaj novu lozinku'}</button>
           </form>

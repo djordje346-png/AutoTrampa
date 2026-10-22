@@ -17,11 +17,11 @@ export default function Error({
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
-      <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-rose-500/10">
+      <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-tone-negative-surface">
         <TriangleAlert size={34} className="text-tone-negative" />
       </div>
-      <h1 className="text-lg font-bold text-app-primary dark:text-zinc-100">Nešto je pošlo naopako</h1>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-zinc-400">
+      <h1 className="text-lg font-bold text-app-primary dark:text-app-primary">Nešto je pošlo naopako</h1>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
         Došlo je do neočekivane greške. Pokušaj ponovo ili se vrati na početnu stranu.
       </p>
       {error.digest && (
@@ -37,7 +37,7 @@ export default function Error({
         </button>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-elevated px-5 py-3 text-sm font-semibold text-app-primary dark:text-zinc-100 transition-colors hover:bg-hover-surface"
+          className="inline-flex items-center gap-2 rounded-xl bg-elevated px-5 py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
         >
           <Home size={16} />
           Početna

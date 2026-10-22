@@ -5,104 +5,141 @@
 @layer base {
   :root {
     /* LIGHT THEME (default) */
-    --background: 60 13% 96%;
-    --foreground: 240 10% 10%;
+    --background: 75 18.18% 95.69%;
+    --foreground: 203.08 21.31% 11.96%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 10%;
+    --card-foreground: 203.08 21.31% 11.96%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 10%;
-    --primary: 56.16 100% 49.02%;
-    --brand-text: 56.16 100% 25%;
-    --brand-hover: 56.24 100% 44.9%;
+    --popover-foreground: 203.08 21.31% 11.96%;
+    --primary: 56.4 100% 49.02%;
+    --brand-text: 203.08 21.31% 11.96%;
+    --brand-hover: 56.43 100% 46.08%;
+    --brand-pressed: 55.58 100% 42.55%;
     --brand-soft: 58 100% 90%;
     --brand-soft-border: 56 77% 80%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 10% 10%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 56.16 100% 49.02%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 72% 51%;
+    --primary-foreground: 203.08 21.31% 11.96%;
+    --secondary: 135 11.11% 92.94%;
+    --secondary-foreground: 203.08 21.31% 11.96%;
+    --muted: 135 11.11% 92.94%;
+    --muted-foreground: 194.29 10.77% 38.24%;
+    --accent: 56.4 100% 49.02%;
+    --accent-foreground: 203.08 21.31% 11.96%;
+    --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 56.16 100% 25%;
+    --border: 145.71 10.14% 86.47%;
+    --input: 145.71 10.14% 86.47%;
+    --ring: 188.24 38.93% 25.69%;
     --radius: 0.75rem;
 
     /* semantic surface tokens (light defaults) */
-    --surface-base: 60 13% 96%;
+    --surface-base: 75 18.18% 95.69%;
     --surface-card: 0 0% 100%;
-    --surface-elevated: 240 5% 96%;
-    --surface-hover: 240 5% 92%;
-    --surface-border: 240 5% 90%;
-    --text-primary: 240 10% 10%;
-    --text-secondary: 240 5% 34%;
-    --text-muted: 240 4% 46%;
-    --on-accent: 0 0% 0%;
+    --surface-elevated: 135 11.11% 92.94%;
+    --surface-hover: 140 13.04% 89.8%;
+    --surface-border: 145.71 10.14% 86.47%;
+    --text-primary: 203.08 21.31% 11.96%;
+    --text-secondary: 194.29 10.77% 38.24%;
+    --text-muted: 194.29 10.77% 38.24%;
+    --on-accent: 203.08 21.31% 11.96%;
+    --secondary-accent: 188.24 38.93% 25.69%;
+    --surface-brand-dark: 203.08 21.31% 11.96%;
+    --text-brand-dark-primary: 160 13.04% 95.49%;
+    --text-brand-dark-secondary: 195 13.7% 71.37%;
+    --border-brand-dark: 199.09 17.19% 25.1%;
 
-    /* Semantic state colours. The 400-level Tailwind shades are readable on a
-       dark surface but wash out on white, so each tone gets a per-theme value
-       and components use the .text-tone-* helpers instead of emerald-400 etc. */
-    --tone-positive: 158 64% 32%;
-    --tone-negative: 347 77% 45%;
-    --tone-info: 201 90% 37%;
-    --tone-warn: 32 95% 40%;
+    /* System feedback colors: semantic text and soft surface are paired. */
+    --tone-positive: 155.06 63.64% 23.73%;
+    --tone-positive-bg: 142.5 42.11% 92.55%;
+    --tone-negative: 2.18 50% 43.14%;
+    --tone-negative-bg: 0 61.54% 94.9%;
+    --tone-info: 188.24 38.93% 25.69%;
+    --tone-info-bg: 172.5 21.05% 92.55%;
+    --tone-warn: 39.13 67.65% 26.67%;
+    --tone-warn-bg: 40.5 66.67% 88.24%;
+    --tone-disabled: 194.29 10.77% 38.24%;
+    --tone-disabled-bg: 135 11.11% 92.94%;
+    --on-tone-negative: 0 0% 100%;
 
-    /* Outlined controls (swipe buttons, hint rings) need a border and an icon
-       in the same tone. The bright 400s vanish on white, so light mode uses the
-       darker pair while dark mode keeps the vivid one. */
-    --tone-positive-ring: 158 64% 32%;
-    --tone-negative-ring: 347 77% 45%;
+    /* Trade direction colors are always described from the active car's side. */
+    --trade-owner-bg: 142.5 42.11% 92.55%;
+    --trade-owner-fg: 155.06 63.64% 23.73%;
+    --trade-you-bg: 28.97 100% 94.31%;
+    --trade-you-fg: 26.72 68.79% 33.92%;
+    --trade-even-bg: 200 31.58% 92.55%;
+    --trade-even-fg: 199.53 26.38% 31.96%;
+
+    /* Outlined controls keep an accessible icon and focus tone in light mode. */
+    --tone-positive-ring: 155.06 63.64% 23.73%;
+    --tone-negative-ring: 2.18 50% 43.14%;
   }
 
   .dark {
     /* DARK THEME */
-    --background: 240 10% 3.9%;
-    --foreground: 240 5% 96%;
-    --card: 240 6% 10%;
-    --card-foreground: 240 5% 96%;
-    --popover: 240 6% 10%;
-    --popover-foreground: 240 5% 96%;
-    --primary: 56.16 100% 49.02%;
-    --brand-text: 56.16 100% 49.02%;
-    --brand-hover: 56.24 100% 44.9%;
+    --background: 204 22.73% 8.63%;
+    --foreground: 160 13.04% 95.49%;
+    --card: 202.5 22.86% 13.73%;
+    --card-foreground: 160 13.04% 95.49%;
+    --popover: 202.5 22.86% 13.73%;
+    --popover-foreground: 160 13.04% 95.49%;
+    --primary: 56.4 100% 49.02%;
+    --brand-text: 56.4 100% 49.02%;
+    --brand-hover: 56.43 100% 46.08%;
+    --brand-pressed: 55.58 100% 42.55%;
     --brand-soft: 56 70% 19%;
     --brand-soft-border: 56 70% 30%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 96%;
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 52%;
-    --accent: 56.16 100% 49.02%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 96%;
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 56.16 100% 49.02%;
+    --primary-foreground: 203.08 21.31% 11.96%;
+    --secondary: 202.11 20% 18.63%;
+    --secondary-foreground: 160 13.04% 95.49%;
+    --muted: 202.11 20% 18.63%;
+    --muted-foreground: 195 13.7% 71.37%;
+    --accent: 56.4 100% 49.02%;
+    --accent-foreground: 203.08 21.31% 11.96%;
+    --destructive: 2.18 50% 43.14%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 199.09 17.19% 25.1%;
+    --input: 199.09 17.19% 25.1%;
+    --ring: 56.4 100% 49.02%;
     --radius: 0.75rem;
 
     /* semantic surface tokens (dark defaults) */
-    --surface-base: 240 10% 3.9%;
-    --surface-card: 240 6% 10%;
-    --surface-elevated: 240 4% 16%;
-    --surface-hover: 240 4% 20%;
-    --surface-border: 240 4% 16%;
-    --text-primary: 240 5% 96%;
-    --text-secondary: 240 5% 65%;
-    --text-muted: 240 4% 46%;
-    --on-accent: 0 0% 0%;
+    --surface-base: 204 22.73% 8.63%;
+    --surface-card: 202.5 22.86% 13.73%;
+    --surface-elevated: 202.11 20% 18.63%;
+    --surface-hover: 199.09 17.19% 25.1%;
+    --surface-border: 199.09 17.19% 25.1%;
+    --text-primary: 160 13.04% 95.49%;
+    --text-secondary: 195 13.7% 71.37%;
+    --text-muted: 195 13.7% 71.37%;
+    --on-accent: 203.08 21.31% 11.96%;
+    --secondary-accent: 180 30.65% 75.69%;
+    --surface-brand-dark: 203.08 21.31% 11.96%;
+    --text-brand-dark-primary: 160 13.04% 95.49%;
+    --text-brand-dark-secondary: 195 13.7% 71.37%;
+    --border-brand-dark: 199.09 17.19% 25.1%;
 
-    /* See the light block: these are the readable-on-dark counterparts. */
-    --tone-positive: 158 64% 52%;
-    --tone-negative: 351 95% 71%;
-    --tone-info: 199 89% 64%;
-    --tone-warn: 43 96% 56%;
+    /* Dark feedback colors keep the same meaning with lighter foregrounds. */
+    --tone-positive: 145.95 57.81% 74.9%;
+    --tone-positive-bg: 157.06 41.46% 16.08%;
+    --tone-negative: 3.69 74.71% 82.94%;
+    --tone-negative-bg: 1.94 27.93% 21.76%;
+    --tone-info: 180 30.65% 75.69%;
+    --tone-info-bg: 190 27.27% 17.25%;
+    --tone-warn: 40.71 82.35% 73.33%;
+    --tone-warn-bg: 38.82 39.53% 16.86%;
+    --tone-disabled: 195 13.7% 71.37%;
+    --tone-disabled-bg: 202.11 20% 18.63%;
+    --on-tone-negative: 203.08 21.31% 11.96%;
 
-    /* See the light block: outlined controls keep the vivid shade here. */
-    --tone-positive-ring: 158 64% 52%;
-    --tone-negative-ring: 351 95% 71%;
+    --trade-owner-bg: 157.06 41.46% 16.08%;
+    --trade-owner-fg: 145.95 57.81% 74.9%;
+    --trade-you-bg: 26.67 42.86% 20.59%;
+    --trade-you-fg: 28.67 100% 82.35%;
+    --trade-even-bg: 201.43 26.42% 20.78%;
+    --trade-even-fg: 199.57 57.5% 84.31%;
+
+    /* See the light block: outlined controls keep the readable dark variant. */
+    --tone-positive-ring: 145.95 57.81% 74.9%;
+    --tone-negative-ring: 3.69 74.71% 82.94%;
   }
 
   * {
@@ -112,6 +149,11 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
@@ -216,6 +258,35 @@
   .text-tone-warn {
     color: hsl(var(--tone-warn));
   }
+  .bg-tone-positive-surface { background-color: hsl(var(--tone-positive-bg)); }
+  .bg-tone-negative-surface { background-color: hsl(var(--tone-negative-bg)); }
+  .bg-tone-info-surface { background-color: hsl(var(--tone-info-bg)); }
+  .bg-tone-warn-surface { background-color: hsl(var(--tone-warn-bg)); }
+  .bg-tone-disabled-surface { background-color: hsl(var(--tone-disabled-bg)); }
+  .bg-tone-positive { background-color: hsl(var(--tone-positive)); }
+  .bg-tone-negative { background-color: hsl(var(--tone-negative)); }
+  .bg-tone-info { background-color: hsl(var(--tone-info)); }
+  .bg-tone-warn { background-color: hsl(var(--tone-warn)); }
+  .text-tone-disabled { color: hsl(var(--tone-disabled)); }
+  .text-on-tone-negative { color: hsl(var(--on-tone-negative)); }
+  .border-tone-positive-surface { border-color: hsl(var(--tone-positive) / 0.28); }
+  .border-tone-negative-surface { border-color: hsl(var(--tone-negative) / 0.28); }
+  .border-tone-info-surface { border-color: hsl(var(--tone-info) / 0.28); }
+  .border-tone-warn-surface { border-color: hsl(var(--tone-warn) / 0.28); }
+  .text-secondary-accent { color: hsl(var(--secondary-accent)); }
+  .bg-brand-dark { background-color: hsl(var(--surface-brand-dark)); }
+  .text-brand-dark-primary { color: hsl(var(--text-brand-dark-primary)); }
+  .text-brand-dark-secondary { color: hsl(var(--text-brand-dark-secondary)); }
+  .border-brand-dark { border-color: hsl(var(--border-brand-dark)); }
+  .bg-trade-owner { background-color: hsl(var(--trade-owner-bg)); }
+  .text-trade-owner { color: hsl(var(--trade-owner-fg)); }
+  .border-trade-owner { border-color: hsl(var(--trade-owner-fg) / 0.28); }
+  .bg-trade-you { background-color: hsl(var(--trade-you-bg)); }
+  .text-trade-you { color: hsl(var(--trade-you-fg)); }
+  .border-trade-you { border-color: hsl(var(--trade-you-fg) / 0.28); }
+  .bg-trade-even { background-color: hsl(var(--trade-even-bg)); }
+  .text-trade-even { color: hsl(var(--trade-even-fg)); }
+  .border-trade-even { border-color: hsl(var(--trade-even-fg) / 0.28); }
   /* Outlined controls: the icon and its ring share one tone, so they can never
      disagree, and both stay visible on a light surface. */
   .text-tone-positive-ring {
@@ -266,8 +337,8 @@
     background-color: hsl(var(--surface-base));
   }
   .dark .app-page-header {
-    border-color: hsl(240 4% 16%);
-    background-color: hsl(240 10% 3.9%);
+    border-color: hsl(var(--surface-border));
+    background-color: hsl(var(--surface-base));
   }
 }
 
@@ -292,6 +363,7 @@
 
 .btn-primary:active:not(:disabled) {
   transform: scale(0.98);
+  background-color: hsl(var(--brand-pressed));
 }
 
 .btn-primary:disabled {
@@ -329,7 +401,7 @@
 
 ::selection {
   background-color: rgb(250 235 0 / 0.4);
-  color: #625900;
+  color: hsl(var(--on-accent));
 }
 
 button, a {

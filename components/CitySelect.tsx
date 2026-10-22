@@ -84,7 +84,7 @@ export function CitySelect({ value, onChange, className, invalid, required, id }
             }
           }}
           placeholder="Pretraži grad ili naselje"
-          className={`${className ?? ''} pl-10 pr-10 ${invalid ? 'border-rose-500/70 focus:border-rose-500' : ''}`}
+          className={`${className ?? ''} pl-10 pr-10 ${invalid ? 'border-tone-negative focus:border-tone-negative focus:ring-ring/15' : ''}`}
         />
         <ChevronDown size={15} className={`pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-app-muted transition-transform ${open ? 'rotate-180' : ''}`} />
       </div>
@@ -93,7 +93,7 @@ export function CitySelect({ value, onChange, className, invalid, required, id }
         <div
           id={id ? `${id}-options` : undefined}
           role="listbox"
-          className="absolute inset-x-0 top-full z-[90] mt-1 max-h-64 overflow-y-auto rounded-xl border border-surface bg-card-surface p-1 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+          className="absolute inset-x-0 top-full z-[90] mt-1 max-h-64 overflow-y-auto rounded-xl border border-surface bg-card-surface p-1 shadow-xl dark:border-surface dark:bg-card-surface"
         >
           {options.length ? options.map((place) => (
             <button
@@ -103,7 +103,7 @@ export function CitySelect({ value, onChange, className, invalid, required, id }
               aria-selected={selected?.id === place.id}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => choose(place)}
-              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-app-primary transition-colors hover:bg-elevated dark:text-zinc-100 dark:hover:bg-zinc-800"
+              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-app-primary transition-colors hover:bg-elevated dark:text-app-primary dark:hover:bg-elevated"
             >
               <MapPin size={14} className="flex-shrink-0 text-brand-text" />
               <span className="min-w-0 flex-1 truncate">{place.name}</span>
@@ -112,7 +112,7 @@ export function CitySelect({ value, onChange, className, invalid, required, id }
           )) : (
             <p className="px-3 py-3 text-xs text-app-muted">Nema naselja za ovaj unos.</p>
           )}
-          <div className="border-t border-surface px-2.5 py-1.5 text-[10px] text-app-muted dark:border-zinc-800">
+          <div className="border-t border-surface px-2.5 py-1.5 text-[10px] text-app-muted dark:border-surface">
             Podaci i koordinate: <a href="https://www.geonames.org/" target="_blank" rel="noreferrer" className="underline underline-offset-2">GeoNames</a>
           </div>
         </div>

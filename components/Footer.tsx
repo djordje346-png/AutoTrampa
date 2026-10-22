@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 function Badge({ count, desktop = false }: { count: number; desktop?: boolean }) {
   if (count <= 0) return null;
   return (
-    <span className={`absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ${desktop ? 'ring-zinc-900' : 'ring-[hsl(var(--surface-card))]'}`}>
+    <span className={`absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ${desktop ? 'ring-[hsl(var(--surface-brand-dark))]' : 'ring-[hsl(var(--surface-card))]'}`}>
       {count > 9 ? '9+' : count}
     </span>
   );
@@ -43,10 +43,10 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
     <>
       <nav
         aria-label="Glavna navigacija"
-        className={`sticky top-0 z-40 hidden border-b border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
+        className={`sticky top-0 z-40 hidden border-b border-brand-dark bg-brand-dark text-brand-dark-primary shadow-sm ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
       >
         <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-8">
-          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-white">
+          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-brand-dark-primary">
             <BrandLockup />
           </Link>
           <div className="flex items-center justify-end gap-0 xl:gap-1">
@@ -59,7 +59,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
                   href={href}
                   aria-current={active ? 'page' : undefined}
                   className={`relative flex items-center gap-2 rounded-lg px-1.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 xl:px-3 xl:text-sm ${
-                    active ? 'bg-white/10 text-brand-500' : 'text-zinc-300 hover:bg-white/10 hover:text-white'
+                    active ? 'bg-white/10 text-brand-500' : 'text-brand-dark-secondary hover:bg-white/10 hover:text-brand-dark-primary'
                   }`}
                 >
                   <span className="relative flex">
@@ -74,7 +74,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
               href="/profile"
               aria-label="Profil"
               aria-current={pathname === '/profile' ? 'page' : undefined}
-              className={`ml-2 flex h-10 w-10 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'text-brand-500' : 'text-zinc-200 hover:text-brand-500'}`}
+              className={`ml-2 flex h-10 w-10 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'text-brand-500' : 'text-brand-dark-primary hover:text-brand-500'}`}
             >
               <User size={19} />
             </Link>

@@ -18,8 +18,8 @@ export function SignedOut({ title, description, reason }: SignedOutProps) {
       <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-elevated">
         <LockKeyhole size={32} className="text-app-muted" />
       </div>
-      <h2 className="text-base font-bold text-app-primary dark:text-zinc-100">{title}</h2>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-zinc-400">{description}</p>
+      <h2 className="text-base font-bold text-app-primary dark:text-app-primary">{title}</h2>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-app-secondary dark:text-app-secondary">{description}</p>
 
       <button
         onClick={() => openAuthPrompt(reason)}
@@ -48,7 +48,7 @@ export function SignedOutPage({
     <div className="flex flex-col">
       <header className="app-page-header safe-top">
         <div className="app-container py-4">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">{heading}</h1>
+          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">{heading}</h1>
         </div>
       </header>
       <SignedOut {...props} />

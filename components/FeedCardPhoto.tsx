@@ -37,8 +37,8 @@ export function FeedCardPhoto({ car }: FeedCardPhotoProps) {
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out desktop:group-hover/card:scale-[1.025]"
         />
       ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-zinc-100 via-zinc-200 to-zinc-100 text-zinc-500 dark:from-zinc-800 dark:via-zinc-900 dark:to-zinc-800">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/80 text-zinc-700 shadow-sm dark:bg-zinc-800 dark:text-zinc-200">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-elevated via-app to-elevated text-app-muted dark:from-elevated dark:via-app dark:to-elevated">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/80 text-app-secondary shadow-sm dark:bg-elevated dark:text-app-secondary">
             {image ? <ImageOff size={21} aria-hidden="true" /> : <CarFront size={23} aria-hidden="true" />}
           </span>
           <span className="text-xs font-medium">{image ? 'Fotografija nije dostupna' : 'Vozilo bez fotografije'}</span>

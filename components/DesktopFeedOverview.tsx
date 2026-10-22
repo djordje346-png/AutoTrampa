@@ -80,9 +80,9 @@ export function DesktopFeedOverview({
   const estimatedValue = selectedCar.estimatedValue || selectedCar.price;
 
   return (
-    <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-zinc-800 dark:bg-zinc-900 desktop:grid-cols-[minmax(0,1.25fr)_minmax(0,.75fr)_minmax(0,1fr)_minmax(190px,.8fr)]">
+    <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface desktop:grid-cols-[minmax(0,1.25fr)_minmax(0,.75fr)_minmax(0,1fr)_minmax(190px,.8fr)]">
       <div className={`${SEGMENT} relative min-w-0`} ref={carPickerRef}>
-        <p className="mb-1.5 text-xs font-semibold text-app-secondary dark:text-zinc-400">Tvoj auto za zamenu</p>
+        <p className="mb-1.5 text-xs font-semibold text-app-secondary dark:text-app-secondary">Tvoj auto za zamenu</p>
         <button
           type="button"
           onClick={() => setCarPickerOpen((open) => !open)}
@@ -90,7 +90,7 @@ export function DesktopFeedOverview({
           aria-label={`Izabrano vozilo: ${selectedCar.brand} ${selectedCar.model}. Promeni vozilo`}
           className="flex w-full min-w-0 items-center gap-3 rounded-xl p-0 text-left transition-opacity hover:opacity-80"
         >
-          <span className="h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-zinc-950">
+          <span className="h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-app">
             {selectedCar.image ? (
               <img src={selectedCar.image} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -98,10 +98,10 @@ export function DesktopFeedOverview({
             )}
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-bold text-app-primary dark:text-zinc-100">
+            <span className="block truncate text-sm font-bold text-app-primary dark:text-app-primary">
               {selectedCar.brand} {selectedCar.model} {displayValue(selectedCar.generation)}
             </span>
-            <span className="mt-1 block truncate text-xs text-app-secondary dark:text-zinc-400">
+            <span className="mt-1 block truncate text-xs text-app-secondary dark:text-app-secondary">
               {formatYear(selectedCar.year)} · {fuelLabel(selectedCar.specs.fuelType)} · {formatKm(selectedCar.mileage)}
             </span>
           </span>
@@ -109,8 +109,8 @@ export function DesktopFeedOverview({
         </button>
 
         {carPickerOpen && (
-          <div className="absolute left-4 right-4 top-full z-50 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-surface bg-card-surface p-2 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:left-5 sm:right-5 desktop:left-6 desktop:right-6">
-            <p className="px-2 pb-1 pt-1 text-xs font-semibold text-app-secondary dark:text-zinc-400">Moja vozila</p>
+          <div className="absolute left-4 right-4 top-full z-50 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-surface bg-card-surface p-2 shadow-xl dark:border-surface dark:bg-card-surface sm:left-5 sm:right-5 desktop:left-6 desktop:right-6">
+            <p className="px-2 pb-1 pt-1 text-xs font-semibold text-app-secondary dark:text-app-secondary">Moja vozila</p>
             {cars.map((car) => {
               const active = car.id === selectedId;
               return (
@@ -121,13 +121,13 @@ export function DesktopFeedOverview({
                     selectCar(car.id);
                     setCarPickerOpen(false);
                   }}
-                  className={`flex w-full min-w-0 items-center gap-2.5 rounded-xl p-2 text-left transition-colors ${active ? 'bg-brand-500/10' : 'hover:bg-elevated dark:hover:bg-zinc-800'}`}
+                  className={`flex w-full min-w-0 items-center gap-2.5 rounded-xl p-2 text-left transition-colors ${active ? 'bg-brand-500/10' : 'hover:bg-elevated dark:hover:bg-elevated'}`}
                 >
-                  <span className="h-10 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-zinc-950">
+                  <span className="h-10 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-elevated dark:bg-app">
                     {car.image && <img src={car.image} alt="" className="h-full w-full object-cover" />}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-semibold text-app-primary dark:text-zinc-100">
+                    <span className="block truncate text-xs font-semibold text-app-primary dark:text-app-primary">
                       {car.brand} {car.model} {displayValue(car.generation)}
                     </span>
                     <span className="mt-0.5 block text-[11px] text-app-muted">{formatYear(car.year)} · {formatEuro(car.price)}</span>
@@ -143,7 +143,7 @@ export function DesktopFeedOverview({
                   setCarPickerOpen(false);
                   onAddCar();
                 }}
-                className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-surface px-3 py-2.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/5 dark:border-zinc-800"
+                className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-surface px-3 py-2.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/5 dark:border-surface"
               >
                 <Plus size={15} /> Dodaj auto
               </button>
@@ -152,19 +152,19 @@ export function DesktopFeedOverview({
         )}
       </div>
 
-      <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-zinc-700 desktop:block" />
-        <p className="text-xs font-medium text-app-secondary dark:text-zinc-400">Vrednost mog auta</p>
-        <p className="mt-1 truncate text-xl font-bold tracking-tight text-app-primary dark:text-zinc-100">{formatEuro(estimatedValue)}</p>
+      <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-surface-border desktop:block" />
+        <p className="text-xs font-medium text-app-secondary dark:text-app-secondary">Vrednost mog auta</p>
+        <p className="mt-1 truncate text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(estimatedValue)}</p>
         <p className="mt-1 text-[11px] text-app-muted">Vrednost iz oglasa</p>
       </div>
 
-      <div className={`${SEGMENT} relative z-30 flex min-w-0 flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-zinc-700 desktop:block" />
+      <div className={`${SEGMENT} relative z-30 flex min-w-0 flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-surface-border desktop:block" />
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-xs font-medium text-app-secondary dark:text-zinc-400">Budžet za doplatu</p>
-            <p className="mt-1 truncate text-lg font-bold tracking-tight text-app-primary dark:text-zinc-100">
+            <p className="text-xs font-medium text-app-secondary dark:text-app-secondary">Budžet za doplatu</p>
+            <p className="mt-1 truncate text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">
               {!preferencesReady
                 ? 'Učitavanje…'
                 : preferences.noTopUp
@@ -180,7 +180,7 @@ export function DesktopFeedOverview({
               onClick={() => setBudgetEditorOpen((open) => !open)}
               aria-label={budgetEditorOpen ? 'Zatvori izmenu budžeta' : 'Izmeni budžet za doplatu'}
               aria-expanded={budgetEditorOpen}
-              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-brand-text dark:hover:bg-zinc-950"
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-brand-text dark:hover:bg-brand-dark"
             >
               <Pencil size={14} />
             </button>
@@ -188,8 +188,8 @@ export function DesktopFeedOverview({
         </div>
         <p className="mt-1 text-[11px] leading-relaxed text-app-muted">Koristi se za preporuke</p>
         {budgetEditorOpen && (
-          <form onSubmit={saveBudget} className="absolute left-3 right-3 top-[calc(100%-0.25rem)] z-40 rounded-xl border border-surface bg-card-surface p-3 shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
-            <label htmlFor="desktop-budget-input" className="mb-2 block text-[11px] font-semibold text-app-secondary dark:text-zinc-300">Budžet za doplatu</label>
+          <form onSubmit={saveBudget} className="absolute left-3 right-3 top-[calc(100%-0.25rem)] z-40 rounded-xl border border-surface bg-card-surface p-3 shadow-xl dark:border-surface dark:bg-card-surface">
+            <label htmlFor="desktop-budget-input" className="mb-2 block text-[11px] font-semibold text-app-secondary dark:text-app-secondary">Budžet za doplatu</label>
             <div className="flex items-center gap-2">
               <input
                 id="desktop-budget-input"
@@ -202,9 +202,9 @@ export function DesktopFeedOverview({
                 onChange={(event) => setBudgetDraft(event.target.value)}
                 placeholder="Iznos u €"
                 aria-label="Budžet za doplatu u evrima"
-                className="h-9 min-w-0 flex-1 rounded-lg border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+                className="h-9 min-w-0 flex-1 rounded-lg border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-surface dark:bg-app dark:text-app-primary"
               />
-              <button type="submit" aria-label="Sačuvaj budžet" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-500 text-black transition-colors hover:bg-brand-400">
+              <button type="submit" aria-label="Sačuvaj budžet" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-500 text-on-accent transition-colors hover:bg-brand-600">
                 <Check size={16} />
               </button>
             </div>
@@ -212,12 +212,12 @@ export function DesktopFeedOverview({
         )}
       </div>
 
-      <div className={`${SEGMENT} relative flex flex-col justify-center border-t border-surface dark:border-zinc-800 desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-zinc-700 desktop:block" />
+      <div className={`${SEGMENT} relative flex flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
+        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-surface-border desktop:block" />
         <button
           type="button"
           onClick={onOpenSwipe}
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-zinc-950 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-zinc-800 hover:shadow-md dark:bg-brand-500 dark:text-black dark:hover:bg-brand-400"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-dark px-4 py-3 text-sm font-semibold text-brand-dark-primary transition-all duration-200 hover:bg-brand-dark/90 hover:shadow-md"
         >
           <Sparkles size={17} />
           Smart Match
