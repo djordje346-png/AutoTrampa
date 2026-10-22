@@ -11,50 +11,72 @@ import AuthScreen from '@/components/AuthScreen';
  */
 export default function AuthOverlay() {
   const { promptReason, promptInitialTab, closePrompt } = useAuth();
-  const panelRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const previous = document.body.style.overflow;
+    const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = 'hidden';
-    panelRef.current?.focus();
+    dialogRef.current?.focus();
 
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') closePrompt();
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        closePrompt();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+
+      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ));
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) {
+        event.preventDefault();
+        dialog.focus();
+      } else if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
-    document.addEventListener('keydown', onKey);
 
+    document.addEventListener('keydown', onKeyDown);
     return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = previous;
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected) previousFocus.focus();
     };
   }, [closePrompt]);
 
   return (
     <div
-      ref={panelRef}
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
-      aria-label="Prijava"
+      aria-labelledby="auth-dialog-title"
       tabIndex={-1}
-      className="fixed inset-0 z-[100] overflow-y-auto bg-app dark:bg-zinc-950 outline-none"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overscroll-contain bg-zinc-950/60 px-3 py-4 backdrop-blur-sm outline-none sm:px-6 sm:py-6"
+      style={{
+        paddingTop: 'max(1rem, env(safe-area-inset-top))',
+        paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
+      }}
     >
-      <button
-        onClick={closePrompt}
-        aria-label="Zatvori prijavu"
-        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-surface dark:border-zinc-800 bg-elevated text-app-secondary transition-colors hover:text-app-primary safe-top"
-      >
-        <X size={18} />
-      </button>
-
-      <div className="mx-auto w-full max-w-md">
-        {promptReason ? (
-          <div className="px-6 pt-16">
-            <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-center text-sm font-semibold text-brand-text">
-              {promptReason}
-            </div>
-          </div>
-        ) : null}
-        <AuthScreen compact={Boolean(promptReason)} initialTab={promptInitialTab} />
+      <div className="relative mx-auto w-full max-w-[460px]">
+        <button
+          type="button"
+          onClick={closePrompt}
+          aria-label="Zatvori prijavu"
+          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 shadow-sm transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:hover:text-white"
+        >
+          <X size={18} aria-hidden="true" />
+        </button>
+        <AuthScreen initialTab={promptInitialTab} contextReason={promptReason} />
       </div>
     </div>
   );
