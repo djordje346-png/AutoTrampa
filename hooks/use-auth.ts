@@ -71,7 +71,7 @@ function initializeAuth() {
 }
 
 export function useAuth() {
-  const [auth, authStoreReady] = usePersistentStore(authStore);
+  const [auth] = usePersistentStore(authStore);
   const [prompt] = usePersistentStore(promptStore);
 
   useEffect(() => {
@@ -170,7 +170,11 @@ export function useAuth() {
     user: auth.user,
     userId: auth.user?.id ?? null,
     isLoggedIn: Boolean(auth.user),
-    mounted: authStoreReady && auth.ready,
+    // `auth.ready` is shared across the app. `usePersistentStore`'s local
+    // ready flag resets whenever a route mounts a new subscriber, which made
+    // an already-authenticated user see the full-page loader on every return
+    // to the home route.
+    mounted: auth.ready,
     error: auth.error,
     signIn,
     signInWithGoogle,
