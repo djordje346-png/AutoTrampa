@@ -5,47 +5,78 @@ interface BodyTypeSilhouetteProps {
   className?: string;
 }
 
-/** Original, shared-stroke side profiles sized for the body-type selector. */
-export function BodyTypeSilhouette({ type, className = '' }: BodyTypeSilhouetteProps) {
-  const bodyPaths: Record<BodyType, string> = {
-    Sedan: 'M8 34l3-8 13-3 11-11c3-3 7-5 12-5h19c6 0 10 2 14 6l8 10 12 3 3 8v7H8z',
-    Caravan: 'M8 34l3-8 13-3 11-11c3-3 7-5 12-5h31l12 15 10 3 3 8v7H8z',
-    SUV: 'M8 34l3-10 13-3 8-13c2-4 6-6 12-6h27c6 0 10 2 14 7l8 12 9 3 3 10v7H8z',
-    Coupe: 'M8 34l3-8 13-3 14-13c4-4 9-6 15-6h11c8 0 13 3 18 9l7 10 9 3 3 8v7H8z',
-    Convertible: 'M8 34l3-8 13-3 11-5 7-10h6l-3 10h29l13 5 9 3 3 8v7H8z',
-    Hatchback: 'M8 34l3-8 13-3 10-12c3-3 7-5 12-5h19c6 0 10 2 14 6l8 11 9 3 3 8v7H8z',
-    MPV: 'M8 34l3-8 12-3 6-16c1-4 5-6 10-6h36c6 0 9 2 11 7l6 15 9 3 3 8v7H8z',
-    Pickup: 'M8 34l3-8 13-3 9-14c2-4 6-6 11-6h15v26h6V12h20v12l11 3 3 7v7H8z',
-    Van: 'M8 34l3-8 12-3 4-17c1-4 4-6 9-6h42c5 0 8 2 10 7l6 16 7 3 3 8v7H8z',
-  };
+// Low, side-on outlines share the same wheelbase, baseline and line weight.
+// Open wheel centres inherit the selected card's background in either theme.
+const PROFILES: Record<BodyType, { body: string; windows?: string; details?: string }> = {
+  Sedan: {
+    body: 'M24 48H14q-4 0-4-4l-1-6q1-5 9-7l31-6q14-11 29-12h20q14 1 29 12l19 4 1 5 4 1v9q-1 4-11 4M118 48H46',
+    windows: 'M55 25l12-7q5-2 12-2h18q10 1 21 9ZM85 16v9m17-8 5 8',
+    details: 'M10 38h7m128-4h5',
+  },
+  Caravan: {
+    body: 'M24 48H14q-4 0-4-4l-1-6q1-5 9-7l31-6 14-12q5-3 13-3h49q4 0 7 4l12 15 5 3 2 12q-1 4-11 4M118 48H46',
+    windows: 'M55 25l12-10q4-2 10-2h46l12 13ZM85 13v13m27-13v13',
+    details: 'M10 38h7m128-8-2 6',
+  },
+  SUV: {
+    body: 'M24 48H14q-5 0-5-5v-9q1-5 10-7l27-4 15-12q3-3 11-3h52q5 0 7 5l8 14 8 4 3 7v7q-2 3-10 3M118 48H46',
+    windows: 'M52 24l13-11q3-2 8-2h49l9 15-79-2ZM85 11v15m26-15v15',
+    details: 'M9 36h8m129-5-1 7M69 7h49',
+  },
+  Coupe: {
+    body: 'M24 48H14q-4 0-4-4l-1-6q1-5 9-7l31-5q17-13 34-13h11q15 1 33 14l19 4 2 5 3 1v7q-1 4-11 4M118 48H46',
+    windows: 'M56 26q15-10 28-10h9q13 1 27 10ZM88 16l-2 10',
+    details: 'M10 38h7m129-3h4',
+  },
+  Convertible: {
+    body: 'M24 48H14q-4 0-4-4l-1-6q1-5 9-7l30-3 24-14 3 3-18 12h59l11-3 19 5 2 5 3 1v7q-1 4-11 4M118 48H46',
+    details: 'M91 29l1-6q2-3 5 0l1 6m18-2 1-5q2-3 5 0l1 4M10 38h7m129-3h4',
+  },
+  Hatchback: {
+    body: 'M24 48H14q-4 0-4-4l-1-6q1-5 9-7l31-6 14-12q5-3 13-3h37q10 0 15 5l12 14 6 5 3 10q-1 4-9 4M118 48H46',
+    windows: 'M55 25l12-10q4-2 10-2h35q7 0 11 5l6 8-74-1ZM85 13v13m24-13 4 13',
+    details: 'M10 38h7m122-9-2 6',
+  },
+  MPV: {
+    body: 'M24 48H14q-5 0-5-5v-8q1-5 10-7l22-3L59 8q3-3 11-3h47q7 0 10 7l12 18 9 4 3 10q-1 4-11 4M118 48H46',
+    windows: 'M47 26L63 11q2-2 8-2h44q5 0 7 5l8 14-83-2ZM83 9v18m25-18v19',
+    details: 'M10 37h7m128-3-1 5',
+  },
+  Pickup: {
+    body: 'M24 48H14q-5 0-5-5v-8q1-5 10-7l26-3 14-13q3-3 10-3h25q6 0 8 7l4 13h43v15q-1 4-9 4M118 48H46',
+    windows: 'M51 26l13-12q2-2 6-2h22q4 0 5 5l3 12-49-3ZM81 12v16',
+    details: 'M105 30v13m2-19h42M9 37h8m129-7v7',
+  },
+  Van: {
+    body: 'M24 48H14q-5 0-5-5v-8l10-7L38 8q3-3 10-3h92q6 0 7 7l4 31q0 5-11 5M118 48H46',
+    windows: 'M25 28l17-17q2-2 7-2h16v20l-40-1Z',
+    details: 'M74 10v32m64-32 4 27M10 37h7',
+  },
+};
 
-  const windowPaths: Record<BodyType, string> = {
-    Sedan: 'M28 23l9-10c2-2 5-4 9-4h10v14zm32 0V9h7c4 0 7 2 10 5l6 9z',
-    Caravan: 'M28 23l9-10c2-2 5-4 9-4h10v14zm32 0V9h11c4 0 7 2 10 5l7 9z',
-    SUV: 'M28 23l8-13c2-3 5-4 9-4h11v17zm33 0V6h8c4 0 7 2 10 6l7 11z',
-    Coupe: 'M29 23l12-11c3-3 7-5 12-5h8v16zm36 0V7c6 1 10 4 14 9l5 7z',
-    Convertible: 'M30 23l10-4 7-9h4l-3 9h26l8 4z',
-    Hatchback: 'M28 23l9-11c2-3 6-4 10-4h10v15zm33 0V8h7c4 0 7 2 10 5l7 10z',
-    MPV: 'M27 23l5-14c1-3 4-5 8-5h13v19zm32 0V4h11c4 0 6 2 8 6l6 13z',
-    Pickup: 'M29 23l7-12c2-4 5-5 10-5h10v17zm34 0V14h12v9z',
-    Van: 'M27 23l4-15c1-3 3-4 7-4h12v19zm31 0V4h10c4 0 6 2 7 5l5 14z',
-  };
+export function BodyTypeSilhouette({ type, className = '' }: BodyTypeSilhouetteProps) {
+  const profile = PROFILES[type];
 
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 112 52"
+      focusable="false"
+      viewBox="0 0 168 64"
+      width="168"
+      height="64"
       className={className}
       fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d={bodyPaths[type]} stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d={windowPaths[type]} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M8 34h96" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="27" cy="40" r="7" fill="currentColor" />
-      <circle cx="27" cy="40" r="3.2" fill="hsl(var(--surface-card))" />
-      <circle cx="86" cy="40" r="7" fill="currentColor" />
-      <circle cx="86" cy="40" r="3.2" fill="hsl(var(--surface-card))" />
+      <path d={profile.body} />
+      {profile.windows && <path d={profile.windows} />}
+      {profile.details && <path d={profile.details} />}
+      <circle cx="35" cy="48" r="11" />
+      <circle cx="129" cy="48" r="11" />
     </svg>
   );
 }

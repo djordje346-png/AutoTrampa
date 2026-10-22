@@ -559,12 +559,12 @@ function CarFormFields({
       {/* KAROSERIJA */}
       <section className="border-t border-surface pt-4 dark:border-surface lg:pt-3">
 
-        <div className="mb-4">
+        <div className="mb-2.5">
           <h2 id="car-body-type-label" className="text-base font-semibold text-app-primary dark:text-app-primary">
             Tip karoserije *
           </h2>
 
-          <p className="mt-1 text-xs text-app-muted">
+          <p className="mt-0.5 text-xs text-app-muted">
             Izaberite tip karoserije vozila.
           </p>
         </div>

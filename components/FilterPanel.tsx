@@ -7,6 +7,7 @@ import { bodyLabel, fuelLabel } from '@/lib/labels';
 import { type BodyType, type FuelType } from '@/types';
 import { BODY_TYPES } from '@/lib/body-types';
 import { countActiveFilters, type SearchFilters } from '@/hooks/use-search-prefs';
+import { BodyTypePicker } from '@/components/BodyTypePicker';
 
 /**
  * The app's filter UI, defined once and rendered two ways: a sticky column on
@@ -96,7 +97,27 @@ export function DesktopCompactFilterGroups({
             <span className="min-w-0 flex-1"><span className="block text-[11px] font-semibold text-app-primary dark:text-app-primary">{label}</span><span className="block truncate text-[11px] text-app-muted">{value}</span></span>
             <ChevronDown size={13} className={`flex-shrink-0 text-app-muted transition-transform ${open === id ? 'rotate-180' : ''}`} />
           </button>
-          {open === id && <div className="absolute left-8 right-0 top-full z-20 max-h-48 overflow-y-auto rounded-lg border border-surface bg-card-surface p-1 shadow-lg dark:border-surface dark:bg-card-surface">{options.map((option) => <button type="button" key={option.value ?? 'all'} onClick={() => { select(option.value); setOpen(null); }} className="block w-full truncate rounded-md px-2 py-1.5 text-left text-[11px] text-app-secondary hover:bg-elevated hover:text-app-primary dark:text-app-secondary dark:hover:bg-elevated">{option.label}</button>)}</div>}
+          {open === id && (id === 'body' ? (
+            <div className="absolute left-0 right-0 top-full z-20 max-h-[min(22rem,60vh)] overflow-y-auto rounded-xl border border-surface bg-card-surface p-2 shadow-lg">
+              <button
+                type="button"
+                onClick={() => { select(null); setOpen(null); }}
+                aria-pressed={filters.bodyType === null}
+                className={`mb-2 flex h-8 w-full items-center justify-center rounded-lg border px-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${filters.bodyType === null ? 'border-brand-500 bg-brand-500/10 text-app-primary' : 'border-surface text-app-secondary hover:bg-elevated'}`}
+              >
+                Sve karoserije
+              </button>
+              <BodyTypePicker
+                value={filters.bodyType ?? ''}
+                onChange={(type) => { select(type); setOpen(null); }}
+                variant="compact"
+                required={false}
+                ariaLabel="Karoserija"
+              />
+            </div>
+          ) : (
+            <div className="absolute left-8 right-0 top-full z-20 max-h-48 overflow-y-auto rounded-lg border border-surface bg-card-surface p-1 shadow-lg dark:border-surface dark:bg-card-surface">{options.map((option) => <button type="button" key={option.value ?? 'all'} onClick={() => { select(option.value); setOpen(null); }} className="block w-full truncate rounded-md px-2 py-1.5 text-left text-[11px] text-app-secondary hover:bg-elevated hover:text-app-primary dark:text-app-secondary dark:hover:bg-elevated">{option.label}</button>)}</div>
+          ))}
         </div>
       ))}
       {range('Cena (€)', filters.priceMin, filters.priceMax, 'price', Tag)}
@@ -160,16 +181,14 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
 
       <section>
         <p className={GROUP_TITLE}>Karoserija</p>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {BODY_TYPES.map(({ value: type, label }) => (
-            <button
-              key={type}
-              onClick={() => update({ bodyType: filters.bodyType === type ? null : type })}
-              className={`${CHIP_BASE} ${filters.bodyType === type ? CHIP_ON : CHIP_OFF}`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="mt-2">
+          <BodyTypePicker
+            value={filters.bodyType ?? ''}
+            onChange={(type) => update({ bodyType: filters.bodyType === type ? null : type })}
+            variant="filter"
+            required={false}
+            ariaLabel="Karoserija"
+          />
         </div>
       </section>
 
