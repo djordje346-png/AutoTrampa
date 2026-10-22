@@ -336,6 +336,11 @@
     border-bottom: 1px solid hsl(var(--surface-border));
     background-color: hsl(var(--surface-base));
   }
+  @media (min-width: 1024px) {
+    .app-page-header {
+      top: 4rem;
+    }
+  }
   .dark .app-page-header {
     border-color: hsl(var(--surface-border));
     background-color: hsl(var(--surface-base));

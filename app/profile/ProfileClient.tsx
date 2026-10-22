@@ -312,7 +312,7 @@ export default function ProfileClient() {
                     onClick={() => toggleBodyPref(type)}
                     disabled={!preferencesReady}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                      active ? 'bg-brand-500 border-brand-500 text-app-primary' : 'bg-elevated border-surface dark:border-surface text-app-secondary dark:text-app-secondary hover:border-brand-500/40'
+                      active ? 'bg-brand-500 border-brand-500 text-on-accent' : 'bg-elevated border-surface dark:border-surface text-app-secondary dark:text-app-secondary hover:border-brand-500/40'
                     }`}
                   >
                     {bodyLabel(type)}

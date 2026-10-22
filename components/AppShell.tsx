@@ -19,6 +19,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { promptOpen, isLoggedIn, requireAuth } = useAuth();
   const isPublicLanding = pathname === '/' && !isLoggedIn;
   const isPublicSearch = pathname === '/search' && !isLoggedIn;
+  const hasDesktopAppNavigation = !isPublicLanding && !isPublicSearch;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-app text-app-primary dark:bg-app dark:text-app-primary">
@@ -39,7 +40,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           />
         </div>
       )}
-      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : 'pb-28 md:pb-24 lg:pb-8'}`}>
+      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? 'lg:pt-16' : ''}`}>
         {children}
       </main>
 

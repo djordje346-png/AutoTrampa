@@ -352,6 +352,19 @@ function AuthenticatedFeed({
     return () => window.removeEventListener('keydown', handleSwipeKeyDown);
   }, [viewMode, swipeCar, offerCar, showAddForm, filtersOpen, selectorOpen]);
 
+  if (!mounted) {
+    return (
+      <div className="app-container py-6" role="status" aria-label="Učitavam garažu">
+        <div className="h-24 animate-pulse rounded-2xl border border-surface bg-card-surface desktop:h-32" />
+        <div className="mt-4 grid grid-cols-1 gap-4 desktop:grid-cols-3">
+          {[0, 1, 2].map((item) => (
+            <div key={item} className="aspect-[16/10] animate-pulse rounded-2xl border border-surface bg-card-surface" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col">
       {/* Header */}

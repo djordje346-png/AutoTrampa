@@ -16,10 +16,10 @@ const NAV_ITEMS = [
   { href: '/profile', label: 'Profil', icon: User },
 ] as const;
 
-function Badge({ count, desktop = false }: { count: number; desktop?: boolean }) {
+function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <span className={`absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ${desktop ? 'ring-[hsl(var(--surface-brand-dark))]' : 'ring-[hsl(var(--surface-card))]'}`}>
+    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ring-[hsl(var(--surface-brand-dark))]">
       {count > 9 ? '9+' : count}
     </span>
   );
@@ -43,7 +43,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
     <>
       <nav
         aria-label="Glavna navigacija"
-        className={`sticky top-0 z-40 hidden border-b border-brand-dark bg-brand-dark text-brand-dark-primary shadow-sm ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
+        className={`fixed inset-x-0 top-0 z-50 hidden border-b border-brand-dark bg-brand-dark text-brand-dark-primary shadow-sm ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
       >
         <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-8">
           <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-brand-dark-primary">
@@ -64,7 +64,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
                 >
                   <span className="relative flex">
                     <Icon size={17} strokeWidth={active ? 2.4 : 1.9} />
-                    <Badge count={count} desktop />
+                    <Badge count={count} />
                   </span>
                   {label}
                 </Link>
@@ -83,7 +83,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
       </nav>
       <nav
         aria-label="Glavna navigacija"
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-surface bg-card-surface text-app-secondary safe-bottom lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-brand-dark bg-brand-dark text-brand-dark-secondary safe-bottom lg:hidden"
       >
         <div className="mx-auto flex w-full max-w-md items-center justify-around px-1 py-2 md:max-w-2xl lg:max-w-5xl">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
@@ -95,14 +95,14 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
                 href={href}
                 aria-current={active ? 'page' : undefined}
                 className={`relative flex min-w-[44px] flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                  active ? 'text-brand-text' : 'text-app-muted hover:text-app-primary'
+                  active ? 'text-brand-500' : 'text-brand-dark-secondary hover:text-brand-dark-primary'
                 }`}
               >
                 <span className="relative">
                   <Icon size={22} strokeWidth={active ? 2.5 : 1.8} className={`transition-transform duration-200 ${active ? 'scale-110' : ''}`} />
                   <Badge count={count} />
                 </span>
-                <span className={`text-[9px] font-medium tracking-tight ${active ? 'text-brand-text' : ''}`}>
+                <span className={`text-[9px] font-medium tracking-tight ${active ? 'text-brand-500' : ''}`}>
                   {label}
                 </span>
                 {active && <span className="absolute -top-0.5 h-1 w-1 rounded-full bg-brand-500" />}
