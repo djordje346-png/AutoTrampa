@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { formatEuro } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import TradeBadge from '@/components/TradeBadge';
-import { displayValue } from '@/lib/car-row';
 import { useMessages } from '@/hooks/use-messages';
 import type { Car, MyGarageCar } from '@/types';
 
@@ -44,16 +43,13 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
   const trade = getTradeLabel(myCar, car);
 
   async function send() {
-    if (!car || pending) return;
+    if (!car || !myCar || pending) return;
     setPending(true);
     const result = await createConversation(
       {
         carId: car.id,
-        carTitle: [car.year, car.brand, car.model, displayValue(car.generation)].filter(Boolean).join(' '),
-        carImage: car.image,
-        ownerName: car.owner.name,
+        offeredCarId: myCar.id,
         ownerId: car.ownerId,
-        tradeSummary: trade.label,
       },
       message,
     );

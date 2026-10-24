@@ -18,7 +18,7 @@ export interface Preferences {
   noTopUp: boolean;
 }
 
-type AccountLocalPreferences = Pick<Preferences, 'bodyPrefs' | 'phoneAfterMatch'>;
+type AccountLocalPreferences = Pick<Preferences, 'bodyPrefs'>;
 type PreferencePatch = Partial<Preferences>;
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -31,7 +31,6 @@ export const DEFAULT_PREFERENCES: Preferences = {
 
 const DEFAULT_ACCOUNT_LOCAL: AccountLocalPreferences = {
   bodyPrefs: DEFAULT_PREFERENCES.bodyPrefs,
-  phoneAfterMatch: DEFAULT_PREFERENCES.phoneAfterMatch,
 };
 
 /** Guest-only legacy store. Signed-in accounts never read or write this key. */
@@ -55,7 +54,9 @@ function getAccountLocalStore(userId: string): PersistentStore<AccountLocalPrefe
     DEFAULT_ACCOUNT_LOCAL,
     (raw) =>
       raw && typeof raw === 'object'
-        ? { ...DEFAULT_ACCOUNT_LOCAL, ...(raw as Partial<AccountLocalPreferences>) }
+        ? { bodyPrefs: Array.isArray((raw as Partial<AccountLocalPreferences>).bodyPrefs)
+            ? (raw as AccountLocalPreferences).bodyPrefs.filter((value) => typeof value === 'string')
+            : DEFAULT_ACCOUNT_LOCAL.bodyPrefs }
         : null,
   );
   accountLocalStores.set(userId, store);
@@ -100,6 +101,9 @@ export function usePreferences() {
             budget: user.budget,
             radius: user.searchRadius,
             noTopUp: user.noTopUp,
+            // Privacy must be enforced from the owner's server profile. Never
+            // import a local opt-out that other users cannot securely verify.
+            phoneAfterMatch: user.phoneAfterMatch,
           }
         : DEFAULT_PREFERENCES;
 
@@ -119,13 +123,13 @@ export function usePreferences() {
 
     const localPatch: Partial<AccountLocalPreferences> = {};
     if ('bodyPrefs' in patch) localPatch.bodyPrefs = patch.bodyPrefs;
-    if ('phoneAfterMatch' in patch) localPatch.phoneAfterMatch = patch.phoneAfterMatch;
     if (Object.keys(localPatch).length > 0) accountStore.set((previous) => ({ ...previous, ...localPatch }));
 
-    const profilePatch: { budget?: number | null; searchRadius?: number; noTopUp?: boolean } = {};
+    const profilePatch: { budget?: number | null; searchRadius?: number; noTopUp?: boolean; phoneAfterMatch?: boolean } = {};
     if ('budget' in patch) profilePatch.budget = patch.budget;
     if ('radius' in patch) profilePatch.searchRadius = patch.radius;
     if ('noTopUp' in patch) profilePatch.noTopUp = patch.noTopUp;
+    if ('phoneAfterMatch' in patch) profilePatch.phoneAfterMatch = patch.phoneAfterMatch;
 
     if (Object.keys(profilePatch).length === 0) return { ok: true as const };
     return updateProfilePreferences(profilePatch);

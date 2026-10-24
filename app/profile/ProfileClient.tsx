@@ -35,6 +35,7 @@ export default function ProfileClient() {
   const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [phonePrivacySaving, setPhonePrivacySaving] = useState(false);
 
   const { radius, bodyPrefs, phoneAfterMatch, budget, noTopUp } = preferences;
   const [radiusDraft, setRadiusDraft] = useState(radius);
@@ -51,6 +52,16 @@ export default function ProfileClient() {
   async function savePreference(patch: Parameters<typeof updatePreferences>[0]) {
     const result = await updatePreferences(patch);
     if (!result.ok) toast.error(result.message || 'Preference nisu sačuvane. Pokušaj ponovo.');
+  }
+
+  async function savePhonePrivacy() {
+    if (!preferencesReady || phonePrivacySaving) return;
+    setPhonePrivacySaving(true);
+    try {
+      await savePreference({ phoneAfterMatch: !phoneAfterMatch });
+    } finally {
+      setPhonePrivacySaving(false);
+    }
   }
 
   async function handleLogout() {
@@ -368,11 +379,13 @@ export default function ProfileClient() {
             <div className="flex items-center justify-between gap-3">
               <div className="flex-1">
                 <p className="text-xs font-medium text-app-secondary">Prikaži telefon samo posle dogovorene zamene</p>
-                <p className="text-xs text-app-muted mt-0.5">Broj ostaje skriven na oglasu dok se ne dogovorite</p>
+                <p className="text-xs text-app-muted mt-0.5">Potvrda zamene još nije dostupna. Dok je opcija uključena, broj ostaje skriven drugim korisnicima.</p>
               </div>
               <button
-                onClick={() => void updatePreferences({ phoneAfterMatch: !phoneAfterMatch })}
-                disabled={!preferencesReady}
+                type="button"
+                onClick={() => void savePhonePrivacy()}
+                disabled={!preferencesReady || phonePrivacySaving}
+                aria-busy={phonePrivacySaving}
                 aria-pressed={phoneAfterMatch}
                 aria-label="Prikaži telefon samo posle dogovorene zamene"
                 className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${

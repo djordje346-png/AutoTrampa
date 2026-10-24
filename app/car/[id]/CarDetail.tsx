@@ -14,6 +14,8 @@ import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
+import { useContactPhone } from '@/hooks/use-contact-phone';
+import { contactPhoneMessage } from '@/lib/contact-phone';
 import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
 import { ImageLightbox } from '@/components/ImageLightbox';
@@ -43,6 +45,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
   const { recordSwipe } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const isOwner = Boolean(authReady && userId && car.ownerId && car.ownerId === userId);
+  const ownerContact = useContactPhone(isOwner ? null : { carId: car.id });
   const ownerGarageCar = isOwner ? garageCars.find((garageCar) => garageCar.id === car.id) ?? null : null;
   const showTrade = authReady && isLoggedIn && !isOwner && selectedCar !== null;
   const location = [displayValue(car.city), displayValue(car.country)].filter(Boolean).join(', ');
@@ -75,17 +78,11 @@ export default function CarDetail({ car: listing }: { car: Car }) {
 
   // Only meaningful with a car of your own to compare against.
   const tl = selectedCar && !isOwner ? getTradeLabel(selectedCar, car) : null;
-  /**
-   * Body listings carry no phone number by design, so the call button has to
-   * explain itself instead of silently disappearing.
-   */
+  // Public listing rows contain no phone. Only the targeted server RPC may
+  // authorize revealing the current owner's private contact details.
   const contactNote = isOwner || !authReady
     ? null
-    : car.owner.phone
-      ? null
-      : !isLoggedIn
-        ? 'Prijavi se da vidiš kako da stupiš u kontakt sa vlasnikom.'
-        : 'Vlasnik nije ostavio broj telefona. Pošalji ponudu i dogovorite se kroz poruke.';
+    : contactPhoneMessage(ownerContact.status);
   const carImages = getCarImages(car);
   // "E60 · Sapphire Black", or nothing when the form left both fields empty.
   const subtitle = carSubtitle(car);
@@ -135,6 +132,13 @@ export default function CarDetail({ car: listing }: { car: Car }) {
       return;
     }
     continueToOffer();
+  }
+
+  async function handleCall() {
+    if (!requireAuth('Prijavi se da proveriš dostupnost broja vlasnika.')) return;
+    const contact = await ownerContact.dial();
+    const message = contactPhoneMessage(contact.status);
+    if (message) toast.message(message);
   }
 
   function handleOwnListingEdit() {
@@ -310,9 +314,10 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                     <ArrowLeftRight size={15} className="shrink-0" />
                     <span className="truncate">Pošalji ponudu</span>
                   </button>
-                  {car.owner.phone ? (
+                  {ownerContact.href ? (
                     <a
-                      href={`tel:${car.owner.phone}`}
+                      href={ownerContact.href}
+                      onClick={(event) => { event.preventDefault(); void handleCall(); }}
                       aria-label={`Pozovi ${car.owner.name}`}
                       className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-hover-surface hover:text-brand-text active:scale-[0.98] dark:border-surface"
                     >
@@ -322,10 +327,9 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                   ) : (
                     <button
                       type="button"
-                      disabled
-                      aria-disabled="true"
-                      title="Vlasnik nije ostavio broj telefona — kontakt ide preko ponude"
-                      className="inline-flex h-12 min-h-12 w-full min-w-0 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary opacity-55 shadow-sm dark:border-surface"
+                      onClick={() => void handleCall()}
+                      title={contactNote ?? undefined}
+                      className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:bg-hover-surface dark:border-surface"
                     >
                       <Phone size={15} className="shrink-0" />
                       <span className="truncate">Pozovi</span>
@@ -373,8 +377,12 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                   <span className="text-sm text-app-muted">Ocena vlasnika</span>
                   <span className="text-sm font-semibold text-app-secondary dark:text-app-secondary">{car.owner.rating.toFixed(1)} / 5</span>
                 </div>
-                {car.owner.phone && (
-                  <a href={`tel:${car.owner.phone}`} className={`mt-4 w-full hover:text-brand-text ${CHIP}`}>
+                {ownerContact.href && (
+                  <a
+                    href={ownerContact.href}
+                    onClick={(event) => { event.preventDefault(); void handleCall(); }}
+                    className={`mt-4 w-full hover:text-brand-text ${CHIP}`}
+                  >
                     <Phone size={16} />
                     Pozovi vlasnika
                   </a>
@@ -552,14 +560,25 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                   <ArrowLeftRight size={16} className="shrink-0" />
                   <span className="truncate">Pošalji ponudu</span>
                 </button>
-                {car.owner.phone && (
+                {ownerContact.href ? (
                   <a
-                    href={`tel:${car.owner.phone}`}
+                    href={ownerContact.href}
+                    onClick={(event) => { event.preventDefault(); void handleCall(); }}
                     aria-label={`Pozovi ${car.owner.name}`}
                     className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-surface"
                   >
                     <Phone size={17} />
                   </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => void handleCall()}
+                    aria-label="Proveri dostupnost broja telefona vlasnika"
+                    title={contactNote ?? undefined}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-surface"
+                  >
+                    <Phone size={17} />
+                  </button>
                 )}
               </>
             )}

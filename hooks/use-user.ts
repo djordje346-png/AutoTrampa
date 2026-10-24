@@ -17,11 +17,12 @@ export interface UserProfile {
   budget: number | null;
   searchRadius: number;
   noTopUp: boolean;
+  phoneAfterMatch: boolean;
 }
 
 const EMPTY_USER: UserProfile = {
   id: '', name: '', email: '', city: '', phone: '', trades: 0, rating: 5, verified: false,
-  budget: null, searchRadius: 50, noTopUp: false,
+  budget: null, searchRadius: 50, noTopUp: false, phoneAfterMatch: true,
 };
 
 /** In-memory only: profile and contact details must never leak between accounts. */
@@ -58,10 +59,14 @@ function ensureProfileLoaded(
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from('profiles')
-      .select('name,city,phone,rating,trade_count,verified,budget,search_radius_km,no_top_up')
+      .select('name,city,phone,rating,trade_count,verified,budget,search_radius_km,no_top_up,phone_after_match')
       .eq('id', activeUser.id)
       .maybeSingle();
     if (error) throw error;
+
+    // The request may finish after sign-out or after another account becomes
+    // active. Never publish that account's private profile into the new one.
+    if (userStore.get().id !== activeUser.id) return;
 
     if (data) {
       userStore.set({
@@ -75,6 +80,7 @@ function ensureProfileLoaded(
         budget: data.budget == null ? null : Number(data.budget),
         searchRadius: Number(data.search_radius_km ?? 50),
         noTopUp: Boolean(data.no_top_up ?? false),
+        phoneAfterMatch: data.phone_after_match !== false,
       });
       return;
     }
@@ -87,12 +93,14 @@ function ensureProfileLoaded(
       phone: fallback.phone,
     });
     if (insertError) throw insertError;
-    userStore.set(fallback);
+    if (userStore.get().id === activeUser.id) userStore.set(fallback);
   })();
 
   profileRequests.set(activeUser.id, request);
   return request.then(
-    () => { loadedProfiles.add(activeUser.id); },
+    () => {
+      if (userStore.get().id === activeUser.id) loadedProfiles.add(activeUser.id);
+    },
     (error: unknown) => {
       throw error;
     },
@@ -156,8 +164,11 @@ export function useUser() {
   }, [authReady, authUser, reloadKey]);
 
   const reloadProfile = useCallback(() => {
+    // A reload must bypass the session cache, otherwise retrying after a
+    // privacy/contact edit would immediately return the old in-memory row.
+    if (authUser) loadedProfiles.delete(authUser.id);
     setReloadKey((key) => key + 1);
-  }, []);
+  }, [authUser]);
 
   const updateUser = useCallback(async (patch: Partial<UserProfile>) => {
     const current = userStore.get();
@@ -195,7 +206,7 @@ export function useUser() {
   }, []);
 
   const updateProfilePreferences = useCallback(async (
-    patch: Partial<Pick<UserProfile, 'budget' | 'searchRadius' | 'noTopUp'>>,
+    patch: Partial<Pick<UserProfile, 'budget' | 'searchRadius' | 'noTopUp' | 'phoneAfterMatch'>>,
   ) => {
     const userId = userStore.get().id;
     if (!userId) return { ok: false as const, message: 'Profil još nije učitan. Pokušaj ponovo.' };
@@ -210,7 +221,8 @@ export function useUser() {
       if (
         (!('budget' in patch) || next.budget === current.budget) &&
         (!('searchRadius' in patch) || next.searchRadius === current.searchRadius) &&
-        (!('noTopUp' in patch) || next.noTopUp === current.noTopUp)
+        (!('noTopUp' in patch) || next.noTopUp === current.noTopUp) &&
+        (!('phoneAfterMatch' in patch) || next.phoneAfterMatch === current.phoneAfterMatch)
       ) {
         return { ok: true };
       }
@@ -219,13 +231,14 @@ export function useUser() {
       if ('budget' in patch) values.budget = next.budget;
       if ('searchRadius' in patch) values.search_radius_km = next.searchRadius;
       if ('noTopUp' in patch) values.no_top_up = next.noTopUp;
+      if ('phoneAfterMatch' in patch) values.phone_after_match = next.phoneAfterMatch;
 
       try {
         const { data, error } = await getSupabase()
           .from('profiles')
           .update(values)
           .eq('id', userId)
-          .select('id,budget,search_radius_km,no_top_up')
+          .select('id,budget,search_radius_km,no_top_up,phone_after_match')
           .single();
         if (error) {
           console.error('Korisničke preference nisu sačuvane u Supabase-u.', {
@@ -240,7 +253,8 @@ export function useUser() {
         const matches = data && data.id === userId &&
           (!('budget' in patch) || (data.budget == null ? null : Number(data.budget)) === next.budget) &&
           (!('searchRadius' in patch) || Number(data.search_radius_km) === next.searchRadius) &&
-          (!('noTopUp' in patch) || Boolean(data.no_top_up) === next.noTopUp);
+          (!('noTopUp' in patch) || Boolean(data.no_top_up) === next.noTopUp) &&
+          (!('phoneAfterMatch' in patch) || data.phone_after_match === next.phoneAfterMatch);
         if (!matches) return { ok: false, message: 'Baza nije potvrdila sačuvane preference.' };
 
         const latest = userStore.get();
@@ -266,5 +280,17 @@ export function useUser() {
     }
   }, []);
 
-  return { user, updateUser, updateProfilePreferences, mounted: storeReady && authReady, profileReady, profileError, reloadProfile };
+  const profileMatchesAccount = !authUser || user.id === authUser.id;
+  const scopedUser = authUser
+    ? profileMatchesAccount ? user : profileFromAuth(authUser)
+    : EMPTY_USER;
+  return {
+    user: scopedUser,
+    updateUser,
+    updateProfilePreferences,
+    mounted: storeReady && authReady,
+    profileReady: profileReady && profileMatchesAccount,
+    profileError: profileMatchesAccount ? profileError : '',
+    reloadProfile,
+  };
 }

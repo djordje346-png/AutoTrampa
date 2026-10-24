@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/use-auth';
-import { userStore } from '@/hooks/use-user';
 import { carTitle } from '@/lib/cars';
 
 export interface ChatMessage {
@@ -27,7 +26,7 @@ export interface Conversation {
   isBuyer: boolean;
 }
 
-interface MessageRow {
+export interface MessageRow {
   id: string;
   sender_id: string | null;
   kind: 'text' | 'match';
@@ -36,40 +35,50 @@ interface MessageRow {
   read_at: string | null;
 }
 
-interface ConversationRow {
+interface ConversationCarRow {
+  brand: string;
+  model: string;
+  generation: string | null;
+  year: number | null;
+  image: string | null;
+  owner_name: string | null;
+}
+
+export interface ConversationRow {
   id: string;
   car_id: string;
+  offered_car_id: string | null;
   buyer_id: string;
   seller_id: string;
   buyer_name: string;
   trade_summary: string;
   updated_at: string;
   created_at: string;
-  car: {
-    brand: string;
-    model: string;
-    generation: string | null;
-    year: number | null;
-    image: string | null;
-    owner_name: string | null;
-  } | null;
+  car: ConversationCarRow | null;
+  offered_car: ConversationCarRow | null;
   messages: MessageRow[] | null;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function mapConversation(row: ConversationRow, userId: string): Conversation | null {
-  if (!row.car) return null;
+export function mapConversation(row: ConversationRow, userId: string): Conversation {
   const messages = [...(row.messages ?? [])].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
   const isBuyer = row.buyer_id === userId;
+  const showOfferedCar = !isBuyer && Boolean(row.offered_car);
+  const displayedCar = showOfferedCar ? row.offered_car : row.car;
   return {
     id: row.id,
-    carId: row.car_id,
-    carTitle: [carTitle(row.car), row.car.generation && row.car.generation !== '-' ? row.car.generation : ''].filter(Boolean).join(' '),
-    carImage: row.car.image ?? '',
-    ownerName: isBuyer ? row.car.owner_name ?? 'Korisnik' : row.buyer_name || 'Korisnik',
+    carId: showOfferedCar ? row.offered_car_id ?? row.car_id : row.car_id,
+    carTitle: displayedCar
+      ? [carTitle(displayedCar), displayedCar.generation && displayedCar.generation !== '-' ? displayedCar.generation : ''].filter(Boolean).join(' ')
+      : 'Oglas više nije dostupan',
+    carImage: displayedCar?.image ?? '',
+    ownerName: isBuyer
+      ? row.car?.owner_name || 'Korisnik'
+      : row.offered_car?.owner_name || row.buyer_name || 'Korisnik',
     ownerPhone: '',
     tradeSummary: row.trade_summary,
     messages: messages.map((message) => ({
@@ -101,11 +110,11 @@ export function useMessages(options?: { poll?: boolean }) {
     try {
       const { data, error } = await getSupabase()
         .from('conversations')
-        .select('id,car_id,buyer_id,seller_id,buyer_name,trade_summary,updated_at,created_at,car:cars!conversations_car_id_fkey(brand,model,generation,year,image,owner_name),messages:messages!messages_conversation_id_fkey(id,sender_id,kind,body,created_at,read_at)')
+        .select('id,car_id,offered_car_id,buyer_id,seller_id,buyer_name,trade_summary,updated_at,created_at,car:cars!conversations_car_id_fkey(brand,model,generation,year,image,owner_name),offered_car:cars!conversations_offered_car_id_fkey(brand,model,generation,year,image,owner_name),messages:messages!messages_conversation_id_fkey(id,sender_id,kind,body,created_at,read_at)')
         .order('updated_at', { ascending: false });
       if (error) throw error;
       const rows = (data ?? []) as unknown as ConversationRow[];
-      setConversations(rows.map((row) => mapConversation(row, userId)).filter((item): item is Conversation => Boolean(item)));
+      setConversations(rows.map((row) => mapConversation(row, userId)));
     } catch {
       setConversations([]);
     } finally {
@@ -186,70 +195,38 @@ export function useMessages(options?: { poll?: boolean }) {
   const createConversation = useCallback(async (
     conv: {
       carId: string;
-      carTitle: string;
-      carImage: string;
-      ownerName: string;
+      offeredCarId: string;
       ownerId?: string;
-      tradeSummary: string;
     },
     firstMessage?: string,
   ): Promise<{ ok: true; id: string } | { ok: false; message: string }> => {
     if (!userId) return { ok: false, message: 'Prijavi se da pošalješ ponudu.' };
-    if (!UUID_RE.test(conv.carId) || !conv.ownerId || !UUID_RE.test(conv.ownerId)) {
+    if (!UUID_RE.test(conv.carId) || (conv.ownerId && !UUID_RE.test(conv.ownerId))) {
       return { ok: false, message: 'Ovo je demo oglas i nema aktivnog vlasnika za razgovor.' };
     }
-    if (conv.ownerId === userId) return { ok: false, message: 'Ne možeš poslati ponudu za svoj oglas.' };
-
-    const supabase = getSupabase();
-    let conversationId: string | null = null;
-    const { data: existing, error: lookupError } = await supabase
-      .from('conversations')
-      .select('id')
-      .eq('car_id', conv.carId)
-      .eq('buyer_id', userId)
-      .eq('seller_id', conv.ownerId)
-      .maybeSingle();
-    if (lookupError) return { ok: false, message: lookupError.message };
-    conversationId = existing?.id ?? null;
-
-    if (!conversationId) {
-      const { data, error } = await supabase
-        .from('conversations')
-        .insert({
-          car_id: conv.carId,
-          buyer_id: userId,
-          seller_id: conv.ownerId,
-          buyer_name: userStore.get().name,
-          trade_summary: conv.tradeSummary,
-        })
-        .select('id')
-        .single();
-      if (error) {
-        // A concurrent offer can win the unique constraint; reuse its thread.
-        if (error.code !== '23505') return { ok: false, message: error.message };
-        const { data: raced } = await supabase
-          .from('conversations')
-          .select('id')
-          .eq('car_id', conv.carId)
-          .eq('buyer_id', userId)
-          .eq('seller_id', conv.ownerId)
-          .maybeSingle();
-        conversationId = raced?.id ?? null;
-      } else {
-        conversationId = data.id;
-      }
+    if (!UUID_RE.test(conv.offeredCarId)) {
+      return { ok: false, message: 'Za ponudu izaberi svoj sačuvani automobil iz garaže.' };
+    }
+    if (conv.ownerId === userId || conv.carId === conv.offeredCarId) {
+      return { ok: false, message: 'Ne možeš poslati ponudu za svoj oglas.' };
     }
 
-    if (!conversationId) return { ok: false, message: 'Razgovor nije mogao da se otvori.' };
-    const body = firstMessage?.trim() || `Zdravo! Šaljem ponudu za zamenu — ${conv.tradeSummary}.`;
-    const { error: messageError } = await supabase.from('messages').insert({
-      conversation_id: conversationId,
-      sender_id: userId,
-      body: body.slice(0, 1000),
-    });
-    if (messageError) return { ok: false, message: messageError.message };
-    await refresh();
-    return { ok: true, id: conversationId };
+    try {
+      const { data, error } = await getSupabase().rpc('send_trade_offer', {
+        p_target_car_id: conv.carId,
+        p_offered_car_id: conv.offeredCarId,
+        p_message: firstMessage?.trim().slice(0, 1000) ?? '',
+      });
+      if (error) return { ok: false, message: error.message };
+      const conversationId = data?.conversation_id;
+      if (typeof conversationId !== 'string' || !UUID_RE.test(conversationId)) {
+        return { ok: false, message: 'Razgovor nije mogao da se otvori.' };
+      }
+      await refresh();
+      return { ok: true, id: conversationId };
+    } catch {
+      return { ok: false, message: 'Ponuda nije poslata. Proveri vezu i pokušaj ponovo.' };
+    }
   }, [refresh, userId]);
 
   const totalUnread = conversations.reduce((sum, conversation) => sum + conversation.unread, 0);

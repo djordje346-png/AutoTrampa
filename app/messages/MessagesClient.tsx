@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { useMessages } from '@/hooks/use-messages';
 import type { ChatMessage, Conversation } from '@/hooks/use-messages';
 import { useAuth } from '@/hooks/use-auth';
+import { useContactPhone } from '@/hooks/use-contact-phone';
+import { contactPhoneMessage } from '@/lib/contact-phone';
 import { SignedOutPage } from '@/components/SignedOut';
 
 function formatTime(ts: number): string {
@@ -105,6 +107,7 @@ function MessageHistory({
 
 function ConversationThread({
   conversation,
+  contact,
   input,
   onInputChange,
   sending,
@@ -115,6 +118,7 @@ function ConversationThread({
   onBack,
 }: {
   conversation: Conversation;
+  contact: ReturnType<typeof useContactPhone>;
   input: string;
   onInputChange: (value: string) => void;
   sending: boolean;
@@ -124,6 +128,14 @@ function ConversationThread({
   fullScreen?: boolean;
   onBack?: () => void;
 }) {
+  const contactNote = contactPhoneMessage(contact.status);
+
+  async function handleCall() {
+    const current = await contact.dial();
+    const message = contactPhoneMessage(current.status);
+    if (message) toast.message(message);
+  }
+
   return (
     <section
       aria-label={`Razgovor sa ${conversation.ownerName}`}
@@ -155,14 +167,25 @@ function ConversationThread({
           <p className="truncate text-xs text-app-muted">{conversation.carTitle}</p>
         </div>
 
-        {conversation.ownerPhone && (
+        {contact.href ? (
           <a
-            href={`tel:${conversation.ownerPhone}`}
+            href={contact.href}
+            onClick={(event) => { event.preventDefault(); void handleCall(); }}
             aria-label={`Pozovi ${conversation.ownerName}`}
             className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-brand-text dark:text-app-secondary"
           >
             <Phone size={16} />
           </a>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void handleCall()}
+            aria-label="Proveri dostupnost broja telefona sagovornika"
+            title={contactNote ?? undefined}
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:text-brand-text dark:text-app-secondary"
+          >
+            <Phone size={16} />
+          </button>
         )}
         <button
           onClick={onArchive}
@@ -188,6 +211,8 @@ function ConversationThread({
           Oglas
         </Link>
       </div>
+
+      {contactNote && <p className="mx-4 mt-2 flex-shrink-0 text-[11px] leading-relaxed text-app-muted" role="status">{contactNote}</p>}
 
       <MessageHistory messages={conversation.messages} scrollRef={scrollRef} />
 
@@ -233,6 +258,7 @@ export default function MessagesClient() {
   const desktopScrollRef = useRef<HTMLDivElement>(null);
 
   const activeConv = conversations.find(c => c.id === activeId) || null;
+  const activeContact = useContactPhone(activeConv ? { conversationId: activeConv.id } : null);
   const messageCount = activeConv?.messages.length ?? 0;
 
   useEffect(() => {
@@ -465,6 +491,7 @@ export default function MessagesClient() {
             {desktopConversationList}
             <ConversationThread
               conversation={activeConv}
+              contact={activeContact}
               input={input}
               onInputChange={setInput}
               sending={sending}
@@ -478,6 +505,7 @@ export default function MessagesClient() {
         <div className="desktop:hidden">
           <ConversationThread
             conversation={activeConv}
+            contact={activeContact}
             input={input}
             onInputChange={setInput}
             sending={sending}
