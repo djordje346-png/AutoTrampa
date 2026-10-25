@@ -252,7 +252,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             {subtitle && <p className="mt-1 break-words text-xs text-app-muted">{subtitle}</p>}
             <div className="my-5 border-y border-surface py-4">
               <p className="text-xs font-medium text-app-muted">Vrednost vozila</p>
-              <p className="mt-1 break-words font-sans text-[2rem] font-bold leading-tight tracking-tight tabular-nums text-app-primary sm:text-4xl">{formatEuro(car.price)}</p>
+              <p className="mt-1 break-words font-heading text-[2rem] font-bold leading-tight tracking-tight tabular-nums text-app-primary sm:text-4xl">{formatEuro(car.price)}</p>
             </div>
             {!isOwner && <div className="mb-4 rounded-xl border border-surface bg-elevated p-3.5">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-app-primary"><ArrowLeftRight size={18} className="shrink-0 text-brand-text" aria-hidden="true" />Poređenje zamene</h2>
@@ -309,7 +309,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
       </section>
       {authReady && !lightboxOpen && !offerOpen && !ownEditOpen && <div style={isLoggedIn && bottomNavHeight !== null ? { bottom: bottomNavHeight } : undefined} className={`fixed inset-x-0 z-40 border-t border-surface bg-card-surface px-4 py-3 lg:hidden ${isLoggedIn ? 'bottom-[calc(72px+env(safe-area-inset-bottom))]' : 'bottom-0 pb-[calc(12px+env(safe-area-inset-bottom))]'}`}>
         <div className="mx-auto flex max-w-2xl items-center gap-3">
-          <p className="min-w-0 shrink-0 text-lg font-bold tabular-nums text-app-primary">{formatEuro(car.price)}</p>
+          <p className="min-w-0 shrink-0 font-heading text-lg font-bold tabular-nums text-app-primary">{formatEuro(car.price)}</p>
           {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" /><span className="truncate">{ownerActionLabel}</span></button> : <button onClick={handleOfferClick} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm"><ArrowLeftRight size={18} className="shrink-0" aria-hidden="true" /><span className="truncate">Pošalji ponudu</span></button>}
         </div>
       </div>}
