@@ -228,6 +228,13 @@ function AuthenticatedFeed({
     toast.success('Vozilo dodato u garažu.');
   }
 
+  function enterSwipeMode() {
+    setSwipeIndex(0);
+    setSessionReviewedIds(new Set());
+    setDragX(0);
+    setViewMode('swipe');
+  }
+
   function flyAway(dir: 'left' | 'right') {
     setIsAnimating(true);
     setDragX(dir === 'right' ? 500 : -500);
@@ -256,8 +263,8 @@ function AuthenticatedFeed({
   }
 
   async function handleSwipeSkip() {
-    if (isAnimating) return;
-    if (swipeCar && userId && UUID_RE.test(swipeCar.id)) {
+    if (isAnimating || !swipeCar) return;
+    if (userId && UUID_RE.test(swipeCar.id)) {
       setIsAnimating(true);
       setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
       const result = await recordSwipe(
@@ -314,9 +321,11 @@ function AuthenticatedFeed({
   }
 
   const showTrade = tradeAware;
+  // Demo listings cannot participate in swipe_car or form a match.
+  const swipeEligibleCars = filteredCars.filter((car) => Boolean(car.ownerId) && UUID_RE.test(car.id));
   const swipeCars = userId
-    ? filteredCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
-    : filteredCars;
+    ? swipeEligibleCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
+    : swipeEligibleCars;
   const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
   const keyboardSwipeActions = useRef<{ skip: () => void; like: () => void }>({
@@ -389,7 +398,7 @@ function AuthenticatedFeed({
                   <LayoutGrid size={14} />
                 </button>
                 <button
-                  onClick={() => setViewMode('swipe')}
+                  onClick={() => enterSwipeMode()}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
                     viewMode === 'swipe' ? 'bg-brand-500 text-on-accent' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
                   }`}
@@ -568,7 +577,7 @@ function AuthenticatedFeed({
               selectCar={selectCar}
               canAddCar={canAddCar}
               onAddCar={handleAddListing}
-              onOpenSwipe={() => setViewMode('swipe')}
+              onOpenSwipe={() => enterSwipeMode()}
             />
           )}
 
@@ -745,7 +754,7 @@ function AuthenticatedFeed({
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
-                    onPointerCancel={handlePointerUp}
+                    onPointerCancel={() => { dragStart.current = null; setDragX(0); }}
                   >
                     {/* Image */}
                     <div className="relative h-72 sm:h-80 lg:h-[min(40vh,380px)]">
@@ -808,6 +817,7 @@ function AuthenticatedFeed({
                 <div className="flex items-center gap-5 mt-6 lg:mt-4 lg:gap-7">
                   <button
                     onClick={() => void handleSwipeSkip()}
+                    disabled={isAnimating}
                     className="w-14 h-14 rounded-full bg-tone-negative-surface border-2 border-tone-negative flex items-center justify-center text-tone-negative-ring hover:opacity-80 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
                     aria-label="Preskoči"
                   >
@@ -816,6 +826,7 @@ function AuthenticatedFeed({
                   <span className="text-xs text-app-muted font-medium min-w-[50px] text-center">{swipeIndex + 1} / {swipeCars.length}</span>
                   <button
                     onClick={() => void handleSwipeLike()}
+                    disabled={isAnimating}
                     className="w-14 h-14 rounded-full bg-tone-positive-surface border-2 border-tone-positive flex items-center justify-center text-tone-positive-ring hover:opacity-80 hover:scale-110 active:scale-95 transition-all duration-200 lg:h-16 lg:w-16"
                     aria-label="Sviđa mi se"
                   >
@@ -838,7 +849,7 @@ function AuthenticatedFeed({
                   <CheckCircle size={40} className="text-tone-positive" />
                 </div>
                 <h2 className="text-xl font-bold text-app-primary dark:text-app-primary mb-2">Sve pregledano!</h2>
-                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">Pregledao si sve oglase.</p>
+                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">{swipeEligibleCars.length === 0 ? 'Trenutno nema stvarnih oglasa za svajp. Demo oglasi služe samo za pregled.' : 'Pregledao si sve dostupne oglase za svajp.'}</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
                   <button onClick={async () => {
