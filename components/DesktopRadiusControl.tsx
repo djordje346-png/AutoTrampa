@@ -15,7 +15,7 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
   const { preferences, update, mounted: preferencesReady } = usePreferences();
   const [draft, setDraft] = useState(preferences.radius);
 
-  useEffect(() => setDraft(preferences.radius), [preferences.radius]);
+  useEffect(() => setDraft(Math.min(550, Math.max(50, Math.round(preferences.radius / 50) * 50))), [preferences.radius]);
 
   async function saveRadius() {
     if (draft === preferences.radius) return;
@@ -29,7 +29,7 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
   const city = selectedCar.city && selectedCar.city !== '-'
     ? getSerbianPlace(selectedCar.city)
     : null;
-  const radiusLabel = !preferencesReady ? '…' : `${draft >= 200 ? '200+' : draft} km`;
+  const radiusLabel = !preferencesReady ? '…' : `${draft >= 550 ? '500+' : draft} km`;
 
   return (
     <div className="flex h-9 min-w-0 flex-shrink-0 items-center gap-1.5" title={city ? `Centar pretrage: ${city.name}` : 'Dodaj grad svom autu u garaži'}>
@@ -38,13 +38,14 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
       <input
         id="desktop-search-radius"
         type="range"
-        min={10}
-        max={200}
-        step={10}
+        min={50}
+        max={550}
+        step={50}
         value={draft}
         disabled={!preferencesReady}
         onChange={(event) => setDraft(Number(event.target.value))}
         onPointerUp={() => void saveRadius()}
+        onBlur={() => void saveRadius()}
         onKeyUp={(event) => {
           if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) void saveRadius();
         }}
