@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import BrandLockup from '@/components/BrandLockup';
 
 interface PublicHeaderProps {
@@ -12,65 +12,93 @@ interface PublicHeaderProps {
   onRegister: () => void;
 }
 
-const navClass = (active: boolean) =>
-  `relative flex items-center gap-2 rounded-lg px-1.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 xl:px-3 xl:text-sm ${
-    active ? 'bg-white/10 text-brand-500' : 'text-brand-dark-secondary hover:bg-white/10 hover:text-brand-dark-primary'
-  }`;
-
-export default function PublicHeader({ onAddCar, onSignIn, onRegister }: PublicHeaderProps) {
+export default function PublicHeader({ onSignIn, onRegister }: PublicHeaderProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLElement>(null);
   const howHref = pathname === '/' ? '#kako-funkcionise' : '/#kako-funkcionise';
   const whyHref = pathname === '/' ? '#smart-match' : '/#smart-match';
   const isSearch = pathname === '/search';
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setActiveSection(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    mobileMenuRef.current?.querySelector<HTMLAnchorElement>('a')?.focus();
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    }
+    function onPointerDown(event: PointerEvent) {
+      if (event.target instanceof Node && !headerRef.current?.contains(event.target)) setMenuOpen(false);
+    }
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => { if (desktop.matches) setMenuOpen(false); };
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('pointerdown', onPointerDown);
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerdown', onPointerDown);
+      desktop.removeEventListener('change', closeOnDesktop);
+    };
+  }, [menuOpen]);
 
   function closeMenu() {
     setMenuOpen(false);
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-brand-dark bg-brand-dark text-brand-dark-primary shadow-sm">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-4 lg:px-8">
+    <header ref={headerRef} className="carbon-header sticky top-0 z-50">
+      <div className="app-container flex h-[63px] items-center justify-between gap-3 lg:grid lg:h-[71px] lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-3">
         <div className="flex min-w-0 items-center">
-          <Link href="/" aria-label="AutoTrampa — početna" className="flex shrink-0 items-center gap-2 text-brand-dark-primary">
-            <BrandLockup />
+          <Link href="/" aria-label="AutoTrampa — početna" className="carbon-brand">
+            <BrandLockup header />
           </Link>
         </div>
 
-        <nav aria-label="Glavni meni" className="hidden items-center justify-center gap-0 lg:flex xl:gap-1">
-          <a href={howHref} onClick={() => setActiveSection('how')} aria-current={activeSection === 'how' ? 'location' : undefined} className={navClass(activeSection === 'how')}>Kako funkcioniše</a>
-          <Link href="/search" aria-current={isSearch ? 'page' : undefined} className={navClass(isSearch)}>Oglasi</Link>
-          <a href={whyHref} onClick={() => setActiveSection('why')} aria-current={activeSection === 'why' ? 'location' : undefined} className={navClass(activeSection === 'why')}>Zašto AutoTrampa</a>
+        <nav aria-label="Glavni meni" className="hidden items-center justify-center gap-1 lg:flex xl:gap-2">
+          <a href={howHref} onClick={() => setActiveSection('how')} aria-current={!isSearch && activeSection === 'how' ? 'location' : undefined} className="carbon-nav-link">Kako funkcioniše</a>
+          <Link href="/search" aria-current={isSearch ? 'page' : undefined} className="carbon-nav-link">Oglasi</Link>
+          <a href={whyHref} onClick={() => setActiveSection('why')} aria-current={!isSearch && activeSection === 'why' ? 'location' : undefined} className="carbon-nav-link">Zašto AutoTrampa</a>
         </nav>
 
-        <div className="hidden items-center justify-self-end gap-1 lg:flex xl:gap-2">
-          <button type="button" onClick={onSignIn} className={navClass(false)}>Prijavi se</button>
-          <button type="button" onClick={onRegister} className="btn-primary btn-primary-compact !rounded-xl ml-1 whitespace-nowrap text-xs">Registruj se</button>
+        <div className="hidden items-center justify-self-end gap-2 lg:flex xl:gap-3">
+          <button type="button" onClick={onSignIn} className="carbon-nav-link">Prijavi se</button>
+          <button type="button" onClick={onRegister} className="carbon-header-cta">Registruj se</button>
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <button type="button" onClick={onSignIn} className="rounded-lg px-2.5 py-2 text-xs font-semibold text-brand-dark-secondary transition-colors hover:bg-white/10 hover:text-brand-dark-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:text-sm">Prijavi se</button>
+          <button type="button" onClick={onSignIn} className="carbon-nav-link !px-2">Prijavi se</button>
           <button
             type="button"
+            ref={menuButtonRef}
             onClick={() => setMenuOpen((open) => !open)}
             aria-label={menuOpen ? 'Zatvori meni' : 'Otvori meni'}
             aria-expanded={menuOpen}
             aria-controls="public-mobile-menu"
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-brand-dark-primary transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="carbon-nav-link !w-11 !px-0"
           >
-            {menuOpen ? <X size={21} /> : <Menu size={21} />}
+            {menuOpen ? <X size={19} strokeWidth={1.8} aria-hidden="true" /> : <Menu size={19} strokeWidth={1.8} aria-hidden="true" />}
           </button>
         </div>
       </div>
 
       {menuOpen && (
-        <nav id="public-mobile-menu" aria-label="Mobilni meni" className="absolute inset-x-0 top-full border-b border-brand-dark bg-brand-dark p-4 shadow-lg lg:hidden">
+        <nav ref={mobileMenuRef} id="public-mobile-menu" aria-label="Mobilni meni" className="absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-b border-brand-dark bg-brand-dark p-4 lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1">
-            <a href={howHref} onClick={() => { setActiveSection('how'); closeMenu(); }} className="rounded-xl px-3 py-3 text-sm font-semibold text-brand-dark-secondary transition-colors hover:bg-white/10 hover:text-brand-dark-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Kako funkcioniše</a>
-            <Link href="/search" onClick={closeMenu} className="rounded-xl px-3 py-3 text-sm font-semibold text-brand-dark-secondary transition-colors hover:bg-white/10 hover:text-brand-dark-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Oglasi</Link>
-            <a href={whyHref} onClick={() => { setActiveSection('why'); closeMenu(); }} className="rounded-xl px-3 py-3 text-sm font-semibold text-brand-dark-secondary transition-colors hover:bg-white/10 hover:text-brand-dark-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Zašto AutoTrampa</a>
-            <button type="button" onClick={() => { closeMenu(); onAddCar(); }} className="btn-primary mt-2 w-full text-sm">Dodaj svoj auto <ArrowRight size={16} /></button>
+            <a href={howHref} aria-current={!isSearch && activeSection === 'how' ? 'location' : undefined} onClick={() => { setActiveSection('how'); closeMenu(); }} className="carbon-nav-link">Kako funkcioniše</a>
+            <Link href="/search" aria-current={isSearch ? 'page' : undefined} onClick={closeMenu} className="carbon-nav-link">Oglasi</Link>
+            <a href={whyHref} aria-current={!isSearch && activeSection === 'why' ? 'location' : undefined} onClick={() => { setActiveSection('why'); closeMenu(); }} className="carbon-nav-link">Zašto AutoTrampa</a>
+            <button type="button" onClick={() => { closeMenu(); onRegister(); }} className="carbon-header-cta mt-3 w-full">Registruj se</button>
           </div>
         </nav>
       )}

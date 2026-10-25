@@ -308,6 +308,65 @@
    classes so a plain `className` assignment is enough — no tailwind-merge
    dependency at call sites. */
 @layer components {
+  /* Shared public/application header language; existing Carbon/Volt tokens. */
+  .carbon-header {
+    --ring: var(--primary);
+    border-bottom: 1px solid hsl(var(--border-brand-dark));
+    background: hsl(var(--surface-brand-dark));
+    color: hsl(var(--text-brand-dark-primary));
+  }
+  .carbon-brand {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.625rem;
+    border-radius: 0.75rem;
+    color: hsl(var(--text-brand-dark-primary));
+  }
+  .carbon-nav-link, .carbon-header-cta {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 0.75rem;
+    border-radius: 0.75rem;
+    font-family: var(--font-outfit), Outfit, ui-sans-serif, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.25;
+    font-weight: 500;
+    white-space: nowrap;
+    color: hsl(var(--text-brand-dark-secondary));
+    transition: color 160ms ease, background-color 160ms ease;
+  }
+  .carbon-nav-link:hover, .carbon-nav-link:active {
+    background: hsl(var(--text-brand-dark-primary) / 0.06);
+    color: hsl(var(--text-brand-dark-primary));
+  }
+  .carbon-nav-link[aria-current] {
+    background: hsl(var(--text-brand-dark-primary) / 0.08);
+    color: hsl(var(--primary));
+  }
+  .carbon-nav-link[aria-current]:hover, .carbon-nav-link[aria-current]:active {
+    background: hsl(var(--text-brand-dark-primary) / 0.12);
+  }
+  .carbon-header-cta {
+    padding: 0 1rem;
+    background: hsl(var(--primary));
+    color: hsl(var(--on-accent));
+    font-weight: 600;
+  }
+  .carbon-header-cta:hover { background: hsl(var(--brand-hover)); }
+  .carbon-header-cta:active { background: hsl(var(--brand-pressed)); }
+  .carbon-brand:focus-visible, .carbon-nav-link:focus-visible, .carbon-header-cta:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .carbon-nav-link, .carbon-header-cta { transition: none; }
+  }
+  .public-search-content .app-page-header { top: 4rem; }
   .app-container {
     width: 100%;
     max-width: 80rem; /* 1280px = max-w-7xl */
@@ -338,8 +397,9 @@
   }
   @media (min-width: 1024px) {
     .app-page-header {
-      top: 4rem;
+      top: 4.5rem;
     }
+    .public-search-content .app-page-header { top: 4.5rem; }
   }
   .dark .app-page-header {
     border-color: hsl(var(--surface-border));

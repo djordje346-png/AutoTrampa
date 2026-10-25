@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Chrome as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
+import { House as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
 import BrandLockup from '@/components/BrandLockup';
 import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
@@ -16,10 +16,10 @@ const NAV_ITEMS = [
   { href: '/profile', label: 'Profil', icon: User },
 ] as const;
 
-function Badge({ count }: { count: number }) {
+function Badge({ count, desktop = false }: { count: number; desktop?: boolean }) {
   if (count <= 0) return null;
   return (
-    <span className="absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ring-[hsl(var(--surface-brand-dark))]">
+    <span aria-hidden={desktop || undefined} className={desktop ? 'ml-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white/10 px-1 text-[10px] font-semibold leading-none text-brand-dark-primary tabular-nums' : 'absolute -right-1 top-0 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold leading-none text-on-accent ring-2 ring-[hsl(var(--surface-brand-dark))]'}>
       {count > 9 ? '9+' : count}
     </span>
   );
@@ -43,13 +43,13 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
     <>
       <nav
         aria-label="Glavna navigacija"
-        className={`fixed inset-x-0 top-0 z-50 hidden border-b border-brand-dark bg-brand-dark text-brand-dark-primary shadow-sm ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
+        className={`carbon-header fixed inset-x-0 top-0 z-50 hidden ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
       >
-        <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-8">
-          <Link href="/" aria-label="AutoTrampa — početna" className="flex w-fit items-center gap-2 text-brand-dark-primary">
-            <BrandLockup />
+        <div className="app-container grid h-[71px] grid-cols-[auto_minmax(0,1fr)] items-center gap-6">
+          <Link href="/" aria-label="AutoTrampa — početna" className="carbon-brand">
+            <BrandLockup header />
           </Link>
-          <div className="flex items-center justify-end gap-0 xl:gap-1">
+          <div className="flex min-w-0 items-center justify-end gap-1 xl:gap-2">
             {NAV_ITEMS.filter(({ href }) => href !== '/profile').map(({ href, label, icon: Icon }) => {
               const active = pathname === href;
               const count = badgeFor(href);
@@ -58,15 +58,14 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
                   key={href}
                   href={href}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative flex items-center gap-2 rounded-lg px-1.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 xl:px-3 xl:text-sm ${
-                    active ? 'bg-white/10 text-brand-500' : 'text-brand-dark-secondary hover:bg-white/10 hover:text-brand-dark-primary'
-                  }`}
+                  aria-label={count > 0 ? `${label}, ${count} ${href === '/saved' ? 'sačuvanih oglasa' : 'nepročitanih poruka'}` : undefined}
+                  className="carbon-nav-link"
                 >
                   <span className="relative flex">
-                    <Icon size={17} strokeWidth={active ? 2.4 : 1.9} />
-                    <Badge count={count} />
+                    <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
                   </span>
                   {label}
+                  <Badge count={count} desktop />
                 </Link>
               );
             })}
@@ -74,9 +73,9 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
               href="/profile"
               aria-label="Profil"
               aria-current={pathname === '/profile' ? 'page' : undefined}
-              className={`ml-2 flex h-10 w-10 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${pathname === '/profile' ? 'text-brand-500' : 'text-brand-dark-primary hover:text-brand-500'}`}
+              className="carbon-nav-link ml-3 !w-11 !px-0 xl:ml-5"
             >
-              <User size={19} />
+              <User size={19} strokeWidth={1.8} aria-hidden="true" />
             </Link>
           </div>
         </div>

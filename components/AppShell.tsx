@@ -30,17 +30,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      {!isPublicLanding && <Footer hideDesktopHeader={isPublicSearch} />}
+      {!isPublicLanding && !isPublicSearch && <Footer />}
       {isPublicSearch && (
-        <div className="hidden lg:block">
           <PublicHeader
             onAddCar={() => requireAuth('Prijavi se i dodaj svoj oglas', undefined, '/?intent=add-car')}
             onSignIn={() => requireAuth('Prijavi se na AutoTrampu')}
             onRegister={() => requireAuth('Napravi AutoTrampa nalog', undefined, undefined, 'register')}
           />
-        </div>
       )}
-      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? 'lg:pt-16' : ''}`}>
+      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : isPublicSearch ? 'pb-8' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? 'lg:pt-[72px]' : ''} ${isPublicSearch ? 'public-search-content' : ''}`}>
         {children}
       </main>
 
