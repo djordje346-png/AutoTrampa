@@ -258,8 +258,8 @@ export default function ProfileClient() {
               value={radiusDraft}
               disabled={!preferencesReady}
               onChange={e => setRadiusDraft(Number(e.target.value))}
-              onPointerUp={() => void savePreference({ radius: radiusDraft })}
-              onBlur={() => void savePreference({ radius: radiusDraft })}
+              onPointerUp={(e) => void savePreference({ radius: Number(e.currentTarget.value) })}
+              onBlur={(e) => void savePreference({ radius: Number(e.currentTarget.value) })}
               className="w-full h-2 bg-elevated rounded-full appearance-none cursor-pointer accent-brand-500"
             />
           </div>
