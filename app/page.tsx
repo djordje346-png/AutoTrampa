@@ -379,15 +379,15 @@ function AuthenticatedFeed({
       {/* Header */}
       <div className="app-page-header safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
         <header className="app-container py-3">
-          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-shrink-0 lg:hidden">
               <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">AutoTrampa</h1>
               <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
               {/* View mode toggle */}
-              <div className="flex bg-elevated rounded-lg p-0.5 border border-surface dark:border-surface lg:hidden">
+              <div className="flex shrink-0 bg-elevated rounded-lg p-0.5 border border-surface dark:border-surface lg:hidden">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
@@ -419,10 +419,10 @@ function AuthenticatedFeed({
                   Dodaj auto
                 </button>
               ) : showTrade && (
-              <div className={`relative flex-shrink-0 ${viewMode === 'grid' ? 'lg:hidden' : ''}`} ref={selectorRef}>
+              <div className={`relative min-w-0 max-w-[calc(100%-5.5rem)] shrink-0 ${viewMode === 'grid' ? 'lg:hidden' : ''}`} ref={selectorRef}>
                 <button
                   onClick={() => setSelectorOpen(p => !p)}
-                  className="flex items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface dark:border-surface"
+                  className="flex max-w-full min-w-0 items-center gap-2 bg-elevated hover:bg-hover-surface rounded-xl pl-2 pr-2.5 py-1.5 transition-all duration-200 border border-surface dark:border-surface"
                   aria-label="Izaberi vozilo"
                 >
                   {mounted && selectedCar ? (
@@ -432,13 +432,13 @@ function AuthenticatedFeed({
                           <img src={selectedCar.image} alt={selectedCar.model} className="w-full h-full object-cover" />
                         )}
                       </div>
-                      <div className="text-left min-w-0 max-w-[80px]">
+                      <div className="text-left min-w-0 max-w-[120px]">
                         <p className="text-[8px] text-app-muted font-medium uppercase tracking-widest leading-none mb-0.5">Moj auto</p>
                         <p className="text-[11px] font-bold text-app-primary dark:text-app-primary truncate leading-tight">
                           {selectedCar.brand} {selectedCar.model}
                         </p>
                       </div>
-                      <ChevronDown size={14} className={`text-app-muted transition-transform duration-200 ${selectorOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown size={14} className={`shrink-0 text-app-muted transition-transform duration-200 ${selectorOpen ? 'rotate-180' : ''}`} />
                     </>
                   ) : (
                     <>
