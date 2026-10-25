@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter, Outfit } from 'next/font/google';
+import { Inter, Manrope } from 'next/font/google';
 import AppShell from '@/components/AppShell';
 
 const inter = Inter({
@@ -9,9 +9,9 @@ const inter = Inter({
   display: 'swap',
 });
 
-const outfit = Outfit({
+const manrope = Manrope({
   subsets: ['latin', 'latin-ext'],
-  variable: '--font-outfit',
+  variable: '--font-manrope',
   display: 'swap',
 });
 
@@ -80,7 +80,7 @@ const themeInitScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sr" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
+    <html lang="sr" className={`${inter.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
