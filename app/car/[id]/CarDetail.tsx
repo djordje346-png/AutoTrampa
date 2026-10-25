@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Eye, Zap, Share2, Check, Plus, Info, Pencil } from 'lucide-react';
+import { HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Zap, Share2, Check, Plus, Info, Pencil, CarFront, ChevronLeft, ChevronRight, Maximize2, ImageOff, Palette } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import TradeBadge from '@/components/TradeBadge';
-import { fuelLabel, transmissionLabel, vehicleConditionLabel } from '@/lib/labels';
+import { bodyLabel, fuelLabel, transmissionLabel, vehicleConditionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { getCarImages, type Car, type MyGarageCar } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
@@ -27,7 +27,12 @@ import CarForm from '@/components/CarForm';
 /** Shared card chrome, so every block on the page has the same padding. */
 const CARD = 'rounded-2xl border border-surface bg-card-surface p-5 shadow-sm dark:border-surface dark:bg-card-surface sm:p-6';
 /** Action chip used for the secondary buttons (save, call). */
-const CHIP = 'flex min-h-11 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface dark:border-surface';
+const CHIP = 'flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-surface bg-elevated text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface dark:border-surface';
+
+function knownValue(value: string | null | undefined) {
+  const text = displayValue(value);
+  return /^(nije navedeno|nije navedena|nepoznato|unknown|n\/a)$/i.test(text) ? '' : text;
+}
 
 /**
  * The listing view. The listing itself is resolved on the server (see
@@ -52,6 +57,21 @@ export default function CarDetail({ car: listing }: { car: Car }) {
   const [offerOpen, setOfferOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
+  const [bottomNavHeight, setBottomNavHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!authReady || !isLoggedIn || typeof ResizeObserver === 'undefined') return;
+    const navigation = document.querySelector<HTMLElement>('[data-app-bottom-nav]');
+    if (!navigation) return;
+    const measure = () => setBottomNavHeight(navigation.getBoundingClientRect().height);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(navigation);
+    return () => observer.disconnect();
+  }, [authReady, isLoggedIn]);
 
   const currentCar = car;
 
@@ -83,19 +103,26 @@ export default function CarDetail({ car: listing }: { car: Car }) {
   const contactNote = isOwner || !authReady
     ? null
     : contactPhoneMessage(ownerContact.status);
-  const carImages = getCarImages(car);
+  const carImages = getCarImages(car).filter(Boolean);
+  const imageIndex = Math.min(activeImage, Math.max(0, carImages.length - 1));
+  const photo = carImages[imageIndex];
+  const changeImage = (direction: number) => {
+    if (carImages.length > 1) setActiveImage((imageIndex + direction + carImages.length) % carImages.length);
+  };
   // "E60 · Sapphire Black", or nothing when the form left both fields empty.
   const subtitle = carSubtitle(car);
   const condition = vehicleConditionLabel(car.condition);
 
   const specs = [
-    { icon: Gauge, label: 'Kilometraža', value: formatKm(car.mileage) },
+    { icon: Gauge, label: 'Kilometraža', value: car.mileage === null ? '' : formatKm(car.mileage) },
     { icon: Fuel, label: 'Gorivo', value: fuelLabel(car.specs.fuelType) },
     { icon: Settings2, label: 'Menjač', value: transmissionLabel(car.specs.transmission) },
-    { icon: Calendar, label: 'Godina', value: formatYear(car.year) },
+    { icon: Calendar, label: 'Godište', value: car.year ? formatYear(car.year) : '' },
     { icon: Zap, label: 'Snaga', value: car.specs.power },
-    { icon: Eye, label: 'Pogon', value: displayValue(car.specs.drivetrain) || 'Nije navedeno' },
-  ];
+    { icon: Settings2, label: 'Pogon', value: car.specs.drivetrain },
+    { icon: CarFront, label: 'Karoserija', value: bodyLabel(car.bodyType) },
+    { icon: Palette, label: 'Boja', value: car.color },
+  ].filter(({ value }) => knownValue(value));
 
   const engineDetails = [
     { label: 'Motor', value: car.specs.engine },
@@ -104,7 +131,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
     { label: 'Obrtni moment', value: car.specs.torque },
     { label: 'Maks. brzina', value: car.specs.topSpeed },
     { label: '0–100 km/h', value: car.specs.acceleration },
-  ];
+  ].filter(({ value }) => knownValue(value));
 
   function handleOfferClick() {
     if (isOwner) return;
@@ -169,447 +196,126 @@ export default function CarDetail({ car: listing }: { car: Car }) {
       : 'Otvori garažu';
 
   return (
-    <div className="min-h-screen pb-28 md:pb-10">
-      <section
-        id="oglas"
-        className="app-container pb-10 pt-4 sm:pb-12 sm:pt-6 lg:pt-8"
-      >
-        {/* Keep the listing, owner and location cards together in one desktop column. */}
-        <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.95fr)] lg:items-start lg:gap-5 xl:gap-6">
-          <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-black shadow-sm dark:border-surface sm:aspect-[16/10] lg:col-start-1 lg:row-start-1 lg:aspect-square xl:aspect-[4/3]">
-            <div
-              className="flex h-full cursor-zoom-in transition-transform duration-300 ease-out"
-              style={{ transform: `translateX(-${activeImage * 100}%)` }}
-              onClick={() => setLightboxOpen(true)}
-            >
-              {carImages.map((img, i) => (
-                <img
-                  key={i}
-                  src={img}
-                  alt={`${car.brand} ${car.model} - slika ${i + 1}`}
-                  className="h-full w-full flex-shrink-0 object-cover"
-                />
-              ))}
-            </div>
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
-
-            <div className="safe-top absolute inset-x-0 top-0 z-10 flex items-center justify-between p-3 sm:p-4">
+    <div className="min-h-screen pb-24 lg:pb-6">
+      <section id="oglas" className="app-container py-4 sm:py-6">
+        <nav aria-label="Putanja oglasa" className="mb-4 flex min-w-0 items-center gap-2 text-xs text-app-muted">
+          <Link href="/search" className="shrink-0 transition-colors hover:text-app-primary">Oglasi</Link>
+          <ChevronRight size={12} aria-hidden="true" />
+          <span className="truncate" aria-current="page">{car.brand} {car.model}</span>
+        </nav>
+        <div className="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-6">
+          <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+            <div className="relative isolate aspect-[4/3] overflow-hidden rounded-2xl border border-surface bg-elevated sm:aspect-[16/10]">
               <button
-                onClick={() => router.back()}
-                aria-label="Nazad"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-black/75"
+                type="button"
+                aria-label="Uvećaj fotografiju vozila"
+                className="absolute inset-0 w-full touch-pan-y cursor-zoom-in"
+                onTouchStart={(event) => { touchStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY }; swiped.current = false; }}
+                onTouchEnd={(event) => {
+                  if (!touchStart.current) return;
+                  const dx = event.changedTouches[0].clientX - touchStart.current.x;
+                  const dy = event.changedTouches[0].clientY - touchStart.current.y;
+                  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { changeImage(dx < 0 ? 1 : -1); swiped.current = true; }
+                  touchStart.current = null;
+                }}
+                onTouchCancel={() => { touchStart.current = null; }}
+                onClick={() => { if (swiped.current) { swiped.current = false; return; } if (photo && !failedImages.has(photo)) setLightboxOpen(true); }}
               >
-                <ArrowLeft size={18} />
+                {photo && !failedImages.has(photo) ? <img src={photo} alt={`${car.brand} ${car.model} — slika ${imageIndex + 1}`} width={1200} height={750} className="h-full w-full object-cover" draggable={false} onError={() => setFailedImages(previous => new Set(previous).add(photo))} /> : <span className="flex h-full flex-col items-center justify-center gap-3 text-app-muted"><ImageOff size={36} aria-hidden="true" /><span className="text-sm">Fotografija nije dostupna</span></span>}
               </button>
-
-              <div className="flex gap-2">
-                {authReady && !isOwner && (
-                  <button
-                    onClick={() => void likeCar(car)}
-                    disabled={isLiking(car.id)}
-                    aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-                    title="Lajkuj i sačuvaj za match"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-colors hover:text-brand-300 disabled:opacity-60"
-                  >
-                    <HeartHandshake size={17} />
-                  </button>
-                )}
-                <button
-                  onClick={shareCar}
-                  aria-label="Podeli oglas"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-black/75"
-                >
-                  <Share2 size={16} />
-                </button>
-                {carImages.length > 1 && (
-                  <span className="flex items-center rounded-full bg-black/60 px-3 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
-                    {activeImage + 1} / {carImages.length}
-                  </span>
-                )}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/40 to-transparent" />
+              <span className="pointer-events-none absolute left-3 top-3 rounded-lg bg-black/65 px-3 py-2 text-xs font-semibold tabular-nums text-white" aria-live="polite">{carImages.length ? `${imageIndex + 1} / ${carImages.length}` : 'Bez fotografija'}</span>
+              <div className="absolute right-3 top-3 flex gap-2">
+                {authReady && !isOwner && <button type="button" onClick={() => void likeCar(car)} disabled={isLiking(car.id)} aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`} title="Lajkuj i sačuvaj za match" className="listing-photo-control disabled:opacity-60"><HeartHandshake size={19} aria-hidden="true" /></button>}
+                <button type="button" onClick={shareCar} aria-label="Podeli oglas" className="listing-photo-control"><Share2 size={18} aria-hidden="true" /></button>
               </div>
+              {carImages.length > 1 && <>
+                <button type="button" onClick={() => changeImage(-1)} aria-label="Prethodna fotografija" className="listing-photo-control absolute left-3 top-1/2 -translate-y-1/2"><ChevronLeft size={23} aria-hidden="true" /></button>
+                <button type="button" onClick={() => changeImage(1)} aria-label="Sledeća fotografija" className="listing-photo-control absolute right-3 top-1/2 -translate-y-1/2"><ChevronRight size={23} aria-hidden="true" /></button>
+              </>}
+              {photo && !failedImages.has(photo) && <span className="pointer-events-none absolute bottom-3 right-3 rounded-lg bg-black/65 p-2 text-white"><Maximize2 size={16} aria-hidden="true" /></span>}
             </div>
-
-            {carImages.length > 1 && (
-              <div
-                className="absolute inset-x-0 bottom-0 z-10 flex justify-center gap-1.5 p-4"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {carImages.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImage(i)}
-                    aria-label={`Prikaži sliku ${i + 1}`}
-                    aria-current={i === activeImage}
-                    className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-6 bg-brand-500' : 'w-1.5 bg-white/70 hover:bg-card-surface'}`}
-                  />
-                ))}
-              </div>
-            )}
+            {carImages.length > 1 && <div aria-label="Fotografije vozila" className="mt-2.5 flex gap-2 overflow-x-auto overscroll-x-contain pb-1">
+              {carImages.map((image, index) => <button key={`${image}-${index}`} type="button" aria-label={`Prikaži fotografiju ${index + 1}`} aria-pressed={imageIndex === index} onClick={() => setActiveImage(index)} className={`relative aspect-[4/3] w-[calc((100%-1.5rem)/4)] max-w-[110px] shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${imageIndex === index ? 'border-brand-500' : 'border-surface hover:border-app-muted'}`}>
+                {failedImages.has(image) ? <span className="flex h-full items-center justify-center bg-elevated text-app-muted"><ImageOff size={20} aria-hidden="true" /></span> : <img src={image} alt="" width={160} height={120} loading="lazy" className="h-full w-full object-cover" onError={() => setFailedImages(previous => new Set(previous).add(image))} />}
+              </button>)}
+            </div>}
           </div>
 
-          <aside className="min-w-0 space-y-5 lg:sticky lg:top-6 lg:row-span-2 lg:row-start-1 lg:col-start-2 lg:self-start">
-            <section className={`flex min-w-0 flex-col ${CARD}`}>
+          <section aria-label="Vozilo i ponuda za zamenu" className={`${CARD} min-w-0 lg:sticky lg:top-[88px] lg:col-start-2 lg:row-start-1`}>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-text">
-                {isOwner ? 'Tvoj oglas' : 'Oglas za zamenu'}
-              </span>
-              {showTrade && tl && (
-                <TradeBadge trade={tl} />
-              )}
-              {!car.ownerId && (
-                <span className="rounded-full border border-surface bg-elevated px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-app-muted">
-                  Demo oglas
-                </span>
-              )}
+              <span className="rounded-full bg-elevated px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-app-secondary">{isOwner ? 'Tvoj oglas' : 'Oglas za zamenu'}</span>
+              {!car.ownerId && <span className="text-xs text-app-muted">Demo oglas</span>}
             </div>
-
-            <div className="mt-4 min-w-0">
-              <h1 className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-app-primary dark:text-app-primary sm:text-3xl lg:text-4xl">
-                {carTitle(car)}
-              </h1>
-              {subtitle && <p className="mt-1 text-sm text-app-muted">{subtitle}</p>}
-              {condition && <p className="mt-2 inline-flex rounded-full border border-surface bg-elevated px-3 py-1 text-xs font-semibold text-app-secondary dark:border-surface dark:text-app-secondary">Stanje: {condition}</p>}
-              {location && (
-                <p className="mt-2 inline-flex items-center gap-2 text-sm text-app-secondary dark:text-app-secondary">
-                  <MapPin size={15} className="shrink-0 text-app-muted" />
-                  {location}
-                </p>
-              )}
+            <h1 className="mt-3 break-words font-heading text-3xl font-bold leading-tight tracking-tight text-app-primary xl:text-4xl">{car.brand} {car.model}</h1>
+            <p className="mt-2 break-words text-sm leading-relaxed text-app-secondary">{[car.year ? formatYear(car.year) : '', knownValue(car.specs.power), car.specs.transmission ? transmissionLabel(car.specs.transmission) : '', car.bodyType ? bodyLabel(car.bodyType) : ''].filter(Boolean).join(' · ')}</p>
+            {subtitle && <p className="mt-1 break-words text-xs text-app-muted">{subtitle}</p>}
+            <div className="my-5 border-y border-surface py-4">
+              <p className="text-xs font-medium text-app-muted">Vrednost vozila</p>
+              <p className="mt-1 break-words font-sans text-[2rem] font-bold leading-tight tracking-tight tabular-nums text-app-primary sm:text-4xl">{formatEuro(car.price)}</p>
             </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-2 border-y border-surface py-3 dark:border-surface sm:grid-cols-3">
-              {specs.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="min-w-0 rounded-xl bg-elevated/70 p-2.5">
-                  <div className="flex min-w-0 items-center gap-1">
-                    <Icon size={13} className="shrink-0 text-brand-text" />
-                    <p className="truncate text-[11px] font-semibold uppercase leading-tight tracking-wider text-app-muted">{label}</p>
-                  </div>
-                  <p className="mt-1 truncate pl-4 text-[13px] font-semibold leading-tight text-app-primary dark:text-app-primary">{value}</p>
+            {!isOwner && <div className="mb-4 rounded-xl border border-surface bg-elevated p-3.5">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-app-primary"><ArrowLeftRight size={18} className="shrink-0 text-brand-text" aria-hidden="true" />Poređenje zamene</h2>
+              {!authReady || (isLoggedIn && !garageMounted) ? <p role="status" className="mt-2 text-xs text-app-muted">Učitavanje tvog vozila…</p> : showTrade && tl && selectedCar ? <>
+                <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
+                  <div className="min-w-0"><p className="text-[11px] text-app-muted">Tvoj auto</p><p className="mt-1 break-words text-sm font-semibold">{selectedCar.brand} {selectedCar.model}</p><p className="mt-1 text-xs tabular-nums text-app-secondary">{formatEuro(selectedCar.price)}</p></div>
+                  <ArrowLeftRight size={16} className="text-app-muted" aria-hidden="true" />
+                  <div className="min-w-0 text-right"><p className="text-[11px] text-app-muted">Ovaj auto</p><p className="mt-1 break-words text-sm font-semibold">{car.brand} {car.model}</p><p className="mt-1 text-xs tabular-nums text-app-secondary">{formatEuro(car.price)}</p></div>
                 </div>
-              ))}
-            </div>
+                <TradeBadge trade={tl} className="mt-3 w-full justify-center whitespace-normal rounded-lg px-3 py-2 text-xs" />
+                <p className="mt-2 text-[11px] leading-relaxed text-app-muted">Orijentaciona razlika oglašenih vrednosti. Konačnu doplatu dogovarate direktno.</p>
+              </> : <>
+                <p className="mt-2 text-xs leading-relaxed text-app-secondary">Dodaj svoj auto da vidiš orijentacionu razliku u vrednosti.</p>
+                {isLoggedIn ? <Link href="/garage" className="mt-3 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-secondary-accent"><Plus size={16} aria-hidden="true" />Dodaj auto u garažu</Link> : <button type="button" onClick={() => requireAuth('Prijavi se i dodaj svoj auto', undefined, '/?intent=add-car', 'register')} className="mt-3 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-secondary-accent"><Plus size={16} aria-hidden="true" />Dodaj svoj auto</button>}
+              </>}
+            </div>}
+            {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] w-full text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" />{ownerActionLabel}</button> : authReady && <>
+              <button onClick={handleOfferClick} className="btn-primary min-h-[48px] w-full text-sm"><ArrowLeftRight size={19} aria-hidden="true" />Pošalji ponudu</button>
+              {ownerContact.href ? <a href={ownerContact.href} onClick={event => { event.preventDefault(); void handleCall(); }} aria-label={`Pozovi ${car.owner.name}`} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</a> : <button type="button" onClick={() => void handleCall()} title={contactNote ?? undefined} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</button>}
+              {contactNote && <p role="status" className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-app-muted"><Info size={13} className="mt-0.5 shrink-0" aria-hidden="true" />{contactNote}</p>}
+            </>}
+            {location && <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-app-secondary"><MapPin size={15} className="shrink-0" aria-hidden="true" />{location}</p>}
+          </section>
 
-            <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(150px,1.15fr)] lg:items-center">
-              <div className="min-w-0 rounded-2xl bg-elevated/70 px-4 py-3 lg:px-3">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Cena vozila</p>
-                <p className="mt-0.5 truncate font-sans text-2xl font-bold tracking-tight tabular-nums text-app-primary dark:text-app-primary xl:text-3xl">{formatEuro(car.price)}</p>
-              </div>
-
-              {isOwner ? (
-                <button
-                  onClick={handleOwnListingEdit}
-                  disabled={!garageMounted}
-                  className="btn-primary hidden h-12 min-h-12 w-full min-w-0 px-3 py-0 text-xs disabled:cursor-wait disabled:opacity-60 md:inline-flex"
-                >
-                  <Pencil size={15} className="shrink-0" />
-                  <span className="truncate">{ownerActionLabel}</span>
-                </button>
-              ) : authReady ? (
-                <div className="grid min-w-0 gap-2">
-                  <button
-                    onClick={handleOfferClick}
-                    className="btn-primary hidden h-12 min-h-12 w-full min-w-0 px-3 py-0 text-xs md:inline-flex"
-                  >
-                    <ArrowLeftRight size={15} className="shrink-0" />
-                    <span className="truncate">Pošalji ponudu</span>
-                  </button>
-                  {ownerContact.href ? (
-                    <a
-                      href={ownerContact.href}
-                      onClick={(event) => { event.preventDefault(); void handleCall(); }}
-                      aria-label={`Pozovi ${car.owner.name}`}
-                      className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-hover-surface hover:text-brand-text active:scale-[0.98] dark:border-surface"
-                    >
-                      <Phone size={15} className="shrink-0" />
-                      <span className="truncate">Pozovi</span>
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => void handleCall()}
-                      title={contactNote ?? undefined}
-                      className="inline-flex h-12 min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 py-0 text-xs font-bold text-app-secondary shadow-sm transition-all duration-200 hover:bg-hover-surface dark:border-surface"
-                    >
-                      <Phone size={15} className="shrink-0" />
-                      <span className="truncate">Pozovi</span>
-                    </button>
-                  )}
-                </div>
-              ) : <div aria-hidden="true" className="hidden h-12 md:block" />}
-            </div>
-
-            {/* Keep the missing-phone explanation only on other users' listings. */}
-            {!isOwner && contactNote && (
-              <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-app-muted">
-                <Info size={12} className="mt-0.5 shrink-0" />
-                {contactNote}
-              </p>
-            )}
-            </section>
-
-            {isOwner ? (
-              <section className={CARD}>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Moj oglas</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Oglas je objavljen sa tvog naloga</h2>
-                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
-                  Podatke i fotografije možeš da izmeniš dugmetom „Uredi oglas”.
-                </p>
-              </section>
-            ) : (
-              <section className={CARD}>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Prodavac</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">O vlasniku</h2>
-                <div className="mt-4 flex min-w-0 items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-on-accent">
-                    <span className="text-base font-black">{car.owner.name[0]}</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-app-primary dark:text-app-primary">{car.owner.name}</p>
-                    <p className="mt-0.5 text-xs text-app-muted">Član AutoTrampe</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1 rounded-full bg-elevated px-2.5 py-1.5">
-                    <Star size={13} className="fill-brand-500 text-brand-500" />
-                    <span className="text-xs font-bold text-app-primary dark:text-app-primary">{car.owner.rating.toFixed(1)}</span>
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 dark:border-surface">
-                  <span className="text-sm text-app-muted">Ocena vlasnika</span>
-                  <span className="text-sm font-semibold text-app-secondary dark:text-app-secondary">{car.owner.rating.toFixed(1)} / 5</span>
-                </div>
-                {ownerContact.href && (
-                  <a
-                    href={ownerContact.href}
-                    onClick={(event) => { event.preventDefault(); void handleCall(); }}
-                    className={`mt-4 w-full hover:text-brand-text ${CHIP}`}
-                  >
-                    <Phone size={16} />
-                    Pozovi vlasnika
-                  </a>
-                )}
-              </section>
-            )}
-
+          <div className="min-w-0 space-y-5 lg:col-start-1 lg:row-start-2">
+            {specs.length > 0 && <section className={CARD}>
+              <h2 className="text-lg font-semibold text-app-primary">Osnovne informacije</h2>
+              <dl className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
+                {specs.map(({icon:Icon,label,value}) => <div key={label} className="min-w-0 rounded-xl bg-elevated p-3"><dt className="flex items-center gap-1.5 text-[11px] text-app-muted"><Icon size={15} className="shrink-0" aria-hidden="true" />{label}</dt><dd className="mt-1.5 break-words text-sm font-semibold leading-snug text-app-primary">{value}</dd></div>)}
+              </dl>
+              {condition && <p className="mt-4 text-sm text-app-secondary">Stanje: <span className="font-medium text-app-primary">{condition}</span></p>}
+            </section>}
+            {knownValue(car.description) && <section className={CARD}><h2 className="text-lg font-semibold text-app-primary">Opis vozila</h2><p className="mt-3 whitespace-pre-line break-words text-sm leading-7 text-app-secondary">{car.description}</p></section>}
+            {engineDetails.length > 0 && <section className={CARD}><h2 className="text-lg font-semibold text-app-primary">Tehnički podaci</h2><dl className="mt-3 divide-y divide-surface">{engineDetails.map(({label,value}) => <div key={label} className="flex min-w-0 items-start justify-between gap-4 py-3 text-sm"><dt className="text-app-muted">{label}</dt><dd className="min-w-0 break-words text-right font-medium text-app-primary">{value}</dd></div>)}</dl></section>}
+            {car.equipment && car.equipment.length > 0 && <section className={CARD}><h2 className="text-lg font-semibold text-app-primary">Oprema</h2><div className="mt-4 space-y-4">{EQUIPMENT_CATEGORIES.map(category => {
+              const items = category.items.filter(item => car.equipment!.includes(item.id));
+              if (!items.length) return null;
+              return <div key={category.id}><h3 className="mb-2 text-xs font-semibold text-app-muted">{category.label}</h3><ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">{items.map(item => <li key={item.id} className="flex items-start gap-2 text-sm text-app-secondary"><Check size={15} className="mt-0.5 shrink-0 text-secondary-accent" aria-hidden="true" />{item.label}</li>)}</ul></div>;
+            })}</div></section>}
+            {car.modifications?.some(knownValue) && <section className={CARD}><h2 className="text-lg font-semibold text-app-primary">Modifikacije</h2><ul className="mt-3 space-y-2">{car.modifications.filter(knownValue).map((mod,index) => <li key={`${index}-${mod}`} className="flex gap-2 break-words text-sm leading-relaxed text-app-secondary"><Check size={15} className="mt-1 shrink-0 text-secondary-accent" aria-hidden="true" /><span className="min-w-0 break-words">{mod}</span></li>)}</ul></section>}
+          </div>
+          <aside className="min-w-0 lg:col-start-2 lg:row-start-2">
             <section className={CARD}>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Preuzimanje vozila</p>
-              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Lokacija</h2>
-              <div className="mt-4 flex items-start gap-3 rounded-2xl bg-elevated p-4">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-brand-text" />
-                <div className="min-w-0">
-                  <p className="break-words text-sm font-semibold text-app-primary dark:text-app-primary">
-                    {location || 'Lokacija nije navedena'}
-                  </p>
-                </div>
+              <h2 className="text-lg font-semibold text-app-primary">{isOwner ? 'Tvoj oglas' : 'O vlasniku'}</h2>
+              <div className="mt-4 flex min-w-0 items-center gap-3">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-elevated font-heading text-lg font-semibold text-app-primary" aria-hidden="true">{car.owner.name?.trim().charAt(0) || 'K'}</span>
+                <div className="min-w-0"><p className="break-words font-semibold text-app-primary">{car.owner.name || 'Vlasnik vozila'}</p>{knownValue(car.owner.city) && <p className="mt-1 break-words text-xs text-app-muted">{car.owner.city}</p>}</div>
+                {car.ownerId && Number.isFinite(car.owner.rating) && car.owner.rating > 0 && <span className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-lg bg-elevated px-2 py-1 text-xs font-semibold text-app-primary" aria-label={`Ocena vlasnika ${car.owner.rating.toFixed(1)} od 5`}><Star size={14} className="text-brand-text" aria-hidden="true" />{car.owner.rating.toFixed(1)}</span>}
               </div>
+              {isOwner && <p className="mt-4 text-sm leading-relaxed text-app-secondary">Podatke i fotografije možeš da promeniš dugmetom „Uredi oglas”.</p>}
             </section>
           </aside>
-
-        {/* Details continue beneath the gallery while the right column stays sticky. */}
-        <div className="min-w-0 space-y-5 lg:col-start-1 lg:row-start-2">
-            <section className="rounded-2xl border border-brand-500/25 bg-brand-500/5 p-5 sm:p-6">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-text">
-                  <ArrowLeftRight size={19} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Dogovor o zameni</p>
-                  <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary sm:text-2xl">Šta vlasnik traži?</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
-                    Vlasnik prima ponude za zamenu. Predstavi automobil koji nudiš, a detalje dogovorite direktno kroz ponudu.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            <section className={CARD}>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Opis oglasa</p>
-              <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">O automobilu</h2>
-              <p className="mt-4 whitespace-pre-line break-words text-sm leading-7 text-app-secondary dark:text-app-secondary sm:text-base">
-                {car.description}
-              </p>
-            </section>
-
-            <section className="overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface">
-              <div className="border-b border-surface px-5 py-5 dark:border-surface sm:px-6">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Tehnički podaci</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Motor i performanse</h2>
-              </div>
-              <div className="divide-y divide-surface dark:divide-surface">
-                {engineDetails.map(({ label, value }) => (
-                  <div key={label} className="flex items-center justify-between gap-4 px-5 py-3.5 sm:px-6">
-                    <span className="text-sm text-app-muted">{label}</span>
-                    <span className="text-right text-sm font-semibold text-app-secondary dark:text-app-secondary">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {car.equipment && car.equipment.length > 0 && (
-              <section className={CARD}>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Komfor i bezbednost</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Oprema vozila</h2>
-                <div className="mt-5 space-y-5">
-                  {EQUIPMENT_CATEGORIES.map((category) => {
-                    const items = category.items.filter((item) => car.equipment!.includes(item.id));
-                    if (items.length === 0) return null;
-                    const CatIcon = category.icon;
-                    return (
-                      <div key={category.id}>
-                        <div className="mb-2 flex items-center gap-2">
-                          <CatIcon size={14} className="text-brand-text" />
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-app-secondary dark:text-app-secondary">{category.label}</p>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {items.map((item) => (
-                            <span
-                              key={item.id}
-                              className="inline-flex items-center gap-1.5 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs font-medium text-app-secondary dark:border-surface dark:text-app-secondary"
-                            >
-                              <Check size={12} className="text-brand-text" />
-                              {item.label}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-
-            {car.modifications && car.modifications.length > 0 && (
-              <section className={CARD}>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Dodatno</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Modifikacije</h2>
-                <ul className="mt-4 space-y-3">
-                  {car.modifications.map((mod) => (
-                    <li key={mod} className="flex items-start gap-2.5 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400" />
-                      {mod}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {/*
-              * Signed in with an empty garage: say so instead of hiding the
-              * block, because "why is there no doplata here" is the first
-              * question a new user has.
-              */}
-            {garageMounted && authReady && isLoggedIn && !isOwner && !selectedCar && (
-              <section className={CARD}>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Poređenje zamene</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Dodaj svoj auto</h2>
-                <p className="mt-2 text-sm leading-relaxed text-app-secondary dark:text-app-secondary">
-                  Doplata je razlika između vrednosti tvog i ovog vozila. Kada dodaš svoj auto u
-                  garažu, ovde ćeš videti koliko ko doplaćuje.
-                </p>
-                <Link
-                  href="/garage"
-                  className="btn-primary mt-4 w-full text-sm sm:w-auto"
-                >
-                  <Plus size={16} className="shrink-0" />
-                  Dodaj auto u garažu
-                </Link>
-              </section>
-            )}
-
-            {garageMounted && showTrade && tl && selectedCar && (
-              <section className={CARD}>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-app-muted">Za prijavljene korisnike</p>
-                <h2 className="mt-1 text-xl font-semibold text-app-primary dark:text-app-primary">Poređenje zamene</h2>
-                <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3">
-                  <div className="min-w-0 rounded-2xl bg-elevated p-3 text-center sm:p-4">
-                    <p className="text-[10px] text-app-muted">Tvoj auto</p>
-                    <p className="mt-1 truncate text-sm font-semibold text-app-primary dark:text-app-primary">{selectedCar.brand} {selectedCar.model}</p>
-                    <p className="mt-1 text-sm font-bold text-app-primary dark:text-app-primary">{formatEuro(selectedCar.price)}</p>
-                  </div>
-                  <ArrowLeftRight size={18} className="text-app-muted" />
-                  <div className="min-w-0 rounded-2xl bg-elevated p-3 text-center sm:p-4">
-                    <p className="text-[10px] text-app-muted">Ovaj auto</p>
-                    <p className="mt-1 truncate text-sm font-semibold text-app-primary dark:text-app-primary">{car.brand} {car.model}</p>
-                    <p className="mt-1 text-sm font-bold text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-center">
-                  <TradeBadge trade={tl} className="rounded-xl px-4 py-2.5 text-sm" />
-                </div>
-              </section>
-            )}
-        </div>
         </div>
       </section>
-
-      {/* Mobile action bar, sitting above the fixed bottom navigation. */}
-      {authReady && (
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 border-t border-surface bg-app/95 px-4 py-3 shadow-lg backdrop-blur md:hidden dark:border-surface dark:bg-background/95">
-          <div className="mx-auto flex w-full max-w-md gap-2 pb-4">
-            {isOwner ? (
-              <button
-                onClick={handleOwnListingEdit}
-                disabled={!garageMounted}
-                className="btn-primary min-h-12 min-w-0 flex-1 text-sm disabled:cursor-wait disabled:opacity-60"
-              >
-                <Pencil size={16} className="shrink-0" />
-                <span className="truncate">{ownerActionLabel}</span>
-              </button>
-            ) : (
-              <>
-                <button onClick={handleOfferClick} className="btn-primary min-h-12 min-w-0 flex-1 text-sm">
-                  <ArrowLeftRight size={16} className="shrink-0" />
-                  <span className="truncate">Pošalji ponudu</span>
-                </button>
-                {ownerContact.href ? (
-                  <a
-                    href={ownerContact.href}
-                    onClick={(event) => { event.preventDefault(); void handleCall(); }}
-                    aria-label={`Pozovi ${car.owner.name}`}
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-surface"
-                  >
-                    <Phone size={17} />
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => void handleCall()}
-                    aria-label="Proveri dostupnost broja telefona vlasnika"
-                    title={contactNote ?? undefined}
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-surface bg-elevated text-app-secondary hover:text-brand-text dark:border-surface"
-                  >
-                    <Phone size={17} />
-                  </button>
-                )}
-              </>
-            )}
-          </div>
+      {authReady && !lightboxOpen && !offerOpen && !ownEditOpen && <div style={isLoggedIn && bottomNavHeight !== null ? { bottom: bottomNavHeight } : undefined} className={`fixed inset-x-0 z-40 border-t border-surface bg-card-surface px-4 py-3 lg:hidden ${isLoggedIn ? 'bottom-[calc(72px+env(safe-area-inset-bottom))]' : 'bottom-0 pb-[calc(12px+env(safe-area-inset-bottom))]'}`}>
+        <div className="mx-auto flex max-w-2xl items-center gap-3">
+          <p className="min-w-0 shrink-0 text-lg font-bold tabular-nums text-app-primary">{formatEuro(car.price)}</p>
+          {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" /><span className="truncate">{ownerActionLabel}</span></button> : <button onClick={handleOfferClick} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm"><ArrowLeftRight size={18} className="shrink-0" aria-hidden="true" /><span className="truncate">Pošalji ponudu</span></button>}
         </div>
-      )}
-
-      {lightboxOpen && (
-        <ImageLightbox
-          images={carImages}
-          index={activeImage}
-          onIndexChange={setActiveImage}
-          onClose={() => setLightboxOpen(false)}
-          altPrefix={`${car.brand} ${car.model}`}
-        />
-      )}
-
-      {isOwner && ownEditOpen && ownerGarageCar && (
-        <CarForm
-          editingCar={ownerGarageCar}
-          onSave={handleOwnListingSave}
-          onCancel={() => setOwnEditOpen(false)}
-        />
-      )}
-
-      <TradeOfferSheet
-        car={offerOpen ? car : null}
-        myCar={selectedCar}
-        onClose={() => setOfferOpen(false)}
-      />
+      </div>}
+      {lightboxOpen && <ImageLightbox images={carImages} index={imageIndex} onIndexChange={setActiveImage} onClose={() => setLightboxOpen(false)} altPrefix={`${car.brand} ${car.model}`} />}
+      {isOwner && ownEditOpen && ownerGarageCar && <CarForm editingCar={ownerGarageCar} onSave={handleOwnListingSave} onCancel={() => setOwnEditOpen(false)} />}
+      <TradeOfferSheet car={offerOpen ? car : null} myCar={selectedCar} onClose={() => setOfferOpen(false)} />
     </div>
   );
 }
-

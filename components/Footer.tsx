@@ -81,6 +81,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
         </div>
       </nav>
       <nav
+        data-app-bottom-nav
         aria-label="Glavna navigacija"
         className="fixed bottom-0 left-0 right-0 z-50 border-t border-brand-dark bg-brand-dark text-brand-dark-secondary safe-bottom lg:hidden"
       >

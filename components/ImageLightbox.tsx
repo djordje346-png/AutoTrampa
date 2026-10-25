@@ -22,6 +22,29 @@ export function ImageLightbox({
   const touchStartY = useRef<number | null>(null);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const previous = document.activeElement;
+    dialogRef.current?.focus();
+    function trapFocus(event: KeyboardEvent) {
+      if (event.key !== 'Tab') return;
+      const controls = dialogRef.current?.querySelectorAll<HTMLButtonElement>('button');
+      if (!controls?.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialogRef.current)) {
+        event.preventDefault(); first.focus();
+      }
+    }
+    document.addEventListener('keydown', trapFocus);
+    return () => {
+      document.removeEventListener('keydown', trapFocus);
+      if (previous instanceof HTMLElement) previous.focus();
+    };
+  }, []);
 
   const goPrev = useCallback(() => {
     if (images.length <= 1) return;
@@ -101,6 +124,11 @@ export function ImageLightbox({
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Galerija fotografija vozila"
+      tabIndex={-1}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black select-none"
       onClick={onClose}
     >
@@ -171,6 +199,8 @@ export function ImageLightbox({
             <button
               key={i}
               onClick={() => onIndexChange(i)}
+              aria-label={`Prikaži sliku ${i + 1}`}
+              aria-pressed={i === index}
               className={`h-2 rounded-full transition-all ${
                 i === index ? 'w-6 bg-brand-500' : 'w-2 bg-white/50'
               }`}

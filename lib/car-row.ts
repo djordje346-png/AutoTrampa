@@ -175,7 +175,7 @@ function baseFields(row: CarRow) {
       // Never carried on a listing: the phone lives in the private profile row.
       phone: '',
       city: row.owner_city ?? row.city ?? '-',
-      rating: toNumber(row.owner_rating, 5),
+      rating: toNumber(row.owner_rating, 0),
     },
     description: row.description ?? '',
     modifications: rowList(row.modifications),

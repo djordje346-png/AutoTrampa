@@ -402,15 +402,15 @@ test('actual listing detail uses authorized tel links in desktop and mobile bran
   let renderer;
   await act(async () => { renderer = create(React.createElement(CarDetail, { car })); });
   const links = renderer.root.findAll((node) => node.type === 'a' && node.props.href?.startsWith('tel:'));
-  assert.equal(links.length, 3, 'Desktop CTA, owner card and mobile action must share authorized contact');
+  assert.equal(links.length, 1, 'One authorized call action avoids duplicating contact controls');
   assert.ok(links.every((node) => node.props.href === `tel:${PHONE}`), 'Denormalized listing owner.phone must never be used');
   for (const node of links) {
     await act(async () => { node.props.onClick({ preventDefault() {} }); });
   }
-  assert.deepEqual(ctx.dialed, Array(3).fill(`tel:${PHONE}`));
+  assert.deepEqual(ctx.dialed, Array(1).fill(`tel:${PHONE}`));
   ctx.rpc = async () => ({ data: { status: 'hidden' }, error: null });
   await act(async () => { links[0].props.onClick({ preventDefault() {} }); });
-  assert.equal(ctx.dialed.length, 3);
+  assert.equal(ctx.dialed.length, 1);
   assert.equal(renderer.root.findAll((node) => node.type === 'a' && node.props.href?.startsWith('tel:')).length, 0);
   assert.ok(ctx.toasts.some((item) => String(item.args[0]).includes('Potvrda zamene')));
   await act(async () => renderer.unmount());
@@ -439,6 +439,86 @@ test('actual messages desktop and mobile call controls resolve contact for the a
   assert.deepEqual(ctx.dialed, []);
   assert.equal(renderer.root.findAll((node) => node.type === 'a' && node.props.href?.startsWith('tel:')).length, 0);
   assert.equal(renderer.root.findAll((node) => node.props.role === 'status' && String(node.props.children).includes('Potvrda zamene')).length, 2);
+  await act(async () => renderer.unmount());
+});
+
+test('listing navigation waits for auth and chooses only public or application navigation', async () => {
+  let pathname = `/car/${CAR_B}`;
+  const { ctx, load } = harness({
+    'next/navigation': { usePathname: () => pathname },
+    '@/components/Footer': { default: () => React.createElement('nav', { 'data-nav': 'app' }), __esModule: true },
+    '@/components/PublicHeader': { default: () => React.createElement('nav', { 'data-nav': 'public' }), __esModule: true },
+    '@/components/DesktopFooter': { DesktopFooter: () => null },
+    '@/components/AuthOverlay': { default: () => null, __esModule: true },
+    '@/components/PhoneGateHost': { default: () => null, __esModule: true },
+    '@/components/ui/sonner': { Toaster: () => null },
+  });
+  const Shell = load('@/components/AppShell').default;
+  let renderer;
+  ctx.auth = { ...authFor(null), mounted: false };
+  await act(async () => { renderer = create(React.createElement(Shell, null, 'listing')); });
+  assert.equal(renderer.root.findAllByType('nav').length, 0, 'Pending auth must not guess navigation');
+  ctx.auth = authFor(null);
+  await act(async () => renderer.update(React.createElement(Shell, null, 'listing')));
+  assert.equal(renderer.root.findByType('nav').props['data-nav'], 'public');
+  pathname = '/search';
+  await act(async () => renderer.update(React.createElement(Shell, null, 'listing')));
+  assert.equal(renderer.root.findByType('nav').props['data-nav'], 'public');
+  pathname = `/car/${CAR_B}`;
+  ctx.auth = authFor(A);
+  await act(async () => renderer.update(React.createElement(Shell, null, 'listing')));
+  assert.equal(renderer.root.findByType('nav').props['data-nav'], 'app');
+  assert.match(renderer.root.findByType('main').props.className, /pt-\[72px\]/);
+  await act(async () => renderer.unmount());
+});
+
+test('listing gallery, trade comparison, missing specs and own-listing controls preserve state', async () => {
+  let selected = null;
+  let garageCars = [];
+  let sheet;
+  let editor;
+  let lightbox;
+  const { ctx, load } = harness({
+    '@/hooks/use-garage': { useGarage: () => ({ cars: garageCars, selectedCar: selected, mounted: true }), garageErrorMessage: () => '' },
+    '@/hooks/use-saved': { useSaved: () => ({ save() {} }) },
+    '@/hooks/use-swipes': { useSwipes: () => ({ recordSwipe() {} }) },
+    '@/hooks/use-match-like': { useMatchLike: () => ({ likeCar() {}, isLiking: () => false }) },
+    '@/hooks/use-phone-gate': { requestPhoneAction: (action) => action() },
+    '@/components/ImageLightbox': { ImageLightbox: (props) => { lightbox = props; return null; } },
+    '@/components/TradeOfferSheet': { TradeOfferSheet: (props) => { sheet = props; return null; } },
+    '@/components/CarForm': { default: (props) => { editor = props; return null; }, __esModule: true },
+  });
+  const seed = load('@/lib/cars').MARKETPLACE_CARS[0];
+  const car = { ...seed, id: CAR_B, ownerId: B, images: ['one.jpg', 'two.jpg'], specs: { ...seed.specs, torque: '-', topSpeed: 'Nije navedeno' } };
+  const Detail = load('@/app/car/[id]/CarDetail').default;
+  let renderer;
+  await act(async () => { renderer = create(React.createElement(Detail, { car })); });
+  assert.equal(renderer.root.findAllByType('h2').filter(n => n.children.includes('Poređenje zamene')).length, 1);
+  assert.ok(!JSON.stringify(renderer.toJSON()).includes('Maks. brzina'));
+  const findButton = (label) => renderer.root.findAll(n => n.type === 'button' && n.props['aria-label'] === label)[0];
+  await act(async () => findButton('Sledeća fotografija').props.onClick());
+  assert.equal(findButton('Prikaži fotografiju 2').props['aria-pressed'], true);
+  await act(async () => findButton('Uvećaj fotografiju vozila').props.onClick());
+  assert.equal(lightbox.index, 1);
+  await act(async () => lightbox.onClose());
+  await act(async () => {
+    findButton('Uvećaj fotografiju vozila').props.onTouchStart({ touches: [{ clientX: 200, clientY: 20 }] });
+    findButton('Uvećaj fotografiju vozila').props.onTouchEnd({ changedTouches: [{ clientX: 100, clientY: 25 }] });
+  });
+  assert.equal(findButton('Prikaži fotografiju 1').props['aria-pressed'], true);
+  selected = { ...seed, id: CAR_A, ownerId: A, price: car.price - 500 };
+  await act(async () => renderer.update(React.createElement(Detail, { car })));
+  assert.ok(JSON.stringify(renderer.toJSON()).includes('Orijentaciona razlika oglašenih vrednosti'));
+  await act(async () => renderer.root.findAll(n => n.type === 'button' && n.children.includes('Pošalji ponudu'))[0].props.onClick());
+  assert.equal(sheet.car.id, CAR_B);
+  assert.equal(sheet.myCar.id, CAR_A);
+  await act(async () => sheet.onClose());
+  ctx.auth = authFor(B);
+  garageCars = [{ ...car, securityFeatures: [], buildNotes: [], estimatedValue: car.price }];
+  await act(async () => renderer.update(React.createElement(Detail, { car })));
+  assert.equal(renderer.root.findAllByType('h2').filter(n => n.children.includes('Poređenje zamene')).length, 0);
+  await act(async () => renderer.root.findAll(n => n.type === 'button' && n.children.includes('Uredi oglas'))[0].props.onClick());
+  assert.equal(editor.editingCar.id, CAR_B);
   await act(async () => renderer.unmount());
 });
 

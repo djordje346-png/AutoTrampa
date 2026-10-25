@@ -16,10 +16,13 @@ import PublicHeader from '@/components/PublicHeader';
  */
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { promptOpen, isLoggedIn, requireAuth } = useAuth();
+  const { promptOpen, isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const isPublicLanding = pathname === '/' && !isLoggedIn;
   const isPublicSearch = pathname === '/search' && !isLoggedIn;
-  const hasDesktopAppNavigation = !isPublicLanding && !isPublicSearch;
+  const isListing = pathname.startsWith('/car/');
+  const isPublicListing = isListing && !isLoggedIn;
+  const hasPublicHeader = authReady && (isPublicSearch || isPublicListing);
+  const hasDesktopAppNavigation = authReady && !isPublicLanding && !hasPublicHeader;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-app text-app-primary dark:bg-app dark:text-app-primary">
@@ -30,15 +33,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      {!isPublicLanding && !isPublicSearch && <Footer />}
-      {isPublicSearch && (
+      {hasDesktopAppNavigation && <Footer />}
+      {!authReady && (isListing || pathname === '/search') && <div aria-label="Učitavanje navigacije" className="h-16 border-b border-brand-dark bg-brand-dark lg:h-[72px]" />}
+      {hasPublicHeader && (
           <PublicHeader
             onAddCar={() => requireAuth('Prijavi se i dodaj svoj oglas', undefined, '/?intent=add-car')}
             onSignIn={() => requireAuth('Prijavi se na AutoTrampu')}
             onRegister={() => requireAuth('Napravi AutoTrampa nalog', undefined, undefined, 'register')}
           />
       )}
-      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : isPublicSearch ? 'pb-8' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? 'lg:pt-[72px]' : ''} ${isPublicSearch ? 'public-search-content' : ''}`}>
+      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : isPublicSearch || isPublicListing ? 'pb-8' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? 'lg:pt-[72px]' : ''} ${isPublicSearch ? 'public-search-content' : ''}`}>
         {children}
       </main>
 

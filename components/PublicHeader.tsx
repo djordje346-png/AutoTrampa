@@ -21,7 +21,7 @@ export default function PublicHeader({ onSignIn, onRegister }: PublicHeaderProps
   const mobileMenuRef = useRef<HTMLElement>(null);
   const howHref = pathname === '/' ? '#kako-funkcionise' : '/#kako-funkcionise';
   const whyHref = pathname === '/' ? '#smart-match' : '/#smart-match';
-  const isSearch = pathname === '/search';
+  const isSearch = pathname === '/search' || pathname.startsWith('/car/');
 
   useEffect(() => {
     setMenuOpen(false);
