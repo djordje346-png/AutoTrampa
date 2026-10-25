@@ -167,7 +167,7 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-outfit), Outfit, ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-manrope), Manrope, ui-sans-serif, system-ui, sans-serif;
   }
 
   .safe-top {
@@ -346,7 +346,7 @@
     height: 2.75rem;
     padding: 0 0.75rem;
     border-radius: 0.75rem;
-    font-family: var(--font-outfit), Outfit, ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-manrope), Manrope, ui-sans-serif, system-ui, sans-serif;
     font-size: 15px;
     line-height: 1.25;
     font-weight: 500;
