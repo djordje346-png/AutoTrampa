@@ -593,7 +593,7 @@ export default function MessagesClient() {
             return (
               <div
                 key={conv.id}
-                className="group flex items-center gap-3 rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-3 transition-all duration-200 hover:bg-hover-surface"
+                className="group flex min-w-0 items-center gap-3 rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-3 transition-all duration-200 hover:bg-hover-surface"
               >
                 <button
                   onClick={() => openConversation(conv)}
@@ -611,20 +611,18 @@ export default function MessagesClient() {
                       </span>
                     </div>
                     <p className="mb-1 truncate text-xs text-app-muted">{conv.carTitle}</p>
-                    <div className="flex items-center justify-between gap-2">
-                      <p
-                        className={`truncate text-xs ${
-                          conv.unread > 0 ? 'font-medium text-app-primary dark:text-app-primary' : 'text-app-muted'
-                        }`}
-                      >
-                        {lastMsg
-                          ? (lastMsg.sender === 'me' ? 'Ti: ' : '') + lastMsg.text
-                          : 'Još nema poruka'}
-                      </p>
-                      <span className="flex-shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[11px] font-semibold text-brand-text">
-                        {conv.tradeSummary}
-                      </span>
-                    </div>
+                    <p
+                      className={`min-w-0 truncate text-xs ${
+                        conv.unread > 0 ? 'font-medium text-app-primary dark:text-app-primary' : 'text-app-muted'
+                      }`}
+                    >
+                      {lastMsg
+                        ? (lastMsg.sender === 'me' ? 'Ti: ' : '') + lastMsg.text
+                        : 'Još nema poruka'}
+                    </p>
+                    <span className="mt-1.5 inline-block max-w-full whitespace-normal break-words rounded-lg bg-brand-500/10 px-2 py-1 text-[11px] font-semibold leading-snug text-brand-text">
+                      {conv.tradeSummary}
+                    </span>
                   </div>
                 </button>
 
