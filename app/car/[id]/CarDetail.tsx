@@ -196,7 +196,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
       : 'Otvori garažu';
 
   return (
-    <div className="min-h-screen pb-24 lg:pb-6">
+    <div className="pb-24 lg:pb-0">
       <section id="oglas" className="app-container py-4 sm:py-6">
         <nav aria-label="Putanja oglasa" className="mb-4 flex min-w-0 items-center gap-2 text-xs text-app-muted">
           <Link href="/search" className="shrink-0 transition-colors hover:text-app-primary">Oglasi</Link>
