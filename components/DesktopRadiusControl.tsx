@@ -17,9 +17,9 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
 
   useEffect(() => setDraft(Math.min(550, Math.max(50, Math.round(preferences.radius / 50) * 50))), [preferences.radius]);
 
-  async function saveRadius() {
-    if (draft === preferences.radius) return;
-    const result = await update({ radius: draft });
+  async function saveRadius(value: number) {
+    if (value === preferences.radius) return;
+    const result = await update({ radius: value });
     if (!result.ok) {
       setDraft(preferences.radius);
       toast.error(result.message || 'Radius pretrage nije sačuvan. Pokušaj ponovo.');
@@ -44,10 +44,10 @@ export function DesktopRadiusControl({ selectedCar }: DesktopRadiusControlProps)
         value={draft}
         disabled={!preferencesReady}
         onChange={(event) => setDraft(Number(event.target.value))}
-        onPointerUp={() => void saveRadius()}
-        onBlur={() => void saveRadius()}
+        onPointerUp={(event) => void saveRadius(Number(event.currentTarget.value))}
+        onBlur={(event) => void saveRadius(Number(event.currentTarget.value))}
         onKeyUp={(event) => {
-          if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) void saveRadius();
+          if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) void saveRadius(Number(event.currentTarget.value));
         }}
         aria-label={`Radius pretrage: ${radiusLabel}`}
         className="h-2 w-20 cursor-pointer appearance-none rounded-full bg-elevated accent-brand-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-24"
