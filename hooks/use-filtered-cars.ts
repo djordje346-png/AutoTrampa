@@ -82,9 +82,7 @@ export function filterCars(
   return applySoftRadius(ranked, originCity, radiusKm);
 }
 
-const MIN_RADIUS_RESULTS = 9;
-
-/** Keep nearby cars first and expand to the closest cities when the radius is sparse. */
+/** Soft radius ranks nearby cars first but never hides distant listings. */
 function applySoftRadius(cars: Car[], originCity: string, radiusKm: number): Car[] {
   if (!originCity.trim() || !Number.isFinite(radiusKm) || radiusKm <= 0) return cars;
 
@@ -99,14 +97,13 @@ function applySoftRadius(cars: Car[], originCity: string, radiusKm: number): Car
   // No known city coordinates means we cannot estimate distance; preserve the
   // existing order rather than unexpectedly hiding the entire feed.
   if (nearby.length === 0 && outside.every(({ distance }) => distance == null)) return cars;
-  if (nearby.length >= MIN_RADIUS_RESULTS) return nearby;
 
   outside.sort((a, b) => {
     if (a.distance == null) return b.distance == null ? a.order - b.order : 1;
     if (b.distance == null) return -1;
     return a.distance - b.distance || a.order - b.order;
   });
-  return [...nearby, ...outside.slice(0, Math.max(0, MIN_RADIUS_RESULTS - nearby.length)).map(({ car }) => car)];
+  return [...nearby, ...outside.map(({ car }) => car)];
 }
 
 export function useFilteredCars(
