@@ -172,11 +172,11 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
   const heroCar = publicCars[0];
 
   return (
-    <div className="theme-atmosphere min-h-screen overflow-hidden text-app-primary">
+    <div className="theme-atmosphere public-landing-carbon min-h-screen overflow-hidden text-app-primary">
       <PublicHeader onAddCar={onAddCar} onSignIn={onSignIn} onRegister={onRegister} />
 
       <main>
-        <section className="relative border-b border-surface bg-gradient-to-b from-app to-card">
+        <section className="public-landing-carbon-hero relative border-b border-surface bg-gradient-to-b from-app to-card">
           <div className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 sm:py-12 lg:gap-10 lg:py-16 desktop:grid-cols-[0.92fr_1.08fr] desktop:px-8 desktop:py-20">
             <div className="max-w-2xl">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-surface bg-card-surface px-3 py-1.5 text-[11px] font-semibold text-app-secondary shadow-sm sm:text-xs">
