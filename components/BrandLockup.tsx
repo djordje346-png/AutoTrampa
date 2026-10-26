@@ -1,18 +1,25 @@
 import Image from 'next/image';
 
-export default function BrandLockup({ header = false }: { header?: boolean }) {
+type BrandLockupProps = {
+  header?: boolean;
+  /** Header and footer sit on dark graphite surfaces in both app themes. */
+  variant?: 'dark' | 'light';
+};
+
+export default function BrandLockup({ header = false, variant = 'dark' }: BrandLockupProps) {
   return (
-    <>
-      <Image
-        src="/brand/roofline-swap.svg"
-        alt=""
-        width={40}
-        height={40}
-        className="h-9 w-9 shrink-0 sm:h-10 sm:w-10"
-      />
-      <span className={header ? 'font-heading text-[19px] font-bold leading-none tracking-tight sm:text-xl' : 'font-heading text-base font-bold tracking-tight'}>
-        Auto<span className="text-brand-500">Trampa</span>
-      </span>
-    </>
+    <Image
+      src={variant === 'dark' ? '/brand/autotrampa-dark.svg' : '/brand/autotrampa-light.svg'}
+      alt=""
+      aria-hidden="true"
+      width={680}
+      height={295}
+      priority={header}
+      className={
+        header
+          ? 'block h-[55px] w-auto shrink-0 sm:h-[64px] lg:h-[68px]'
+          : 'block h-[72px] w-auto shrink-0'
+      }
+    />
   );
 }
