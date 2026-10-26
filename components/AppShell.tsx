@@ -25,7 +25,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const hasDesktopAppNavigation = authReady && !isPublicLanding && !hasPublicHeader;
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-app text-app-primary dark:bg-app dark:text-app-primary">
+    <div className="theme-atmosphere flex min-h-screen w-full flex-col text-app-primary dark:text-app-primary">
       <a
         href="#sadrzaj"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-on-accent"
