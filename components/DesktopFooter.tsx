@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CarFront } from 'lucide-react';
+import BrandLockup from '@/components/BrandLockup';
 
 const DISCOVERY_LINKS = [
   { href: '/', label: 'Oglasi' },
@@ -22,10 +22,7 @@ export function DesktopFooter() {
         <div className="grid gap-8 py-9 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div className="max-w-sm">
             <Link href="/" aria-label="AutoTrampa — početna" className="inline-flex items-center gap-2 text-brand-dark-primary">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-on-accent">
-                <CarFront size={20} strokeWidth={2.2} />
-              </span>
-              <span className="text-base font-bold tracking-tight">AutoTrampa</span>
+              <BrandLockup />
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-brand-dark-secondary">
               Pronađi automobil za zamenu i dogovori se direktno sa vlasnikom.
