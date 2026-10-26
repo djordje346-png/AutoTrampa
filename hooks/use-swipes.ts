@@ -90,6 +90,7 @@ export function useSwipes() {
 
   return {
     reviewedCarIds: new Set(reviewed.keys()),
+    likedCarIds: new Set(Array.from(reviewed.entries()).filter(([, liked]) => liked).map(([id]) => id)),
     loading,
     recordSwipe,
     resetPasses,
