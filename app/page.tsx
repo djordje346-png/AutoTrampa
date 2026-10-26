@@ -3,7 +3,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeft, ArrowRight, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, CalendarDays, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeft, ArrowRight, ArrowUpRight, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, CalendarDays, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -975,46 +975,47 @@ function AuthenticatedFeed({
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="group/card relative isolate flex min-w-0 flex-col overflow-hidden rounded-[22px] border border-white/15 bg-[#101315] text-white shadow-xl shadow-black/15 transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/45 hover:shadow-2xl">
-                <div className="relative h-[430px] w-full overflow-hidden min-[420px]:h-[450px] sm:h-[470px] desktop:h-[460px]">
+              <article key={car.id} className="group/card relative isolate min-w-0 overflow-hidden rounded-[22px] border border-white/15 bg-[#0b0d10] shadow-xl shadow-black/20 transition-all duration-300 desktop:hover:-translate-y-1 desktop:hover:border-brand-500/35 desktop:hover:shadow-2xl">
+                <div className="relative h-[455px] w-full overflow-hidden min-[420px]:h-[490px] sm:h-[500px] desktop:h-[520px]">
                   <FeedCardPhoto car={car} />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080a0c] via-[#080a0c]/80 via-35% to-transparent" aria-hidden="true" />
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/30 to-transparent" aria-hidden="true" />
-                  {car.city && (
-                    <span className="absolute left-4 top-4 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-2 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
-                      <MapPin size={13} className="shrink-0 text-brand-300" aria-hidden="true" />
-                      <span className="truncate">{car.city}</span>
-                    </span>
-                  )}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07090b] via-[#07090b]/85 via-[29%] to-transparent" aria-hidden="true" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/35 to-transparent" aria-hidden="true" />
+
+                  {car.city && <span className="absolute left-4 top-4 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/15 bg-black/65 px-3 py-2 text-[11px] font-medium text-white backdrop-blur-md sm:left-5 sm:top-5">
+                    <MapPin size={13} className="shrink-0 text-brand-300" aria-hidden="true" /><span className="truncate">{car.city}</span>
+                  </span>}
                   <button type="button"
                     onClick={() => void likeCar(car)}
                     disabled={isLiking(car.id)}
-                    className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/60 text-white backdrop-blur-md transition-colors hover:text-brand-300 disabled:opacity-60"
+                    className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/65 text-white backdrop-blur-md transition-colors hover:text-brand-300 disabled:opacity-60 sm:right-5 sm:top-5"
                     aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
                     title="Lajkuj i sačuvaj za match">
-                    <HeartHandshake size={19} />
+                    <Heart size={20} strokeWidth={1.8} />
                   </button>
-                  <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2.5 px-4 pb-4 pt-14 sm:px-5 sm:pb-5">
-                    <div className="min-w-0">
-                      <h2 className="line-clamp-2 font-heading text-[21px] font-bold leading-tight tracking-tight text-white sm:text-[24px]">{car.brand} {car.model}</h2>
-                      {carSubtitle(car) && <p className="mt-0.5 truncate text-xs text-white/75 sm:text-sm">{carSubtitle(car)}</p>}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-white/80 sm:text-xs">
-                      <span className="inline-flex items-center gap-1"><CalendarDays size={13} aria-hidden="true" />{formatYear(car.year)}</span>
-                      <span className="inline-flex items-center gap-1"><Gauge size={13} aria-hidden="true" />{formatKm(car.mileage)}</span>
-                      <span className="inline-flex items-center gap-1"><Settings2 size={13} aria-hidden="true" />{transmissionLabel(car.specs.transmission)}</span>
-                    </div>
-                    {tl && (
-                      <div className="flex min-w-0 items-center justify-between gap-2 rounded-lg border border-brand-500/25 bg-black/45 px-3 py-1.5 backdrop-blur-sm">
-                        <span className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-semibold text-brand-300">
-                          <ArrowLeftRight size={14} aria-hidden="true" /> Doplata
-                        </span>
-                        <span className="min-w-0 text-right"><TradeBadge trade={tl} compact /></span>
+
+                  <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4 text-white sm:px-6 sm:pb-6">
+                    <div className="mb-1 text-sm font-bold uppercase tracking-[0.15em] text-white/85">{car.brand}</div>
+                    <div className="flex min-w-0 items-end justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <h2 className="line-clamp-2 font-heading text-[23px] font-bold leading-[1.12] tracking-tight text-white sm:text-[29px]">{car.brand} {car.model}</h2>
+                        {carSubtitle(car) && <p className="mt-1 truncate text-[13px] text-white/70 sm:text-sm">{carSubtitle(car)}</p>}
                       </div>
-                    )}
-                    <div className="flex min-w-0 items-center justify-between gap-3 border-t border-white/20 pt-2.5">
-                      <p className="min-w-0 whitespace-nowrap font-sans text-[25px] font-bold leading-tight tracking-tight tabular-nums text-white sm:text-[29px]">{formatEuro(car.price)}</p>
-                      <Link href={`/car/${car.id}`} className="relative z-30 inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-3.5 py-2.5 text-[12px] font-bold leading-none text-[#11171b] transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
+                      {tl && <div className="shrink-0 rounded-2xl border border-brand-500/15 bg-black/60 px-2.5 py-2 text-right shadow-lg backdrop-blur-lg sm:px-3.5">
+                        <div className="flex items-center justify-end gap-1.5 text-[10px] font-semibold text-brand-300 sm:text-xs">
+                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500/20"><ArrowUpRight size={14} aria-hidden="true" /></span>
+                          {tl.tone === 'you-add' ? 'Tvoja doplata' : tl.tone === 'they-add' ? 'Vlasnik doplaćuje' : 'Ravna zamena'}
+                        </div>
+                        {tl.tone !== 'even' && <p className="mt-0.5 text-[13px] font-bold tabular-nums text-white sm:text-base">~ {formatEuro(Math.abs(tl.diff))}</p>}
+                      </div>}
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-white/65 sm:text-[12px]">
+                      <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} aria-hidden="true" />{formatYear(car.year)}</span>
+                      <span className="inline-flex items-center gap-1.5"><Gauge size={14} aria-hidden="true" />{formatKm(car.mileage)}</span>
+                      <span className="inline-flex items-center gap-1.5"><Settings2 size={14} aria-hidden="true" />{transmissionLabel(car.specs.transmission)}</span>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between gap-2.5 border-t border-white/20 pt-4">
+                      <p className="min-w-0 shrink-0 font-sans text-[26px] font-bold leading-none tracking-tight tabular-nums text-white sm:text-[32px]">{formatEuro(car.price)}</p>
+                      <Link href={`/car/${car.id}`} className="relative z-30 inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-2.5 text-[12px] font-bold text-[#11171b] transition-colors hover:bg-brand-400 sm:px-6 sm:text-sm">
                         Pogledaj oglas <ArrowRight size={16} aria-hidden="true" />
                       </Link>
                     </div>
