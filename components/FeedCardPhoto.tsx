@@ -25,7 +25,7 @@ export function FeedCardPhoto({ car }: FeedCardPhotoProps) {
   }
 
   return (
-    <div className="group/photo relative aspect-[16/9] w-full flex-shrink-0 overflow-hidden bg-elevated">
+    <div className="group/photo relative aspect-[16/10] w-full flex-shrink-0 overflow-hidden bg-elevated">
       {image && !imageFailed ? (
         <img
           key={image}
