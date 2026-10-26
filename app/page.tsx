@@ -116,7 +116,7 @@ function AuthenticatedFeed({
   const { saved, save } = useSaved();
   const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
   const { user: profile, profileReady } = useUser();
-  const { reviewedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
+  const { likedCarIds, recordSwipe, refresh: refreshSwipes } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
@@ -247,6 +247,19 @@ function AuthenticatedFeed({
 
   async function handleSwipeLike() {
     if (!swipeCar || isAnimating) return;
+    // Demo listings are browse-only: never attempt the database match RPC.
+    if (!swipeCar.ownerId || !UUID_RE.test(swipeCar.id)) {
+      toast.message('Demo oglas služi za pregled — nije moguće napraviti match.');
+      flyAway('right');
+      return;
+    }
+    // Replaying a previously liked listing must not create another match or
+    // overwrite a saved positive swipe with a negative one.
+    if (likedCarIds.has(swipeCar.id)) {
+      toast.message('Ovaj oglas je već lajkovan.');
+      flyAway('right');
+      return;
+    }
     setIsAnimating(true);
     setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
     const liked = await likeCar(swipeCar);
@@ -264,6 +277,12 @@ function AuthenticatedFeed({
 
   async function handleSwipeSkip() {
     if (isAnimating || !swipeCar) return;
+    // Skipping an already liked car during replay only advances the card.
+    // Do not overwrite its saved like, existing match or conversation.
+    if (likedCarIds.has(swipeCar.id)) {
+      flyAway('left');
+      return;
+    }
     if (userId && UUID_RE.test(swipeCar.id)) {
       setIsAnimating(true);
       setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
@@ -321,11 +340,9 @@ function AuthenticatedFeed({
   }
 
   const showTrade = tradeAware;
-  // Demo listings cannot participate in swipe_car or form a match.
-  const swipeEligibleCars = filteredCars.filter((car) => Boolean(car.ownerId) && UUID_RE.test(car.id));
-  const swipeCars = userId
-    ? swipeEligibleCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
-    : swipeEligibleCars;
+  // Swipe is another view of the same feed. Do not silently remove demo
+  // listings or previously reviewed cars; replay should always work.
+  const swipeCars = filteredCars;
   const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
   const keyboardSwipeActions = useRef<{ skip: () => void; like: () => void }>({
@@ -849,27 +866,18 @@ function AuthenticatedFeed({
                   <CheckCircle size={40} className="text-tone-positive" />
                 </div>
                 <h2 className="text-xl font-bold text-app-primary dark:text-app-primary mb-2">Sve pregledano!</h2>
-                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">{swipeEligibleCars.length === 0 ? 'Trenutno nema stvarnih oglasa za svajp. Demo oglasi služe samo za pregled.' : 'Pregledao si sve dostupne oglase za svajp.'}</p>
+                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">Pregledao si sve oglase koji odgovaraju trenutnim filterima.</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
-                  <button onClick={async () => {
-                    const result = await resetPasses();
-                    if (!result.ok) {
-                      toast.error('Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
-                      return;
-                    }
-                    if (result.restored === 0) {
-                      toast.message('Nema preskočenih oglasa za ponavljanje.', {
-                        description: 'Već lajkovani oglasi ostaju sačuvani i ne vraćaju se u svajp.',
-                      });
-                      return;
-                    }
+                  <button onClick={() => {
+                    // Restart this browsing session without deleting swipe history.
+                    // Previously liked listings remain liked and cannot create duplicate matches.
                     setSwipeIndex(0);
                     setSessionReviewedIds(new Set());
                     setDragX(0);
-                    toast.success(`Vraćeno ${result.restored} preskočenih oglasa.`);
+                    toast.success('Ponovo prikazujemo sve oglase.');
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
-                    <RotateCcw size={15} /> Ponovi preskočene
+                    <RotateCcw size={15} /> Ponovi sve oglase
                   </button>
                   <button onClick={exitSwipeMode} className="btn-primary text-sm">
                     Nazad na feed
