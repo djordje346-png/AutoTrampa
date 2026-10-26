@@ -172,7 +172,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
   const heroCar = publicCars[0];
 
   return (
-    <div className="min-h-screen overflow-hidden bg-app text-app-primary">
+    <div className="theme-atmosphere min-h-screen overflow-hidden text-app-primary">
       <PublicHeader onAddCar={onAddCar} onSignIn={onSignIn} onRegister={onRegister} />
 
       <main>

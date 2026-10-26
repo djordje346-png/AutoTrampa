@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    /* LIGHT THEME (default) */
-    --background: 75 18.18% 95.69%;
-    --foreground: 203.08 21.31% 11.96%;
+    /* PEARL / GRAPHITE palette: light stays default; Volt yellow is unchanged. */
+    --background: 60 9.09% 95.69%;
+    --foreground: 220 9.09% 12.94%;
     --card: 0 0% 100%;
-    --card-foreground: 203.08 21.31% 11.96%;
+    --card-foreground: 220 9.09% 12.94%;
     --popover: 0 0% 100%;
-    --popover-foreground: 203.08 21.31% 11.96%;
+    --popover-foreground: 220 9.09% 12.94%;
     --primary: 56.4 100% 49.02%;
-    --brand-text: 203.08 21.31% 11.96%;
-    --brand-hover: 56.43 100% 46.08%;
-    --brand-pressed: 55.58 100% 42.55%;
-    --brand-soft: 58 100% 90%;
-    --brand-soft-border: 56 77% 80%;
-    --primary-foreground: 203.08 21.31% 11.96%;
-    --secondary: 135 11.11% 92.94%;
-    --secondary-foreground: 203.08 21.31% 11.96%;
-    --muted: 135 11.11% 92.94%;
-    --muted-foreground: 194.29 10.77% 38.24%;
+    --brand-text: 220 9.09% 12.94%;
+    --brand-hover: 56.67 100% 45.88%;
+    --brand-pressed: 56.41 100% 42.55%;
+    --brand-soft: 55.61 100% 91.96%;
+    --brand-soft-border: 50.67 64.29% 72.55%;
+    --primary-foreground: 228 13.51% 7.25%;
+    --secondary: 60 5.88% 93.33%;
+    --secondary-foreground: 220 9.09% 12.94%;
+    --muted: 60 5.88% 93.33%;
+    --muted-foreground: 216 4.59% 42.75%;
     --accent: 56.4 100% 49.02%;
-    --accent-foreground: 203.08 21.31% 11.96%;
+    --accent-foreground: 228 13.51% 7.25%;
     --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
-    --border: 145.71 10.14% 86.47%;
-    --input: 145.71 10.14% 86.47%;
-    --ring: 188.24 38.93% 25.69%;
+    --border: 220 4.11% 85.69%;
+    --input: 220 4.11% 85.69%;
+    --ring: 220 8% 30%;
     --radius: 0.75rem;
 
     /* semantic surface tokens (light defaults) */
-    --surface-base: 75 18.18% 95.69%;
+    --surface-base: 60 9.09% 95.69%;
     --surface-card: 0 0% 100%;
-    --surface-elevated: 135 11.11% 92.94%;
-    --surface-hover: 140 13.04% 89.8%;
-    --surface-border: 145.71 10.14% 86.47%;
-    --text-primary: 203.08 21.31% 11.96%;
-    --text-secondary: 194.29 10.77% 38.24%;
-    --text-muted: 194.29 10.77% 38.24%;
-    --on-accent: 203.08 21.31% 11.96%;
-    --secondary-accent: 188.24 38.93% 25.69%;
-    --surface-brand-dark: 203.08 21.31% 11.96%;
-    --text-brand-dark-primary: 160 13.04% 95.49%;
-    --text-brand-dark-secondary: 195 13.7% 71.37%;
-    --border-brand-dark: 199.09 17.19% 25.1%;
+    --surface-elevated: 60 5.88% 93.33%;
+    --surface-hover: 80 5.66% 89.61%;
+    --surface-border: 220 4.11% 85.69%;
+    --text-primary: 220 9.09% 12.94%;
+    --text-secondary: 212.73 6.01% 35.88%;
+    --text-muted: 216 4.59% 42.75%;
+    --on-accent: 228 13.51% 7.25%;
+    --secondary-accent: 192.86 10% 27.45%;
+    --surface-brand-dark: 228 13.51% 7.25%;
+    --text-brand-dark-primary: 60 9.09% 95.69%;
+    --text-brand-dark-secondary: 220 5.96% 70.39%;
+    --border-brand-dark: 220 6.52% 18.04%;
 
     /* System feedback colors: semantic text and soft surface are paired. */
     --tone-positive: 155.06 63.64% 23.73%;
@@ -56,8 +56,8 @@
     --tone-info-bg: 172.5 21.05% 92.55%;
     --tone-warn: 39.13 67.65% 26.67%;
     --tone-warn-bg: 40.5 66.67% 88.24%;
-    --tone-disabled: 194.29 10.77% 38.24%;
-    --tone-disabled-bg: 135 11.11% 92.94%;
+    --tone-disabled: 216 4.59% 42.75%;
+    --tone-disabled-bg: 60 5.88% 93.33%;
     --on-tone-negative: 0 0% 100%;
 
     /* Trade direction colors are always described from the active car's side. */
@@ -74,48 +74,48 @@
   }
 
   .dark {
-    /* DARK THEME */
-    --background: 204 22.73% 8.63%;
-    --foreground: 160 13.04% 95.49%;
-    --card: 202.5 22.86% 13.73%;
-    --card-foreground: 160 13.04% 95.49%;
-    --popover: 202.5 22.86% 13.73%;
-    --popover-foreground: 160 13.04% 95.49%;
+    /* GRAPHITE NIGHT: neutral black surfaces, not blue-tinted charcoal. */
+    --background: 228 13.51% 7.25%;
+    --foreground: 60 9.09% 95.69%;
+    --card: 228 9.09% 10.78%;
+    --card-foreground: 60 9.09% 95.69%;
+    --popover: 228 9.09% 10.78%;
+    --popover-foreground: 60 9.09% 95.69%;
     --primary: 56.4 100% 49.02%;
     --brand-text: 56.4 100% 49.02%;
-    --brand-hover: 56.43 100% 46.08%;
-    --brand-pressed: 55.58 100% 42.55%;
-    --brand-soft: 56 70% 19%;
-    --brand-soft-border: 56 70% 30%;
-    --primary-foreground: 203.08 21.31% 11.96%;
-    --secondary: 202.11 20% 18.63%;
-    --secondary-foreground: 160 13.04% 95.49%;
-    --muted: 202.11 20% 18.63%;
-    --muted-foreground: 195 13.7% 71.37%;
+    --brand-hover: 56.67 100% 45.88%;
+    --brand-pressed: 56.41 100% 42.55%;
+    --brand-soft: 57 62.5% 12.55%;
+    --brand-soft-border: 55.89 60.33% 23.73%;
+    --primary-foreground: 228 13.51% 7.25%;
+    --secondary: 230 7.89% 14.90%;
+    --secondary-foreground: 60 9.09% 95.69%;
+    --muted: 230 7.89% 14.90%;
+    --muted-foreground: 215 6.19% 61.96%;
     --accent: 56.4 100% 49.02%;
-    --accent-foreground: 203.08 21.31% 11.96%;
+    --accent-foreground: 228 13.51% 7.25%;
     --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
-    --border: 199.09 17.19% 25.1%;
-    --input: 199.09 17.19% 25.1%;
+    --border: 225 7.02% 22.35%;
+    --input: 225 7.02% 22.35%;
     --ring: 56.4 100% 49.02%;
     --radius: 0.75rem;
 
     /* semantic surface tokens (dark defaults) */
-    --surface-base: 204 22.73% 8.63%;
-    --surface-card: 202.5 22.86% 13.73%;
-    --surface-elevated: 202.11 20% 18.63%;
-    --surface-hover: 199.09 17.19% 25.1%;
-    --surface-border: 199.09 17.19% 25.1%;
-    --text-primary: 160 13.04% 95.49%;
-    --text-secondary: 195 13.7% 71.37%;
-    --text-muted: 195 13.7% 71.37%;
-    --on-accent: 203.08 21.31% 11.96%;
-    --secondary-accent: 180 30.65% 75.69%;
-    --surface-brand-dark: 203.08 21.31% 11.96%;
-    --text-brand-dark-primary: 160 13.04% 95.49%;
-    --text-brand-dark-secondary: 195 13.7% 71.37%;
-    --border-brand-dark: 199.09 17.19% 25.1%;
+    --surface-base: 228 13.51% 7.25%;
+    --surface-card: 228 9.09% 10.78%;
+    --surface-elevated: 230 7.89% 14.90%;
+    --surface-hover: 231.43 6.8% 20.20%;
+    --surface-border: 225 7.02% 22.35%;
+    --text-primary: 60 9.09% 95.69%;
+    --text-secondary: 217.5 5.80% 72.94%;
+    --text-muted: 215 6.19% 61.96%;
+    --on-accent: 228 13.51% 7.25%;
+    --secondary-accent: 225 4.44% 82.35%;
+    --surface-brand-dark: 228 13.51% 7.25%;
+    --text-brand-dark-primary: 60 9.09% 95.69%;
+    --text-brand-dark-secondary: 220 5.96% 70.39%;
+    --border-brand-dark: 220 6.52% 18.04%;
 
     /* Dark feedback colors keep the same meaning with lighter foregrounds. */
     --tone-positive: 145.95 57.81% 74.9%;
@@ -126,9 +126,9 @@
     --tone-info-bg: 190 27.27% 17.25%;
     --tone-warn: 40.71 82.35% 73.33%;
     --tone-warn-bg: 38.82 39.53% 16.86%;
-    --tone-disabled: 195 13.7% 71.37%;
-    --tone-disabled-bg: 202.11 20% 18.63%;
-    --on-tone-negative: 203.08 21.31% 11.96%;
+    --tone-disabled: 215 6.19% 61.96%;
+    --tone-disabled-bg: 230 7.89% 14.90%;
+    --on-tone-negative: 228 13.51% 7.25%;
 
     --trade-owner-bg: 157.06 41.46% 16.08%;
     --trade-owner-fg: 145.95 57.81% 74.9%;
@@ -189,17 +189,17 @@
 .theme-atmosphere {
   background-color: hsl(var(--surface-base));
   background-image:
-    radial-gradient(ellipse 100% 60% at 12% 0%, rgb(255 255 255 / 0.82), transparent 75%),
-    radial-gradient(ellipse 85% 70% at 100% 100%, rgb(170 184 180 / 0.11), transparent 80%),
-    repeating-linear-gradient(115deg, rgb(31 49 52 / 0.009) 0 1px, transparent 1px 6px);
+    radial-gradient(ellipse 100% 62% at 12% 0%, rgb(255 255 255 / 0.76), transparent 76%),
+    radial-gradient(ellipse 85% 75% at 100% 100%, rgb(60 62 68 / 0.045), transparent 82%),
+    repeating-linear-gradient(115deg, rgb(31 32 36 / 0.007) 0 1px, transparent 1px 8px);
 }
 
 .dark .theme-atmosphere {
   background-image:
-    radial-gradient(ellipse 90% 62% at 12% 0%, rgb(111 138 150 / 0.095), transparent 75%),
-    radial-gradient(ellipse 85% 70% at 100% 100%, rgb(0 0 0 / 0.12), transparent 80%),
-    repeating-linear-gradient(45deg, rgb(220 235 242 / 0.017) 0 1px, transparent 1px 9px),
-    repeating-linear-gradient(135deg, rgb(220 235 242 / 0.012) 0 1px, transparent 1px 9px);
+    radial-gradient(ellipse 95% 64% at 12% 0%, rgb(81 83 91 / 0.10), transparent 76%),
+    radial-gradient(ellipse 85% 70% at 100% 100%, rgb(0 0 0 / 0.17), transparent 82%),
+    repeating-linear-gradient(45deg, rgb(226 227 229 / 0.012) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(135deg, rgb(226 227 229 / 0.008) 0 1px, transparent 1px 9px);
 }
 
 @layer utilities {
@@ -346,6 +346,7 @@
     border-bottom: 1px solid hsl(var(--border-brand-dark));
     background: hsl(var(--surface-brand-dark));
     color: hsl(var(--text-brand-dark-primary));
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.025);
   }
   .carbon-brand {
     display: inline-flex;
@@ -387,7 +388,8 @@
     padding: 0 1rem;
     background: hsl(var(--primary));
     color: hsl(var(--on-accent));
-    font-weight: 600;
+    font-weight: 700;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
   }
   .carbon-header-cta:hover { background: hsl(var(--brand-hover)); }
   .carbon-header-cta:active { background: hsl(var(--brand-pressed)); }
@@ -449,18 +451,20 @@
   padding: 0.75rem 1.5rem;
   color: hsl(var(--primary-foreground));
   font-weight: 700;
-  box-shadow: 0 4px 6px -1px hsl(var(--primary) / 0.25), 0 2px 4px -2px hsl(var(--primary) / 0.25);
-  transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.10), 0 8px 18px rgb(0 0 0 / 0.08);
+  transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: scale(1.02);
+  transform: translateY(-1px);
   background-color: hsl(var(--brand-hover));
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.12), 0 10px 22px rgb(0 0 0 / 0.12);
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: translateY(0);
   background-color: hsl(var(--brand-pressed));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
 
 .btn-primary:disabled {
