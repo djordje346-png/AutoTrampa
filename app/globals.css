@@ -202,6 +202,29 @@
     repeating-linear-gradient(135deg, rgb(226 227 229 / 0.008) 0 1px, transparent 1px 9px);
 }
 
+
+/* Public landing only: a quiet carbon-weave atmosphere in dark mode.
+   No image asset, no bright streaks, and no texture on solid UI surfaces.
+   ~2% line contrast makes the pattern much softer than a standalone texture. */
+.dark .public-landing-carbon {
+  background-color: hsl(var(--surface-base));
+  background-image:
+    radial-gradient(ellipse 76% 55% at 17% 0%, rgb(255 255 255 / 0.03), transparent 77%),
+    radial-gradient(ellipse 70% 65% at 100% 100%, rgb(0 0 0 / 0.13), transparent 83%),
+    repeating-linear-gradient(135deg, rgb(226 229 231 / 0.022) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(45deg, rgb(226 229 231 / 0.008) 0 1px, transparent 1px 8px);
+}
+
+/* The hero's opaque Tailwind gradient otherwise hides the woven background.
+   Translucent gradient preserves subtle depth without affecting legibility. */
+.dark .public-landing-carbon-hero {
+  background-image: linear-gradient(
+    to bottom,
+    hsl(var(--surface-base) / 0.26),
+    hsl(var(--surface-card) / 0.32)
+  );
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
