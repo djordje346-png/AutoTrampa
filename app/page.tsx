@@ -30,6 +30,7 @@ import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
 import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
 import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
 import { FeedCardPhoto } from '@/components/FeedCardPhoto';
+import ListingCardSpecs from '@/components/ListingCardSpecs';
 import PublicLanding from '@/components/PublicLanding';
 
 type ViewMode = 'grid' | 'swipe';
@@ -979,6 +980,7 @@ function AuthenticatedFeed({
                 {/* The photo stays inside its own top section; the details never sit over it. */}
                 <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
                   <FeedCardPhoto car={car} />
+                  {tl && <TradeBadge trade={tl} variant="photo" className="absolute bottom-3 right-3 z-20 max-w-[calc(100%-6rem)] sm:bottom-4 sm:right-4" />}
                   {car.city && <span className="absolute left-3 top-3 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:left-4 sm:top-4">
                     <MapPin size={13} className="shrink-0 text-brand-300" aria-hidden="true" /><span className="truncate">{car.city}</span>
                   </span>}
@@ -997,12 +999,7 @@ function AuthenticatedFeed({
                     <h2 className="line-clamp-2 font-heading text-[19px] font-bold leading-tight tracking-tight text-app-primary sm:text-[22px]">{car.brand} {car.model}</h2>
                     {carSubtitle(car) && <p className="mt-1 truncate text-xs text-app-secondary sm:text-[13px]">{carSubtitle(car)}</p>}
                   </div>
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-app-secondary sm:text-xs">
-                    <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} className="text-app-muted" aria-hidden="true" />{formatYear(car.year)}</span>
-                    <span className="inline-flex items-center gap-1.5"><Gauge size={14} className="text-app-muted" aria-hidden="true" />{formatKm(car.mileage)}</span>
-                    <span className="inline-flex items-center gap-1.5"><Settings2 size={14} className="text-app-muted" aria-hidden="true" />{transmissionLabel(car.specs.transmission)}</span>
-                  </div>
-                  {tl && <div className="mt-3"><TradeBadge trade={tl} className="max-w-full" /></div>}
+                  <ListingCardSpecs car={car} />
                   <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-surface pt-4 first:mt-4">
                     <p className="min-w-0 font-sans text-[25px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[29px]">{formatEuro(car.price)}</p>
                     <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-bold text-on-accent transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">

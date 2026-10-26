@@ -21,7 +21,8 @@ import BrandLockup from '@/components/BrandLockup';
 import PublicHeader from '@/components/PublicHeader';
 import { carSubtitle } from '@/lib/car-row';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
-import { fuelLabel, transmissionLabel } from '@/lib/labels';
+import { fuelLabel } from '@/lib/labels';
+import ListingCardSpecs from '@/components/ListingCardSpecs';
 
 interface PublicLandingProps {
   cars: Car[];
@@ -155,11 +156,7 @@ function ListingCard({ car, onSignIn }: { car: Car; onSignIn: () => void }) {
           <h3 className="line-clamp-2 font-heading text-[19px] font-bold leading-tight tracking-tight text-app-primary sm:text-[22px]">{car.brand} {car.model}</h3>
           {carSubtitle(car) && <p className="mt-1 truncate text-xs text-app-secondary sm:text-[13px]">{carSubtitle(car)}</p>}
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-app-secondary sm:text-xs">
-          <span>{formatYear(car.year)}</span>
-          <span>{formatKm(car.mileage)}</span>
-          <span>{transmissionLabel(car.specs.transmission)}</span>
-        </div>
+        <ListingCardSpecs car={car} />
         <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-surface pt-4">
           <span className="font-sans text-[25px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[29px]">{formatEuro(car.price)}</span>
           <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-bold text-on-accent transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
