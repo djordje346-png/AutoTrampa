@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 type BrandLockupProps = {
   header?: boolean;
-  /** Header and footer sit on dark graphite surfaces in both app themes. */
+  /** Both navigation headers and the desktop footer use graphite surfaces. */
   variant?: 'dark' | 'light';
 };
 
@@ -12,14 +12,12 @@ export default function BrandLockup({ header = false, variant = 'dark' }: BrandL
       src={variant === 'dark' ? '/brand/autotrampa-dark.svg' : '/brand/autotrampa-light.svg'}
       alt=""
       aria-hidden="true"
-      width={680}
-      height={295}
+      width={423}
+      height={175}
       priority={header}
-      className={
-        header
-          ? 'block h-[55px] w-auto shrink-0 sm:h-[64px] lg:h-[68px]'
-          : 'block h-[72px] w-auto shrink-0'
-      }
+      className={header
+        ? 'block h-[61px] w-auto shrink-0 sm:h-[65px] lg:h-[69px]'
+        : 'block h-[70px] w-auto shrink-0'}
     />
   );
 }
