@@ -996,40 +996,65 @@ function AuthenticatedFeed({
                   </button>
                 </div>
 
-                {/* Info */}
-                <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3">
-                  {/* Title and specs reserve consistent space so cards align in each row. */}
-                  <div className="min-w-0">
-                    <h2 className="line-clamp-2 min-h-10 text-[17px] font-bold leading-snug text-app-primary dark:text-app-primary">
-                      {carTitle(car)}
-                    </h2>
-                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
-
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-xs text-app-secondary dark:text-app-secondary desktop:mt-2">
-                      <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><Settings2 size={12} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
-                    </div>
-                  </div>
-
-                  {/*
-                   * Price and doplata share one line: the price is the anchor,
-                   * the difference sits right next to it. No budget badge here —
-                   * the budget only reorders the feed, it does not mark listings.
-                   */}
-                  <div className="mt-auto pt-3.5 desktop:pt-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 font-sans text-[23px] font-bold tracking-tight tabular-nums text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
-                      {tl && (
-                        <TradeBadge trade={tl} />
+                {/* Carbon / Volt exchange card: clear hierarchy and one primary action. */}
+                <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col px-4 pb-4 pt-3.5">
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="line-clamp-2 text-[17px] font-bold leading-snug tracking-tight text-app-primary">
+                        {carTitle(car)}
+                      </h2>
+                      {carSubtitle(car) && (
+                        <p className="mt-1 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
                       )}
                     </div>
-
+                    <p className="shrink-0 whitespace-nowrap font-heading text-xl font-bold tracking-tight tabular-nums text-app-primary sm:text-[22px]">
+                      {formatEuro(car.price)}
+                    </p>
                   </div>
+
+                  <div className="mt-3 flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1.5 border-b border-surface pb-3 text-xs text-app-secondary">
+                    <span>{formatYear(car.year)}</span>
+                    <span className="text-app-muted/60" aria-hidden="true">·</span>
+                    <span>{formatKm(car.mileage)}</span>
+                    <span className="text-app-muted/60" aria-hidden="true">·</span>
+                    <span className="truncate">{fuelLabel(car.specs.fuelType)}</span>
+                    <span className="text-app-muted/60" aria-hidden="true">·</span>
+                    <span className="truncate">{transmissionLabel(car.specs.transmission)}</span>
+                    {car.city && (
+                      <span className="inline-flex min-w-0 items-center gap-1">
+                        <MapPin size={12} className="shrink-0 text-app-muted" aria-hidden="true" />
+                        <span className="truncate">{car.city}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {tl && selectedCar && (
+                    <div className="mt-3 rounded-xl border border-surface bg-elevated px-3 py-2.5">
+                      <div className="flex min-w-0 items-center gap-2 text-[11px] text-app-muted">
+                        <span className="min-w-0 flex-1 truncate">Tvoj auto</span>
+                        <ArrowLeftRight size={13} className="shrink-0" aria-hidden="true" />
+                        <span className="min-w-0 flex-1 truncate text-right">Ponuđeni auto</span>
+                      </div>
+                      <div className="mt-1 flex min-w-0 items-center gap-2 text-xs font-semibold text-app-primary">
+                        <span className="min-w-0 flex-1 truncate">{selectedCar.brand} {selectedCar.model}</span>
+                        <span className="shrink-0 text-app-muted" aria-hidden="true">↔</span>
+                        <span className="min-w-0 flex-1 truncate text-right">{car.brand} {car.model}</span>
+                      </div>
+                      <div className="mt-2 flex justify-end">
+                        <TradeBadge trade={tl} />
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => openOffer(car)}
+                    className="pointer-events-auto relative z-20 mt-auto flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-on-accent transition-colors hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:text-on-accent"
+                    style={{ marginTop: tl ? '12px' : '16px' }}
+                  >
+                    <ArrowLeftRight size={17} aria-hidden="true" />
+                    Predloži zamenu
+                  </button>
                 </div>
               </article>
             );
