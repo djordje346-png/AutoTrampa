@@ -6,6 +6,7 @@ import {
   ArrowLeftRight,
   ArrowRight,
   CarFront,
+  Heart,
   ChevronRight,
   Coins,
   MapPin,
@@ -131,31 +132,39 @@ function SwapVisual({ cars }: { cars: Car[] }) {
   );
 }
 
-function ListingCard({ car }: { car: Car }) {
+function ListingCard({ car, onSignIn }: { car: Car; onSignIn: () => void }) {
   return (
-    <article className="group relative isolate min-w-0 overflow-hidden rounded-[22px] border border-white/15 bg-[#0b0d10] shadow-xl shadow-black/20 transition-all hover:-translate-y-1 hover:shadow-2xl">
-      <div className="relative h-[455px] overflow-hidden min-[420px]:h-[490px] desktop:h-[520px]">
-        <CarPhoto src={car.image} alt={`${car.brand} ${car.model}`}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-brand-500/35 hover:shadow-xl dark:shadow-black/20">
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
+        <CarPhoto src={car.image} alt={car.brand + ' ' + car.model}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
           fallbackClassName="absolute inset-0 flex items-center justify-center bg-elevated text-app-muted" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07090b] via-[#07090b]/85 via-[29%] to-transparent" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/35 to-transparent" />
-        {car.city && <span className="absolute left-4 top-4 inline-flex max-w-[calc(100%-2rem)] items-center gap-1.5 rounded-full border border-white/15 bg-black/65 px-3 py-2 text-[11px] font-medium text-white backdrop-blur-md sm:left-5 sm:top-5">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 to-transparent" />
+        {car.city && <span className="absolute left-3 top-3 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:left-4 sm:top-4">
           <MapPin size={13} className="shrink-0 text-brand-300" /><span className="truncate">{car.city}</span>
         </span>}
-        <div className="absolute inset-x-0 bottom-0 px-4 pb-4 text-white sm:px-6 sm:pb-6">
-          <div className="mb-1 text-sm font-bold uppercase tracking-[0.15em] text-white/85">{car.brand}</div>
-          <h3 className="line-clamp-2 font-heading text-[23px] font-bold leading-[1.12] tracking-tight text-white sm:text-[29px]">{car.brand} {car.model}</h3>
-          {carSubtitle(car) && <p className="mt-1 truncate text-[13px] text-white/70">{carSubtitle(car)}</p>}
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-white/65">
-            <span>{formatYear(car.year)}</span><span>{formatKm(car.mileage)}</span><span>{transmissionLabel(car.specs.transmission)}</span>
-          </div>
-          <div className="mt-4 flex items-center justify-between gap-2.5 border-t border-white/20 pt-4">
-            <span className="font-sans text-[26px] font-bold leading-none tracking-tight tabular-nums text-white sm:text-[32px]">{formatEuro(car.price)}</span>
-            <Link href={`/car/${car.id}`} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-2.5 text-xs font-bold text-[#11171b] transition-colors hover:bg-brand-400 sm:px-6 sm:text-sm">
-              Pogledaj oglas <ArrowRight size={16} />
-            </Link>
-          </div>
+        <button type="button" onClick={onSignIn}
+          aria-label={'Prijavi se da sačuvaš ' + car.brand + ' ' + car.model}
+          title="Prijavi se da sačuvaš oglas"
+          className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/65 text-white backdrop-blur-sm transition-colors hover:text-brand-300 sm:right-4 sm:top-4">
+          <Heart size={20} strokeWidth={1.8} aria-hidden="true" />
+        </button>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
+        <div>
+          <h3 className="line-clamp-2 font-heading text-[19px] font-bold leading-tight tracking-tight text-app-primary sm:text-[22px]">{car.brand} {car.model}</h3>
+          {carSubtitle(car) && <p className="mt-1 truncate text-xs text-app-secondary sm:text-[13px]">{carSubtitle(car)}</p>}
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-app-secondary sm:text-xs">
+          <span>{formatYear(car.year)}</span>
+          <span>{formatKm(car.mileage)}</span>
+          <span>{transmissionLabel(car.specs.transmission)}</span>
+        </div>
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-surface pt-4">
+          <span className="font-sans text-[25px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[29px]">{formatEuro(car.price)}</span>
+          <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-bold text-on-accent transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
+            Pogledaj oglas <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </div>
     </article>
@@ -242,7 +251,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
               </div>
             ) : popularCars.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2 desktop:grid-cols-3">
-                {popularCars.map((car) => <ListingCard key={car.id} car={car} />)}
+                {popularCars.map((car) => <ListingCard key={car.id} car={car} onSignIn={onSignIn} />)}
               </div>
             ) : (
               <p className="rounded-2xl border border-surface bg-card-surface p-6 text-sm text-app-muted">Novi oglasi uskoro stižu.</p>
