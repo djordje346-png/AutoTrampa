@@ -853,13 +853,21 @@ function AuthenticatedFeed({
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
                   <button onClick={async () => {
-                    const reset = await resetPasses();
-                    if (!reset) {
+                    const result = await resetPasses();
+                    if (!result.ok) {
                       toast.error('Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
+                      return;
+                    }
+                    if (result.restored === 0) {
+                      toast.message('Nema preskočenih oglasa za ponavljanje.', {
+                        description: 'Već lajkovani oglasi ostaju sačuvani i ne vraćaju se u svajp.',
+                      });
                       return;
                     }
                     setSwipeIndex(0);
                     setSessionReviewedIds(new Set());
+                    setDragX(0);
+                    toast.success(`Vraćeno ${result.restored} preskočenih oglasa.`);
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ponovi preskočene
                   </button>
