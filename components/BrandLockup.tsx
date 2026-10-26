@@ -1,12 +1,18 @@
-import { CarFront } from 'lucide-react';
+import Image from 'next/image';
 
 export default function BrandLockup({ header = false }: { header?: boolean }) {
   return (
     <>
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-on-accent">
-        <CarFront size={20} strokeWidth={2.2} />
+      <Image
+        src="/brand/roofline-swap.svg"
+        alt=""
+        width={40}
+        height={40}
+        className="h-9 w-9 shrink-0 sm:h-10 sm:w-10"
+      />
+      <span className={header ? 'font-heading text-[19px] font-bold leading-none tracking-tight sm:text-xl' : 'font-heading text-base font-bold tracking-tight'}>
+        AutoTrampa
       </span>
-      <span className={header ? 'font-heading text-[19px] font-bold leading-none tracking-tight sm:text-xl' : 'text-base font-bold tracking-tight'}>AutoTrampa</span>
     </>
   );
 }
