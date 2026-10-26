@@ -133,30 +133,27 @@ function SwapVisual({ cars }: { cars: Car[] }) {
 
 function ListingCard({ car }: { car: Car }) {
   return (
-    <article className="group relative isolate min-w-0 overflow-hidden rounded-[22px] border border-white/15 bg-[#0c1013] shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[4/4] desktop:aspect-[5/4]">
-        <CarPhoto
-          src={car.image}
-          alt={`${car.brand} ${car.model}`}
+    <article className="group relative isolate min-w-0 overflow-hidden rounded-[22px] border border-white/15 bg-[#0b0d10] shadow-xl shadow-black/20 transition-all hover:-translate-y-1 hover:shadow-2xl">
+      <div className="relative h-[455px] overflow-hidden min-[420px]:h-[490px] desktop:h-[520px]">
+        <CarPhoto src={car.image} alt={`${car.brand} ${car.model}`}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
-          fallbackClassName="absolute inset-0 flex items-center justify-center bg-elevated text-app-muted"
-        />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080a0c] via-[#080a0c]/80 via-35% to-transparent" />
-        {car.city && <span className="absolute left-4 top-4 inline-flex max-w-[calc(100%-2rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-2 text-xs font-semibold text-white backdrop-blur-md"><MapPin size={13} className="shrink-0 text-brand-300" /><span className="truncate">{car.city}</span></span>}
-        <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2.5 px-4 pb-4 pt-24 text-white sm:px-5 sm:pb-5">
-          <div className="min-w-0">
-            <h3 className="line-clamp-2 font-heading text-xl font-bold leading-tight tracking-tight text-white sm:text-2xl">{carTitle(car)}</h3>
-            {carSubtitle(car) && <p className="mt-1 truncate text-xs text-white/75 sm:text-sm">{carSubtitle(car)}</p>}
+          fallbackClassName="absolute inset-0 flex items-center justify-center bg-elevated text-app-muted" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07090b] via-[#07090b]/85 via-[29%] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/35 to-transparent" />
+        {car.city && <span className="absolute left-4 top-4 inline-flex max-w-[calc(100%-2rem)] items-center gap-1.5 rounded-full border border-white/15 bg-black/65 px-3 py-2 text-[11px] font-medium text-white backdrop-blur-md sm:left-5 sm:top-5">
+          <MapPin size={13} className="shrink-0 text-brand-300" /><span className="truncate">{car.city}</span>
+        </span>}
+        <div className="absolute inset-x-0 bottom-0 px-4 pb-4 text-white sm:px-6 sm:pb-6">
+          <div className="mb-1 text-sm font-bold uppercase tracking-[0.15em] text-white/85">{car.brand}</div>
+          <h3 className="line-clamp-2 font-heading text-[23px] font-bold leading-[1.12] tracking-tight text-white sm:text-[29px]">{car.brand} {car.model}</h3>
+          {carSubtitle(car) && <p className="mt-1 truncate text-[13px] text-white/70">{carSubtitle(car)}</p>}
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-white/65">
+            <span>{formatYear(car.year)}</span><span>{formatKm(car.mileage)}</span><span>{transmissionLabel(car.specs.transmission)}</span>
           </div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-white/75">
-            <span>{formatYear(car.year)}</span>
-            <span>{formatKm(car.mileage)}</span>
-            <span>{transmissionLabel(car.specs.transmission)}</span>
-          </div>
-          <div className="flex items-end justify-between gap-2 border-t border-white/20 pt-3">
-            <span className="font-sans text-2xl font-bold tracking-tight tabular-nums text-white">{formatEuro(car.price)}</span>
-            <Link href={`/car/${car.id}`} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-500 px-3 text-xs font-bold text-[#11171b] transition-colors hover:bg-brand-400 sm:px-4">
-              Pogledaj oglas <ArrowRight size={15} />
+          <div className="mt-4 flex items-center justify-between gap-2.5 border-t border-white/20 pt-4">
+            <span className="font-sans text-[26px] font-bold leading-none tracking-tight tabular-nums text-white sm:text-[32px]">{formatEuro(car.price)}</span>
+            <Link href={`/car/${car.id}`} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-2.5 text-xs font-bold text-[#11171b] transition-colors hover:bg-brand-400 sm:px-6 sm:text-sm">
+              Pogledaj oglas <ArrowRight size={16} />
             </Link>
           </div>
         </div>
