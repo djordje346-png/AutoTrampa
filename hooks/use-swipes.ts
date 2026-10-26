@@ -65,21 +65,28 @@ export function useSwipes() {
     }
   }, [userId]);
 
-  const resetPasses = useCallback(async () => {
-    if (!userId) return true;
+  const resetPasses = useCallback(async (): Promise<{ ok: boolean; restored: number }> => {
+    if (!userId) return { ok: false, restored: 0 };
     try {
-      const { error } = await getSupabase()
+      // Return affected rows: Supabase DELETE can succeed with zero rows.
+      // Without .select(), the UI incorrectly reports success even when
+      // there are no skipped listings to replay.
+      const { data, error } = await getSupabase()
         .from('car_swipes')
         .delete()
         .eq('user_id', userId)
-        .eq('liked', false);
-      if (error) return false;
-      setReviewed((previous) => new Map(Array.from(previous.entries()).filter(([, liked]) => liked)));
-      return true;
+        .eq('liked', false)
+        .select('target_car_id');
+      if (error) return { ok: false, restored: 0 };
+
+      // Reconcile with the server so likes stay reviewed and deleted passes
+      // become eligible again even after revisiting the feed.
+      await refresh();
+      return { ok: true, restored: (data ?? []).length };
     } catch {
-      return false;
+      return { ok: false, restored: 0 };
     }
-  }, [userId]);
+  }, [userId, refresh]);
 
   return {
     reviewedCarIds: new Set(reviewed.keys()),
