@@ -394,7 +394,7 @@ function AuthenticatedFeed({
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="app-page-header safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
+      <div className="relative z-10 border-b border-surface bg-app safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
         <header className="app-container py-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-shrink-0 lg:hidden">
@@ -976,7 +976,7 @@ function AuthenticatedFeed({
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
               <article key={car.id} className="group/card relative isolate flex min-w-0 flex-col overflow-hidden rounded-[22px] border border-white/15 bg-[#101315] text-white shadow-xl shadow-black/15 transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/45 hover:shadow-2xl">
-                <div className="relative aspect-[4/5] min-h-[390px] w-full overflow-hidden sm:aspect-[4/4] desktop:aspect-[5/4]">
+                <div className="relative h-[430px] w-full overflow-hidden min-[420px]:h-[450px] sm:h-[470px] desktop:h-[460px]">
                   <FeedCardPhoto car={car} />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080a0c] via-[#080a0c]/80 via-35% to-transparent" aria-hidden="true" />
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/30 to-transparent" aria-hidden="true" />
@@ -994,29 +994,27 @@ function AuthenticatedFeed({
                     title="Lajkuj i sačuvaj za match">
                     <HeartHandshake size={19} />
                   </button>
-                  <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-3 px-4 pb-4 pt-20 sm:px-5 sm:pb-5">
-                    <div className="flex min-w-0 items-end justify-between gap-2">
-                      <div className="min-w-0">
-                        <h2 className="line-clamp-2 font-heading text-[23px] font-bold leading-tight tracking-tight text-white sm:text-[27px]">{carTitle(car)}</h2>
-                        {carSubtitle(car) && <p className="mt-1 truncate text-sm text-white/75">{carSubtitle(car)}</p>}
+                  <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2.5 px-4 pb-4 pt-14 sm:px-5 sm:pb-5">
+                    <div className="min-w-0">
+                      <h2 className="line-clamp-2 font-heading text-[21px] font-bold leading-tight tracking-tight text-white sm:text-[24px]">{car.brand} {car.model}</h2>
+                      {carSubtitle(car) && <p className="mt-0.5 truncate text-xs text-white/75 sm:text-sm">{carSubtitle(car)}</p>}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-white/80 sm:text-xs">
+                      <span className="inline-flex items-center gap-1"><CalendarDays size={13} aria-hidden="true" />{formatYear(car.year)}</span>
+                      <span className="inline-flex items-center gap-1"><Gauge size={13} aria-hidden="true" />{formatKm(car.mileage)}</span>
+                      <span className="inline-flex items-center gap-1"><Settings2 size={13} aria-hidden="true" />{transmissionLabel(car.specs.transmission)}</span>
+                    </div>
+                    {tl && (
+                      <div className="flex min-w-0 items-center justify-between gap-2 rounded-lg border border-brand-500/25 bg-black/45 px-3 py-1.5 backdrop-blur-sm">
+                        <span className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-semibold text-brand-300">
+                          <ArrowLeftRight size={14} aria-hidden="true" /> Doplata
+                        </span>
+                        <span className="min-w-0 text-right"><TradeBadge trade={tl} compact /></span>
                       </div>
-                      {tl && (
-                        <button type="button" onClick={() => openOffer(car)}
-                          className="shrink-0 rounded-xl border border-brand-500/25 bg-brand-500/15 px-2.5 py-2 text-right text-[11px] font-semibold text-brand-300 backdrop-blur-md transition-colors hover:bg-brand-500/25"
-                          aria-label="Predloži zamenu za ovo vozilo">
-                          <span className="flex items-center justify-end gap-1"><ArrowLeftRight size={13} /> Doplata</span>
-                          <span className="mt-0.5 block text-white"><TradeBadge trade={tl} compact /></span>
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-white/75 sm:text-xs">
-                      <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} aria-hidden="true" />{formatYear(car.year)}</span>
-                      <span className="inline-flex items-center gap-1.5"><Gauge size={14} aria-hidden="true" />{formatKm(car.mileage)}</span>
-                      <span className="inline-flex items-center gap-1.5"><Settings2 size={14} aria-hidden="true" />{transmissionLabel(car.specs.transmission)}</span>
-                    </div>
-                    <div className="flex items-end justify-between gap-3 border-t border-white/20 pt-3">
-                      <p className="min-w-0 font-sans text-[25px] font-bold leading-tight tracking-tight tabular-nums text-white sm:text-[30px]">{formatEuro(car.price)}</p>
-                      <Link href={`/car/${car.id}`} className="relative z-30 inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-500 px-4 text-xs font-bold text-[#11171b] transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
+                    )}
+                    <div className="flex min-w-0 items-center justify-between gap-3 border-t border-white/20 pt-2.5">
+                      <p className="min-w-0 whitespace-nowrap font-sans text-[25px] font-bold leading-tight tracking-tight tabular-nums text-white sm:text-[29px]">{formatEuro(car.price)}</p>
+                      <Link href={`/car/${car.id}`} className="relative z-30 inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-3.5 py-2.5 text-[12px] font-bold leading-none text-[#11171b] transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
                         Pogledaj oglas <ArrowRight size={16} aria-hidden="true" />
                       </Link>
                     </div>
