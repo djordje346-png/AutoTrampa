@@ -140,7 +140,7 @@ function ListingCard({ car, onSignIn }: { car: Car; onSignIn: () => void }) {
         <CarPhoto src={car.image} alt={car.brand + ' ' + car.model}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
           fallbackClassName="absolute inset-0 flex items-center justify-center bg-elevated text-app-muted" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 to-transparent" />
+        <div aria-hidden="true" className="photo-to-card-fade" />
         {car.city && <span className="absolute left-3 top-3 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:left-4 sm:top-4">
           <MapPin size={13} className="shrink-0 text-brand-300" /><span className="truncate">{car.city}</span>
         </span>}

@@ -45,7 +45,7 @@ export function FeedCardPhoto({ car }: FeedCardPhotoProps) {
         </div>
       )}
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 to-transparent" aria-hidden="true" />
+      <div className="photo-to-card-fade" aria-hidden="true" />
 
       {!car.ownerId && (
         <span className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">

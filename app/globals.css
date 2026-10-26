@@ -308,6 +308,24 @@
    classes so a plain `className` assignment is enough — no tailwind-merge
    dependency at call sites. */
 @layer components {
+  /* A real photo-to-card transition, not a black vignette.
+     The final gradient stop exactly matches each card surface in both themes. */
+  .photo-to-card-fade {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 1;
+    height: clamp(72px, 22%, 112px);
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--surface-card) / 0) 0%,
+      hsl(var(--surface-card) / 0.08) 25%,
+      hsl(var(--surface-card) / 0.45) 65%,
+      hsl(var(--surface-card) / 0.82) 88%,
+      hsl(var(--surface-card)) 100%
+    );
+  }
   .listing-photo-control {
     display: inline-flex;
     height: 2.75rem;
