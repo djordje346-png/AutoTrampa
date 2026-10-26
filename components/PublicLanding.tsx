@@ -135,12 +135,13 @@ function SwapVisual({ cars }: { cars: Car[] }) {
 
 function ListingCard({ car, onSignIn }: { car: Car; onSignIn: () => void }) {
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-brand-500/35 hover:shadow-xl dark:shadow-black/20">
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[20px] border border-surface bg-card-surface shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-brand-500/40 hover:shadow-md dark:shadow-black/15">
       <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
         <CarPhoto src={car.image} alt={car.brand + ' ' + car.model}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
           fallbackClassName="absolute inset-0 flex items-center justify-center bg-elevated text-app-muted" />
         <div aria-hidden="true" className="photo-to-card-fade" />
+        <Link href={'/car/' + car.id} className="absolute inset-0 z-10" aria-label={'Pogledaj fotografije i detalje za ' + carTitle(car)} />
         {car.city && <span className="absolute left-3 top-3 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:left-4 sm:top-4">
           <MapPin size={13} className="shrink-0 text-brand-300" /><span className="truncate">{car.city}</span>
         </span>}
@@ -153,15 +154,20 @@ function ListingCard({ car, onSignIn }: { car: Car; onSignIn: () => void }) {
       </div>
       <div className="flex min-w-0 flex-1 flex-col px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
         <div>
-          <h3 className="line-clamp-2 font-heading text-[19px] font-bold leading-tight tracking-tight text-app-primary sm:text-[22px]">{car.brand} {car.model}</h3>
+          <h3 className="line-clamp-2 font-heading text-[19px] font-bold leading-snug tracking-tight text-app-primary sm:text-[21px]"><Link href={'/car/' + car.id} className="transition-colors hover:text-brand-text">{car.brand} {car.model}</Link></h3>
           {carSubtitle(car) && <p className="mt-1 truncate text-xs text-app-secondary sm:text-[13px]">{carSubtitle(car)}</p>}
         </div>
         <ListingCardSpecs car={car} />
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-surface pt-4">
-          <span className="font-sans text-[25px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[29px]">{formatEuro(car.price)}</span>
-          <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-bold text-on-accent transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
-            Pogledaj oglas <ArrowRight size={16} aria-hidden="true" />
-          </Link>
+        <div className="mt-auto pt-4">
+          <div className="flex min-w-0 items-center justify-between gap-3 border-t border-surface pt-3.5">
+            <div className="min-w-0">
+              <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-app-muted">Vrednost vozila</p>
+              <p className="truncate font-heading text-[25px] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</p>
+            </div>
+            <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3.5 text-xs font-semibold text-app-primary transition-colors hover:border-brand-500/50 hover:bg-hover-surface sm:text-sm" aria-label={'Pogledaj detalje za ' + carTitle(car)}>
+              Detalji <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </div>
     </article>

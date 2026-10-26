@@ -315,7 +315,7 @@
     inset-inline: 0;
     bottom: 0;
     z-index: 1;
-    height: clamp(72px, 22%, 112px);
+    height: clamp(28px, 9%, 48px);
     pointer-events: none;
     background: linear-gradient(
       to bottom,

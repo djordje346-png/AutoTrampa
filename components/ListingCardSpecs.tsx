@@ -22,19 +22,18 @@ export default function ListingCardSpecs({ car }: { car: Car }) {
 
   return (
     <div
-      className="mt-3 grid min-w-0 grid-cols-[0.7fr_1.25fr_1.1fr_1fr] items-center gap-x-1 whitespace-nowrap text-[9px] leading-5 text-app-secondary min-[360px]:text-[10px] sm:text-[11px] desktop:gap-x-2 desktop:text-xs"
+      className="mt-3 grid min-w-0 grid-cols-2 gap-x-4 gap-y-1.5 text-xs leading-5 text-app-secondary sm:text-[13px]"
       aria-label="Osnovni podaci o vozilu"
     >
       {specs.map(({ key, Icon, label, full, short }) => (
         <span
           key={key}
-          className="flex min-w-0 items-center gap-1 border-l border-surface pl-1 first:border-l-0 first:pl-0 desktop:gap-1.5 desktop:pl-2"
+          className="flex min-w-0 items-center gap-1.5"
           title={label + ': ' + full}
           aria-label={label + ': ' + full}
         >
-          <Icon size={12} className="shrink-0 text-app-muted desktop:h-[14px] desktop:w-[14px]" aria-hidden="true" />
-          <span className="min-w-0 truncate desktop:hidden">{short}</span>
-          <span className="hidden min-w-0 truncate desktop:inline">{full}</span>
+          <Icon size={15} className="shrink-0 text-app-muted" aria-hidden="true" />
+          <span className="min-w-0 truncate">{short}</span>
         </span>
       ))}
     </div>

@@ -976,11 +976,11 @@ function AuthenticatedFeed({
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="group/card flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-lg shadow-black/10 transition-all duration-300 desktop:hover:-translate-y-1 desktop:hover:border-brand-500/35 desktop:hover:shadow-xl dark:shadow-black/20">
+              <article key={car.id} className="group/card flex h-full min-w-0 flex-col overflow-hidden rounded-[20px] border border-surface bg-card-surface shadow-sm transition-[border-color,box-shadow,transform] duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/40 desktop:hover:shadow-md dark:shadow-black/15">
                 {/* The photo stays inside its own top section; the details never sit over it. */}
                 <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
                   <FeedCardPhoto car={car} />
-                  {tl && <TradeBadge trade={tl} variant="photo" className="absolute bottom-3 right-3 z-20 max-w-[calc(100%-6rem)] sm:bottom-4 sm:right-4" />}
+                  <Link href={'/car/' + car.id} className="absolute inset-0 z-10" aria-label={'Pogledaj fotografije i detalje za ' + carTitle(car)} />
                   {car.city && <span className="absolute left-3 top-3 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:left-4 sm:top-4">
                     <MapPin size={13} className="shrink-0 text-brand-300" aria-hidden="true" /><span className="truncate">{car.city}</span>
                   </span>}
@@ -996,15 +996,21 @@ function AuthenticatedFeed({
 
                 <div className="flex min-w-0 flex-1 flex-col px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
                   <div className="min-w-0">
-                    <h2 className="line-clamp-2 font-heading text-[19px] font-bold leading-tight tracking-tight text-app-primary sm:text-[22px]">{car.brand} {car.model}</h2>
+                    <h2 className="line-clamp-2 font-heading text-[19px] font-bold leading-snug tracking-tight text-app-primary sm:text-[21px]"><Link href={'/car/' + car.id} className="transition-colors hover:text-brand-text">{car.brand} {car.model}</Link></h2>
                     {carSubtitle(car) && <p className="mt-1 truncate text-xs text-app-secondary sm:text-[13px]">{carSubtitle(car)}</p>}
                   </div>
                   <ListingCardSpecs car={car} />
-                  <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-surface pt-4 first:mt-4">
-                    <p className="min-w-0 font-sans text-[25px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[29px]">{formatEuro(car.price)}</p>
-                    <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-bold text-on-accent transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
-                      Pogledaj oglas <ArrowRight size={16} aria-hidden="true" />
-                    </Link>
+                  <div className="mt-auto pt-4">
+                    {tl && <div className="mb-3"><TradeBadge trade={tl} className="max-w-full" /></div>}
+                    <div className="flex min-w-0 items-center justify-between gap-3 border-t border-surface pt-3.5">
+                      <div className="min-w-0">
+                        <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-app-muted">Vrednost vozila</p>
+                        <p className="truncate font-heading text-[25px] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</p>
+                      </div>
+                      <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3.5 text-xs font-semibold text-app-primary transition-colors hover:border-brand-500/50 hover:bg-hover-surface sm:text-sm" aria-label={'Pogledaj detalje za ' + carTitle(car)}>
+                        Detalji <ArrowUpRight size={16} aria-hidden="true" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </article>
