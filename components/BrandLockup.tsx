@@ -1,23 +1,17 @@
-import Image from 'next/image';
-
 type BrandLockupProps = {
   header?: boolean;
-  /** Both navigation headers and the desktop footer use graphite surfaces. */
+  /** Preserve text contrast when the wordmark is placed on light surfaces. */
   variant?: 'dark' | 'light';
 };
 
+/** Text-only wordmark shared by the public header, app header and desktop footer. */
 export default function BrandLockup({ header = false, variant = 'dark' }: BrandLockupProps) {
   return (
-    <Image
-      src={variant === 'dark' ? '/brand/autotrampa-dark.svg' : '/brand/autotrampa-light.svg'}
-      alt=""
-      aria-hidden="true"
-      width={423}
-      height={175}
-      priority={header}
-      className={header
-        ? 'block h-[61px] w-auto shrink-0 sm:h-[65px] lg:h-[69px]'
-        : 'block h-[70px] w-auto shrink-0'}
-    />
+    <span
+      className={`inline-flex shrink-0 items-baseline whitespace-nowrap font-heading font-extrabold leading-none tracking-[-0.045em] ${header ? 'text-[25px] sm:text-[28px] lg:text-[30px]' : 'text-[27px]'}`}
+    >
+      <span className={variant === 'dark' ? 'text-brand-dark-primary' : 'text-app-primary'}>Auto</span>
+      <span className={variant === 'dark' ? 'text-brand-500' : 'text-brand-text'}>Trampa</span>
+    </span>
   );
 }
