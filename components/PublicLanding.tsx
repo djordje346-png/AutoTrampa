@@ -6,7 +6,6 @@ import {
   ArrowLeftRight,
   ArrowRight,
   CarFront,
-  Heart,
   ChevronRight,
   Coins,
   MapPin,
@@ -21,8 +20,7 @@ import BrandLockup from '@/components/BrandLockup';
 import PublicHeader from '@/components/PublicHeader';
 import { carSubtitle } from '@/lib/car-row';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
-import { fuelLabel } from '@/lib/labels';
-import ListingCardSpecs from '@/components/ListingCardSpecs';
+import { fuelLabel, transmissionLabel } from '@/lib/labels';
 
 interface PublicLandingProps {
   cars: Car[];
@@ -133,44 +131,36 @@ function SwapVisual({ cars }: { cars: Car[] }) {
   );
 }
 
-function ListingCard({ car, onSignIn }: { car: Car; onSignIn: () => void }) {
+function ListingCard({ car }: { car: Car }) {
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[20px] border border-surface bg-card-surface shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-brand-500/40 hover:shadow-md dark:shadow-black/15">
-      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
-        <CarPhoto src={car.image} alt={car.brand + ' ' + car.model}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
-          fallbackClassName="absolute inset-0 flex items-center justify-center bg-elevated text-app-muted" />
-        <div aria-hidden="true" className="photo-to-card-fade" />
-        <Link href={'/car/' + car.id} className="absolute inset-0 z-10" aria-label={'Pogledaj fotografije i detalje za ' + carTitle(car)} />
-        {car.city && <span className="absolute left-3 top-3 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:left-4 sm:top-4">
-          <MapPin size={13} className="shrink-0 text-brand-300" /><span className="truncate">{car.city}</span>
-        </span>}
-        <button type="button" onClick={onSignIn}
-          aria-label={'Prijavi se da sačuvaš ' + car.brand + ' ' + car.model}
-          title="Prijavi se da sačuvaš oglas"
-          className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/65 text-white backdrop-blur-sm transition-colors hover:text-brand-300 sm:right-4 sm:top-4">
-          <Heart size={20} strokeWidth={1.8} aria-hidden="true" />
-        </button>
+    <Link
+      href={`/car/${car.id}`}
+      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+    >
+      <div className="aspect-[16/10] overflow-hidden bg-elevated">
+        <CarPhoto
+          src={car.image}
+          alt={`${car.brand} ${car.model}`}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          fallbackClassName="flex h-full w-full items-center justify-center bg-elevated text-app-muted"
+        />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
-        <div>
-          <h3 className="line-clamp-2 font-heading text-[19px] font-bold leading-snug tracking-tight text-app-primary sm:text-[21px]"><Link href={'/car/' + car.id} className="transition-colors hover:text-brand-text">{car.brand} {car.model}</Link></h3>
-          {carSubtitle(car) && <p className="mt-1 truncate text-xs text-app-secondary sm:text-[13px]">{carSubtitle(car)}</p>}
-        </div>
-        <ListingCardSpecs car={car} />
-        <div className="mt-auto pt-4">
-          <div className="flex min-w-0 items-center justify-between gap-3 border-t border-surface pt-3.5">
-            <div className="min-w-0">
-              <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-app-muted">Vrednost vozila</p>
-              <p className="truncate font-heading text-[25px] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</p>
-            </div>
-            <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3.5 text-xs font-semibold text-app-primary transition-colors hover:border-brand-500/50 hover:bg-hover-surface sm:text-sm" aria-label={'Pogledaj detalje za ' + carTitle(car)}>
-              Detalji <ArrowRight size={16} aria-hidden="true" />
-            </Link>
+      <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="truncate text-base font-semibold text-app-primary sm:text-lg">{carTitle(car)}</h3>
+            <p className="mt-0.5 truncate text-xs text-app-secondary">{carSubtitle(car)}</p>
           </div>
+          <span className="shrink-0 font-sans text-[22px] font-bold tabular-nums text-app-primary">{formatEuro(car.price)}</span>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-app-secondary">
+          <span>{formatKm(car.mileage)}</span>
+          <span>{fuelLabel(car.specs.fuelType)}</span>
+          <span>{transmissionLabel(car.specs.transmission)}</span>
+          {car.city && <span className="truncate">{car.city}</span>}
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 
@@ -254,7 +244,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
               </div>
             ) : popularCars.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2 desktop:grid-cols-3">
-                {popularCars.map((car) => <ListingCard key={car.id} car={car} onSignIn={onSignIn} />)}
+                {popularCars.map((car) => <ListingCard key={car.id} car={car} />)}
               </div>
             ) : (
               <p className="rounded-2xl border border-surface bg-card-surface p-6 text-sm text-app-muted">Novi oglasi uskoro stižu.</p>

@@ -3,7 +3,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeft, ArrowRight, ArrowUpRight, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, CalendarDays, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -30,7 +30,6 @@ import { DesktopFeedSidebar } from '@/components/DesktopFeedSidebar';
 import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
 import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
 import { FeedCardPhoto } from '@/components/FeedCardPhoto';
-import ListingCardSpecs from '@/components/ListingCardSpecs';
 import PublicLanding from '@/components/PublicLanding';
 
 type ViewMode = 'grid' | 'swipe';
@@ -117,7 +116,7 @@ function AuthenticatedFeed({
   const { saved, save } = useSaved();
   const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
   const { user: profile, profileReady } = useUser();
-  const { likedCarIds, recordSwipe, refresh: refreshSwipes } = useSwipes();
+  const { reviewedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
@@ -248,19 +247,6 @@ function AuthenticatedFeed({
 
   async function handleSwipeLike() {
     if (!swipeCar || isAnimating) return;
-    // Demo listings are browse-only: never attempt the database match RPC.
-    if (!swipeCar.ownerId || !UUID_RE.test(swipeCar.id)) {
-      toast.message('Demo oglas služi za pregled — nije moguće napraviti match.');
-      flyAway('right');
-      return;
-    }
-    // Replaying a previously liked listing must not create another match or
-    // overwrite a saved positive swipe with a negative one.
-    if (likedCarIds.has(swipeCar.id)) {
-      toast.message('Ovaj oglas je već lajkovan.');
-      flyAway('right');
-      return;
-    }
     setIsAnimating(true);
     setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
     const liked = await likeCar(swipeCar);
@@ -278,12 +264,6 @@ function AuthenticatedFeed({
 
   async function handleSwipeSkip() {
     if (isAnimating || !swipeCar) return;
-    // Skipping an already liked car during replay only advances the card.
-    // Do not overwrite its saved like, existing match or conversation.
-    if (likedCarIds.has(swipeCar.id)) {
-      flyAway('left');
-      return;
-    }
     if (userId && UUID_RE.test(swipeCar.id)) {
       setIsAnimating(true);
       setSessionReviewedIds((previous) => new Set(previous).add(swipeCar.id));
@@ -341,9 +321,11 @@ function AuthenticatedFeed({
   }
 
   const showTrade = tradeAware;
-  // Swipe is another view of the same feed. Do not silently remove demo
-  // listings or previously reviewed cars; replay should always work.
-  const swipeCars = filteredCars;
+  // Demo listings cannot participate in swipe_car or form a match.
+  const swipeEligibleCars = filteredCars.filter((car) => Boolean(car.ownerId) && UUID_RE.test(car.id));
+  const swipeCars = userId
+    ? swipeEligibleCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
+    : swipeEligibleCars;
   const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
   const keyboardSwipeActions = useRef<{ skip: () => void; like: () => void }>({
@@ -395,7 +377,7 @@ function AuthenticatedFeed({
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="relative z-10 border-b border-surface bg-app safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
+      <div className="app-page-header safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
         <header className="app-container py-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-shrink-0 lg:hidden">
@@ -867,18 +849,19 @@ function AuthenticatedFeed({
                   <CheckCircle size={40} className="text-tone-positive" />
                 </div>
                 <h2 className="text-xl font-bold text-app-primary dark:text-app-primary mb-2">Sve pregledano!</h2>
-                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">Pregledao si sve oglase koji odgovaraju trenutnim filterima.</p>
+                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">{swipeEligibleCars.length === 0 ? 'Trenutno nema stvarnih oglasa za svajp. Demo oglasi služe samo za pregled.' : 'Pregledao si sve dostupne oglase za svajp.'}</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
-                  <button onClick={() => {
-                    // Restart this browsing session without deleting swipe history.
-                    // Previously liked listings remain liked and cannot create duplicate matches.
+                  <button onClick={async () => {
+                    const reset = await resetPasses();
+                    if (!reset) {
+                      toast.error('Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
+                      return;
+                    }
                     setSwipeIndex(0);
                     setSessionReviewedIds(new Set());
-                    setDragX(0);
-                    toast.success('Ponovo prikazujemo sve oglase.');
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
-                    <RotateCcw size={15} /> Ponovi sve oglase
+                    <RotateCcw size={15} /> Ponovi preskočene
                   </button>
                   <button onClick={exitSwipeMode} className="btn-primary text-sm">
                     Nazad na feed
@@ -972,45 +955,64 @@ function AuthenticatedFeed({
               </div>
             )}
           {marketplaceReady && (
-            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-2 desktop:gap-6">
+            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="group/card flex h-full min-w-0 flex-col overflow-hidden rounded-[20px] border border-surface bg-card-surface shadow-sm transition-[border-color,box-shadow,transform] duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/40 desktop:hover:shadow-md dark:shadow-black/15">
-                {/* The photo stays inside its own top section; the details never sit over it. */}
-                <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
+              <article key={car.id} className="group/card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/30 desktop:hover:shadow-lg dark:border-surface dark:bg-card-surface dark:shadow-black/20">
+                <Link
+                  href={`/car/${car.id}`}
+                  aria-label={`Otvori oglas: ${carTitle(car)}`}
+                  className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                />
+                {/* Image */}
+                <div className="relative z-10 w-full flex-shrink-0 pointer-events-none">
                   <FeedCardPhoto car={car} />
-                  <Link href={'/car/' + car.id} className="absolute inset-0 z-10" aria-label={'Pogledaj fotografije i detalje za ' + carTitle(car)} />
-                  {car.city && <span className="absolute left-3 top-3 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm sm:left-4 sm:top-4">
-                    <MapPin size={13} className="shrink-0 text-brand-300" aria-hidden="true" /><span className="truncate">{car.city}</span>
-                  </span>}
-                  <button type="button"
-                    onClick={() => void likeCar(car)}
+                  <button
+                    type="button"
+                    onClick={(event) => { event.preventDefault(); event.stopPropagation(); void likeCar(car); }}
                     disabled={isLiking(car.id)}
-                    className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/65 text-white backdrop-blur-sm transition-colors hover:text-brand-300 disabled:opacity-60 sm:right-4 sm:top-4"
-                    aria-label={'Lajkuj i sačuvaj ' + car.brand + ' ' + car.model}
-                    title="Lajkuj i sačuvaj za match">
-                    <Heart size={20} strokeWidth={1.8} />
+                    className="pointer-events-auto absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:text-brand-300 disabled:opacity-60"
+                    aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
+                    title="Lajkuj i sačuvaj za match"
+                  >
+                    <HeartHandshake size={17} />
                   </button>
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
+                {/* Info */}
+                <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3">
+                  {/* Title and specs reserve consistent space so cards align in each row. */}
                   <div className="min-w-0">
-                    <h2 className="line-clamp-2 font-heading text-[19px] font-bold leading-snug tracking-tight text-app-primary sm:text-[21px]"><Link href={'/car/' + car.id} className="transition-colors hover:text-brand-text">{car.brand} {car.model}</Link></h2>
-                    {carSubtitle(car) && <p className="mt-1 truncate text-xs text-app-secondary sm:text-[13px]">{carSubtitle(car)}</p>}
-                  </div>
-                  <ListingCardSpecs car={car} />
-                  <div className="mt-auto pt-4">
-                    {tl && <div className="mb-3"><TradeBadge trade={tl} className="max-w-full" /></div>}
-                    <div className="flex min-w-0 items-center justify-between gap-3 border-t border-surface pt-3.5">
-                      <div className="min-w-0">
-                        <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-app-muted">Vrednost vozila</p>
-                        <p className="truncate font-heading text-[25px] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</p>
-                      </div>
-                      <Link href={'/car/' + car.id} className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3.5 text-xs font-semibold text-app-primary transition-colors hover:border-brand-500/50 hover:bg-hover-surface sm:text-sm" aria-label={'Pogledaj detalje za ' + carTitle(car)}>
-                        Detalji <ArrowUpRight size={16} aria-hidden="true" />
-                      </Link>
+                    <h2 className="line-clamp-2 min-h-10 text-[17px] font-bold leading-snug text-app-primary dark:text-app-primary">
+                      {carTitle(car)}
+                    </h2>
+                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
+
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-xs text-app-secondary dark:text-app-secondary desktop:mt-2">
+                      <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><Settings2 size={12} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
+                      <span className="text-app-muted/60" aria-hidden="true">·</span>
+                      <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
                     </div>
+                  </div>
+
+                  {/*
+                   * Price and doplata share one line: the price is the anchor,
+                   * the difference sits right next to it. No budget badge here —
+                   * the budget only reorders the feed, it does not mark listings.
+                   */}
+                  <div className="mt-auto pt-3.5 desktop:pt-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="shrink-0 font-sans text-[23px] font-bold tracking-tight tabular-nums text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
+                      {tl && (
+                        <TradeBadge trade={tl} />
+                      )}
+                    </div>
+
                   </div>
                 </div>
               </article>
