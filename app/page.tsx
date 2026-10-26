@@ -3,7 +3,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeft, ArrowRight, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, CalendarDays, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -971,90 +971,56 @@ function AuthenticatedFeed({
               </div>
             )}
           {marketplaceReady && (
-            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
+            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-2 desktop:gap-6">
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="group/card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/30 desktop:hover:shadow-lg dark:border-surface dark:bg-card-surface dark:shadow-black/20">
-                <Link
-                  href={`/car/${car.id}`}
-                  aria-label={`Otvori oglas: ${carTitle(car)}`}
-                  className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
-                />
-                {/* Image */}
-                <div className="relative z-10 w-full flex-shrink-0 pointer-events-none">
+              <article key={car.id} className="group/card relative isolate flex min-w-0 flex-col overflow-hidden rounded-[22px] border border-white/15 bg-[#101315] text-white shadow-xl shadow-black/15 transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/45 hover:shadow-2xl">
+                <div className="relative aspect-[4/5] min-h-[390px] w-full overflow-hidden sm:aspect-[4/4] desktop:aspect-[5/4]">
                   <FeedCardPhoto car={car} />
-                  <button
-                    type="button"
-                    onClick={(event) => { event.preventDefault(); event.stopPropagation(); void likeCar(car); }}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080a0c] via-[#080a0c]/80 via-35% to-transparent" aria-hidden="true" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/30 to-transparent" aria-hidden="true" />
+                  {car.city && (
+                    <span className="absolute left-4 top-4 z-20 inline-flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-2 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
+                      <MapPin size={13} className="shrink-0 text-brand-300" aria-hidden="true" />
+                      <span className="truncate">{car.city}</span>
+                    </span>
+                  )}
+                  <button type="button"
+                    onClick={() => void likeCar(car)}
                     disabled={isLiking(car.id)}
-                    className="pointer-events-auto absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:text-brand-300 disabled:opacity-60"
+                    className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/60 text-white backdrop-blur-md transition-colors hover:text-brand-300 disabled:opacity-60"
                     aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-                    title="Lajkuj i sačuvaj za match"
-                  >
-                    <HeartHandshake size={17} />
+                    title="Lajkuj i sačuvaj za match">
+                    <HeartHandshake size={19} />
                   </button>
-                </div>
-
-                {/* Carbon / Volt exchange card: clear hierarchy and one primary action. */}
-                <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col px-4 pb-4 pt-3.5">
-                  <div className="flex min-w-0 items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <h2 className="line-clamp-2 text-[17px] font-bold leading-snug tracking-tight text-app-primary">
-                        {carTitle(car)}
-                      </h2>
-                      {carSubtitle(car) && (
-                        <p className="mt-1 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
+                  <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-3 px-4 pb-4 pt-20 sm:px-5 sm:pb-5">
+                    <div className="flex min-w-0 items-end justify-between gap-2">
+                      <div className="min-w-0">
+                        <h2 className="line-clamp-2 font-heading text-[23px] font-bold leading-tight tracking-tight text-white sm:text-[27px]">{carTitle(car)}</h2>
+                        {carSubtitle(car) && <p className="mt-1 truncate text-sm text-white/75">{carSubtitle(car)}</p>}
+                      </div>
+                      {tl && (
+                        <button type="button" onClick={() => openOffer(car)}
+                          className="shrink-0 rounded-xl border border-brand-500/25 bg-brand-500/15 px-2.5 py-2 text-right text-[11px] font-semibold text-brand-300 backdrop-blur-md transition-colors hover:bg-brand-500/25"
+                          aria-label="Predloži zamenu za ovo vozilo">
+                          <span className="flex items-center justify-end gap-1"><ArrowLeftRight size={13} /> Doplata</span>
+                          <span className="mt-0.5 block text-white"><TradeBadge trade={tl} compact /></span>
+                        </button>
                       )}
                     </div>
-                    <p className="shrink-0 whitespace-nowrap font-heading text-xl font-bold tracking-tight tabular-nums text-app-primary sm:text-[22px]">
-                      {formatEuro(car.price)}
-                    </p>
-                  </div>
-
-                  <div className="mt-3 flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1.5 border-b border-surface pb-3 text-xs text-app-secondary">
-                    <span>{formatYear(car.year)}</span>
-                    <span className="text-app-muted/60" aria-hidden="true">·</span>
-                    <span>{formatKm(car.mileage)}</span>
-                    <span className="text-app-muted/60" aria-hidden="true">·</span>
-                    <span className="truncate">{fuelLabel(car.specs.fuelType)}</span>
-                    <span className="text-app-muted/60" aria-hidden="true">·</span>
-                    <span className="truncate">{transmissionLabel(car.specs.transmission)}</span>
-                    {car.city && (
-                      <span className="inline-flex min-w-0 items-center gap-1">
-                        <MapPin size={12} className="shrink-0 text-app-muted" aria-hidden="true" />
-                        <span className="truncate">{car.city}</span>
-                      </span>
-                    )}
-                  </div>
-
-                  {tl && selectedCar && (
-                    <div className="mt-3 rounded-xl border border-surface bg-elevated px-3 py-2.5">
-                      <div className="flex min-w-0 items-center gap-2 text-[11px] text-app-muted">
-                        <span className="min-w-0 flex-1 truncate">Tvoj auto</span>
-                        <ArrowLeftRight size={13} className="shrink-0" aria-hidden="true" />
-                        <span className="min-w-0 flex-1 truncate text-right">Ponuđeni auto</span>
-                      </div>
-                      <div className="mt-1 flex min-w-0 items-center gap-2 text-xs font-semibold text-app-primary">
-                        <span className="min-w-0 flex-1 truncate">{selectedCar.brand} {selectedCar.model}</span>
-                        <span className="shrink-0 text-app-muted" aria-hidden="true">↔</span>
-                        <span className="min-w-0 flex-1 truncate text-right">{car.brand} {car.model}</span>
-                      </div>
-                      <div className="mt-2 flex justify-end">
-                        <TradeBadge trade={tl} />
-                      </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-white/75 sm:text-xs">
+                      <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} aria-hidden="true" />{formatYear(car.year)}</span>
+                      <span className="inline-flex items-center gap-1.5"><Gauge size={14} aria-hidden="true" />{formatKm(car.mileage)}</span>
+                      <span className="inline-flex items-center gap-1.5"><Settings2 size={14} aria-hidden="true" />{transmissionLabel(car.specs.transmission)}</span>
                     </div>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => openOffer(car)}
-                    className="pointer-events-auto relative z-20 mt-auto flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-on-accent transition-colors hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:text-on-accent"
-                    style={{ marginTop: tl ? '12px' : '16px' }}
-                  >
-                    <ArrowLeftRight size={17} aria-hidden="true" />
-                    Predloži zamenu
-                  </button>
+                    <div className="flex items-end justify-between gap-3 border-t border-white/20 pt-3">
+                      <p className="min-w-0 font-sans text-[25px] font-bold leading-tight tracking-tight tabular-nums text-white sm:text-[30px]">{formatEuro(car.price)}</p>
+                      <Link href={`/car/${car.id}`} className="relative z-30 inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-brand-500 px-4 text-xs font-bold text-[#11171b] transition-colors hover:bg-brand-400 sm:px-5 sm:text-sm">
+                        Pogledaj oglas <ArrowRight size={16} aria-hidden="true" />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </article>
             );
