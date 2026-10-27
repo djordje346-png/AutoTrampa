@@ -137,8 +137,8 @@ export default function SavedClient() {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
             return (
               /* Same card as the feed, with the remove button in place of detail links. */
-              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-surface dark:bg-card-surface">
-                <div className="relative aspect-[16/9] w-full flex-shrink-0 overflow-hidden">
+              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-[0_14px_30px_rgba(0,0,0,.10)] transition-shadow duration-200 hover:shadow-xl dark:border-white/10 dark:shadow-[0_14px_30px_rgba(0,0,0,.16)]">
+                <div className="relative aspect-[16/10] w-full flex-shrink-0 sm:aspect-[16/9] overflow-hidden">
                   <Link href={`/car/${car.id}`} className="block h-full w-full">
                     <img
                       src={car.image}
@@ -172,16 +172,16 @@ export default function SavedClient() {
                   </div>
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
+                <div className="flex min-w-0 flex-1 flex-col bg-card-surface p-3.5 sm:p-4">
                   <div className="min-w-0">
                     <Link href={`/car/${car.id}`}>
-                      <h2 className="line-clamp-2 min-h-10 font-bold text-base leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-app-primary">
+                      <h2 className="line-clamp-2 min-h-10 font-heading text-[19px] font-extrabold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-app-primary">
                     {carTitle(car)}
                       </h2>
                     </Link>
                     <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
 
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-[11px] text-app-secondary dark:text-app-secondary">
+                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2 gap-y-1.5 text-[11px] text-app-secondary dark:text-app-secondary">
                       <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
                       <span className="text-app-muted/60" aria-hidden="true">·</span>
                       <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
@@ -190,9 +190,9 @@ export default function SavedClient() {
                     </div>
                   </div>
 
-                  <div className="mt-auto pt-3.5">
+                  <div className="mt-auto border-t border-surface pt-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
+                      <p className="shrink-0 text-[23px] font-extrabold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
                       {tl && (
                         <TradeBadge trade={tl} />
                       )}
@@ -207,7 +207,7 @@ export default function SavedClient() {
                     </button>
                     <Link
                       href={`/car/${car.id}`}
-                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary dark:border-surface"
+                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-medium text-brand-text transition-colors hover:bg-hover-surface dark:border-surface"
                     >
                       Pogledaj oglas
                     </Link>
