@@ -745,7 +745,7 @@ function AuthenticatedFeed({
 
                   {/* Active card */}
                   <div
-                    className="relative w-full overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-surface dark:bg-card-surface lg:max-w-2xl"
+                    className="relative w-full overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-surface lg:max-w-2xl"
                     style={{
                       transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
                       transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
@@ -780,24 +780,24 @@ function AuthenticatedFeed({
 
                       {/* Trade label */}
                       {swipeTl && (
-                        <TradeBadge trade={swipeTl} className="absolute bottom-3 left-3 px-3 py-2 text-sm" />
+                        <TradeBadge trade={swipeTl} className="absolute bottom-3 left-3 !border-white/25 !bg-black/70 !text-white px-3 py-2 text-sm backdrop-blur-md [&_svg]:!text-[#faeb00]" />
                       )}
                     </div>
 
                     {/* Info */}
-                    <div className="p-5 lg:p-6">
+                    <div className="bg-card-surface p-5 lg:p-6">
                       <div className="flex items-start justify-between mb-2 gap-2">
                         <div className="min-w-0">
-                          <h2 className="text-lg font-black text-app-primary dark:text-app-primary tracking-tight truncate">{carTitle(swipeCar)}</h2>
+                          <h2 className="truncate font-heading text-xl font-extrabold tracking-tight text-app-primary">{carTitle(swipeCar)}</h2>
                           <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
                         </div>
-                        <p className="text-app-primary font-black text-xl flex-shrink-0">{formatEuro(swipeCar.price)}</p>
+                        <p className="shrink-0 font-sans text-xl font-extrabold tracking-tight text-app-primary">{formatEuro(swipeCar.price)}</p>
                       </div>
 
-                      <div className="flex items-center gap-2 mt-3 flex-wrap">
+                      <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
                         <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><Gauge size={12} className="text-app-muted" />{formatKm(swipeCar.mileage)}</div>
                         <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><Fuel size={12} className="text-app-muted" />{fuelLabel(swipeCar.specs.fuelType)}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary ml-auto"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
                       </div>
 
                       <p className="text-xs text-app-secondary dark:text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
@@ -855,12 +855,19 @@ function AuthenticatedFeed({
                 <div className="flex gap-3">
                   <button onClick={async () => {
                     const reset = await resetPasses();
-                    if (!reset) {
+                    if (!reset.ok) {
                       toast.error('Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
                       return;
                     }
+                    if (reset.restored === 0) {
+                      toast.message('Nema preskočenih oglasa za ponovno pregledanje.');
+                      return;
+                    }
                     setSwipeIndex(0);
+                    setDragX(0);
                     setSessionReviewedIds(new Set());
+                    setIsAnimating(false);
+                    toast.success(`Vraćeno ${reset.restored} preskočenih oglasa.`);
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ponovi preskočene
                   </button>
