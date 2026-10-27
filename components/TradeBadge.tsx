@@ -28,14 +28,14 @@ export default function TradeBadge({ trade, compact = false, variant = 'default'
   const { Icon, className: toneClass } = TONE_STYLES[trade.tone];
   // First PNG mockup: soft blue/orange/mint badge fills, dark text and vivid arrows.
   const mockupColor = {
-    'they-add': 'text-[#19C784]',
-    'you-add': 'text-[#FF9A23]',
-    even: 'text-[#528EFF]',
+    'they-add': 'text-[#00B97A]',
+    'you-add': 'text-[#F59A00]',
+    even: 'text-[#2878D5]',
   }[trade.tone];
   const mockupBackground = {
-    'they-add': 'bg-[#E6F7EE]',
-    'you-add': 'bg-[#FFF0DF]',
-    even: 'bg-[#E7F0FF]',
+    'they-add': 'bg-[#E3F7EE]',
+    'you-add': 'bg-[#FFF1E3]',
+    even: 'bg-[#E7F0FD]',
   }[trade.tone];
   const isMockupBadge = variant === 'card' || variant === 'photo';
 
@@ -47,7 +47,7 @@ export default function TradeBadge({ trade, compact = false, variant = 'default'
       aria-label={trade.label}
       title={trade.label}
     >
-      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} className={`shrink-0 ${isMockupBadge ? mockupColor : ''} `} aria-hidden="true" />
+      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} strokeWidth={isMockupBadge ? 3 : 2} className={`shrink-0 ${isMockupBadge ? mockupColor : ''} `} aria-hidden="true" />
       <span className={variant === 'card' ? 'min-w-0 break-words leading-snug text-[#16191D]' : 'min-w-0 truncate'}>{compact ? trade.short : trade.label}</span>
     </span>
   );
