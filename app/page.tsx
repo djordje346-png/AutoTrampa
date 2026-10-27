@@ -40,7 +40,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 const TRADE_FILTERS: { key: SearchFilters['trade']; label: string }[] = [
   { key: 'all', label: 'Sve' },
   { key: 'similar', label: 'Slična vrednost' },
-  { key: 'cheaper', label: 'Vlasnik doplaćuje' },
+  { key: 'cheaper', label: 'Doplata tebi' },
   { key: 'expensive', label: 'Ja doplaćujem' },
 ];
 
