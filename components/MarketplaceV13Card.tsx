@@ -27,8 +27,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
   ];
 
   return (
-    <article className="group/card relative isolate grid aspect-square min-w-0 grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[18px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-[transform,box-shadow] duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] motion-safe:desktop:hover:-translate-y-0.5 sm:aspect-auto sm:flex sm:h-full sm:flex-col">
-      <Link href={`/car/${car.id}`} aria-label={`Otvori oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[18px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
+    <article className="group/card relative isolate grid aspect-square min-w-0 grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[12px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-[transform,box-shadow] duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] motion-safe:desktop:hover:-translate-y-0.5 sm:aspect-auto sm:flex sm:h-full sm:flex-col">
+      <Link href={`/car/${car.id}`} aria-label={`Otvori oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[12px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
       <div className="relative min-h-0 overflow-hidden bg-elevated sm:h-[237px] sm:flex-none">
         <div className="absolute inset-0 [&>div]:!aspect-auto [&>div]:!h-full">
           <FeedCardPhoto car={car} showDemoBadge={false} />
