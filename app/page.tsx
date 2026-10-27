@@ -31,6 +31,7 @@ import { DesktopFeedOverview } from '@/components/DesktopFeedOverview';
 import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
 import { FeedCardPhoto } from '@/components/FeedCardPhoto';
 import PublicLanding from '@/components/PublicLanding';
+import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 
 type ViewMode = 'grid' | 'swipe';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -959,63 +960,13 @@ function AuthenticatedFeed({
           {filteredCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
-              <article key={car.id} className="group/card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-all duration-200 desktop:hover:-translate-y-0.5 desktop:hover:border-brand-500/30 desktop:hover:shadow-lg dark:border-surface dark:bg-card-surface dark:shadow-black/20">
-                <Link
-                  href={`/car/${car.id}`}
-                  aria-label={`Otvori oglas: ${carTitle(car)}`}
-                  className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
-                />
-                {/* Image */}
-                <div className="relative z-10 w-full flex-shrink-0 pointer-events-none">
-                  <FeedCardPhoto car={car} />
-                  <button
-                    type="button"
-                    onClick={(event) => { event.preventDefault(); event.stopPropagation(); void likeCar(car); }}
-                    disabled={isLiking(car.id)}
-                    className="pointer-events-auto absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:text-brand-300 disabled:opacity-60"
-                    aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-                    title="Lajkuj i sačuvaj za match"
-                  >
-                    <HeartHandshake size={17} />
-                  </button>
-                </div>
-
-                {/* Info */}
-                <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3">
-                  {/* Title and specs reserve consistent space so cards align in each row. */}
-                  <div className="min-w-0">
-                    <h2 className="line-clamp-2 min-h-10 text-[17px] font-bold leading-snug text-app-primary dark:text-app-primary">
-                      {carTitle(car)}
-                    </h2>
-                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
-
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2.5 gap-y-1.5 text-xs text-app-secondary dark:text-app-secondary desktop:mt-2">
-                      <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><Settings2 size={12} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
-                    </div>
-                  </div>
-
-                  {/*
-                   * Price and doplata share one line: the price is the anchor,
-                   * the difference sits right next to it. No budget badge here —
-                   * the budget only reorders the feed, it does not mark listings.
-                   */}
-                  <div className="mt-auto pt-3.5 desktop:pt-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 font-sans text-[23px] font-bold tracking-tight tabular-nums text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
-                      {tl && (
-                        <TradeBadge trade={tl} />
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-              </article>
+              <MarketplaceV13Card
+                key={car.id}
+                car={car}
+                trade={tl}
+                onLike={(listing) => { void likeCar(listing); }}
+                liking={isLiking(car.id)}
+              />
             );
           })}
             </div>
