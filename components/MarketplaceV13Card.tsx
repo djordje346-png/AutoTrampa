@@ -58,7 +58,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
         <div className="mt-2 grid min-w-0 grid-cols-[minmax(0,.80fr)_3px_minmax(0,1.36fr)_3px_minmax(0,1.14fr)_3px_minmax(0,1.07fr)] items-center gap-x-[5px] text-[clamp(8px,2.4vw,10px)] leading-tight text-app-secondary min-[390px]:gap-x-[8px] sm:text-[11px]">
           {specs.map(({ Icon, text, label }, index) => (
             <span key={label} className="contents">
-              {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center self-center rounded-full bg-app-muted" />}
+              {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center self-center rounded-full bg-[#819096] dark:bg-[#71858d]" />}
               <span title={`${label}: ${text}`} className="flex min-w-0 items-center gap-[3px]">
                 <Icon size={11} className="shrink-0 text-app-muted" strokeWidth={1.7} aria-hidden="true" />
                 <span className="min-w-0 truncate tabular-nums">{text}</span>
@@ -68,11 +68,11 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
         </div>
         <div className="mt-2.5 flex min-h-[36px] items-center justify-between gap-2 border-t border-surface pt-2">
           <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
-          {onOffer && <button type="button" onClick={() => onOffer(car)} className="relative z-20 rounded-lg bg-brand-500 px-2.5 py-2 text-[10px] font-semibold text-on-accent sm:text-xs">Pošalji ponudu</button>}
           <Link href={`/car/${car.id}`} className="relative z-20 inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[10.5px] font-medium tracking-normal text-brand-text hover:underline hover:underline-offset-4 sm:text-[11.5px]">
             Pogledaj oglas <ArrowRight size={10} strokeWidth={1.8} aria-hidden="true" />
           </Link>
         </div>
+        {onOffer && <button type="button" onClick={() => onOffer(car)} className="relative z-20 mt-2 w-full rounded-lg bg-brand-500 px-3 py-2 text-[11px] font-semibold text-on-accent transition-colors hover:bg-brand-400">Pošalji ponudu</button>}
       </div>
     </article>
   );
