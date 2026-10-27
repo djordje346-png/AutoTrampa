@@ -26,17 +26,24 @@ interface TradeBadgeProps {
 /** Shared, active-car-relative trade state badge for feed, search and offers. */
 export default function TradeBadge({ trade, compact = false, variant = 'default', className = '' }: TradeBadgeProps) {
   const { Icon, className: toneClass } = TONE_STYLES[trade.tone];
+  // Mockup badge colors: vivid direction arrows, white label, translucent black background.
+  const mockupColor = {
+    'they-add': 'text-[#19C784]',
+    'you-add': 'text-[#FF9A23]',
+    even: 'text-[#528EFF]',
+  }[trade.tone];
+  const isMockupBadge = variant === 'card' || variant === 'photo';
 
   return (
     <span
       className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full leading-none ${variant === 'card' ? 'border-0 font-medium' : 'border font-semibold'} ${
         variant === 'card' ? 'min-h-[28px] px-2.5 py-1.5 text-[11px]' : variant === 'photo' ? 'h-7 px-2.5 py-0 text-[11px]' : compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'
-      } ${toneClass} ${className}`}
+      } ${isMockupBadge ? 'border-white/25 bg-black/75 text-white' : toneClass} ${className}`}
       aria-label={trade.label}
       title={trade.label}
     >
-      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} className="shrink-0" aria-hidden="true" />
-      <span className={variant === 'card' ? 'min-w-0 break-words leading-snug text-app-primary' : 'min-w-0 truncate'}>{compact ? trade.short : trade.label}</span>
+      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} className={`shrink-0 ${isMockupBadge ? mockupColor : ''} `} aria-hidden="true" />
+      <span className={variant === 'card' ? 'min-w-0 break-words leading-snug text-white' : 'min-w-0 truncate'}>{compact ? trade.short : trade.label}</span>
     </span>
   );
 }
