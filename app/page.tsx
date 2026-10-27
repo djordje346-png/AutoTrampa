@@ -327,7 +327,10 @@ function AuthenticatedFeed({
 
   const showTrade = tradeAware;
   // Demo listings cannot participate in swipe_car or form a match.
-  const swipeEligibleCars = filteredCars.filter((car) => Boolean(car.ownerId) && UUID_RE.test(car.id));
+  // Swipe replay must not be constrained by the current feed filters.
+  // A skipped listing can be excluded by price, trade direction or radius,
+  // even while it remains available in the marketplace.
+  const swipeEligibleCars = marketplaceCars.filter((car) => Boolean(car.ownerId) && UUID_RE.test(car.id));
   const swipeCars = replaySkippedIds !== null
     ? replaySkippedIds.map(id => swipeEligibleCars.find(car => car.id === id)).filter((car): car is Car => Boolean(car))
     : userId
@@ -700,7 +703,7 @@ function AuthenticatedFeed({
       </BottomSheet>
 
       {/* SWIPE MODE — FULLSCREEN */}
-      {viewMode === 'swipe' && filteredCars.length > 0 && (
+      {viewMode === 'swipe' && (
         <div className="fixed inset-0 z-[60] bg-app dark:bg-app flex flex-col safe-top safe-bottom">
           {/* Swipe header */}
           <div className="relative flex items-center justify-between px-4 py-3 border-b border-surface dark:border-surface lg:px-8">
@@ -870,14 +873,17 @@ function AuthenticatedFeed({
                     // left to fetch. Recover from the current marketplace feed,
                     // but never replay cars the user liked.
                     const storedPassIds = new Set(reset.restoredIds);
+                    // Primary queue: exact skipped cars that still exist.
+                    // If older resets erased the pass records, recover every
+                    // available unliked car, independent of search filters.
                     const replayIds = swipeEligibleCars
                       .filter(car => !likedCarIds.has(car.id))
                       .filter(car => storedPassIds.size === 0 || storedPassIds.has(car.id))
                       .map(car => car.id);
                     if (replayIds.length === 0) {
                       toast.message(swipeEligibleCars.length === 0
-                        ? 'Nema dostupnih oglasa za trenutne filtere.'
-                        : 'Nema oglasa bez lajka za ponovno pregledanje.');
+                        ? 'Nema aktivnih stvarnih oglasa za ponovno pregledanje.'
+                        : 'Svi dostupni oglasi su već lajkovani.');
                       return;
                     }
                     setSessionReviewedIds(new Set());
