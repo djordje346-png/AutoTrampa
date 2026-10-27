@@ -14,9 +14,10 @@ type Props = {
   trade?: TradeLabel | null;
   onLike?: (car: Car) => void;
   liking?: boolean;
+  onOffer?: (car: Car) => void;
 };
 
-export default function MarketplaceV13Card({ car, trade, onLike, liking = false }: Props) {
+export default function MarketplaceV13Card({ car, trade, onLike, liking = false, onOffer }: Props) {
   const specs = [
     { Icon: CalendarDays, text: formatYear(car.year), label: 'Godište' },
     { Icon: Gauge, text: formatKm(car.mileage), label: 'Kilometraža' },
@@ -25,8 +26,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false 
   ];
 
   return (
-    <article className="group/card relative isolate grid aspect-square min-w-0 grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[22px] border border-white/10 bg-[hsl(228_9.09%_10.78%)] text-white shadow-[0_14px_30px_rgba(0,0,0,.16)] transition-shadow hover:shadow-xl sm:aspect-auto sm:flex sm:h-full sm:flex-col">
-      <div className="relative min-h-0 overflow-hidden bg-[hsl(228_9.09%_10.78%)] sm:h-[237px] sm:flex-none">
+    <article className="group/card relative isolate grid aspect-square min-w-0 grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[22px] border border-surface bg-card-surface text-app-primary shadow-[0_14px_30px_rgba(0,0,0,.10)] dark:border-white/10 dark:shadow-[0_14px_30px_rgba(0,0,0,.16)] transition-shadow hover:shadow-xl sm:aspect-auto sm:flex sm:h-full sm:flex-col">
+      <div className="relative min-h-0 overflow-hidden bg-elevated sm:h-[237px] sm:flex-none">
         <div className="absolute inset-0 [&>div]:!aspect-auto [&>div]:!h-full">
           <FeedCardPhoto car={car} />
         </div>
@@ -51,23 +52,24 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false 
         {!car.ownerId && <span className="pointer-events-none absolute bottom-2 left-3 z-20 rounded-full bg-black/65 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white">Demo</span>}
       </div>
 
-      <div className="relative flex min-w-0 flex-col bg-[hsl(228_9.09%_10.78%)] px-[13px] pb-3 pt-2.5 sm:flex-1 sm:px-[19px] sm:pb-[19px]">
-        <h3 className="truncate font-heading text-[clamp(17px,5vw,21px)] font-extrabold leading-[1.13] tracking-tight text-white sm:text-[22px]">{carTitle(car)}</h3>
-        <p className="mt-1 truncate text-[11px] leading-[1.2] text-[#b4c0c6] sm:text-xs">{carSubtitle(car) || ' '}</p>
-        <div className="mt-2 grid min-w-0 grid-cols-[minmax(0,.80fr)_3px_minmax(0,1.36fr)_3px_minmax(0,1.14fr)_3px_minmax(0,1.07fr)] items-center gap-x-[5px] text-[clamp(8px,2.4vw,10px)] leading-tight text-[#b9c5ca] min-[390px]:gap-x-[8px] sm:text-[11px]">
+      <div className="relative flex min-w-0 flex-col bg-card-surface px-[13px] pb-3 pt-2.5 sm:flex-1 sm:px-[19px] sm:pb-[19px]">
+        <h3 className="truncate font-heading text-[clamp(17px,5vw,21px)] font-extrabold leading-[1.13] tracking-tight text-app-primary sm:text-[22px]">{carTitle(car)}</h3>
+        <p className="mt-1 truncate text-[11px] leading-[1.2] text-app-secondary sm:text-xs">{carSubtitle(car) || ' '}</p>
+        <div className="mt-2 grid min-w-0 grid-cols-[minmax(0,.80fr)_3px_minmax(0,1.36fr)_3px_minmax(0,1.14fr)_3px_minmax(0,1.07fr)] items-center gap-x-[5px] text-[clamp(8px,2.4vw,10px)] leading-tight text-app-secondary min-[390px]:gap-x-[8px] sm:text-[11px]">
           {specs.map(({ Icon, text, label }, index) => (
             <span key={label} className="contents">
-              {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center self-center rounded-full bg-[#71858d]" />}
+              {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center self-center rounded-full bg-app-muted" />}
               <span title={`${label}: ${text}`} className="flex min-w-0 items-center gap-[3px]">
-                <Icon size={11} className="shrink-0 text-[#adbbc1]" strokeWidth={1.7} aria-hidden="true" />
+                <Icon size={11} className="shrink-0 text-app-muted" strokeWidth={1.7} aria-hidden="true" />
                 <span className="min-w-0 truncate tabular-nums">{text}</span>
               </span>
             </span>
           ))}
         </div>
-        <div className="mt-2.5 flex min-h-[36px] items-center justify-between gap-2 border-t border-white/[.13] pt-2">
-          <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-extrabold leading-none tracking-tight tabular-nums text-white sm:text-[27px]">{formatEuro(car.price)}</strong>
-          <Link href={`/car/${car.id}`} className="relative z-20 inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[10.5px] font-medium tracking-normal text-[#faeb00] hover:underline hover:underline-offset-4 sm:text-[11.5px]">
+        <div className="mt-2.5 flex min-h-[36px] items-center justify-between gap-2 border-t border-surface pt-2">
+          <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
+          {onOffer && <button type="button" onClick={() => onOffer(car)} className="relative z-20 rounded-lg bg-brand-500 px-2.5 py-2 text-[10px] font-semibold text-on-accent sm:text-xs">Pošalji ponudu</button>}
+          <Link href={`/car/${car.id}`} className="relative z-20 inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[10.5px] font-medium tracking-normal text-brand-text hover:underline hover:underline-offset-4 sm:text-[11.5px]">
             Pogledaj oglas <ArrowRight size={10} strokeWidth={1.8} aria-hidden="true" />
           </Link>
         </div>
