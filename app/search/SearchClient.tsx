@@ -172,9 +172,9 @@ export default function SearchClient() {
           />
         )}
 
-        <div className={`min-w-0 flex-1 pb-4 ${'grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5'}`}>
+        <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
         {results.length === 0 ? (
-          <div className={`flex flex-col items-center justify-center py-20 text-center ${'col-span-full'}`}>
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
               <Search size={28} className="text-app-muted" />
             </div>
@@ -201,6 +201,7 @@ export default function SearchClient() {
                   openOffer(listing);
                 } : undefined}
               />
+            );
           })
         )}
         </div>
