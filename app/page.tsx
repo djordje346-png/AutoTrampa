@@ -876,14 +876,18 @@ function AuthenticatedFeed({
                     // Primary queue: exact skipped cars that still exist.
                     // If older resets erased the pass records, recover every
                     // available unliked car, independent of search filters.
-                    const replayIds = swipeEligibleCars
+                    const preferredIds = swipeEligibleCars
                       .filter(car => !likedCarIds.has(car.id))
                       .filter(car => storedPassIds.size === 0 || storedPassIds.has(car.id))
                       .map(car => car.id);
+                    // When every available listing is already liked or prior
+                    // resets removed all passes, still let the user replay the
+                    // deck. Replaying does NOT reset any likes in the database.
+                    const replayIds = preferredIds.length > 0
+                      ? preferredIds
+                      : swipeEligibleCars.map(car => car.id);
                     if (replayIds.length === 0) {
-                      toast.message(swipeEligibleCars.length === 0
-                        ? 'Nema aktivnih stvarnih oglasa za ponovno pregledanje.'
-                        : 'Svi dostupni oglasi su već lajkovani.');
+                      toast.message('Trenutno nema stvarnih oglasa za ponovno pregledanje.');
                       return;
                     }
                     setSessionReviewedIds(new Set());
@@ -891,9 +895,9 @@ function AuthenticatedFeed({
                     setSwipeIndex(0);
                     setDragX(0);
                     setIsAnimating(false);
-                    toast.success(storedPassIds.size > 0
+                    toast.success(storedPassIds.size > 0 && preferredIds.length > 0
                       ? `Vraćeno ${replayIds.length} preskočenih oglasa.`
-                      : `Ponovo prikazano ${replayIds.length} dostupnih oglasa bez lajka.`);
+                      : `Ponovo prikazano ${replayIds.length} dostupnih oglasa. Postojeći lajkovi su sačuvani.`);
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ponovi preskočene
                   </button>
