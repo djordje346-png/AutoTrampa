@@ -172,9 +172,9 @@ export default function SearchClient() {
           />
         )}
 
-        <div className={`min-w-0 flex-1 pb-4 ${isLoggedIn ? 'space-y-3' : 'grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5'}`}>
+        <div className={`min-w-0 flex-1 pb-4 ${'grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5'}`}>
         {results.length === 0 ? (
-          <div className={`flex flex-col items-center justify-center py-20 text-center ${!isLoggedIn ? 'col-span-full' : ''}`}>
+          <div className={`flex flex-col items-center justify-center py-20 text-center ${'col-span-full'}`}>
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
               <Search size={28} className="text-app-muted" />
             </div>
@@ -184,115 +184,23 @@ export default function SearchClient() {
         ) : (
           results.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
-            return !isLoggedIn ? (
-              <MarketplaceV13Card key={car.id} car={car} onLike={() => openOffer(car)} />
-            ) : (
-              <article
+            return (
+              <MarketplaceV13Card
                 key={car.id}
-                className={`overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-surface dark:bg-card-surface ${
-                  isLoggedIn ? '' : 'flex h-full min-w-0 flex-col shadow-sm hover:shadow-md dark:shadow-black/20'
-                }`}
-              >
-                <div className={isLoggedIn ? 'flex flex-col sm:flex-row' : 'flex h-full min-w-0 flex-col'}>
-                  <Link
-                    href={`/car/${car.id}`}
-                    className={isLoggedIn
-                      ? 'relative h-36 w-full flex-shrink-0 sm:h-auto sm:w-28'
-                      : 'relative block aspect-[16/9] w-full flex-shrink-0 overflow-hidden'}
-                    aria-label={`Detalji: ${carTitle(car)}`}
-                  >
-                    <img
-                      src={car.image}
-                      alt={`${car.brand} ${car.model}`}
-                      className={isLoggedIn ? 'h-full w-full object-cover' : 'absolute inset-0 h-full w-full object-cover'}
-                    />
-                    {tl && (
-                      <TradeBadge trade={tl} compact className="absolute bottom-1 left-1" />
-                    )}
-                    {!car.ownerId && (
-                      <span className="absolute left-1 top-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
-                        Demo
-                      </span>
-                    )}
-                  </Link>
-
-                  <div className={isLoggedIn
-                    ? 'min-w-0 flex-1 p-3'
-                    : 'flex min-w-0 flex-1 flex-col p-3.5 sm:p-4 desktop:px-4 desktop:py-3'}>
-                    <div className="flex items-start justify-between gap-2">
-                      <Link href={`/car/${car.id}`} className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text">
-                          {bodyLabel(car.bodyType)}
-                        </p>
-                        <h3 className={`${isLoggedIn ? 'truncate text-sm' : 'line-clamp-2 min-h-10 text-base sm:text-lg'} font-semibold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-app-primary`}>
-                          {carTitle(car)}
-                        </h3>
-                        <p className="text-xs text-app-muted">{displayValue(car.generation)}</p>
-                      </Link>
-                      <div className="flex flex-shrink-0 items-start gap-2">
-                        <p className={`${isLoggedIn ? 'text-sm font-semibold' : 'font-sans text-[22px] font-bold tabular-nums'} text-app-primary dark:text-app-primary`}>{formatEuro(car.price)}</p>
-                        <button
-                          onClick={() => void likeCar(car)}
-                          disabled={isLiking(car.id)}
-                          aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-                          title="Lajkuj i sačuvaj za match"
-                          className="flex h-7 w-7 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-brand-500/10 hover:text-brand-text disabled:opacity-60"
-                        >
-                          <HeartHandshake size={15} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="mt-2 flex flex-wrap items-center gap-2.5">
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-app-secondary">
-                        <Gauge size={11} className="text-app-muted" />
-                        {formatKm(car.mileage)}
-                      </span>
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-app-secondary">
-                        <Fuel size={11} className="text-app-muted" />
-                        {car.specs.displacement} {fuelLabel(car.specs.fuelType)}
-                      </span>
-                      <span className="flex items-center gap-1 text-[11px] text-app-secondary dark:text-app-secondary">
-                        <MapPin size={11} className="text-app-muted" />
-                        {car.city}
-                      </span>
-                    </div>
-
-                    <div className={`${isLoggedIn ? 'mt-2.5' : 'mt-auto pt-3.5'} flex items-center gap-2`}>
-                      <button
-                        onClick={() => {
-                          if (!isLoggedIn) {
-                            openOffer(car);
-                            return;
-                          }
-                          // The offer sheet needs a car of your own to state a
-                          // difference; without one it stays shut, so say why.
-                          if (!selectedCar) {
-                            toast.error('Prvo dodaj svoj auto u garažu.', {
-                              description: 'Ponuda je razlika između tvog i ovog vozila.',
-                              action: { label: 'Garaža', onClick: () => router.push('/garage') },
-                            });
-                            return;
-                          }
-                          openOffer(car);
-                        }}
-                        className={`btn-primary btn-primary-compact flex min-w-0 items-center justify-center gap-1.5 whitespace-nowrap text-[10px] sm:text-[11px] ${isLoggedIn ? 'flex-1' : 'flex-1 !px-2'}`}
-                      >
-                        <ArrowLeftRight size={12} />
-                        Pošalji ponudu
-                      </button>
-                      <Link
-                        href={`/car/${car.id}`}
-                        className={`flex min-w-0 flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-lg bg-elevated px-2 py-2 text-[10px] font-semibold text-app-secondary transition-all hover:bg-hover-surface dark:text-app-secondary sm:text-[11px] ${isLoggedIn ? 'sm:flex-none sm:px-3' : ''}`}
-                      >
-                        Detalji
-                        <ArrowRight size={11} />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            );
+                car={car}
+                trade={tl}
+                onLike={(listing) => { void likeCar(listing); }}
+                liking={isLiking(car.id)}
+                onOffer={isLoggedIn ? (listing) => {
+                  if (!selectedCar) {
+                    toast.error('Prvo dodaj svoj auto u garažu.', {
+                      action: { label: 'Garaža', onClick: () => router.push('/garage') },
+                    });
+                    return;
+                  }
+                  openOffer(listing);
+                } : undefined}
+              />
           })
         )}
         </div>
