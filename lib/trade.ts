@@ -9,7 +9,7 @@ export interface TradeLabel {
   tone: TradeTone;
   /** other.price - myCar.price */
   diff: number;
-  /** Full sentence for badges, e.g. "Vlasnik doplaćuje 700 €". */
+  /** Full sentence for badges, e.g. "Doplata tebi 700 €". */
   label: string;
   /** Compact form for tight spots, with the active-car perspective included. */
   short: string;
@@ -89,7 +89,7 @@ export function getTradeLabel(myCar: Priced, other: Priced): TradeLabel {
   return {
     tone: 'they-add',
     diff,
-    label: `Vlasnik doplaćuje ${formatEuro(Math.abs(diff))}`,
+    label: `Doplata tebi ${formatEuro(Math.abs(diff))}`,
     short: `Tebi +${formatEuro(Math.abs(diff))}`,
   };
 }
