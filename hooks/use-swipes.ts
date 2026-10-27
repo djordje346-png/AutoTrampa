@@ -65,24 +65,43 @@ export function useSwipes() {
     }
   }, [userId]);
 
-  const resetPasses = useCallback(async (): Promise<{ ok: boolean; restored: number }> => {
-    if (!userId) return { ok: false, restored: 0 };
+  const resetPasses = useCallback(async (): Promise<{ ok: boolean; restoredIds: string[]; message?: string }> => {
+    if (!userId) return { ok: false, restoredIds: [], message: 'Nisi prijavljen.' };
     try {
-      // Return deleted rows so we can distinguish a real reset from a no-op.
-      // SELECT and DELETE are both scoped to this user by RLS.
-      const { data, error } = await getSupabase()
+      // Capture precisely which ads the user passed BEFORE clearing pass history.
+      const { data: passes, error: readError } = await getSupabase()
+        .from('car_swipes')
+        .select('target_car_id')
+        .eq('user_id', userId)
+        .eq('liked', false);
+      if (readError) return { ok: false, restoredIds: [], message: readError.message };
+
+      const restoredIds = Array.from(new Set((passes ?? []).map(row => row.target_car_id)));
+      if (restoredIds.length === 0) return { ok: true, restoredIds };
+
+      const { data: deleted, error: deleteError } = await getSupabase()
         .from('car_swipes')
         .delete()
         .eq('user_id', userId)
         .eq('liked', false)
         .select('target_car_id');
-      if (error) return { ok: false, restored: 0 };
-      const restored = data?.length ?? 0;
-      // A fresh read is authoritative; never clear liked records locally.
-      await refresh();
-      return { ok: true, restored };
+      if (deleteError) return { ok: false, restoredIds: [], message: deleteError.message };
+      if ((deleted?.length ?? 0) !== restoredIds.length) {
+        // Do not falsely report a reset when RLS blocked or raced with a delete.
+        await refresh();
+        return { ok: false, restoredIds: [], message: 'Nisu obrisana sva preskakanja.' };
+      }
+
+      // Update the in-memory state immediately; do not rely on a network
+      // refresh to change the rendered list. Only passed records are removed.
+      setReviewed(previous => {
+        const next = new Map(previous);
+        for (const id of restoredIds) if (next.get(id) === false) next.delete(id);
+        return next;
+      });
+      return { ok: true, restoredIds };
     } catch {
-      return { ok: false, restored: 0 };
+      return { ok: false, restoredIds: [], message: 'Veza sa bazom nije dostupna.' };
     }
   }, [userId, refresh]);
 
