@@ -47,7 +47,7 @@ export default function TradeBadge({ trade, compact = false, variant = 'default'
       aria-label={trade.label}
       title={trade.label}
     >
-      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} strokeWidth={isMockupBadge ? 3 : 2} className={`shrink-0 ${isMockupBadge ? mockupColor : ''} `} aria-hidden="true" />
+      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} strokeWidth={isMockupBadge ? 3 : 2} strokeWidth={isMockupBadge ? 3.3 : 2} className={`shrink-0 ${isMockupBadge ? mockupColor : ''}`} aria-hidden="true" />
       <span className={variant === 'card' ? 'min-w-0 break-words leading-snug text-[#16191D]' : 'min-w-0 truncate'}>{compact ? trade.short : trade.label}</span>
     </span>
   );
