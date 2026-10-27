@@ -117,7 +117,7 @@ function AuthenticatedFeed({
   const { saved, save } = useSaved();
   const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
   const { user: profile, profileReady } = useUser();
-  const { reviewedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
+  const { reviewedCarIds, likedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
@@ -865,23 +865,29 @@ function AuthenticatedFeed({
                       toast.error(reset.message || 'Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
                       return;
                     }
-                    if (reset.restoredIds.length === 0) {
-                      toast.message('Nema preskočenih oglasa za ponovno pregledanje.');
+                    // Earlier versions deleted pass rows without reopening the
+                    // cards. If that already happened, there is no pass history
+                    // left to fetch. Recover from the current marketplace feed,
+                    // but never replay cars the user liked.
+                    const storedPassIds = new Set(reset.restoredIds);
+                    const replayIds = swipeEligibleCars
+                      .filter(car => !likedCarIds.has(car.id))
+                      .filter(car => storedPassIds.size === 0 || storedPassIds.has(car.id))
+                      .map(car => car.id);
+                    if (replayIds.length === 0) {
+                      toast.message(swipeEligibleCars.length === 0
+                        ? 'Nema dostupnih oglasa za trenutne filtere.'
+                        : 'Nema oglasa bez lajka za ponovno pregledanje.');
                       return;
                     }
                     setSessionReviewedIds(new Set());
-                    // Freeze the exact restored queue, independent of the
-                    // reviewed-state and async Supabase refresh.
-                    setReplaySkippedIds(reset.restoredIds);
+                    setReplaySkippedIds(replayIds);
                     setSwipeIndex(0);
                     setDragX(0);
                     setIsAnimating(false);
-                    const available = reset.restoredIds.filter(id => swipeEligibleCars.some(car => car.id === id)).length;
-                    if (available === 0) {
-                      toast.message('Preskočeni oglasi više nisu među trenutno prikazanim vozilima. Proveri filtere.');
-                    } else {
-                      toast.success(`Vraćeno ${available} preskočenih oglasa.`);
-                    }
+                    toast.success(storedPassIds.size > 0
+                      ? `Vraćeno ${replayIds.length} preskočenih oglasa.`
+                      : `Ponovo prikazano ${replayIds.length} dostupnih oglasa bez lajka.`);
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ponovi preskočene
                   </button>
