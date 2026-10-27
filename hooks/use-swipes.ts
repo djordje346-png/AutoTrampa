@@ -65,21 +65,26 @@ export function useSwipes() {
     }
   }, [userId]);
 
-  const resetPasses = useCallback(async () => {
-    if (!userId) return true;
+  const resetPasses = useCallback(async (): Promise<{ ok: boolean; restored: number }> => {
+    if (!userId) return { ok: false, restored: 0 };
     try {
-      const { error } = await getSupabase()
+      // Return deleted rows so we can distinguish a real reset from a no-op.
+      // SELECT and DELETE are both scoped to this user by RLS.
+      const { data, error } = await getSupabase()
         .from('car_swipes')
         .delete()
         .eq('user_id', userId)
-        .eq('liked', false);
-      if (error) return false;
-      setReviewed((previous) => new Map(Array.from(previous.entries()).filter(([, liked]) => liked)));
-      return true;
+        .eq('liked', false)
+        .select('target_car_id');
+      if (error) return { ok: false, restored: 0 };
+      const restored = data?.length ?? 0;
+      // A fresh read is authoritative; never clear liked records locally.
+      await refresh();
+      return { ok: true, restored };
     } catch {
-      return false;
+      return { ok: false, restored: 0 };
     }
-  }, [userId]);
+  }, [userId, refresh]);
 
   return {
     reviewedCarIds: new Set(reviewed.keys()),
