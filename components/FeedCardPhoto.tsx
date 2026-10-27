@@ -7,10 +7,11 @@ import { getCarImages, type Car } from '@/types';
 
 interface FeedCardPhotoProps {
   car: Car;
+  showDemoBadge?: boolean;
 }
 
 /** Compact feed gallery; the first saved image remains the cover. */
-export function FeedCardPhoto({ car }: FeedCardPhotoProps) {
+export function FeedCardPhoto({ car, showDemoBadge = true }: FeedCardPhotoProps) {
   const images = getCarImages(car).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
   const [imageFailed, setImageFailed] = useState(false);
@@ -47,7 +48,7 @@ export function FeedCardPhoto({ car }: FeedCardPhotoProps) {
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" aria-hidden="true" />
 
-      {!car.ownerId && (
+      {showDemoBadge && !car.ownerId && (
         <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
           Demo
         </span>

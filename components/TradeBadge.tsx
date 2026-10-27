@@ -19,17 +19,18 @@ const TONE_STYLES = {
 interface TradeBadgeProps {
   trade: TradeLabel;
   compact?: boolean;
+  variant?: 'default' | 'photo';
   className?: string;
 }
 
 /** Shared, active-car-relative trade state badge for feed, search and offers. */
-export default function TradeBadge({ trade, compact = false, className = '' }: TradeBadgeProps) {
+export default function TradeBadge({ trade, compact = false, variant = 'default', className = '' }: TradeBadgeProps) {
   const { Icon, className: toneClass } = TONE_STYLES[trade.tone];
 
   return (
     <span
       className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border font-semibold leading-none ${
-        compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'
+        variant === 'photo' ? 'h-7 px-2.5 py-0 text-[11px]' : compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'
       } ${toneClass} ${className}`}
       aria-label={trade.label}
       title={trade.label}
