@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import {
   ArrowLeftRight,
   ArrowRight,
@@ -132,36 +133,7 @@ function SwapVisual({ cars }: { cars: Car[] }) {
 }
 
 function ListingCard({ car }: { car: Car }) {
-  return (
-    <Link
-      href={`/car/${car.id}`}
-      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface bg-card-surface shadow-sm transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-    >
-      <div className="aspect-[16/10] overflow-hidden bg-elevated">
-        <CarPhoto
-          src={car.image}
-          alt={`${car.brand} ${car.model}`}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-          fallbackClassName="flex h-full w-full items-center justify-center bg-elevated text-app-muted"
-        />
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h3 className="truncate text-base font-semibold text-app-primary sm:text-lg">{carTitle(car)}</h3>
-            <p className="mt-0.5 truncate text-xs text-app-secondary">{carSubtitle(car)}</p>
-          </div>
-          <span className="shrink-0 font-sans text-[22px] font-bold tabular-nums text-app-primary">{formatEuro(car.price)}</span>
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-app-secondary">
-          <span>{formatKm(car.mileage)}</span>
-          <span>{fuelLabel(car.specs.fuelType)}</span>
-          <span>{transmissionLabel(car.specs.transmission)}</span>
-          {car.city && <span className="truncate">{car.city}</span>}
-        </div>
-      </div>
-    </Link>
-  );
+  return <MarketplaceV13Card car={car} />;
 }
 
 export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn, onRegister }: PublicLandingProps) {
