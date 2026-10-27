@@ -22,6 +22,7 @@ import { BottomSheet } from '@/components/BottomSheet';
 import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import TradeBadge from '@/components/TradeBadge';
+import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import { Car } from '@/types';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
@@ -183,7 +184,9 @@ export default function SearchClient() {
         ) : (
           results.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
-            return (
+            return !isLoggedIn ? (
+              <MarketplaceV13Card key={car.id} car={car} onLike={() => openOffer(car)} />
+            ) : (
               <article
                 key={car.id}
                 className={`overflow-hidden rounded-2xl border border-surface bg-card-surface transition-all duration-200 hover:border-brand-500/30 dark:border-surface dark:bg-card-surface ${
