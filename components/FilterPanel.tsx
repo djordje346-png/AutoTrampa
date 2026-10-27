@@ -29,7 +29,7 @@ interface FilterGroupsProps {
 const TRADE_OPTIONS: { key: SearchFilters['trade']; label: string }[] = [
   { key: 'all', label: 'Sve' },
   { key: 'similar', label: 'Slična vrednost' },
-  { key: 'cheaper', label: 'Vlasnik doplaćuje' },
+  { key: 'cheaper', label: 'Doplata tebi' },
   { key: 'expensive', label: 'Ja doplaćujem' },
 ];
 
