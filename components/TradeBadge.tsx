@@ -19,7 +19,7 @@ const TONE_STYLES = {
 interface TradeBadgeProps {
   trade: TradeLabel;
   compact?: boolean;
-  variant?: 'default' | 'photo';
+  variant?: 'default' | 'photo' | 'card';
   className?: string;
 }
 
@@ -29,14 +29,14 @@ export default function TradeBadge({ trade, compact = false, variant = 'default'
 
   return (
     <span
-      className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border font-semibold leading-none ${
-        variant === 'photo' ? 'h-7 px-2.5 py-0 text-[11px]' : compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'
+      className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full leading-none ${variant === 'card' ? 'border-0 font-medium' : 'border font-semibold'} ${
+        variant === 'card' ? 'min-h-[28px] px-2.5 py-1.5 text-[11px]' : variant === 'photo' ? 'h-7 px-2.5 py-0 text-[11px]' : compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'
       } ${toneClass} ${className}`}
       aria-label={trade.label}
       title={trade.label}
     >
-      <Icon size={compact ? 11 : 13} className="shrink-0" aria-hidden="true" />
-      <span className="min-w-0 truncate">{compact ? trade.short : trade.label}</span>
+      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} className="shrink-0" aria-hidden="true" />
+      <span className={variant === 'card' ? 'min-w-0 break-words leading-snug text-app-primary' : 'min-w-0 truncate'}>{compact ? trade.short : trade.label}</span>
     </span>
   );
 }

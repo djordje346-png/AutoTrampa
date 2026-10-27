@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, CalendarDays, Gauge, Heart, MapPin, Settings2 } from 'lucide-react';
+import { CalendarDays, Gauge, Heart, MapPin, Settings2 } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { carSubtitle } from '@/lib/car-row';
 import { transmissionLabel } from '@/lib/labels';
@@ -34,10 +34,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           <FeedCardPhoto car={car} showDemoBadge={false} />
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-black/25 via-transparent to-black/50" />
-        <div className="pointer-events-none absolute inset-x-3 top-3 z-20 flex items-start justify-between gap-2">
-          {trade ? (
-            <TradeBadge trade={trade} variant="photo" className="max-w-[calc(100%-48px)]" />
-          ) : <span />}
+        <div className="pointer-events-none absolute right-3 top-3 z-20 flex items-start gap-2">
           {onLike && (
             <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onLike(car); }} disabled={liking}
               aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
@@ -64,11 +61,9 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
             </span>
           ))}
         </div>
-        <div className="mt-3 flex min-h-[40px] items-center justify-between gap-2 border-t border-surface pt-2.5">
+        <div className="mt-3 flex min-h-[40px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-t border-surface pt-2.5">
           <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
-          <Link href={`/car/${car.id}`} className="relative z-20 inline-flex min-h-[28px] shrink-0 items-center gap-1 whitespace-nowrap text-[10.5px] font-medium tracking-normal text-app-secondary transition-colors hover:text-app-primary hover:underline hover:underline-offset-4 sm:text-[11.5px]">
-            Pogledaj oglas <ArrowRight size={10} strokeWidth={1.8} aria-hidden="true" />
-          </Link>
+          {trade && <TradeBadge trade={trade} variant="card" className="ml-auto" />}
         </div>
         {onOffer && <button type="button" onClick={() => onOffer(car)} className="relative z-20 mt-2 w-full rounded-lg bg-brand-500 px-3 py-2 text-[11px] font-semibold text-on-accent transition-colors hover:bg-brand-400">Pošalji ponudu</button>}
       </div>
