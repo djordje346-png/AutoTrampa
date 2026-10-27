@@ -133,6 +133,7 @@ function AuthenticatedFeed({
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSwipeHint, setShowSwipeHint] = useState(false);
   const [sessionReviewedIds, setSessionReviewedIds] = useState<Set<string>>(new Set());
+  const [replaySkippedIds, setReplaySkippedIds] = useState<string[] | null>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number } | null>(null);
   const pendingAddCarHandled = useRef(false);
@@ -202,6 +203,7 @@ function AuthenticatedFeed({
   useEffect(() => {
     setSwipeIndex(0);
     setSessionReviewedIds(new Set());
+    setReplaySkippedIds(null);
   }, [selectedId, filters]);
 
   function openOffer(car: Car) {
@@ -231,6 +233,7 @@ function AuthenticatedFeed({
 
   function enterSwipeMode() {
     setSwipeIndex(0);
+    setReplaySkippedIds(null);
     setSessionReviewedIds(new Set());
     setDragX(0);
     setViewMode('swipe');
@@ -315,6 +318,7 @@ function AuthenticatedFeed({
 
   function exitSwipeMode() {
     void refreshSwipes();
+    setReplaySkippedIds(null);
     setSessionReviewedIds(new Set());
     setViewMode('grid');
     setSwipeIndex(0);
@@ -324,9 +328,11 @@ function AuthenticatedFeed({
   const showTrade = tradeAware;
   // Demo listings cannot participate in swipe_car or form a match.
   const swipeEligibleCars = filteredCars.filter((car) => Boolean(car.ownerId) && UUID_RE.test(car.id));
-  const swipeCars = userId
-    ? swipeEligibleCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
-    : swipeEligibleCars;
+  const swipeCars = replaySkippedIds !== null
+    ? replaySkippedIds.map(id => swipeEligibleCars.find(car => car.id === id)).filter((car): car is Car => Boolean(car))
+    : userId
+      ? swipeEligibleCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
+      : swipeEligibleCars;
   const swipeCar = swipeCars[swipeIndex];
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
   const keyboardSwipeActions = useRef<{ skip: () => void; like: () => void }>({
@@ -856,18 +862,26 @@ function AuthenticatedFeed({
                   <button onClick={async () => {
                     const reset = await resetPasses();
                     if (!reset.ok) {
-                      toast.error('Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
+                      toast.error(reset.message || 'Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
                       return;
                     }
-                    if (reset.restored === 0) {
+                    if (reset.restoredIds.length === 0) {
                       toast.message('Nema preskočenih oglasa za ponovno pregledanje.');
                       return;
                     }
+                    setSessionReviewedIds(new Set());
+                    // Freeze the exact restored queue, independent of the
+                    // reviewed-state and async Supabase refresh.
+                    setReplaySkippedIds(reset.restoredIds);
                     setSwipeIndex(0);
                     setDragX(0);
-                    setSessionReviewedIds(new Set());
                     setIsAnimating(false);
-                    toast.success(`Vraćeno ${reset.restored} preskočenih oglasa.`);
+                    const available = reset.restoredIds.filter(id => swipeEligibleCars.some(car => car.id === id)).length;
+                    if (available === 0) {
+                      toast.message('Preskočeni oglasi više nisu među trenutno prikazanim vozilima. Proveri filtere.');
+                    } else {
+                      toast.success(`Vraćeno ${available} preskočenih oglasa.`);
+                    }
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ponovi preskočene
                   </button>
