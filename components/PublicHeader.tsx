@@ -7,12 +7,13 @@ import { Menu, X } from 'lucide-react';
 import BrandLockup from '@/components/BrandLockup';
 
 interface PublicHeaderProps {
+  landing?: boolean;
   onAddCar: () => void;
   onSignIn: () => void;
   onRegister: () => void;
 }
 
-export default function PublicHeader({ onSignIn, onRegister }: PublicHeaderProps) {
+export default function PublicHeader({ onAddCar, onSignIn, onRegister, landing = false }: PublicHeaderProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -68,12 +69,12 @@ export default function PublicHeader({ onSignIn, onRegister }: PublicHeaderProps
         <nav aria-label="Glavni meni" className="hidden items-center justify-center gap-1 lg:flex xl:gap-2">
           <a href={howHref} onClick={() => setActiveSection('how')} aria-current={!isSearch && activeSection === 'how' ? 'location' : undefined} className="carbon-nav-link">Kako funkcioniše</a>
           <Link href="/search" aria-current={isSearch ? 'page' : undefined} className="carbon-nav-link">Oglasi</Link>
-          <a href={whyHref} onClick={() => setActiveSection('why')} aria-current={!isSearch && activeSection === 'why' ? 'location' : undefined} className="carbon-nav-link">Zašto AutoTrampa</a>
+          {!landing && <a href={whyHref} onClick={() => setActiveSection('why')} aria-current={!isSearch && activeSection === 'why' ? 'location' : undefined} className="carbon-nav-link">Zašto AutoTrampa</a>}
         </nav>
 
         <div className="hidden items-center justify-self-end gap-2 lg:flex xl:gap-3">
           <button type="button" onClick={onSignIn} className="carbon-nav-link">Prijavi se</button>
-          <button type="button" onClick={onRegister} className="carbon-header-cta">Registruj se</button>
+          <button type="button" onClick={landing ? onAddCar : onRegister} className="carbon-header-cta">{landing ? 'Dodaj svoj auto' : 'Registruj se'}</button>
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -97,8 +98,8 @@ export default function PublicHeader({ onSignIn, onRegister }: PublicHeaderProps
           <div className="mx-auto flex max-w-7xl flex-col gap-1">
             <a href={howHref} aria-current={!isSearch && activeSection === 'how' ? 'location' : undefined} onClick={() => { setActiveSection('how'); closeMenu(); }} className="carbon-nav-link">Kako funkcioniše</a>
             <Link href="/search" aria-current={isSearch ? 'page' : undefined} onClick={closeMenu} className="carbon-nav-link">Oglasi</Link>
-            <a href={whyHref} aria-current={!isSearch && activeSection === 'why' ? 'location' : undefined} onClick={() => { setActiveSection('why'); closeMenu(); }} className="carbon-nav-link">Zašto AutoTrampa</a>
-            <button type="button" onClick={() => { closeMenu(); onRegister(); }} className="carbon-header-cta mt-3 w-full">Registruj se</button>
+            {!landing && <a href={whyHref} aria-current={!isSearch && activeSection === 'why' ? 'location' : undefined} onClick={() => { setActiveSection('why'); closeMenu(); }} className="carbon-nav-link">Zašto AutoTrampa</a>}
+            <button type="button" onClick={() => { closeMenu(); (landing ? onAddCar : onRegister)(); }} className="carbon-header-cta mt-3 w-full">{landing ? 'Dodaj svoj auto' : 'Registruj se'}</button>
           </div>
         </nav>
       )}
