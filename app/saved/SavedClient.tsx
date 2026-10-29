@@ -3,12 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, HeartHandshake, X, MapPin, Gauge, Fuel, BookmarkX, ArrowRight, ArrowLeftRight, TriangleAlert } from 'lucide-react';
+import { Heart, X, BookmarkX, ArrowRight, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { carTitle, formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
-import { fuelLabel } from '@/lib/labels';
-import { carSubtitle } from '@/lib/car-row';
 import { useSaved } from '@/hooks/use-saved';
 import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
@@ -16,7 +13,7 @@ import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
-import TradeBadge from '@/components/TradeBadge';
+import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import { Car } from '@/types';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
@@ -136,84 +133,24 @@ export default function SavedClient() {
           savedCars.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
             return (
-              /* Same card as the feed, with the remove button in place of detail links. */
-              <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-[0_14px_30px_rgba(0,0,0,.10)] transition-shadow duration-200 hover:shadow-xl dark:border-white/10 dark:shadow-[0_14px_30px_rgba(0,0,0,.16)]">
-                <div className="relative aspect-[16/10] w-full flex-shrink-0 sm:aspect-[16/9] overflow-hidden">
-                  <Link href={`/car/${car.id}`} className="block h-full w-full">
-                    <img
-                      src={car.image}
-                      alt={`${car.brand} ${car.model}`}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                  </Link>
-                  {!car.ownerId && (
-                    <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
-                      Demo
-                    </span>
-                  )}
-                  <div className="absolute right-3 top-3 flex gap-2">
-                    <button
-                      onClick={() => void likeCar(car)}
-                      disabled={isLiking(car.id)}
-                      aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-                      title="Lajkuj i sačuvaj za match"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:text-brand-300 disabled:opacity-60"
-                    >
-                      <HeartHandshake size={17} />
-                    </button>
-                    <button
-                      onClick={() => remove(car)}
-                      aria-label={`Ukloni ${car.brand} ${car.model} iz sačuvanih`}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:text-tone-negative"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex min-w-0 flex-1 flex-col bg-card-surface p-3.5 sm:p-4">
-                  <div className="min-w-0">
-                    <Link href={`/car/${car.id}`}>
-                      <h2 className="line-clamp-2 min-h-10 font-heading text-[19px] font-extrabold leading-tight text-app-primary transition-colors hover:text-brand-text dark:text-app-primary">
-                    {carTitle(car)}
-                      </h2>
-                    </Link>
-                    <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
-
-                    <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2 gap-y-1.5 text-[11px] text-app-secondary dark:text-app-secondary">
-                      <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
-                      <span className="text-app-muted/60" aria-hidden="true">·</span>
-                      <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto border-t border-surface pt-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 text-[23px] font-extrabold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
-                      {tl && (
-                        <TradeBadge trade={tl} />
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => openOffer(car)}
-                      className="btn-primary btn-primary-compact mt-3 flex w-full items-center justify-center gap-1.5 text-sm"
-                    >
-                      <ArrowLeftRight size={15} className="shrink-0" />
-                      Pošalji ponudu
-                    </button>
-                    <Link
-                      href={`/car/${car.id}`}
-                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-surface bg-elevated px-4 py-2.5 text-sm font-medium text-brand-text transition-colors hover:bg-hover-surface dark:border-surface"
-                    >
-                      Pogledaj oglas
-                    </Link>
-                  </div>
-                </div>
-              </article>
+              <MarketplaceV13Card
+                key={car.id}
+                car={car}
+                trade={tl}
+                onLike={(likedCar) => { void likeCar(likedCar); }}
+                liking={isLiking(car.id)}
+                onOffer={openOffer}
+                photoActions={
+                  <button
+                    type="button"
+                    onClick={(event) => { event.preventDefault(); event.stopPropagation(); remove(car); }}
+                    aria-label={`Ukloni ${car.brand} ${car.model} iz sačuvanih`}
+                    className="pointer-events-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white transition-colors hover:text-tone-negative"
+                  >
+                    <X size={16} aria-hidden="true" />
+                  </button>
+                }
+              />
             );
           })
         )}

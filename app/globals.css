@@ -42,10 +42,10 @@
     --text-muted: 216 4.59% 42.75%;
     --on-accent: 228 13.51% 7.25%;
     --secondary-accent: 192.86 10% 27.45%;
-    --surface-brand-dark: 228 13.51% 7.25%;
-    --text-brand-dark-primary: 60 9.09% 95.69%;
-    --text-brand-dark-secondary: 220 5.96% 70.39%;
-    --border-brand-dark: 220 6.52% 18.04%;
+    --surface-brand-dark: 206.67 21.95% 8.04%;
+    --text-brand-dark-primary: 90.00 11.11% 96.47%;
+    --text-brand-dark-secondary: 199.20 14.62% 66.47%;
+    --border-brand-dark: 201.00 19.23% 20.39%;
 
     /* System feedback colors: semantic text and soft surface are paired. */
     --tone-positive: 155.06 63.64% 23.73%;
@@ -354,6 +354,16 @@
    classes so a plain `className` assignment is enough — no tailwind-merge
    dependency at call sites. */
 @layer components {
+  /* Keep four facts grouped on the left, with centered 14px dividers. */
+  .listing-card-specs {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: minmax(0, max-content) 14px minmax(0, max-content) 14px minmax(0, max-content) 14px minmax(0, max-content) 1fr;
+    align-items: center;
+  }
+  .listing-spec-dot {
+    background-color: hsl(var(--text-muted) / 0.7);
+  }
   .listing-photo-control {
     display: inline-flex;
     height: 2.75rem;

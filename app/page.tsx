@@ -3,10 +3,10 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, Fuel, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Car as CarIcon, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
-import { fuelLabel, transmissionLabel } from '@/lib/labels';
+import { bodyLabel, transmissionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { Car, MyGarageCar } from '@/types';
 import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
@@ -789,7 +789,7 @@ function AuthenticatedFeed({
 
                       {/* Trade label */}
                       {swipeTl && (
-                        <TradeBadge trade={swipeTl} className="absolute bottom-3 left-3 !border-white/25 !bg-black/70 !text-white px-3 py-2 text-sm backdrop-blur-md [&_svg]:!text-[#faeb00]" />
+                        <TradeBadge trade={swipeTl} variant="photo" className="absolute right-3 top-3 !max-w-[calc(100%-24px)]" />
                       )}
                     </div>
 
@@ -800,18 +800,35 @@ function AuthenticatedFeed({
                           <h2 className="truncate font-heading text-xl font-extrabold tracking-tight text-app-primary">{carTitle(swipeCar)}</h2>
                           <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
                         </div>
-                        <p className="shrink-0 font-sans text-xl font-extrabold tracking-tight text-app-primary">{formatEuro(swipeCar.price)}</p>
                       </div>
 
-                      <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><Gauge size={12} className="text-app-muted" />{formatKm(swipeCar.mileage)}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><Fuel size={12} className="text-app-muted" />{fuelLabel(swipeCar.specs.fuelType)}</div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-app-secondary dark:text-app-secondary"><MapPin size={12} className="text-app-muted" />{swipeCar.city}</div>
+                      <div className="listing-card-specs mt-3 text-[clamp(8px,2.4vw,11px)] leading-tight text-app-secondary sm:text-[11px]">
+                        {[
+                          { Icon: CalendarDays, text: formatYear(swipeCar.year), label: 'Godište' },
+                          { Icon: Gauge, text: formatKm(swipeCar.mileage), label: 'Kilometraža' },
+                          { Icon: Settings2, text: transmissionLabel(swipeCar.specs.transmission), label: 'Menjač' },
+                          { Icon: CarIcon, text: bodyLabel(swipeCar.bodyType), label: 'Karoserija' },
+                        ].map(({ Icon, text, label }, index) => (
+                          <span key={label} className="contents">
+                            {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center rounded-full listing-spec-dot" />}
+                            <span title={`${label}: ${text}`} className="flex min-w-0 items-center gap-[3px]">
+                              <Icon size={12} className="shrink-0 text-app-muted" aria-hidden="true" />
+                              <span className="min-w-0 truncate">{text}</span>
+                            </span>
+                          </span>
+                        ))}
                       </div>
 
                       <p className="text-xs text-app-secondary dark:text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
 
-                      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-surface dark:border-surface">
+                      <div className="mt-4 flex items-center justify-between gap-3 border-t border-surface pt-3">
+                        <p className="shrink-0 font-sans text-xl font-extrabold tracking-tight text-app-primary">{formatEuro(swipeCar.price)}</p>
+                        <span title={`Lokacija oglasa: ${swipeCar.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center gap-1 text-xs text-app-secondary">
+                          <MapPin size={13} className="shrink-0 text-app-muted" aria-hidden="true" />
+                          <span className="truncate">{swipeCar.city || 'Nije navedeno'}</span>
+                        </span>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2">
                         <button onClick={() => openOffer(swipeCar)} className="btn-primary btn-primary-compact flex-1 text-sm">
                           <ArrowLeftRight size={15} /> Pošalji ponudu
                         </button>

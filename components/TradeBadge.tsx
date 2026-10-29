@@ -1,18 +1,19 @@
 import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight } from 'lucide-react';
+import { formatEuro } from '@/lib/cars';
 import type { TradeLabel } from '@/lib/trade';
 
 const TONE_STYLES = {
   'they-add': {
     Icon: ArrowDownLeft,
-    className: 'border-trade-owner bg-trade-owner text-trade-owner',
+    arrowClass: 'text-[#5CE9AC]',
   },
   'you-add': {
     Icon: ArrowUpRight,
-    className: 'border-trade-you bg-trade-you text-trade-you',
+    arrowClass: 'text-[#FAEB00]',
   },
   even: {
     Icon: ArrowLeftRight,
-    className: 'border-trade-even bg-trade-even text-trade-even',
+    arrowClass: 'text-[#78B7FF]',
   },
 } as const;
 
@@ -25,30 +26,22 @@ interface TradeBadgeProps {
 
 /** Shared, active-car-relative trade state badge for feed, search and offers. */
 export default function TradeBadge({ trade, compact = false, variant = 'default', className = '' }: TradeBadgeProps) {
-  const { Icon, className: toneClass } = TONE_STYLES[trade.tone];
-  // First PNG mockup: soft blue/orange/mint badge fills, dark text and vivid arrows.
-  const mockupColor = {
-    'they-add': 'text-[#00B97A]',
-    'you-add': 'text-[#F59A00]',
-    even: 'text-[#2878D5]',
-  }[trade.tone];
-  const mockupBackground = {
-    'they-add': 'bg-[#E3F7EE]',
-    'you-add': 'bg-[#FFF1E3]',
-    even: 'bg-[#E7F0FD]',
-  }[trade.tone];
-  const isMockupBadge = variant === 'card' || variant === 'photo';
+  const { Icon, arrowClass } = TONE_STYLES[trade.tone];
+  const isPhotoBadge = variant === 'card' || variant === 'photo';
+  const label = compact ? trade.short : isPhotoBadge && trade.tone !== 'even'
+    ? `${trade.tone === 'you-add' ? 'Doplata' : 'Dobijaš'} ${formatEuro(Math.abs(trade.diff))}`
+    : trade.label;
 
   return (
     <span
-      className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full leading-none ${variant === 'card' ? 'border-0 font-medium' : 'border font-semibold'} ${
-        variant === 'card' ? 'min-h-[28px] px-2.5 py-1.5 text-[11px]' : variant === 'photo' ? 'h-7 px-2.5 py-0 text-[11px]' : compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'
-      } ${isMockupBadge ? `border-transparent text-[#16191D] ${mockupBackground}` : toneClass} ${className}`}
+      className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-white/25 leading-none backdrop-blur-md ${
+        isPhotoBadge ? 'min-h-[32px] bg-[#10191c]/45 px-2.5 py-1.5 text-[11px] font-medium text-white shadow-sm' : `bg-brand-dark text-brand-dark-primary font-semibold ${compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'}`
+      } ${className}`}
       aria-label={trade.label}
       title={trade.label}
     >
-      <Icon size={variant === 'card' ? 15 : compact ? 11 : 13} strokeWidth={isMockupBadge ? 2.8 : 2} className={`shrink-0 ${isMockupBadge ? mockupColor : ''}`} aria-hidden="true" />
-      <span className={variant === 'card' ? 'min-w-0 break-words leading-snug text-[#16191D]' : 'min-w-0 truncate'}>{compact ? trade.short : trade.label}</span>
+      <Icon size={isPhotoBadge ? 14 : compact ? 11 : 13} strokeWidth={2.2} className={`shrink-0 ${arrowClass}`} aria-hidden="true" />
+      <span className="min-w-0 truncate leading-snug">{label}</span>
     </span>
   );
 }
