@@ -41,9 +41,9 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           {onLike && (
             <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onLike(car); }} disabled={liking}
               aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-              className="pointer-events-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white transition-colors hover:border-brand-500 hover:text-brand-500 disabled:opacity-50"
+              className="pointer-events-auto relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white transition-colors after:absolute after:-inset-1.5 after:rounded-full hover:border-brand-500 hover:text-brand-500 disabled:opacity-50 sm:h-9 sm:w-9 sm:after:hidden"
               title="Lajkuj i sačuvaj za match">
-              <Heart size={18} strokeWidth={1.8} aria-hidden="true" />
+              <Heart size={18} strokeWidth={1.8} className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
             </button>
           )}
         </div>

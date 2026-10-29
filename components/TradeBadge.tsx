@@ -35,12 +35,12 @@ export default function TradeBadge({ trade, compact = false, variant = 'default'
   return (
     <span
       className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-white/25 leading-none backdrop-blur-md ${
-        isPhotoBadge ? 'min-h-[32px] bg-black/75 px-2.5 py-1.5 text-[11px] font-medium text-white shadow-sm' : `bg-brand-dark text-brand-dark-primary font-semibold ${compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'}`
+        isPhotoBadge ? 'min-h-[28px] bg-black/[0.65] px-2 py-1 text-[10px] font-medium text-white shadow-sm sm:min-h-[32px] sm:px-2.5 sm:py-1.5 sm:text-[11px]' : `bg-brand-dark text-brand-dark-primary font-semibold ${compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'}`
       } ${className}`}
       aria-label={trade.label}
       title={trade.label}
     >
-      <Icon size={isPhotoBadge ? 14 : compact ? 11 : 13} strokeWidth={2.8} className={`shrink-0 ${arrowClass}`} aria-hidden="true" />
+      <Icon size={isPhotoBadge ? 14 : compact ? 11 : 13} strokeWidth={2.8} className={`shrink-0 ${isPhotoBadge ? 'h-3 w-3 sm:h-3.5 sm:w-3.5' : ''} ${arrowClass}`} aria-hidden="true" />
       <span className="min-w-0 truncate leading-snug">{label}</span>
     </span>
   );
