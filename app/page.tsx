@@ -823,8 +823,8 @@ function AuthenticatedFeed({
 
                       <div className="mt-4 flex items-center justify-between gap-3 border-t border-surface pt-3">
                         <p className="shrink-0 font-sans text-xl font-extrabold tracking-tight text-app-primary">{formatEuro(swipeCar.price)}</p>
-                        <span title={`Lokacija oglasa: ${swipeCar.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center gap-1 text-xs text-app-secondary">
-                          <MapPin size={13} className="shrink-0 text-app-muted" aria-hidden="true" />
+                        <span title={`Lokacija oglasa: ${swipeCar.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center gap-1 text-[13px] font-semibold text-app-secondary">
+                          <MapPin size={14} className="shrink-0 text-app-muted" aria-hidden="true" />
                           <span className="truncate">{swipeCar.city || 'Nije navedeno'}</span>
                         </span>
                       </div>

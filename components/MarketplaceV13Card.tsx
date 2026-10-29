@@ -67,8 +67,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
         </div>
         <div className="mt-3 flex min-h-[40px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-t border-surface pt-2.5">
           <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
-          <span title={`Lokacija oglasa: ${car.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center justify-end gap-1 text-[11px] text-app-secondary">
-            <MapPin size={13} className="shrink-0 text-app-muted" aria-hidden="true" />
+          <span title={`Lokacija oglasa: ${car.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center justify-end gap-1 text-xs font-semibold text-app-secondary">
+            <MapPin size={14} className="shrink-0 text-app-muted" aria-hidden="true" />
             <span className="truncate">{car.city || 'Nije navedeno'}</span>
           </span>
         </div>

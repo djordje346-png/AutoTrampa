@@ -42,10 +42,10 @@
     --text-muted: 216 4.59% 42.75%;
     --on-accent: 228 13.51% 7.25%;
     --secondary-accent: 192.86 10% 27.45%;
-    --surface-brand-dark: 206.67 21.95% 8.04%;
-    --text-brand-dark-primary: 90.00 11.11% 96.47%;
-    --text-brand-dark-secondary: 199.20 14.62% 66.47%;
-    --border-brand-dark: 201.00 19.23% 20.39%;
+    --surface-brand-dark: 228 13.51% 7.25%;
+    --text-brand-dark-primary: 60 9.09% 95.69%;
+    --text-brand-dark-secondary: 220 5.96% 70.39%;
+    --border-brand-dark: 220 6.52% 18.04%;
 
     /* System feedback colors: semantic text and soft surface are paired. */
     --tone-positive: 155.06 63.64% 23.73%;
@@ -74,13 +74,13 @@
   }
 
   .dark {
-    /* Card Studio dark palette: blue-graphite surfaces with lighter card depth. */
-    --background: 206.67 21.95% 8.04%;
-    --foreground: 90.00 11.11% 96.47%;
-    --card: 200.00 24.59% 11.96%;
-    --card-foreground: 90.00 11.11% 96.47%;
-    --popover: 200.00 24.59% 11.96%;
-    --popover-foreground: 90.00 11.11% 96.47%;
+    /* Graphite Night: original neutral graphite palette with subtle card depth. */
+    --background: 228 13.51% 7.25%;
+    --foreground: 60 9.09% 95.69%;
+    --card: 228 9.09% 10.78%;
+    --card-foreground: 60 9.09% 95.69%;
+    --popover: 228 9.09% 10.78%;
+    --popover-foreground: 60 9.09% 95.69%;
     --primary: 56.4 100% 49.02%;
     --brand-text: 56.4 100% 49.02%;
     --brand-hover: 56.67 100% 45.88%;
@@ -88,35 +88,35 @@
     --brand-soft: 57 62.5% 12.55%;
     --brand-soft-border: 55.89 60.33% 23.73%;
     --primary-foreground: 228 13.51% 7.25%;
-    --secondary: 198.00 25.64% 15.29%;
-    --secondary-foreground: 90.00 11.11% 96.47%;
-    --muted: 198.00 25.64% 15.29%;
-    --muted-foreground: 199.20 14.62% 66.47%;
+    --secondary: 230 7.89% 14.90%;
+    --secondary-foreground: 60 9.09% 95.69%;
+    --muted: 230 7.89% 14.90%;
+    --muted-foreground: 215 6.19% 61.96%;
     --accent: 56.4 100% 49.02%;
     --accent-foreground: 228 13.51% 7.25%;
     --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
-    --border: 201.00 19.23% 20.39%;
-    --input: 201.00 19.23% 20.39%;
+    --border: 225 7.02% 22.35%;
+    --input: 225 7.02% 22.35%;
     --ring: 56.4 100% 49.02%;
     --radius: 0.75rem;
 
     /* semantic surface tokens (dark defaults) */
-    --surface-card-gradient: linear-gradient(145deg, #1d2b31 0%, #111a1e 85%);
-    --surface-base: 206.67 21.95% 8.04%;
-    --surface-card: 200.00 24.59% 11.96%;
-    --surface-elevated: 198.00 25.64% 15.29%;
-    --surface-hover: 202.11 20.00% 18.63%;
-    --surface-border: 201.00 19.23% 20.39%;
-    --text-primary: 90.00 11.11% 96.47%;
-    --text-secondary: 199.20 14.62% 66.47%;
-    --text-muted: 199.20 14.62% 66.47%;
+    --surface-card-gradient: linear-gradient(145deg, #22242a 0%, #191a1e 85%);
+    --surface-base: 228 13.51% 7.25%;
+    --surface-card: 228 9.09% 10.78%;
+    --surface-elevated: 230 7.89% 14.90%;
+    --surface-hover: 231.43 6.8% 20.20%;
+    --surface-border: 225 7.02% 22.35%;
+    --text-primary: 60 9.09% 95.69%;
+    --text-secondary: 217.5 5.80% 72.94%;
+    --text-muted: 215 6.19% 61.96%;
     --on-accent: 228 13.51% 7.25%;
     --secondary-accent: 225 4.44% 82.35%;
-    --surface-brand-dark: 206.67 21.95% 8.04%;
-    --text-brand-dark-primary: 90.00 11.11% 96.47%;
-    --text-brand-dark-secondary: 199.20 14.62% 66.47%;
-    --border-brand-dark: 201.00 19.23% 20.39%;
+    --surface-brand-dark: 228 13.51% 7.25%;
+    --text-brand-dark-primary: 60 9.09% 95.69%;
+    --text-brand-dark-secondary: 220 5.96% 70.39%;
+    --border-brand-dark: 220 6.52% 18.04%;
 
     /* Dark feedback colors keep the same meaning with lighter foregrounds. */
     --tone-positive: 145.95 57.81% 74.9%;
@@ -354,12 +354,18 @@
    classes so a plain `className` assignment is enough — no tailwind-merge
    dependency at call sites. */
 @layer components {
-  /* Keep four facts grouped on the left, with centered 14px dividers. */
+  /* Keep facts grouped on the left with equal breathing room around each dot. */
   .listing-card-specs {
+    --listing-spec-divider: 16px;
     display: grid;
     min-width: 0;
-    grid-template-columns: minmax(0, max-content) 14px minmax(0, max-content) 14px minmax(0, max-content) 14px minmax(0, max-content) 1fr;
+    grid-template-columns: minmax(0, max-content) var(--listing-spec-divider) minmax(0, max-content) var(--listing-spec-divider) minmax(0, max-content) var(--listing-spec-divider) minmax(0, max-content) 1fr;
     align-items: center;
+  }
+  @media (min-width: 640px) {
+    .listing-card-specs {
+      --listing-spec-divider: 20px;
+    }
   }
   .listing-spec-dot {
     background-color: hsl(var(--text-muted) / 0.7);

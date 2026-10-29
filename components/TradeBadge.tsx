@@ -35,7 +35,7 @@ export default function TradeBadge({ trade, compact = false, variant = 'default'
   return (
     <span
       className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-white/25 leading-none backdrop-blur-md ${
-        isPhotoBadge ? 'min-h-[32px] bg-[#10191c]/45 px-2.5 py-1.5 text-[11px] font-medium text-white shadow-sm' : `bg-brand-dark text-brand-dark-primary font-semibold ${compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'}`
+        isPhotoBadge ? 'min-h-[32px] bg-black/70 px-2.5 py-1.5 text-[11px] font-medium text-white shadow-sm' : `bg-brand-dark text-brand-dark-primary font-semibold ${compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'}`
       } ${className}`}
       aria-label={trade.label}
       title={trade.label}
