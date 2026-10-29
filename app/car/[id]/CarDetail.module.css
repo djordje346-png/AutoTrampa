@@ -18,3 +18,14 @@
 }
 
 @media (min-width: 1024px) { .photo { object-position: center 60%; } }
+
+/* Eight populated fields form two equal desktop rows, including power/drive. */
+@media (min-width: 1024px) {
+  .specs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .spec { gap: 8px; padding: 11px 8px; }
+  .spec:nth-child(n) { border-left: 0; border-top: 0; }
+  .spec:not(:nth-child(4n+1)) { border-left: 1px solid hsl(var(--surface-border)); }
+  .spec:nth-child(n+5) { border-top: 1px solid hsl(var(--surface-border)); }
+  .spec > svg { width: 18px; height: 18px; }
+  .spec dd { font-size: 14px; line-height: 21px; overflow-wrap: anywhere; }
+}
