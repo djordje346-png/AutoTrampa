@@ -789,7 +789,7 @@ function AuthenticatedFeed({
 
                       {/* Trade label */}
                       {swipeTl && (
-                        <TradeBadge trade={swipeTl} variant="photo" className="absolute right-3 top-3 !max-w-[calc(100%-24px)]" />
+                        <TradeBadge trade={swipeTl} variant="photo" className="absolute left-3 top-3 !max-w-[calc(100%-24px)]" />
                       )}
                     </div>
 

@@ -36,7 +36,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           <FeedCardPhoto car={car} showDemoBadge={false} />
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-black/25 via-transparent to-black/50" />
-        <div className="pointer-events-none absolute left-3 top-3 z-20 flex items-center gap-2">
+        <div className="pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-2">
+          {photoActions}
           {onLike && (
             <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onLike(car); }} disabled={liking}
               aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
@@ -45,9 +46,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
               <Heart size={18} strokeWidth={1.8} aria-hidden="true" />
             </button>
           )}
-          {photoActions}
         </div>
-        {trade && <TradeBadge trade={trade} variant="photo" className={`pointer-events-none absolute right-3 top-3 z-20 ${photoActions ? '!max-w-[calc(100%-112px)]' : '!max-w-[calc(100%-72px)]'}`} />}
+        {trade && <TradeBadge trade={trade} variant="photo" className={`pointer-events-none absolute left-3 top-3 z-20 ${photoActions ? '!max-w-[calc(100%-112px)]' : '!max-w-[calc(100%-72px)]'}`} />}
         {!car.ownerId && <span className="pointer-events-none absolute bottom-2 left-3 z-20 rounded-full bg-black/65 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white">Demo</span>}
       </div>
 
