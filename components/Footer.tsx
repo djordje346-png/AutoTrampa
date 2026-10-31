@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { House as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
 import BrandLockup from '@/components/BrandLockup';
+import { useOffers } from '@/hooks/use-offers';
 import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
@@ -27,6 +28,7 @@ function Badge({ count, desktop = false }: { count: number; desktop?: boolean })
 
 export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeader?: boolean }) {
   const pathname = usePathname();
+  const { unread: offerUnread } = useOffers({ poll: true });
   const { totalUnread, mounted: messagesReady } = useMessages({ poll: false });
   const { count: savedCount, mounted: savedReady } = useSaved();
   const { isLoggedIn, mounted: authReady } = useAuth();
@@ -34,7 +36,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
   function badgeFor(href: string): number {
     // Unread messages sit behind sign-in; badging them for a visitor who would
     // only hit the sign-in prompt is noise.
-    if (href === '/messages') return messagesReady && authReady && isLoggedIn ? totalUnread : 0;
+    if (href === '/messages') return messagesReady && authReady && isLoggedIn ? totalUnread + offerUnread : 0;
     if (href === '/saved') return savedReady ? savedCount : 0;
     return 0;
   }
@@ -58,7 +60,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
                   key={href}
                   href={href}
                   aria-current={active ? 'page' : undefined}
-                  aria-label={count > 0 ? `${label}, ${count} ${href === '/saved' ? 'sačuvanih oglasa' : 'nepročitanih poruka'}` : undefined}
+                  aria-label={count > 0 ? `${label}, ${count} ${href === '/saved' ? 'sačuvanih oglasa' : 'novih poruka i ponuda'}` : undefined}
                   className="carbon-nav-link"
                 >
                   <span className="relative flex">

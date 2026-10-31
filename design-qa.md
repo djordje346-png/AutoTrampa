@@ -168,3 +168,52 @@ and interaction regression check, not a complete accessibility audit.
 No unresolved P0/P1/P2 visual findings in this scope.
 
 final result: passed
+
+## Standalone offers — 2026-10-31
+
+Source visual truth: the offer mockup generated in this conversation,
+`generated_images/exec-d9a040c5-b3df-4c05-8ca2-f59bb7bf8646.png` in the task workspace
+(1487 × 1058 pixels). The user subsequently approved removing the amount and acceptance
+step: doplata is negotiated in chat. This is a functional extension, not a pixel-exact clone.
+
+Browser-rendered evidence in the task workspace:
+- `/workspace/scratch/autotrampa-offers-light-qa.jpg`
+- `/workspace/scratch/autotrampa-offers-dark-qa.jpg`
+- `/workspace/scratch/autotrampa-offers-mobile-qa.jpg`
+- `/workspace/scratch/autotrampa-offers-comparison.jpg` (source and implementation together)
+
+Desktop CSS viewport was 1363 × 936. The captured light image is 1169 × 936 pixels;
+comparison uses aspect-preserving contain in equal 744 × 530 regions rather than assuming
+pixel-identical browser density. The mobile component viewport was 390 × 844 in an iframe;
+its document scroll width was exactly 390 pixels. Different mock fixture names/photos and
+viewport density are expected and are not evidence of an implementation defect.
+
+Fonts/typography: existing Manrope heading and Inter body variables are retained; readable
+product sizes and wrapping were inspected. Spacing/layout: shared app-container, two tabs,
+left selection list/right details, side-by-side vehicle images, one clear message action;
+mobile uses list-to-detail navigation with a back action and no horizontal overflow.
+Colors/tokens: existing graphite/pearl surfaces and yellow action tokens; light and dark
+were inspected. Images: implementation uses the actual listing image/snapshot fields,
+not generated UI graphics; QA photography is synthetic fixture content. Copy: Latin Serbian,
+explicit 'Doplata po dogovoru', no unsupported acceptance step or completed-trade claim.
+
+Full-view comparison confirms the approved hierarchy. Focused checks covered tab/filter
+labels, car ownership labels, note field, status and action row, and mobile confirmation
+buttons. There are no outstanding actionable P0/P1/P2 findings. The QA harness's initial
+serif font and overlapping header came from missing fixture font/padding classes; those
+fixture-only issues were corrected before the final comparison. No production styling
+was changed to compensate for the harness.
+
+Primary interactions tested: garage car selection; send note; view sent offer; withdraw
+confirmation and persisted status; received offer; open/reuse linked conversation; send
+message; return to offer; mobile details, cancel-reject confirmation and mobile message;
+match label without duplicate bubble. Console was checked: only browser-extension metadata
+errors were observed, not application errors. SQL checks cover rejected offers, missing
+vehicles, duplicate pairs and access denial. Production-account sign-in was not simulated
+as a verified real login; see docs/trade-offers.md for the exact test boundary.
+
+Intentional differences: cash form and 'Prihvati ponudu' removed at the user's request;
+existing navigation/icon system retained; received/sent filter moved above the workspace.
+P3 follow-up: pagination can be added when account histories exceed one API response page.
+
+final result: passed

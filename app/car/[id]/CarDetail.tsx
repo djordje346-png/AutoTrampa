@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { HeartHandshake, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Zap, Share2, Check, Plus, Info, Pencil, CarFront, ChevronLeft, ChevronRight, Maximize2, ImageOff, Palette } from 'lucide-react';
+import { HeartHandshake, MessageCircle, ArrowLeftRight, Phone, MapPin, Gauge, Fuel, Settings2, Star, Calendar, Zap, Share2, Check, Plus, Info, Pencil, CarFront, ChevronLeft, ChevronRight, Maximize2, ImageOff, Palette } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import TradeBadge from '@/components/TradeBadge';
@@ -13,6 +13,7 @@ import { getCarImages, type Car, type MyGarageCar } from '@/types';
 import { EQUIPMENT_CATEGORIES } from '@/lib/equipment';
 import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
+import { useMessages } from '@/hooks/use-messages';
 import { useAuth } from '@/hooks/use-auth';
 import { useContactPhone } from '@/hooks/use-contact-phone';
 import { contactPhoneMessage } from '@/lib/contact-phone';
@@ -55,6 +56,9 @@ export default function CarDetail({ car: listing }: { car: Car }) {
   const ownerGarageCar = isOwner ? garageCars.find((garageCar) => garageCar.id === car.id) ?? null : null;
   const showTrade = authReady && isLoggedIn && !isOwner && selectedCar !== null;
   const location = [displayValue(car.city), displayValue(car.country)].filter(Boolean).join(', ');
+  const { openListingConversation } = useMessages({ poll: false });
+  const [openingChat, setOpeningChat] = useState(false);
+  const chatBusy = useRef(false);
   const [offerOpen, setOfferOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -139,7 +143,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
     const continueToOffer = () => requestPhoneAction(() => {
       if (!selectedCar) {
         toast.error('Prvo dodaj svoj auto u garažu.', {
-          description: 'Ponuda za zamenu je razlika između tvog i ovog vozila.',
+          description: 'Izaberi automobil koji želiš da ponudiš vlasniku.',
           action: { label: 'Garaža', onClick: () => router.push('/garage') },
         });
         return;
@@ -149,17 +153,27 @@ export default function CarDetail({ car: listing }: { car: Car }) {
     if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', continueToOffer)) return;
     /*
      * Signed in but nothing in the garage: the offer sheet needs a car of your
-     * own to state a difference, so it stays shut. Say why and point at the fix
+     * own to identify the offered vehicle, so it stays shut. Say why and point at the fix
      * instead of letting the button look dead.
      */
     if (!selectedCar) {
       toast.error('Prvo dodaj svoj auto u garažu.', {
-        description: 'Ponuda za zamenu je razlika između tvog i ovog vozila.',
+        description: 'Izaberi automobil koji želiš da ponudiš vlasniku.',
         action: { label: 'Garaža', onClick: () => router.push('/garage') },
       });
       return;
     }
     continueToOffer();
+  }
+
+  async function handleMessage() {
+    if (chatBusy.current || isOwner) return;
+    if (!requireAuth('Prijavi se da pošalješ poruku vlasniku.')) return;
+    chatBusy.current = true; setOpeningChat(true);
+    const result = await openListingConversation(car.id, selectedCar?.id);
+    chatBusy.current = false; setOpeningChat(false);
+    if (!result.ok) { toast.error(result.message); return; }
+    router.push(`/messages?conversation=${result.id}`);
   }
 
   async function handleCall() {
@@ -272,6 +286,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             </div>}
             {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] w-full text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" />{ownerActionLabel}</button> : authReady && <>
               <button onClick={handleOfferClick} className="btn-primary min-h-[48px] w-full text-sm"><ArrowLeftRight size={19} aria-hidden="true" />Pošalji ponudu</button>
+              <button onClick={() => void handleMessage()} disabled={openingChat} className={`${CHIP} mt-2 w-full disabled:opacity-60`}><MessageCircle size={17} aria-hidden="true" />{openingChat ? 'Otvaram razgovor…' : 'Pošalji poruku'}</button>
               {ownerContact.href ? <a href={ownerContact.href} onClick={event => { event.preventDefault(); void handleCall(); }} aria-label={`Pozovi ${car.owner.name}`} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</a> : <button type="button" onClick={() => void handleCall()} title={contactNote ?? undefined} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</button>}
               {contactNote && <p role="status" className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-app-muted"><Info size={13} className="mt-0.5 shrink-0" aria-hidden="true" />{contactNote}</p>}
             </>}
@@ -306,6 +321,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
         <div className="mx-auto flex max-w-2xl items-center gap-3">
           <p className="min-w-0 shrink-0 font-heading text-lg font-bold tabular-nums text-app-primary">{formatEuro(car.price)}</p>
           {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" /><span className="truncate">{ownerActionLabel}</span></button> : <button onClick={handleOfferClick} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm"><ArrowLeftRight size={18} className="shrink-0" aria-hidden="true" /><span className="truncate">Pošalji ponudu</span></button>}
+          {!isOwner && <button onClick={() => void handleMessage()} disabled={openingChat} aria-label="Pošalji poruku vlasniku" className={`${CHIP} h-12 w-12 shrink-0 disabled:opacity-60`}><MessageCircle size={20} aria-hidden="true" /></button>}
         </div>
       </div>}
       {lightboxOpen && <ImageLightbox images={carImages} index={imageIndex} onIndexChange={setActiveImage} onClose={() => setLightboxOpen(false)} altPrefix={`${car.brand} ${car.model}`} />}

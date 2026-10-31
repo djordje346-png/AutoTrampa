@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MapPin, Shield, Plus, LogOut, Car, ChevronRight, ChevronDown, Lock, TriangleAlert as AlertTriangle, SlidersHorizontal, CircleHelp as HelpCircle, FileText, ShieldAlert, Sun, Moon, Database, Pencil, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
@@ -133,6 +134,7 @@ export default function ProfileClient() {
       </header>
 
       <div className="app-container pt-5 pb-4">
+        <Link href="/messages?tab=offers" className="mb-4 flex min-h-[60px] items-center justify-between gap-3 rounded-2xl border border-surface bg-card-surface p-4 text-app-primary hover:bg-hover-surface"><span><span className="block text-sm font-semibold">Moje ponude za zamenu</span><span className="mt-1 block text-xs text-app-muted">Pogledaj primljene i poslate ponude</span></span><ChevronRight size={18} aria-hidden="true" /></Link>
         <div className="bg-card-surface dark:bg-card-surface rounded-2xl border border-surface dark:border-surface p-5">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/20">

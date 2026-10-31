@@ -122,7 +122,8 @@ function harness(extraStubs = {}) {
     if (cache.has(filename)) return cache.get(filename).exports;
     const module = { exports: {} };
     cache.set(filename, module);
-    if (filename.endsWith('.json')) module.exports = JSON.parse(fs.readFileSync(filename, 'utf8'));
+    if (filename.endsWith('.css')) module.exports = {};
+    else if (filename.endsWith('.json')) module.exports = JSON.parse(fs.readFileSync(filename, 'utf8'));
     else {
       const compiled = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
         fileName: filename,
@@ -288,7 +289,8 @@ test('conversation mapper shows the counterparty vehicle in both directions with
   assert.equal(seller.carId, CAR_A);
   assert.match(seller.carTitle, /BMW 525d/);
   assert.equal(seller.ownerName, 'Owner A');
-  assert.deepEqual(buyer.messages.map((item) => [item.id, item.sender]), [['m1', 'system'], ['m2', 'them'], ['m3', 'me']]);
+  assert.deepEqual(buyer.messages.map((item) => [item.id, item.sender]), [['m2', 'them'], ['m3', 'me']]);
+  assert.equal(buyer.hasMatch, true);
   assert.equal(buyer.unread, 1);
   assert.equal(seller.unread, 2);
   assert.deepEqual(row, original, 'Mapping must preserve persisted messages and read_at values');
@@ -297,7 +299,7 @@ test('conversation mapper shows the counterparty vehicle in both directions with
   assert.equal(legacy.ownerName, 'Owner A');
   const deleted = mapConversation({ ...row, car: null, offered_car: null }, A);
   assert.equal(deleted.carTitle, 'Oglas više nije dostupan');
-  assert.equal(deleted.messages.length, 3);
+  assert.equal(deleted.messages.length, 2);
 });
 
 function profileRow(phone, privatePhone = true) {
@@ -418,6 +420,8 @@ test('actual listing detail uses authorized tel links in desktop and mobile bran
 
 test('actual messages desktop and mobile call controls resolve contact for the active conversation', async () => {
   const { ctx, load } = harness({
+    'next/navigation': { useRouter: () => ({ push() {}, replace() {} }), useSearchParams: () => new URLSearchParams('conversation='+CONVERSATION) },
+    '@/hooks/use-offers': { useOffers: () => ({ offers:[],unread:0,mounted:true,updateOffer:async()=>({ok:true}) }) },
     '@/hooks/use-messages': {
       useMessages: () => ({ conversations: [{ id: CONVERSATION, carId: CAR_B, carTitle: 'Audi A4', carImage: 'b.jpg', ownerName: 'Owner B', ownerPhone: '+381669999999', tradeSummary: 'Razlika 500 €', messages: [], unread: 0, lastUpdated: Date.now(), isBuyer: true }],
         sendMessage: async () => true, markRead: async () => {}, deleteConversation: async () => true, totalUnread: 0, mounted: true }),
@@ -428,8 +432,7 @@ test('actual messages desktop and mobile call controls resolve contact for the a
   const MessagesClient = load('@/app/messages/MessagesClient').default;
   let renderer;
   await act(async () => { renderer = create(React.createElement(MessagesClient)); });
-  const conversationButton = renderer.root.findAll((node) => node.type === 'button' && node.props['aria-pressed'] === false)[0];
-  await act(async () => conversationButton.props.onClick());
+
   const links = renderer.root.findAll((node) => node.type === 'a' && node.props.href?.startsWith('tel:'));
   assert.equal(links.length, 2, 'Both responsive thread branches must use the same resolved phone');
   assert.ok(links.every((node) => node.props.href === `tel:${PHONE}`));
@@ -438,7 +441,7 @@ test('actual messages desktop and mobile call controls resolve contact for the a
   await act(async () => { links[1].props.onClick({ preventDefault() {} }); });
   assert.deepEqual(ctx.dialed, []);
   assert.equal(renderer.root.findAll((node) => node.type === 'a' && node.props.href?.startsWith('tel:')).length, 0);
-  assert.equal(renderer.root.findAll((node) => node.props.role === 'status' && String(node.props.children).includes('Potvrda zamene')).length, 2);
+  assert.equal(renderer.root.findAll((node) => node.props.role === 'status' && String(node.props.children).includes('Broj telefona je privatan')).length, 2);
   await act(async () => renderer.unmount());
 });
 
