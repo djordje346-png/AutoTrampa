@@ -39,6 +39,9 @@ interface PageProps {
 const getCar = cache(async (id: string): Promise<Car | null> => {
   const demo = MARKETPLACE_CARS.find((car) => car.id === id);
   if (demo) return demo;
+  // Preserve links to the earlier repeated demo examples.
+  const legacyDemo = id.startsWith('demo-dodatni-') ? MARKETPLACE_CARS.find(car => car.id === id.slice('demo-dodatni-'.length)) : null;
+  if (legacyDemo) return legacyDemo;
   // Everything else has to come from the database; a slug that is not in the
   // seed can never exist there, and the lookup returns null without a request.
   return fetchListing(id);

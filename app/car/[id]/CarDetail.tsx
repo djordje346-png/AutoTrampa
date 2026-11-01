@@ -167,6 +167,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
   }
 
   async function handleMessage() {
+    if (!car.ownerId) { toast.message('Demo oglas nema stvarnog vlasnika. Poruke se ne šalju.'); return; }
     if (chatBusy.current || isOwner) return;
     if (!requireAuth('Prijavi se da pošalješ poruku vlasniku.')) return;
     chatBusy.current = true; setOpeningChat(true);
@@ -269,6 +270,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
               <p className="text-xs font-medium text-app-muted">Vrednost vozila</p>
               <p className="mt-1 break-words font-heading text-[2rem] font-bold leading-tight tracking-tight tabular-nums text-app-primary sm:text-4xl">{formatEuro(car.price)}</p>
             </div>
+            {!car.ownerId && car.id.startsWith('demo-dodatni-') && <p className="mb-4 text-xs text-app-muted"><a href={`/demo-photo-credits.html#${car.id}`} target="_blank" rel="noreferrer" className="underline">Autor i licenca fotografije</a></p>}
             {!isOwner && <div className="mb-4 rounded-xl border border-surface bg-elevated p-3.5">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-app-primary"><ArrowLeftRight size={18} className="shrink-0 text-brand-text" aria-hidden="true" />Poređenje zamene</h2>
               {!authReady || (isLoggedIn && !garageMounted) ? <p role="status" className="mt-2 text-xs text-app-muted">Učitavanje tvog vozila…</p> : showTrade && tl && selectedCar ? <>

@@ -636,6 +636,28 @@ test('listing pagination restores URLs, resets filters and clamps shrinking resu
   globalThis.requestAnimationFrame = previousFrame;
 });
 
+test('demo likes save locally without a garage car and never submit a match swipe', async () => {
+  const saved = [], swipes = [];
+  const { ctx, load } = harness({ '@/hooks/use-garage': { useGarage: () => ({ selectedCar: null }) } });
+  const { useMatchLike } = load('@/hooks/use-match-like');
+  const demo = load('@/lib/cars').MARKETPLACE_CARS.find(c => c.id.startsWith('demo-dodatni-'));
+  const hook = await hookMount(() => useMatchLike(async (...args) => { swipes.push(args); return { ok: true, result: { matched: false, new_match: false } }; }, async id => { saved.push(id); return true; }));
+  let result;
+  await act(async () => { result = await hook.value.likeCar(demo); });
+  assert.equal(result, true);
+  assert.deepEqual(saved, [demo.id]);
+  assert.equal(swipes.length, 0);
+  await act(async () => { result = await hook.value.likeCar({ ...demo, id: CAR_B, ownerId: B }); });
+  assert.equal(result, false, 'Real likes still require an owned garage car');
+  assert.equal(swipes.length, 0);
+  ctx.auth = authFor(null);
+  await hook.update();
+  await act(async () => { result = await hook.value.likeCar(demo); });
+  assert.equal(result, false);
+  assert.equal(saved.length, 1);
+  await hook.unmount();
+});
+
 let failed = 0;
 for (const { name, run } of tests) {
   try { await run(); console.log(`PASS ${name}`); }

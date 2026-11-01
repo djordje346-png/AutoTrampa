@@ -1,4 +1,5 @@
 import { Car, MyGarageCar } from '@/types';
+import { ADDITIONAL_DEMO_CARS } from '@/lib/additional-demo-cars';
 
 export function formatEuro(amount: number): string {
   return new Intl.NumberFormat('sr-RS', {
@@ -901,16 +902,5 @@ export const MARKETPLACE_CARS: Car[] = [
   },
 ];
 
-// Additional illustrative listings reuse the matching vehicle photography and
-// specifications. They have no owner id and cannot receive real trade offers.
-const DEMO_CITIES = ['Kragujevac', 'Niš', 'Subotica', 'Čačak', 'Kraljevo', 'Zrenjanin', 'Pančevo', 'Kruševac', 'Valjevo', 'Smederevo', 'Užice', 'Leskovac', 'Šabac', 'Novi Sad', 'Beograd'];
-MARKETPLACE_CARS.push(...MARKETPLACE_CARS.slice(0, 15).map((car, index): Car => ({
-  ...car,
-  id: `demo-dodatni-${car.id}`,
-  city: DEMO_CITIES[index],
-  country: 'Srbija',
-  price: Math.round(car.price * (0.9 + (index % 5) * 0.05) / 100) * 100,
-  mileage: Math.max(10000, (car.mileage ?? 180000) + (index - 7) * 3000),
-  owner: { name: 'Demo oglas', phone: '', city: DEMO_CITIES[index], rating: 0 },
-  description: 'Demo oglas za prikaz funkcija AutoTrampe. Fotografije i podaci su ilustrativni; vozilo nije stvarno ponuđeno na zamenu.',
-})));
+// Distinct demo models with locally hosted, attributed photographs.
+MARKETPLACE_CARS.unshift(...ADDITIONAL_DEMO_CARS);

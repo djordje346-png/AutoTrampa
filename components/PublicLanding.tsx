@@ -23,8 +23,10 @@ const STEPS = [
 ] as const;
 
 export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn, onRegister }: PublicLandingProps) {
-  // The marketplace hook includes demo seeds. Only real owner listings belong here.
-  const publicCars = cars.filter((car) => Boolean(car.ownerId)).slice(0, 3);
+  // Real and clearly labelled demo listings share the public showcase.
+  const realCars = cars.filter(car => Boolean(car.ownerId));
+  const demoCars = cars.filter(car => !car.ownerId);
+  const publicCars = [...realCars.slice(0, 3), ...demoCars.filter(car => car.id.startsWith('demo-dodatni-')).slice(0, 3), ...demoCars.filter(car => !car.id.startsWith('demo-dodatni-')).slice(0, 3)];
 
   return (
     <div className={styles.landing}>

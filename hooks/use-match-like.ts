@@ -30,6 +30,13 @@ export function useMatchLike(recordSwipe: RecordSwipe, saveCar: SaveCar) {
   const likeCar = useCallback(async function likeCar(target: Car) {
     if (!requireAuth('Prijavi se i dodaj auto da lajkuješ oglas', () => void likeCarRef.current(target))) return false;
 
+    if (!target.ownerId && !UUID_RE.test(target.id)) {
+      const saved = await saveCar(target.id);
+      if (saved) toast.success('Demo oglas je sačuvan.', { description: 'Ovo je primer vozila; ne šalje se lajk vlasniku i ne pravi se match.' });
+      else toast.error('Demo oglas nije sačuvan. Pokušaj ponovo.');
+      return saved;
+    }
+
     if (!selectedCar) {
       toast.error('Prvo dodaj svoj auto u garažu.', {
         description: 'Za match je potreban auto koji nudiš za zamenu.',

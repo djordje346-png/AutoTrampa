@@ -342,11 +342,11 @@ function AuthenticatedFeed({
   }
 
   const showTrade = tradeAware;
-  // Demo listings cannot participate in swipe_car or form a match.
+  // Demo listings are browsable in swipe; their actions stay local and cannot match.
   // Swipe replay must not be constrained by the current feed filters.
   // A skipped listing can be excluded by price, trade direction or radius,
   // even while it remains available in the marketplace.
-  const swipeEligibleCars = marketplaceCars.filter((car) => Boolean(car.ownerId) && UUID_RE.test(car.id));
+  const swipeEligibleCars = marketplaceCars;
   const swipeCars = replaySkippedIds !== null
     ? replaySkippedIds.map(id => swipeEligibleCars.find(car => car.id === id)).filter((car): car is Car => Boolean(car))
     : userId
@@ -787,6 +787,8 @@ function AuthenticatedFeed({
                       <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover pointer-events-none" draggable={false} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent pointer-events-none" />
 
+                      {!swipeCar.ownerId && <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">Demo</span>}
+
                       {/* LIKE badge */}
                       <div
                         className="absolute top-8 left-6 -rotate-12 border-4 border-tone-positive text-tone-positive font-black text-3xl px-4 py-1.5 rounded-xl pointer-events-none"
@@ -892,7 +894,7 @@ function AuthenticatedFeed({
                   <CheckCircle size={40} className="text-tone-positive" />
                 </div>
                 <h2 className="text-xl font-bold text-app-primary dark:text-app-primary mb-2">Sve pregledano!</h2>
-                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">{swipeEligibleCars.length === 0 ? 'Trenutno nema stvarnih oglasa za svajp. Demo oglasi služe samo za pregled.' : 'Pregledao si sve dostupne oglase za svajp.'}</p>
+                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">{swipeEligibleCars.length === 0 ? 'Trenutno nema dostupnih oglasa za svajp.' : 'Pregledao si sve dostupne oglase za svajp.'}</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
                   <button onClick={async () => {
@@ -920,7 +922,7 @@ function AuthenticatedFeed({
                       ? preferredIds
                       : swipeEligibleCars.map(car => car.id);
                     if (replayIds.length === 0) {
-                      toast.message('Trenutno nema stvarnih oglasa za ponovno pregledanje.');
+                      toast.message('Trenutno nema dostupnih oglasa za ponovno pregledanje.');
                       return;
                     }
                     setSessionReviewedIds(new Set());
