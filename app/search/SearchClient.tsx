@@ -24,6 +24,7 @@ import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import TradeBadge from '@/components/TradeBadge';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
+import { useListingMessage } from '@/hooks/use-listing-message';
 import ListingPagination from '@/components/ListingPagination';
 import { useListingPagination } from '@/hooks/use-listing-pagination';
 import { Car } from '@/types';
@@ -32,6 +33,7 @@ import { requestPhoneAction } from '@/hooks/use-phone-gate';
 export default function SearchClient() {
   const { selectedCar, mounted } = useGarage();
   const activeOfferIds = useActiveOfferIds(selectedCar?.id);
+  const { openMessage, messagingId } = useListingMessage();
   const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
   const { save } = useSaved();
   const { recordSwipe } = useSwipes();
@@ -197,6 +199,8 @@ export default function SearchClient() {
                 trade={tl}
                 onLike={(listing) => { void likeCar(listing); }}
                 liking={isLiking(car.id)}
+                onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
+                messaging={messagingId === car.id}
                 offerId={isLoggedIn ? activeOfferIds.get(car.id) : undefined}
                 onOffer={isLoggedIn ? (listing) => {
                   if (!selectedCar) {

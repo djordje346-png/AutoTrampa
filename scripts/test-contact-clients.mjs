@@ -658,6 +658,27 @@ test('demo likes save locally without a garage car and never submit a match swip
   await hook.unmount();
 });
 
+test('card message action opens a conversation without a garage vehicle, offer or automatic message', async () => {
+  const pushed = [];
+  const { ctx, load } = harness({
+    'next/navigation': { useRouter: () => ({ push: url => pushed.push(url) }) },
+    '@/hooks/use-garage': { useGarage: () => ({ selectedCar: null }) },
+  });
+  ctx.rpc = async () => ({ data: CONVERSATION, error: null });
+  const { useListingMessage } = load('@/hooks/use-listing-message');
+  const hook = await hookMount(useListingMessage);
+  const seed = load('@/lib/cars').MARKETPLACE_CARS[0];
+  await act(async () => { await hook.value.openMessage({ ...seed, id: CAR_B, ownerId: B }); });
+  assert.equal(ctx.rpcCalls.length, 1);
+  assert.equal(ctx.rpcCalls[0].name, 'open_listing_conversation');
+  assert.equal(ctx.rpcCalls[0].args.p_offered_car_id, null);
+  assert.equal(pushed[0], `/messages?conversation=${CONVERSATION}`);
+  await act(async () => { await hook.value.openMessage(seed); });
+  assert.equal(ctx.rpcCalls.length, 1, 'Demo messages must not make a server request');
+  assert.equal(hook.value.messagingId, null);
+  await hook.unmount();
+});
+
 let failed = 0;
 for (const { name, run } of tests) {
   try { await run(); console.log(`PASS ${name}`); }

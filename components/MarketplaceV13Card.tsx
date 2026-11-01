@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { CalendarDays, Car as CarIcon, Gauge, Heart, MapPin, Settings2 } from 'lucide-react';
+import { CalendarDays, Car as CarIcon, Gauge, Heart, MapPin, MessageCircle, Settings2 } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { carSubtitle } from '@/lib/car-row';
 import { bodyLabel, transmissionLabel } from '@/lib/labels';
@@ -18,10 +18,12 @@ type Props = {
   liking?: boolean;
   onOffer?: (car: Car) => void;
   offerId?: string;
+  onMessage?: (car: Car) => void;
+  messaging?: boolean;
   photoActions?: ReactNode;
 };
 
-export default function MarketplaceV13Card({ car, trade, onLike, liking = false, onOffer, offerId, photoActions }: Props) {
+export default function MarketplaceV13Card({ car, trade, onLike, liking = false, onOffer, offerId, onMessage, messaging = false, photoActions }: Props) {
   const hasOfferAction = Boolean(onOffer || offerId);
   const specs = [
     { Icon: CalendarDays, text: formatYear(car.year), label: 'Godište' },
@@ -71,18 +73,25 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
         </div>
         <div className="mt-3 flex min-h-[40px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-t border-surface pt-2.5">
           <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
+          {hasOfferAction ? <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1.5">
           {offerId ? (
             <Link href={`/messages?tab=offers&offer=${offerId}`} aria-label={`Pogledaj ponudu za ${carTitle(car)}`}
-              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-full border border-surface px-3.5 py-2 text-[11px] font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
+              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-lg border border-surface px-3.5 py-2 text-[11px] font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
               Pogledaj ponudu
             </Link>
           ) : onOffer ? (
             <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onOffer(car); }}
               aria-label={`Ponudi zamenu za ${carTitle(car)}`}
-              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-full bg-brand-500 px-3.5 py-2 text-[11px] font-semibold text-on-accent transition-colors hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
+              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-lg bg-brand-500 px-3.5 py-2 text-[11px] font-semibold text-on-accent transition-colors hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
               Ponudi zamenu
             </button>
-          ) : (
+          ) : null}
+          {onMessage && <button type="button" disabled={messaging} aria-label={`Pošalji poruku za ${carTitle(car)}`} title="Pošalji poruku vlasniku"
+            onClick={(event) => { event.preventDefault(); event.stopPropagation(); onMessage(car); }}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-surface text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-50" aria-busy={messaging}>
+            <MessageCircle size={18} aria-hidden="true" />
+          </button>}
+          </div> : (
           <span title={`Lokacija oglasa: ${car.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center justify-end gap-1 text-xs font-semibold text-app-secondary">
             <MapPin size={14} className="shrink-0 text-app-muted" aria-hidden="true" />
             <span className="truncate">{car.city || 'Nije navedeno'}</span>

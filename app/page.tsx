@@ -33,6 +33,7 @@ import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
 import { FeedCardPhoto } from '@/components/FeedCardPhoto';
 import PublicLanding from '@/components/PublicLanding';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
+import { useListingMessage } from '@/hooks/use-listing-message';
 import ListingPagination from '@/components/ListingPagination';
 import { useListingPagination } from '@/hooks/use-listing-pagination';
 
@@ -124,6 +125,7 @@ function AuthenticatedFeed({
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const activeOfferIds = useActiveOfferIds(selectedCar?.id);
+  const { openMessage, messagingId } = useListingMessage();
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -1038,6 +1040,8 @@ function AuthenticatedFeed({
                 trade={tl}
                 onLike={(listing) => { void likeCar(listing); }}
                 liking={isLiking(car.id)}
+                onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
+                messaging={messagingId === car.id}
                 onOffer={openOffer}
                 offerId={activeOfferIds.get(car.id)}
               />
