@@ -284,9 +284,11 @@ export default function CarDetail({ car: listing }: { car: Car }) {
                 {isLoggedIn ? <Link href="/garage" className="mt-3 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-secondary-accent"><Plus size={16} aria-hidden="true" />Dodaj auto u garažu</Link> : <button type="button" onClick={() => requireAuth('Prijavi se i dodaj svoj auto', undefined, '/?intent=add-car', 'register')} className="mt-3 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-secondary-accent"><Plus size={16} aria-hidden="true" />Dodaj svoj auto za poređenje</button>}
               </>}
             </div>}
-            {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] w-full text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" />{ownerActionLabel}</button> : authReady && <>
+            {isOwner ? <div className="hidden lg:block"><button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] w-full text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" />{ownerActionLabel}</button></div> : authReady && <>
+              <div className="hidden lg:block">
               <button onClick={handleOfferClick} className="btn-primary min-h-[48px] w-full text-sm"><ArrowLeftRight size={19} aria-hidden="true" />Pošalji ponudu</button>
               <button onClick={() => void handleMessage()} disabled={openingChat} className={`${CHIP} mt-2 w-full disabled:opacity-60`}><MessageCircle size={17} aria-hidden="true" />{openingChat ? 'Otvaram razgovor…' : 'Pošalji poruku'}</button>
+              </div>
               {ownerContact.href ? <a href={ownerContact.href} onClick={event => { event.preventDefault(); void handleCall(); }} aria-label={`Pozovi ${car.owner.name}`} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</a> : <button type="button" onClick={() => void handleCall()} title={contactNote ?? undefined} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</button>}
               {contactNote && <p role="status" className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-app-muted"><Info size={13} className="mt-0.5 shrink-0" aria-hidden="true" />{contactNote}</p>}
             </>}
