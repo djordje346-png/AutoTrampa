@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { getSupabase } from "@/lib/supabase";
 import {
@@ -123,4 +123,23 @@ export function useOffers({ poll = false }: { poll?: boolean } = {}) {
     updateOffer,
     openConversation,
   };
+}
+
+/** One offers subscription per listing screen, matched to the selected garage car. */
+export function useActiveOfferIds(selectedCarId: string | null | undefined) {
+  const { offers } = useOffers();
+  return useMemo(() => {
+    const ids = new Map<string, string>();
+    if (!selectedCarId) return ids;
+    for (const offer of offers) {
+      if (!offerActive(offer)) continue;
+      const otherCarId = offer.offered_car_id === selectedCarId
+        ? offer.target_car_id
+        : offer.target_car_id === selectedCarId
+          ? offer.offered_car_id
+          : null;
+      if (otherCarId && !ids.has(otherCarId)) ids.set(otherCarId, offer.id);
+    }
+    return ids;
+  }, [offers, selectedCarId]);
 }

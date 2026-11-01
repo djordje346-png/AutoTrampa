@@ -14,6 +14,7 @@ import { useMarketplace } from '@/hooks/use-marketplace';
 import { useSaved } from '@/hooks/use-saved';
 import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
+import { useActiveOfferIds } from '@/hooks/use-offers';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useFilteredCars } from '@/hooks/use-filtered-cars';
 import { countActiveFilters, useSearchPrefs, type SearchFilters } from '@/hooks/use-search-prefs';
@@ -120,6 +121,7 @@ function AuthenticatedFeed({
   const { reviewedCarIds, likedCarIds, recordSwipe, resetPasses, refresh: refreshSwipes } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
+  const activeOfferIds = useActiveOfferIds(selectedCar?.id);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -207,6 +209,16 @@ function AuthenticatedFeed({
   }, [selectedId, filters]);
 
   function openOffer(car: Car) {
+    if (!UUID_RE.test(car.id) || !car.ownerId) {
+      toast.message('Demo oglasi služe za pregled. Ponudu možeš poslati za stvarni oglas.');
+      return;
+    }
+    if (!selectedCar) {
+      toast.error('Prvo dodaj svoj auto u garažu.', {
+        action: { label: 'Garaža', onClick: () => router.push('/garage') },
+      });
+      return;
+    }
     if (!requireAuth('Prijavi se da pošalješ ponudu za zamenu', () => requestPhoneAction(() => setOfferCar(car)))) return;
     requestPhoneAction(() => setOfferCar(car));
   }
@@ -1020,6 +1032,8 @@ function AuthenticatedFeed({
                 trade={tl}
                 onLike={(listing) => { void likeCar(listing); }}
                 liking={isLiking(car.id)}
+                onOffer={openOffer}
+                offerId={activeOfferIds.get(car.id)}
               />
             );
           })}

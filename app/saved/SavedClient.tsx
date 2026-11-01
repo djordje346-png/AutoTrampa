@@ -11,6 +11,7 @@ import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
 import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
+import { useActiveOfferIds } from '@/hooks/use-offers';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
@@ -20,6 +21,7 @@ import { requestPhoneAction } from '@/hooks/use-phone-gate';
 export default function SavedClient() {
   const { saved: savedIds, remove: removeSaved, save, clear, mounted } = useSaved();
   const { selectedCar } = useGarage();
+  const activeOfferIds = useActiveOfferIds(selectedCar?.id);
   const { cars: marketplaceCars } = useMarketplace();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const { recordSwipe } = useSwipes();
@@ -139,6 +141,7 @@ export default function SavedClient() {
                 trade={tl}
                 onLike={(likedCar) => { void likeCar(likedCar); }}
                 liking={isLiking(car.id)}
+                offerId={activeOfferIds.get(car.id)}
                 onOffer={openOffer}
                 photoActions={
                   <button

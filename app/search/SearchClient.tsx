@@ -12,6 +12,7 @@ import { useGarage } from '@/hooks/use-garage';
 import { useSaved } from '@/hooks/use-saved';
 import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
+import { useActiveOfferIds } from '@/hooks/use-offers';
 import { useAuth } from '@/hooks/use-auth';
 import { countActiveFilters, useSearchPrefs } from '@/hooks/use-search-prefs';
 import { filterCars } from '@/hooks/use-filtered-cars';
@@ -28,6 +29,7 @@ import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
 export default function SearchClient() {
   const { selectedCar, mounted } = useGarage();
+  const activeOfferIds = useActiveOfferIds(selectedCar?.id);
   const { cars: marketplaceCars } = useMarketplace();
   const { save } = useSaved();
   const { recordSwipe } = useSwipes();
@@ -191,6 +193,7 @@ export default function SearchClient() {
                 trade={tl}
                 onLike={(listing) => { void likeCar(listing); }}
                 liking={isLiking(car.id)}
+                offerId={isLoggedIn ? activeOfferIds.get(car.id) : undefined}
                 onOffer={isLoggedIn ? (listing) => {
                   if (!selectedCar) {
                     toast.error('Prvo dodaj svoj auto u garažu.', {

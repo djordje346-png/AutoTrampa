@@ -525,6 +525,75 @@ test('listing gallery, trade comparison, missing specs and own-listing controls 
   await act(async () => renderer.unmount());
 });
 
+test('listing cards keep offer, save and detail actions separate and preserve public cards', async () => {
+  const { load } = harness();
+  const seed = load('@/lib/cars').MARKETPLACE_CARS[0];
+  const car = { ...seed, id: CAR_B, ownerId: B, city: 'Kosovska Mitrovica', bodyType: 'Sedan' };
+  const Card = load('@/components/MarketplaceV13Card').default;
+  const offers = [], likes = [];
+  const props = { car, onOffer: (c) => offers.push(c.id), onLike: (c) => likes.push(c.id) };
+  let renderer;
+  await act(async () => { renderer = create(React.createElement(Card, props)); });
+  assert.deepEqual(offers, [], 'Rendering a card must never send an offer');
+  const offer = renderer.root.findAll(n => n.type === 'button' && n.props['aria-label']?.startsWith('Ponudi zamenu za '))[0];
+  const prevented = [];
+  await act(async () => offer.props.onClick({ preventDefault: () => prevented.push('default'), stopPropagation: () => prevented.push('bubble') }));
+  assert.deepEqual(prevented, ['default', 'bubble']);
+  assert.deepEqual(offers, [CAR_B]);
+  assert.deepEqual(likes, [], 'An offer must not also like the listing');
+  assert.ok(renderer.root.findAllByType('a').some(n => n.props.href === `/car/${CAR_B}`));
+  assert.equal(renderer.root.findAll(n => n.props.title === 'Lokacija: Kosovska Mitrovica').length, 1);
+  assert.equal(renderer.root.findAll(n => n.props.title?.startsWith('Karoserija:')).length, 0);
+  const save = renderer.root.findAll(n => n.type === 'button' && n.props['aria-label']?.startsWith('Lajkuj i sačuvaj'))[0];
+  await act(async () => save.props.onClick({ preventDefault() {}, stopPropagation() {} }));
+  assert.deepEqual(likes, [CAR_B]);
+  assert.deepEqual(offers, [CAR_B]);
+  await act(async () => renderer.update(React.createElement(Card, { ...props, offerId: CONVERSATION })));
+  assert.equal(renderer.root.findAll(n => n.type === 'button' && n.props['aria-label']?.startsWith('Ponudi zamenu za ')).length, 0);
+  assert.equal(renderer.root.findAllByType('a').filter(n => n.props.href === `/messages?tab=offers&offer=${CONVERSATION}`).length, 1);
+  await act(async () => renderer.update(React.createElement(Card, { car })));
+  assert.equal(renderer.root.findAll(n => n.type === 'button' && n.props['aria-label']?.startsWith('Ponudi zamenu za ')).length, 0);
+  assert.equal(renderer.root.findAll(n => n.props.title?.startsWith('Karoserija:')).length, 1);
+  assert.equal(renderer.root.findAll(n => n.props.title === 'Lokacija oglasa: Kosovska Mitrovica').length, 1);
+  await act(async () => renderer.unmount());
+});
+
+test('listing offer state follows the selected vehicle pair in both directions and clears after withdrawal', async () => {
+  const OTHER_OWN_CAR = '60000000-0000-4000-8000-000000000006';
+  const OTHER_TARGET = '70000000-0000-4000-8000-000000000007';
+  let rows = [
+    { id: 'forward', status: 'pending', offered_car_id: CAR_A, target_car_id: CAR_B },
+    { id: 'reverse', status: 'pending', offered_car_id: OTHER_TARGET, target_car_id: CAR_A },
+    { id: 'other-garage-car', status: 'pending', offered_car_id: OTHER_OWN_CAR, target_car_id: CAR_B },
+    { id: 'withdrawn', status: 'withdrawn', offered_car_id: CAR_A, target_car_id: OTHER_OWN_CAR },
+    { id: 'declined', status: 'declined', offered_car_id: CAR_A, target_car_id: CONVERSATION },
+    { id: 'deleted-car', status: 'pending', offered_car_id: null, target_car_id: CAR_A },
+  ];
+  const { ctx, load } = harness({
+    '@/lib/supabase': { getSupabase: () => ({ from: () => ({ select() { return this; }, or() { return this; }, order: async () => ({ data: rows, error: null }) }) }) },
+  });
+  const { useActiveOfferIds } = load('@/hooks/use-offers');
+  const hook = await hookMount(({ selectedId }) => useActiveOfferIds(selectedId), { selectedId: CAR_A });
+  assert.equal(hook.value.size, 2);
+  assert.equal(hook.value.get(CAR_B), 'forward');
+  assert.equal(hook.value.get(OTHER_TARGET), 'reverse');
+  await hook.update({ selectedId: OTHER_OWN_CAR });
+  assert.equal(hook.value.size, 1);
+  assert.equal(hook.value.get(CAR_B), 'other-garage-car');
+  await hook.update({ selectedId: null });
+  assert.equal(hook.value.size, 0);
+  await hook.update({ selectedId: CAR_A });
+  rows = rows.map(o => o.id === 'forward' ? { ...o, status: 'withdrawn' } : o);
+  await act(async () => { window.dispatchEvent(new Event('autotrampa:offers')); });
+  assert.equal(hook.value.has(CAR_B), false, 'A withdrawn offer must restore the send action');
+  assert.equal(hook.value.get(OTHER_TARGET), 'reverse');
+  rows = [];
+  ctx.auth = authFor(B);
+  await hook.update({ selectedId: CAR_B });
+  assert.equal(hook.value.size, 0, 'An account switch must clear the previous account offers');
+  await hook.unmount();
+});
+
 let failed = 0;
 for (const { name, run } of tests) {
   try { await run(); console.log(`PASS ${name}`); }
