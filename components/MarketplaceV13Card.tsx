@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { ArrowLeftRight, CalendarDays, Car as CarIcon, FileText, Gauge, Heart, MapPin, Settings2 } from 'lucide-react';
+import { CalendarDays, Car as CarIcon, Gauge, Heart, MapPin, Settings2 } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { carSubtitle } from '@/lib/car-row';
 import { bodyLabel, transmissionLabel } from '@/lib/labels';
@@ -73,15 +73,13 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
           {offerId ? (
             <Link href={`/messages?tab=offers&offer=${offerId}`} aria-label={`Pogledaj ponudu za ${carTitle(car)}`}
-              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-lg border border-surface px-2.5 py-2 text-[11px] font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
-              <FileText size={15} aria-hidden="true" />
+              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-full border border-surface px-3.5 py-2 text-[11px] font-semibold text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
               Pogledaj ponudu
             </Link>
           ) : onOffer ? (
             <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onOffer(car); }}
               aria-label={`Ponudi zamenu za ${carTitle(car)}`}
-              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-2.5 py-2 text-[11px] font-semibold text-on-accent transition-colors hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
-              <ArrowLeftRight size={15} aria-hidden="true" />
+              className="relative z-20 ml-auto inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-full bg-brand-500 px-3.5 py-2 text-[11px] font-semibold text-on-accent transition-colors hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:text-xs">
               Ponudi zamenu
             </button>
           ) : (
