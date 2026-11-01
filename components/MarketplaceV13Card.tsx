@@ -16,6 +16,7 @@ type Props = {
   trade?: TradeLabel | null;
   onLike?: (car: Car) => void;
   liking?: boolean;
+  liked?: boolean;
   onOffer?: (car: Car) => void;
   offerId?: string;
   onMessage?: (car: Car) => void;
@@ -23,7 +24,7 @@ type Props = {
   photoActions?: ReactNode;
 };
 
-export default function MarketplaceV13Card({ car, trade, onLike, liking = false, onOffer, offerId, onMessage, messaging = false, photoActions }: Props) {
+export default function MarketplaceV13Card({ car, trade, onLike, liking = false, liked = false, onOffer, offerId, onMessage, messaging = false, photoActions }: Props) {
   const hasOfferAction = Boolean(onOffer || offerId);
   const specs = [
     { Icon: CalendarDays, text: formatYear(car.year), label: 'Godište' },
@@ -35,9 +36,9 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
   ];
 
   return (
-    <article className={`group/card relative isolate min-w-0 overflow-hidden rounded-[12px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-[transform,box-shadow] duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] motion-safe:desktop:hover:-translate-y-0.5 sm:aspect-auto sm:flex sm:h-full sm:flex-col ${hasOfferAction ? 'flex flex-col' : 'grid aspect-square grid-rows-[minmax(0,1fr)_auto]'}`}>
+    <article className={`listing-card group/card relative isolate min-w-0 overflow-hidden rounded-[12px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] sm:aspect-auto sm:flex sm:h-full sm:flex-col ${hasOfferAction ? 'flex flex-col' : 'grid aspect-square grid-rows-[minmax(0,1fr)_auto]'}`}>
       <Link href={`/car/${car.id}`} aria-label={`Otvori oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[12px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
-      <div className={`relative overflow-hidden bg-elevated sm:aspect-auto sm:h-[237px] sm:flex-none ${hasOfferAction ? 'aspect-[16/10] flex-none' : 'min-h-0'}`}>
+      <div className={`relative overflow-hidden rounded-t-[11px] bg-elevated sm:aspect-auto sm:h-[237px] sm:flex-none ${hasOfferAction ? 'aspect-[16/10] flex-none' : 'min-h-0'}`}>
         <div className="absolute inset-0 [&>div]:!aspect-auto [&>div]:!h-full">
           <FeedCardPhoto car={car} showDemoBadge={false} />
         </div>
@@ -46,10 +47,11 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           {photoActions}
           {onLike && (
             <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onLike(car); }} disabled={liking}
-              aria-label={`Lajkuj i sačuvaj ${car.brand} ${car.model}`}
-              className="pointer-events-auto relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white transition-colors after:absolute after:-inset-1.5 after:rounded-full hover:border-brand-500 hover:text-brand-500 disabled:opacity-50 sm:h-9 sm:w-9 sm:after:hidden"
-              title="Lajkuj i sačuvaj za match">
-              <Heart size={18} strokeWidth={1.8} className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
+              aria-label={`${liked ? 'Sačuvano:' : 'Lajkuj i sačuvaj'} ${car.brand} ${car.model}`}
+              aria-pressed={liked}
+              className={`pointer-events-auto relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 ${liked ? 'text-brand-500 !border-brand-500' : 'text-white'} transition-colors after:absolute after:-inset-1.5 after:rounded-full hover:border-brand-500 hover:text-brand-500 disabled:opacity-50 sm:h-9 sm:w-9 sm:after:hidden`}
+              title={liked ? 'Oglas je sačuvan' : 'Lajkuj i sačuvaj za match'}>
+              <Heart size={18} fill={liked ? 'currentColor' : 'none'} strokeWidth={1.8} className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
             </button>
           )}
         </div>

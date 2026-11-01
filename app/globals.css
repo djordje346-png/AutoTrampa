@@ -384,6 +384,33 @@
     transition: background-color 160ms ease;
   }
   .listing-photo-control:hover { background: rgb(0 0 0 / 0.85); }
+  /* Keep image compositing inside the same curve throughout hover zoom. */
+  .listing-card { transform: translateZ(0); }
+  .app-account-header { background: linear-gradient(110deg, hsl(var(--surface-brand-dark)), hsl(var(--surface-brand-dark) / .98)); }
+  .app-header-link {
+    position: relative; display: inline-flex; height: 100%; align-items: center;
+    justify-content: center; gap: 7px; padding: 0 10px; white-space: nowrap;
+    font-size: 13px; font-weight: 500; color: hsl(var(--text-brand-dark-secondary));
+    transition: color 160ms ease;
+  }
+  .app-header-link:hover { color: hsl(var(--text-brand-dark-primary)); }
+  .app-header-link[aria-current] { color: hsl(var(--primary)); }
+  .app-header-link[aria-current]::after {
+    content: ''; position: absolute; bottom: 0; left: 9px; right: 9px;
+    height: 3px; border-radius: 3px 3px 0 0; background: hsl(var(--primary));
+  }
+  .app-header-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 36px; width: 32px; border-radius: 9px;
+    color: hsl(var(--text-brand-dark-secondary));
+  }
+  .app-header-icon:hover, .app-header-icon[data-state=open] { background: rgb(255 255 255 / .06); }
+  .app-header-link:focus-visible, .app-header-icon:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: -3px; }
+  .app-header-menu { z-index: 60; border-color: hsl(var(--surface-border)); background: hsl(var(--surface-card)); color: hsl(var(--text-primary)); }
+  .app-header-menu [role=menuitem]:focus { background: hsl(var(--surface-hover)); color: hsl(var(--text-primary)); }
+  .app-navigation-shell .app-page-header { top: 64px; }
+  @media (min-width: 1024px) { .app-navigation-shell .app-page-header { top: 80px; } }
+
   /* Shared public/application header language; existing Carbon/Volt tokens. */
   .carbon-header {
     --ring: var(--primary);

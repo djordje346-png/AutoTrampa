@@ -1,13 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { House as Home, Heart, Warehouse, MessageCircle, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { House as Home, Heart, Warehouse, MessageCircle, User, Bell, Plus, ChevronDown, LogOut, ArrowLeftRight } from 'lucide-react';
 import BrandLockup from '@/components/BrandLockup';
 import { useOffers } from '@/hooks/use-offers';
 import { useMessages } from '@/hooks/use-messages';
 import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
+import { useUser } from '@/hooks/use-user';
+import { useGarage } from '@/hooks/use-garage';
+import { toast } from 'sonner';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Početna', icon: Home },
@@ -28,60 +32,86 @@ function Badge({ count, desktop = false }: { count: number; desktop?: boolean })
 
 export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeader?: boolean }) {
   const pathname = usePathname();
-  const { unread: offerUnread } = useOffers({ poll: true });
+  const { unread: offerUnread, error: offersError } = useOffers({ poll: true });
   const { totalUnread, mounted: messagesReady } = useMessages({ poll: false });
   const { count: savedCount, mounted: savedReady } = useSaved();
-  const { isLoggedIn, mounted: authReady } = useAuth();
+  const { isLoggedIn, mounted: authReady, userId, logout, requireAuth } = useAuth();
+  const { user: profile } = useUser();
+  const { cars, limit } = useGarage();
+  const router = useRouter();
+  const name = profile.id === userId ? profile.name.trim() || 'Moj nalog' : 'Moj nalog';
+  const initials = name.split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+  const notices = isLoggedIn ? offerUnread + (messagesReady ? totalUnread : 0) : 0;
+  async function signOut() {
+    const result = await logout();
+    if (result.ok) router.push('/');
+    else toast.error(result.message);
+  }
 
   function badgeFor(href: string): number {
     // Unread messages sit behind sign-in; badging them for a visitor who would
     // only hit the sign-in prompt is noise.
-    if (href === '/messages') return messagesReady && authReady && isLoggedIn ? totalUnread + offerUnread : 0;
+    if (href === '/messages') return messagesReady && authReady && isLoggedIn ? totalUnread : 0;
     if (href === '/saved') return savedReady ? savedCount : 0;
     return 0;
   }
 
   return (
     <>
-      <nav
-        aria-label="Glavna navigacija"
-        className={`carbon-header fixed inset-x-0 top-0 z-50 hidden ${hideDesktopHeader ? 'lg:hidden' : 'lg:block'}`}
-      >
-        <div className="app-container grid h-[71px] grid-cols-[auto_minmax(0,1fr)] items-center gap-6">
-          <Link href="/" aria-label="AutoTrampa — početna" className="carbon-brand">
-            <BrandLockup header />
-          </Link>
-          <div className="flex min-w-0 items-center justify-end gap-1 xl:gap-2">
+      <header className={`carbon-header app-account-header fixed inset-x-0 top-0 z-50 ${isLoggedIn ? '' : 'hidden lg:block'} ${hideDesktopHeader ? 'lg:hidden' : ''}`}>
+        <div className="app-container flex h-16 items-center justify-between gap-3 lg:grid lg:h-[79px] lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-5">
+          <Link href="/" aria-label="AutoTrampa — početna" className="carbon-brand"><BrandLockup header /></Link>
+          <nav aria-label="Glavna navigacija" className="hidden h-full min-w-0 items-center justify-center gap-1 lg:flex xl:gap-2">
             {NAV_ITEMS.filter(({ href }) => href !== '/profile').map(({ href, label, icon: Icon }) => {
-              const active = pathname === href;
+              const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
               const count = badgeFor(href);
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={active ? 'page' : undefined}
-                  aria-label={count > 0 ? `${label}, ${count} ${href === '/saved' ? 'sačuvanih oglasa' : 'novih poruka i ponuda'}` : undefined}
-                  className="carbon-nav-link"
-                >
-                  <span className="relative flex">
-                    <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
-                  </span>
-                  {label}
-                  <Badge count={count} desktop />
-                </Link>
-              );
+              return <Link key={href} href={href} aria-current={active ? 'page' : undefined}
+                aria-label={count > 0 ? `${label}, ${count} ${href === '/saved' ? 'sačuvanih oglasa' : 'novih poruka'}` : undefined}
+                className="app-header-link">
+                <Icon size={18} strokeWidth={1.8} aria-hidden="true" />{label}<Badge count={count} desktop />
+              </Link>;
             })}
-            <Link
-              href="/profile"
-              aria-label="Profil"
-              aria-current={pathname === '/profile' ? 'page' : undefined}
-              className="carbon-nav-link ml-3 !w-11 !px-0 xl:ml-5"
-            >
-              <User size={19} strokeWidth={1.8} aria-hidden="true" />
+          </nav>
+          <div className="flex shrink-0 items-center gap-2 lg:gap-3">
+            <Link href="/?intent=add-car" aria-label="Dodaj oglas" className="inline-flex h-9 w-9 items-center justify-center gap-1.5 rounded-lg bg-brand-500 font-semibold text-on-accent hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 lg:h-10 lg:w-auto lg:px-3.5 lg:text-xs">
+              <Plus size={19} aria-hidden="true" /><span className="hidden lg:inline">Dodaj oglas</span>
             </Link>
+            {isLoggedIn ? <>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" aria-label={notices ? `Obaveštenja, ${notices} novih` : 'Obaveštenja'} className="app-header-icon relative">
+                    <Bell size={20} strokeWidth={1.7} aria-hidden="true" />
+                    {notices > 0 && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-brand-500 ring-2 ring-[hsl(var(--surface-brand-dark))]" />}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={14} className="app-header-menu w-80 max-w-[calc(100vw-24px)] rounded-2xl p-2">
+                  <div className="flex items-center justify-between px-3 py-3 text-sm font-bold">Obaveštenja<span className="text-xs font-normal text-app-muted">{notices} novih</span></div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild><Link href="/messages?tab=offers" className="flex min-h-[64px] gap-3 rounded-lg p-3"><ArrowLeftRight size={20} className="shrink-0 text-app-secondary" /><span className="flex-1"><strong className="block text-sm">Ponude za zamenu</strong><span className="text-xs text-app-secondary">{offersError ? 'Ponude trenutno nisu učitane' : offerUnread ? `${offerUnread} nepročitanih ponuda` : 'Nema novih ponuda'}</span></span></Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link href="/messages" className="flex min-h-[64px] gap-3 rounded-lg p-3"><MessageCircle size={20} className="shrink-0 text-app-secondary" /><span className="flex-1"><strong className="block text-sm">Poruke</strong><span className="text-xs text-app-secondary">{!messagesReady ? 'Učitavanje poruka…' : totalUnread ? `${totalUnread} nepročitanih poruka` : 'Nema novih poruka'}</span></span></Link></DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <div className="lg:border-l lg:border-white/10 lg:pl-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild><button type="button" aria-label="Meni profila" className="app-header-icon !w-auto gap-2 lg:px-1">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/10 text-[10px] font-bold text-brand-dark-primary">{initials}</span>
+                    <span className="hidden max-w-[110px] truncate text-xs text-brand-dark-primary xl:inline">{name}</span><ChevronDown size={12} className="hidden lg:block" aria-hidden="true" />
+                  </button></DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" sideOffset={14} className="app-header-menu w-60 max-w-[calc(100vw-24px)] rounded-2xl p-2">
+                    <div className="px-3 py-3"><strong className="block truncate text-sm">{name}</strong><span className="text-xs text-app-muted">Lični nalog</span></div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild><Link href="/profile" className="gap-2 rounded-lg p-3"><User size={16} />Moj profil</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link href="/garage" className="gap-2 rounded-lg p-3"><Warehouse size={16} />Moja garaža<span className="ml-auto text-xs text-app-muted">{cars.length} / {limit}</span></Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link href="/messages?tab=offers" className="gap-2 rounded-lg p-3"><ArrowLeftRight size={16} />Ponude za zamenu<span className="ml-auto text-xs text-app-muted">{offerUnread || ''}</span></Link></DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={() => void signOut()} className="gap-2 rounded-lg p-3"><LogOut size={16} />Odjavi se</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </> : <button className="carbon-nav-link" onClick={() => requireAuth('Prijavi se na AutoTrampu')}>Prijavi se</button>}
           </div>
         </div>
-      </nav>
+      </header>
       <nav
         data-app-bottom-nav
         aria-label="Glavna navigacija"

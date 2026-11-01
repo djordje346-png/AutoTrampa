@@ -408,11 +408,6 @@ function AuthenticatedFeed({
       <div className="app-page-header safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
         <header className="app-container py-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex-shrink-0 lg:hidden">
-              <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">AutoTrampa</h1>
-              <p className="text-[11px] text-app-muted mt-0.5">Pronađi sledeću zamenu</p>
-            </div>
-
             <div className="flex min-w-0 w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
               {/* View mode toggle */}
               <div className="flex shrink-0 bg-elevated rounded-lg p-0.5 border border-surface dark:border-surface lg:hidden">
@@ -1040,6 +1035,7 @@ function AuthenticatedFeed({
                 trade={tl}
                 onLike={(listing) => { void likeCar(listing); }}
                 liking={isLiking(car.id)}
+                liked={saved.includes(car.id) || likedCarIds.has(car.id)}
                 onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
                 messaging={messagingId === car.id}
                 onOffer={openOffer}

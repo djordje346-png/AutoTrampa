@@ -143,6 +143,7 @@ export default function SavedClient() {
                 trade={tl}
                 onLike={(likedCar) => { void likeCar(likedCar); }}
                 liking={isLiking(car.id)}
+                liked={savedIds.includes(car.id)}
                 onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
                 messaging={messagingId === car.id}
                 offerId={activeOfferIds.get(car.id)}

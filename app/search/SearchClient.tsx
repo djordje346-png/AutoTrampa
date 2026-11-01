@@ -35,7 +35,7 @@ export default function SearchClient() {
   const activeOfferIds = useActiveOfferIds(selectedCar?.id);
   const { openMessage, messagingId } = useListingMessage();
   const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
-  const { save } = useSaved();
+  const { save, isSaved } = useSaved();
   const { recordSwipe } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
@@ -199,6 +199,7 @@ export default function SearchClient() {
                 trade={tl}
                 onLike={(listing) => { void likeCar(listing); }}
                 liking={isLiking(car.id)}
+                liked={isSaved(car.id)}
                 onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
                 messaging={messagingId === car.id}
                 offerId={isLoggedIn ? activeOfferIds.get(car.id) : undefined}

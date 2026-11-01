@@ -471,7 +471,7 @@ test('listing navigation waits for auth and chooses only public or application n
   ctx.auth = authFor(A);
   await act(async () => renderer.update(React.createElement(Shell, null, 'listing')));
   assert.equal(renderer.root.findByType('nav').props['data-nav'], 'app');
-  assert.match(renderer.root.findByType('main').props.className, /pt-\[72px\]/);
+  assert.match(renderer.root.findByType('main').props.className, /pt-16 lg:pt-20/);
   await act(async () => renderer.unmount());
 });
 
@@ -677,6 +677,24 @@ test('card message action opens a conversation without a garage vehicle, offer o
   assert.equal(ctx.rpcCalls.length, 1, 'Demo messages must not make a server request');
   assert.equal(hook.value.messagingId, null);
   await hook.unmount();
+});
+
+test('listing heart shows saved state and keeps the like action isolated from card navigation', async () => {
+  const { load } = harness();
+  const Card = load('@/components/MarketplaceV13Card').default;
+  const car = load('@/lib/cars').MARKETPLACE_CARS[0];
+  let renderer, liked = false, prevented = false, stopped = false;
+  const props = { car, onLike: () => { liked = true; }, onOffer() {} };
+  await act(async () => { renderer = create(React.createElement(Card, props)); });
+  let heart = renderer.root.findByProps({ 'aria-pressed': false });
+  assert.equal(heart.findByType('svg').props.fill, 'none');
+  await act(async () => { heart.props.onClick({ preventDefault() { prevented = true; }, stopPropagation() { stopped = true; } }); });
+  assert.ok(liked && prevented && stopped);
+  await act(async () => { renderer.update(React.createElement(Card, { ...props, liked: true })); });
+  heart = renderer.root.findByProps({ 'aria-pressed': true });
+  assert.equal(heart.findByType('svg').props.fill, 'currentColor');
+  assert.match(heart.props.className, /text-brand-500/);
+  await act(async () => renderer.unmount());
 });
 
 let failed = 0;

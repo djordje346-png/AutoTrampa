@@ -25,7 +25,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const hasDesktopAppNavigation = authReady && !isPublicLanding && !hasPublicHeader;
 
   return (
-    <div className="theme-atmosphere flex min-h-screen w-full flex-col text-app-primary dark:text-app-primary">
+    <div className={`theme-atmosphere ${hasDesktopAppNavigation ? 'app-navigation-shell' : ''} flex min-h-screen w-full flex-col text-app-primary dark:text-app-primary`}>
       <a
         href="#sadrzaj"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-on-accent"
@@ -42,7 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             onRegister={() => requireAuth('Napravi AutoTrampa nalog', undefined, undefined, 'register')}
           />
       )}
-      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : isPublicSearch || isPublicListing ? 'pb-8' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? 'lg:pt-[72px]' : ''} ${isPublicSearch ? 'public-search-content' : ''}`}>
+      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : isPublicSearch || isPublicListing ? 'pb-8' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? (isLoggedIn ? 'pt-16 lg:pt-20' : 'lg:pt-20') : ''} ${isPublicSearch ? 'public-search-content' : ''}`}>
         {children}
       </main>
 
