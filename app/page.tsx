@@ -842,7 +842,7 @@ function AuthenticatedFeed({
                       </div>
                       <div className="mt-3 flex items-center gap-2">
                         <button onClick={() => openOffer(swipeCar)} className="btn-primary btn-primary-compact flex-1 text-sm">
-                          <ArrowLeftRight size={15} /> Pošalji ponudu
+                          <ArrowLeftRight size={15} /> Ponudi zamenu
                         </button>
                         <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary dark:text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
                           Detalji

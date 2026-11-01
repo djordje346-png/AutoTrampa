@@ -286,7 +286,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
             </div>}
             {isOwner ? <div className="hidden lg:block"><button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] w-full text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" />{ownerActionLabel}</button></div> : authReady && <>
               <div className="hidden lg:block">
-              <button onClick={handleOfferClick} className="btn-primary min-h-[48px] w-full text-sm"><ArrowLeftRight size={19} aria-hidden="true" />Pošalji ponudu</button>
+              <button onClick={handleOfferClick} className="btn-primary min-h-[48px] w-full text-sm"><ArrowLeftRight size={19} aria-hidden="true" />Ponudi zamenu</button>
               <button onClick={() => void handleMessage()} disabled={openingChat} className={`${CHIP} mt-2 w-full disabled:opacity-60`}><MessageCircle size={17} aria-hidden="true" />{openingChat ? 'Otvaram razgovor…' : 'Pošalji poruku'}</button>
               </div>
               {ownerContact.href ? <a href={ownerContact.href} onClick={event => { event.preventDefault(); void handleCall(); }} aria-label={`Pozovi ${car.owner.name}`} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</a> : <button type="button" onClick={() => void handleCall()} title={contactNote ?? undefined} className={`${CHIP} mt-2 w-full`}><Phone size={17} aria-hidden="true" />Pozovi vlasnika</button>}
@@ -322,7 +322,7 @@ export default function CarDetail({ car: listing }: { car: Car }) {
       {authReady && !lightboxOpen && !offerOpen && !ownEditOpen && <div style={isLoggedIn && bottomNavHeight !== null ? { bottom: bottomNavHeight } : undefined} className={`fixed inset-x-0 z-40 border-t border-surface bg-card-surface px-4 py-3 lg:hidden ${isLoggedIn ? 'bottom-[calc(72px+env(safe-area-inset-bottom))]' : 'bottom-0 pb-[calc(12px+env(safe-area-inset-bottom))]'}`}>
         <div className="mx-auto flex max-w-2xl items-center gap-3">
           <p className="min-w-0 shrink-0 font-heading text-lg font-bold tabular-nums text-app-primary">{formatEuro(car.price)}</p>
-          {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" /><span className="truncate">{ownerActionLabel}</span></button> : <button onClick={handleOfferClick} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm"><ArrowLeftRight size={18} className="shrink-0" aria-hidden="true" /><span className="truncate">Pošalji ponudu</span></button>}
+          {isOwner ? <button onClick={handleOwnListingEdit} disabled={!garageMounted} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm disabled:opacity-60"><Pencil size={17} aria-hidden="true" /><span className="truncate">{ownerActionLabel}</span></button> : <button onClick={handleOfferClick} className="btn-primary min-h-[48px] min-w-0 flex-1 px-3 text-sm"><ArrowLeftRight size={18} className="shrink-0" aria-hidden="true" /><span className="truncate">Ponudi zamenu</span></button>}
           {!isOwner && <button onClick={() => void handleMessage()} disabled={openingChat} aria-label="Pošalji poruku vlasniku" className={`${CHIP} h-12 w-12 shrink-0 disabled:opacity-60`}><MessageCircle size={20} aria-hidden="true" /></button>}
         </div>
       </div>}

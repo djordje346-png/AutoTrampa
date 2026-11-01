@@ -512,7 +512,7 @@ test('listing gallery, trade comparison, missing specs and own-listing controls 
   selected = { ...seed, id: CAR_A, ownerId: A, price: car.price - 500 };
   await act(async () => renderer.update(React.createElement(Detail, { car })));
   assert.ok(JSON.stringify(renderer.toJSON()).includes('Orijentaciona razlika oglašenih vrednosti'));
-  await act(async () => renderer.root.findAll(n => n.type === 'button' && n.children.includes('Pošalji ponudu'))[0].props.onClick());
+  await act(async () => renderer.root.findAll(n => n.type === 'button' && n.children.includes('Ponudi zamenu'))[0].props.onClick());
   assert.equal(sheet.car.id, CAR_B);
   assert.equal(sheet.myCar.id, CAR_A);
   await act(async () => sheet.onClose());

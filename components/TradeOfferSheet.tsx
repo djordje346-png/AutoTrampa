@@ -177,7 +177,7 @@ export function TradeOfferSheet({ car, myCar, onClose }: TradeOfferSheetProps) {
             disabled={pending}
             className="btn-primary mt-4 w-full text-sm disabled:opacity-60"
           >
-            {pending ? "Šaljem…" : "Pošalji ponudu"}
+            {pending ? "Šaljem…" : "Ponudi zamenu"}
           </button>
           <p className="mt-3 text-center text-xs leading-relaxed text-app-muted">
             Ponudu možeš da povučeš iz pregleda poslatih ponuda.

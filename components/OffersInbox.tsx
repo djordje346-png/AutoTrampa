@@ -192,7 +192,7 @@ export function OffersInbox({
               <p className="mt-2 text-sm leading-relaxed text-app-muted">
                 {direction === "received"
                   ? "Kada neko ponudi svoj automobil za tvoj, ponuda će biti ovde."
-                  : "Pronađi automobil i klikni na „Pošalji ponudu“."}
+                  : "Pronađi automobil i klikni na „Ponudi zamenu“."}
               </p>
               <Link
                 href="/search"
