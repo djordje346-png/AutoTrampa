@@ -594,6 +594,48 @@ test('listing offer state follows the selected vehicle pair in both directions a
   await hook.unmount();
 });
 
+test('listing pagination restores URLs, resets filters and clamps shrinking results without losing listings', async () => {
+  let ctx;
+  const router = { push(url) { ctx.window.location.href = new URL(url, ctx.window.location.href).href; }, replace(url) { this.push(url); } };
+  const h = harness({ 'next/navigation': { useRouter: () => router } });
+  ctx = h.ctx;
+  ctx.window.location.href = 'https://example.test/search?page=3&keep=yes';
+  ctx.document.getElementById = () => ({ scrollIntoView() {} });
+  const previousFrame = globalThis.requestAnimationFrame;
+  globalThis.requestAnimationFrame = fn => fn();
+  const { useListingPagination, listingPage } = h.load('@/hooks/use-listing-pagination');
+  const cars = h.load('@/lib/cars').MARKETPLACE_CARS;
+  assert.equal(cars.filter(c => c.id.startsWith('demo-dodatni-')).length, 15);
+  assert.equal(new Set(cars.map(c => c.id)).size, cars.length);
+  assert.ok(cars.filter(c => c.id.startsWith('demo-dodatni-')).every(c => !c.ownerId && !c.owner.phone && c.description.includes('Demo oglas')));
+  for (const invalid of ['-2', 'foo', '1.5', '99999999999999999999']) assert.equal(listingPage(invalid, 4), 1);
+  const hook = await hookMount(p => useListingPagination(p.items, p.resetKey, p.ready), { items: cars, resetKey: 'before-hydration', ready: false });
+  await hook.update({ items: cars, resetKey: 'hydrated-filters', ready: true });
+  assert.equal(hook.value.page, 3);
+  assert.equal(hook.value.items.length, 9);
+  const visited = [];
+  for (let n = 1; n <= Math.ceil(cars.length / 9); n++) {
+    await act(async () => hook.value.changePage(n));
+    visited.push(...hook.value.items.map(c => c.id));
+    assert.ok(hook.value.items.length <= 9);
+  }
+  assert.deepEqual(visited, cars.map(c => c.id), 'Every listing appears exactly once across pages');
+  assert.equal(new URL(ctx.window.location.href).searchParams.get('keep'), 'yes');
+  await hook.update({ items: cars, resetKey: 'changed-filter', ready: true });
+  assert.equal(hook.value.page, 1);
+  assert.equal(new URL(ctx.window.location.href).searchParams.has('page'), false);
+  ctx.window.location.href = 'https://example.test/search?page=2';
+  await act(async () => ctx.window.dispatchEvent(new Event('popstate')));
+  assert.equal(hook.value.page, 2);
+  await hook.update({ items: cars.slice(0, 4), resetKey: 'changed-filter', ready: true });
+  assert.equal(hook.value.page, 1);
+  assert.equal(hook.value.items.length, 4);
+  await hook.update({ items: [], resetKey: 'empty', ready: true });
+  assert.equal(hook.value.items.length, 0);
+  await hook.unmount();
+  globalThis.requestAnimationFrame = previousFrame;
+});
+
 let failed = 0;
 for (const { name, run } of tests) {
   try { await run(); console.log(`PASS ${name}`); }

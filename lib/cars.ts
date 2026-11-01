@@ -900,3 +900,17 @@ export const MARKETPLACE_CARS: Car[] = [
     equipment: ['abs', 'esp', 'airbags', 'alarm', 'central_lock', 'isofix', 'leather_seats', 'heated_seats', 'auto_climate', 'cruise_control', 'multi_wheel', 'electric_windows', 'alloy_wheels', 'led_xenon', 'panorama', 'fog_lights', 'navigation', 'bluetooth', 'reverse_camera', 'parking_sensors', 'trip_computer'],
   },
 ];
+
+// Additional illustrative listings reuse the matching vehicle photography and
+// specifications. They have no owner id and cannot receive real trade offers.
+const DEMO_CITIES = ['Kragujevac', 'Niš', 'Subotica', 'Čačak', 'Kraljevo', 'Zrenjanin', 'Pančevo', 'Kruševac', 'Valjevo', 'Smederevo', 'Užice', 'Leskovac', 'Šabac', 'Novi Sad', 'Beograd'];
+MARKETPLACE_CARS.push(...MARKETPLACE_CARS.slice(0, 15).map((car, index): Car => ({
+  ...car,
+  id: `demo-dodatni-${car.id}`,
+  city: DEMO_CITIES[index],
+  country: 'Srbija',
+  price: Math.round(car.price * (0.9 + (index % 5) * 0.05) / 100) * 100,
+  mileage: Math.max(10000, (car.mileage ?? 180000) + (index - 7) * 3000),
+  owner: { name: 'Demo oglas', phone: '', city: DEMO_CITIES[index], rating: 0 },
+  description: 'Demo oglas za prikaz funkcija AutoTrampe. Fotografije i podaci su ilustrativni; vozilo nije stvarno ponuđeno na zamenu.',
+})));

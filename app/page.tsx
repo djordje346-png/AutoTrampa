@@ -33,6 +33,8 @@ import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
 import { FeedCardPhoto } from '@/components/FeedCardPhoto';
 import PublicLanding from '@/components/PublicLanding';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
+import ListingPagination from '@/components/ListingPagination';
+import { useListingPagination } from '@/hooks/use-listing-pagination';
 
 type ViewMode = 'grid' | 'swipe';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -127,10 +129,10 @@ function AuthenticatedFeed({
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [desktopFiltersOpen, setDesktopFiltersOpen] = useState(false);
   const [swipeIndex, setSwipeIndex] = useState(0);
-  const { preferences } = usePreferences();
+  const { preferences, mounted: preferencesMounted } = usePreferences();
   const budget = preferences.budget;
   const noTopUp = preferences.noTopUp;
-  const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen } = useSearchPrefs();
+  const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen, mounted: filtersMounted } = useSearchPrefs();
   const [dragX, setDragX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showSwipeHint, setShowSwipeHint] = useState(false);
@@ -185,6 +187,8 @@ function AuthenticatedFeed({
     selectedCar?.city ?? '',
     preferences.radius,
   );
+
+  const pagination = useListingPagination(filteredCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   const activeFilters = countActiveFilters(filters);
   const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
@@ -1022,8 +1026,8 @@ function AuthenticatedFeed({
               </div>
             )}
           {marketplaceReady && (
-            <div className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
-          {filteredCars.map(car => {
+            <div id="listing-results" className="grid scroll-mt-24 grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
+          {pagination.items.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
               <MarketplaceV13Card
@@ -1037,6 +1041,7 @@ function AuthenticatedFeed({
               />
             );
           })}
+              <ListingPagination page={pagination.page} total={filteredCars.length} onChange={pagination.changePage} />
             </div>
           )}
           </div>

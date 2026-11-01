@@ -24,22 +24,24 @@ import { FilterSheetBody, FilterSidebar } from '@/components/FilterPanel';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
 import TradeBadge from '@/components/TradeBadge';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
+import ListingPagination from '@/components/ListingPagination';
+import { useListingPagination } from '@/hooks/use-listing-pagination';
 import { Car } from '@/types';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
 export default function SearchClient() {
   const { selectedCar, mounted } = useGarage();
   const activeOfferIds = useActiveOfferIds(selectedCar?.id);
-  const { cars: marketplaceCars } = useMarketplace();
+  const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace();
   const { save } = useSaved();
   const { recordSwipe } = useSwipes();
   const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
-  const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
+  const { isLoggedIn, userId, mounted: authReady, requireAuth } = useAuth();
   // Trade sorting and labelling need the user's own car; without one there is
   // no difference to compute.
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
-  const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen } = useSearchPrefs();
-  const { preferences } = usePreferences();
+  const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen, mounted: filtersMounted } = useSearchPrefs();
+  const { preferences, mounted: preferencesMounted } = usePreferences();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const router = useRouter();
 
@@ -62,6 +64,8 @@ export default function SearchClient() {
       ),
     [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius],
   );
+
+  const pagination = useListingPagination(results, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, preferences.budget, preferences.noTopUp, preferences.radius, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   const hasFilters =
     filters.query.trim() !== '' || countActiveFilters(filters) > 0;
@@ -174,7 +178,7 @@ export default function SearchClient() {
           />
         )}
 
-        <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
+        <div id="listing-results" className="grid min-w-0 flex-1 scroll-mt-24 grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
         {results.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
@@ -184,7 +188,7 @@ export default function SearchClient() {
             <p className="text-app-muted text-sm mt-1">Pokušaj sa drugim terminom</p>
           </div>
         ) : (
-          results.map(car => {
+          pagination.items.map(car => {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
             return (
               <MarketplaceV13Card
@@ -207,6 +211,7 @@ export default function SearchClient() {
             );
           })
         )}
+          <ListingPagination page={pagination.page} total={results.length} onChange={pagination.changePage} />
         </div>
       </div>
 
