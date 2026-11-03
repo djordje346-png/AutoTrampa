@@ -116,7 +116,7 @@ export function BodyTypePicker({
             className={`relative flex min-w-0 items-center justify-center border text-center transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-card-surface ${focusStyle} ${layout.button} ${active ? selectedStyle : unselectedStyle}`}
           >
             {active && (
-              <span className={`absolute right-1 top-1 h-3.5 w-3.5 items-center justify-center rounded-full ${isForm ? 'bg-brand-500 text-on-accent' : 'bg-control-foreground text-control-thumb'} ${layout.check}`} aria-hidden="true">
+              <span className={`absolute right-1 top-1 h-3.5 w-3.5 items-center justify-center rounded-full ${isForm ? 'bg-brand-500 text-on-accent' : 'bg-control-thumb text-control'} ${layout.check}`} aria-hidden="true">
                 <Check size={9} strokeWidth={3} />
               </span>
             )}

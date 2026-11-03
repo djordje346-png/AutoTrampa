@@ -363,7 +363,7 @@ export default function ProfileClient() {
                 aria-label="Promeni temu"
                 aria-pressed={theme === 'dark'}
               >
-                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-control-thumb text-control-foreground transition-transform duration-200 flex items-center justify-center ${
+                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-control-thumb text-on-accent transition-transform duration-200 flex items-center justify-center ${
                   theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
                 }`}>
                   {theme === 'dark' ? (

@@ -31,10 +31,10 @@
     --ring: 17.47253 88.34951% 40.39216%;
     --radius: 0.75rem;
 
-    /* Light blue denotes selections and switches; labels stay navy. */
-    --control: 210.38961 35.15982% 57.05882%;
-    --control-hover: 210.00000 37.23404% 63.13725%;
-    --control-foreground: 217.24138 56.86275% 10.00000%;
+    /* Denim blue denotes selections and switches with light labels. */
+    --control: 216.61017 48.36066% 47.84314%;
+    --control-hover: 216.57143 50.23923% 40.98039%;
+    --control-foreground: 210.00000 40.00000% 98.03922%;
     --control-thumb: 210.00000 40.00000% 98.03922%;
     --control-ring: 210.37975 39.30348% 39.41176%;
 
@@ -108,10 +108,10 @@
     --ring: 24.58150 94.97908% 53.13725%;
     --radius: 0.75rem;
 
-    /* Light blue denotes selections and switches; labels stay navy. */
-    --control: 210.38961 35.15982% 57.05882%;
-    --control-hover: 210.00000 37.23404% 63.13725%;
-    --control-foreground: 217.24138 56.86275% 10.00000%;
+    /* Denim blue denotes selections and switches with light labels. */
+    --control: 216.61017 48.36066% 47.84314%;
+    --control-hover: 216.57143 50.23923% 40.98039%;
+    --control-foreground: 210.00000 40.00000% 98.03922%;
     --control-thumb: 210.00000 40.00000% 98.03922%;
     --control-ring: 210.38961 35.15982% 57.05882%;
 
