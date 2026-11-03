@@ -241,7 +241,11 @@ export function useGarage() {
       }
     }
     void fetchCars();
-    return () => { cancelled = true; };
+    window.addEventListener('autotrampa:garage', fetchCars);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('autotrampa:garage', fetchCars);
+    };
   }, [userId]);
 
   const selectCar = useCallback((id: string) => selectedStore.set(id), []);
@@ -283,6 +287,7 @@ export function useGarage() {
         privateDetailsToRow({ ...prepared.car, id: insertedCar.id }, userId),
       );
       setCars((previous) => [...previous, saved]);
+      window.dispatchEvent(new Event('autotrampa:garage'));
       return { ok: true, id: saved.id };
     } catch (error) {
       reportGarageFailure('add car', error);
@@ -326,6 +331,7 @@ export function useGarage() {
       const stale = storedCarImagePaths(oldImages).filter((path) => !preserved.has(path));
       if (stale.length) void getSupabase().storage.from('car-images').remove(stale);
       setCars((previous) => previous.map((item) => (item.id === car.id ? prepared.car : item)));
+      window.dispatchEvent(new Event('autotrampa:garage'));
       return { ok: true };
     } catch (error) {
       reportGarageFailure('update car', error);
@@ -355,6 +361,7 @@ export function useGarage() {
       const paths = storedCarImagePaths(removed);
       if (paths.length) void getSupabase().storage.from('car-images').remove(paths);
       if (selectedStore.get() === id) selectedStore.set(next[0]?.id ?? '');
+      window.dispatchEvent(new Event('autotrampa:garage'));
       return { ok: true };
     } catch (error) {
       reportGarageFailure('delete car', error);

@@ -72,6 +72,7 @@ export function useMatchLike(recordSwipe: RecordSwipe, saveCar: SaveCar) {
         return false;
       }
       if (result.result.matched) {
+        window.dispatchEvent(new Event('autotrampa:messages'));
         toast.success(result.result.new_match ? 'Imate match!' : 'Već imate match!', {
           description: 'Razgovor je dostupan u Porukama.',
           action: { label: 'Otvori poruke', onClick: () => router.push('/messages') },

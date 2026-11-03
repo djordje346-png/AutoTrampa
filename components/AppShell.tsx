@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { usePathname } from 'next/navigation';
 import AuthOverlay from '@/components/AuthOverlay';
@@ -33,7 +34,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Preskoči na sadržaj
       </a>
 
-      {hasDesktopAppNavigation && <Footer />}
+      {hasDesktopAppNavigation && <Suspense fallback={null}><Footer /></Suspense>}
       {!authReady && (isListing || pathname === '/search') && <div aria-label="Učitavanje navigacije" className="h-16 border-b border-brand-dark bg-brand-dark lg:h-[72px]" />}
       {hasPublicHeader && (
           <PublicHeader

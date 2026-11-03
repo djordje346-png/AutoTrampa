@@ -19,6 +19,7 @@ export interface Conversation {
   targetCarId: string;
   offeredCarId: string | null;
   hasMatch: boolean;
+  unreadMatch: boolean;
   carTitle: string;
   carImage: string;
   ownerName: string;
@@ -83,6 +84,7 @@ export function mapConversation(
     targetCarId: row.car_id,
     offeredCarId: row.offered_car_id,
     hasMatch: messages.some((message) => message.kind === "match"),
+    unreadMatch: messages.some((message) => message.kind === "match" && message.sender_id !== userId && !message.read_at),
     carId: showOfferedCar ? (row.offered_car_id ?? row.car_id) : row.car_id,
     carTitle: displayedCar
       ? [
@@ -125,8 +127,8 @@ export function mapConversation(
 
 export function useMessages(options?: { poll?: boolean }) {
   const { userId } = useAuth();
-  // The footer asks for unread counts on every route, but polling belongs to
-  // the Poruke screen: anywhere else this only subscribes for the badge.
+  // Navigation polls for badges; other consumers can subscribe only to local
+  // changes and focus/visibility events to avoid duplicate background timers.
   const poll = options?.poll ?? true;
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -176,18 +178,22 @@ export function useMessages(options?: { poll?: boolean }) {
     };
     void load();
 
-    const timer = poll ? window.setInterval(load, 20_000) : null;
+    const timer = poll ? window.setInterval(() => {
+      if (document.visibilityState === "visible") void load();
+    }, 20_000) : null;
     // Coming back to the tab is the other moment the count can be stale.
     // Only refresh when there is a session, so signed-out browsing stays quiet.
     const onVisible = () => {
       if (document.visibilityState === "visible") void load();
     };
     window.addEventListener("focus", onVisible);
+    window.addEventListener("autotrampa:messages", onVisible);
     document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
       if (timer !== null) window.clearInterval(timer);
       window.removeEventListener("focus", onVisible);
+      window.removeEventListener("autotrampa:messages", onVisible);
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [poll, refresh, userId]);
@@ -203,6 +209,7 @@ export function useMessages(options?: { poll?: boolean }) {
           body,
         });
         if (error) return false;
+        window.dispatchEvent(new Event("autotrampa:messages"));
         await refresh();
         return true;
       } catch {
@@ -222,7 +229,10 @@ export function useMessages(options?: { poll?: boolean }) {
         .eq("conversation_id", conversationId)
         .or(`sender_id.is.null,sender_id.neq.${userId}`)
         .is("read_at", null);
-      if (!error) await refresh();
+      if (!error) {
+        window.dispatchEvent(new Event("autotrampa:messages"));
+        await refresh();
+      }
       } catch { /* A failed read receipt must not interrupt the conversation. */ }
     },
     [refresh, userId],
@@ -247,6 +257,7 @@ export function useMessages(options?: { poll?: boolean }) {
         return false;
       }
       if (data !== true) return false;
+      window.dispatchEvent(new Event("autotrampa:messages"));
       setConversations((previous) =>
         previous.filter((item) => item.id !== conversationId),
       );
@@ -299,6 +310,7 @@ export function useMessages(options?: { poll?: boolean }) {
     openListingConversation,
     deleteConversation,
     totalUnread,
+    unreadMatches: visibleConversations.filter((conversation) => conversation.unreadMatch),
     mounted,
     error,
     refresh,

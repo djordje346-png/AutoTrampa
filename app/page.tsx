@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Car as CarIcon, Settings2, ChevronDown, Check, Plus, LayoutGrid, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Car as CarIcon, Settings2, ChevronDown, Check, Plus, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { bodyLabel, transmissionLabel } from '@/lib/labels';
@@ -36,8 +36,9 @@ import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import { useListingMessage } from '@/hooks/use-listing-message';
 import ListingPagination from '@/components/ListingPagination';
 import { useListingPagination } from '@/hooks/use-listing-pagination';
+import { useFeedView } from '@/hooks/use-feed-view';
+import { useMessages } from '@/hooks/use-messages';
 
-type ViewMode = 'grid' | 'swipe';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /** Quick trade filter in the feed header; the full set lives in the sidebar. */
@@ -49,7 +50,12 @@ const TRADE_FILTERS: { key: SearchFilters['trade']; label: string }[] = [
 ];
 
 export default function FeedPage() {
+  return <Suspense fallback={<div className="app-container py-8" role="status">Učitavanje oglasa…</div>}><FeedPageContent /></Suspense>;
+}
+
+function FeedPageContent() {
   const router = useRouter();
+  const params = useSearchParams();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
   const { cars: marketplaceCars, ready: marketplaceReady } = useMarketplace(authReady);
   const [pendingAddCar, setPendingAddCar] = useState(false);
@@ -73,7 +79,7 @@ export default function FeedPage() {
     url.searchParams.delete('auth');
     const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
     router.replace(cleanUrl, { scroll: false });
-  }, [authReady, isLoggedIn, router]);
+  }, [authReady, isLoggedIn, params, router]);
 
   if (!authReady) {
     return (
@@ -128,7 +134,8 @@ function AuthenticatedFeed({
   const { openMessage, messagingId } = useListingMessage();
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const { viewMode, setViewMode } = useFeedView();
+  const { unreadMatches } = useMessages({ poll: viewMode === 'swipe' });
   const [desktopFiltersOpen, setDesktopFiltersOpen] = useState(false);
   const [swipeIndex, setSwipeIndex] = useState(0);
   const { preferences, mounted: preferencesMounted } = usePreferences();
@@ -143,6 +150,21 @@ function AuthenticatedFeed({
   const selectorRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{ x: number } | null>(null);
   const pendingAddCarHandled = useRef(false);
+  const gridScrollTop = useRef(0);
+  const previousView = useRef(viewMode);
+
+  useEffect(() => {
+    const restore = viewMode === 'grid' && previousView.current === 'swipe';
+    previousView.current = viewMode;
+    if (viewMode !== 'grid') return;
+    const frame = restore ? window.requestAnimationFrame(() => window.scrollTo(0, gridScrollTop.current)) : null;
+    const rememberPosition = () => { gridScrollTop.current = window.scrollY; };
+    window.addEventListener('scroll', rememberPosition, { passive: true });
+    return () => {
+      if (frame !== null) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', rememberPosition);
+    };
+  }, [viewMode]);
 
   useEffect(() => {
     if (!pendingAddCar) {
@@ -250,9 +272,6 @@ function AuthenticatedFeed({
   }
 
   function enterSwipeMode() {
-    setSwipeIndex(0);
-    setReplaySkippedIds(null);
-    setSessionReviewedIds(new Set());
     setDragX(0);
     setViewMode('swipe');
   }
@@ -336,10 +355,7 @@ function AuthenticatedFeed({
 
   function exitSwipeMode() {
     void refreshSwipes();
-    setReplaySkippedIds(null);
-    setSessionReviewedIds(new Set());
     setViewMode('grid');
-    setSwipeIndex(0);
     setDragX(0);
   }
 
@@ -352,9 +368,10 @@ function AuthenticatedFeed({
   const swipeCars = replaySkippedIds !== null
     ? replaySkippedIds.map(id => swipeEligibleCars.find(car => car.id === id)).filter((car): car is Car => Boolean(car))
     : userId
-      ? swipeEligibleCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
-      : swipeEligibleCars;
+      ? filteredCars.filter((car) => !reviewedCarIds.has(car.id) || sessionReviewedIds.has(car.id))
+      : filteredCars;
   const swipeCar = swipeCars[swipeIndex];
+  const noSwipeResults = replaySkippedIds === null && filteredCars.length === 0;
   const swipeTl = swipeCar && showTrade ? getTradeLabel(selectedCar, swipeCar) : null;
   const keyboardSwipeActions = useRef<{ skip: () => void; like: () => void }>({
     skip: () => undefined,
@@ -405,34 +422,10 @@ function AuthenticatedFeed({
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="app-page-header safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
-        <header className="app-container py-3">
+      <div hidden={viewMode === 'swipe'} className="app-page-header safe-top lg:static lg:border-0 lg:bg-transparent lg:shadow-none">
+        <header className="app-container hidden py-3 lg:block">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
-              {/* View mode toggle */}
-              <div className="flex shrink-0 bg-elevated rounded-lg p-0.5 border border-surface dark:border-surface lg:hidden">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`control-focus flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-control text-control-foreground hover:bg-control-hover' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
-                  }`}
-                  aria-label="Prikaz mreže"
-                  aria-pressed={viewMode === 'grid'}
-                >
-                  <LayoutGrid size={14} />
-                </button>
-                <button
-                  onClick={() => enterSwipeMode()}
-                  className={`control-focus flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'swipe' ? 'bg-control text-control-foreground hover:bg-control-hover' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
-                  }`}
-                  aria-label="Svajp režim"
-                  aria-pressed={viewMode === 'swipe'}
-                >
-                  <Flame size={14} />
-                </button>
-              </div>
-
               {/* Tvoje Vozilo dropdown */}
               {showTrade && cars.length === 0 ? (
                 <button
@@ -558,7 +551,7 @@ function AuthenticatedFeed({
         )}
       </div>
 
-      {authReady && isLoggedIn && cars.length === 0 && (
+      {viewMode === 'grid' && authReady && isLoggedIn && cars.length === 0 && (
         <div className="app-container mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-brand-text">Dodaj svoj auto da vidiš doplatu</p>
@@ -718,9 +711,9 @@ function AuthenticatedFeed({
         </button>
       </BottomSheet>
 
-      {/* SWIPE MODE — FULLSCREEN */}
+      {/* Mobile swipe keeps the shared header and bottom navigation available. */}
       {viewMode === 'swipe' && (
-        <div className="fixed inset-0 z-[60] bg-app dark:bg-app flex flex-col safe-top safe-bottom">
+        <div className="app-swipe-view fixed inset-x-0 bg-app dark:bg-app flex flex-col" aria-label="Svajp oglasi">
           {/* Swipe header */}
           <div className="relative flex items-center justify-between px-4 py-3 border-b border-surface dark:border-surface lg:px-8">
             <button
@@ -733,19 +726,22 @@ function AuthenticatedFeed({
             </button>
             <div className="flex items-center gap-2 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               <Flame size={18} className="text-brand-text" />
-              <span className="text-sm font-bold text-app-primary dark:text-app-primary">Svajp režim</span>
+              <h1 className="text-sm font-bold text-app-primary dark:text-app-primary">Svajp</h1>
             </div>
             <button
-              onClick={exitSwipeMode}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-elevated hover:bg-hover-surface text-app-secondary hover:text-app-primary transition-all duration-200 lg:hidden"
-              aria-label="Izađi iz svajp režima"
+              onClick={() => setFiltersOpen(true)}
+              className="flex min-h-[44px] items-center gap-2 rounded-xl bg-elevated px-3 text-xs font-semibold text-app-secondary hover:bg-hover-surface"
+              aria-label={`Filteri${activeFilters > 0 ? ` (${activeFilters} aktivnih)` : ''}`}
             >
-              <X size={18} />
+              <SlidersHorizontal size={16} />Filteri
             </button>
           </div>
 
-          {/* Swipe content */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden lg:py-3">
+          {unreadMatches.length > 0 && <Link href={`/messages?conversation=${unreadMatches[0].id}`} className="mx-4 mt-3 flex shrink-0 items-center justify-between gap-3 rounded-xl border border-control/30 bg-control/10 px-3 py-3 text-sm font-semibold text-app-primary">
+            <span className="flex items-center gap-2"><HeartHandshake size={18} className="text-brand-text" />{unreadMatches.length === 1 ? 'Novo poklapanje!' : `${unreadMatches.length} novih poklapanja`}</span><span className="text-xs">Pogledaj →</span>
+          </Link>}
+          {/* Scroll on short phones rather than hiding the actions behind navigation. */}
+          <div className="app-swipe-content min-h-0 flex-1 flex flex-col items-center px-4 py-4 overflow-y-auto lg:justify-center lg:overflow-hidden lg:py-3">
             {swipeIndex < swipeCars.length && swipeCar ? (
               <>
                 {/* Progress dots */}
@@ -758,7 +754,7 @@ function AuthenticatedFeed({
                 </div>
 
                 {/* Card stack */}
-                <div className="relative w-full max-w-sm lg:max-w-2xl">
+                <div className="app-swipe-card relative w-full max-w-sm lg:max-w-2xl">
                   {/* Next card peeking behind */}
                   {swipeCars[swipeIndex + 1] && (
                     <div className="absolute inset-0 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-lg dark:border-surface dark:bg-card-surface" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
@@ -770,7 +766,7 @@ function AuthenticatedFeed({
 
                   {/* Active card */}
                   <div
-                    className="relative w-full overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-xl select-none touch-none dark:border-surface lg:max-w-2xl"
+                    className="relative w-full overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-xl select-none touch-pan-y dark:border-surface lg:max-w-2xl lg:touch-none"
                     style={{
                       transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
                       transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
@@ -859,7 +855,7 @@ function AuthenticatedFeed({
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex items-center gap-5 mt-6 lg:mt-4 lg:gap-7">
+                <div className="flex shrink-0 items-center gap-5 mt-3 lg:mt-4 lg:gap-7">
                   <button
                     onClick={() => void handleSwipeSkip()}
                     disabled={isAnimating}
@@ -893,11 +889,11 @@ function AuthenticatedFeed({
                 <div className="w-20 h-20 rounded-full bg-tone-positive-surface flex items-center justify-center mb-4">
                   <CheckCircle size={40} className="text-tone-positive" />
                 </div>
-                <h2 className="text-xl font-bold text-app-primary dark:text-app-primary mb-2">Sve pregledano!</h2>
-                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">{swipeEligibleCars.length === 0 ? 'Trenutno nema dostupnih oglasa za svajp.' : 'Pregledao si sve dostupne oglase za svajp.'}</p>
+                <h2 className="text-xl font-bold text-app-primary dark:text-app-primary mb-2">{noSwipeResults ? 'Nema oglasa za ove filtere' : 'Sve pregledano!'}</h2>
+                <p className="text-sm text-app-secondary dark:text-app-secondary mb-1">{noSwipeResults ? 'Promeni filtere da vidiš više vozila.' : swipeEligibleCars.length === 0 ? 'Trenutno nema dostupnih oglasa za svajp.' : 'Pregledao si sve dostupne oglase za svajp.'}</p>
                 <p className="text-xs text-app-muted mb-6">Sačuvano: {saved.length} oglasa</p>
                 <div className="flex gap-3">
-                  <button onClick={async () => {
+                  {noSwipeResults ? <button onClick={resetFilters} className="rounded-xl bg-elevated px-4 py-2.5 text-sm font-semibold text-app-primary hover:bg-hover-surface">Resetuj filtere</button> : <button onClick={async () => {
                     const reset = await resetPasses();
                     if (!reset.ok) {
                       toast.error(reset.message || 'Preskočeni oglasi nisu vraćeni. Pokušaj ponovo.');
@@ -935,7 +931,7 @@ function AuthenticatedFeed({
                       : `Ponovo prikazano ${replayIds.length} dostupnih oglasa. Postojeći lajkovi su sačuvani.`);
                   }} className="flex items-center gap-2 bg-elevated hover:bg-hover-surface text-app-primary dark:text-app-primary font-semibold px-4 py-2.5 rounded-xl text-sm transition-all">
                     <RotateCcw size={15} /> Ponovi preskočene
-                  </button>
+                  </button>}
                   <button onClick={exitSwipeMode} className="btn-primary text-sm">
                     Nazad na feed
                   </button>
