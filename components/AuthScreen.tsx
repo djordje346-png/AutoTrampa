@@ -113,7 +113,7 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
       <div className="p-5 sm:p-8">
         <div className="mb-5 flex justify-center sm:mb-6">
           <span className="inline-flex items-center gap-2" translate="no">
-            <BrandLockup />
+            <BrandLockup variant="auto" />
           </span>
         </div>
 

@@ -1,17 +1,40 @@
+import Image from 'next/image';
+
 type BrandLockupProps = {
   header?: boolean;
-  /** Preserve text contrast when the wordmark is placed on light surfaces. */
-  variant?: 'dark' | 'light';
+  /** Use auto on surfaces that follow the application's light/dark theme. */
+  variant?: 'dark' | 'light' | 'auto';
 };
 
-/** Text-only wordmark shared by the public header, app header and desktop footer. */
+/** Approved vector logo shared by the headers, footers and sign-in screen. */
 export default function BrandLockup({ header = false, variant = 'dark' }: BrandLockupProps) {
+  const size = header
+    ? 'h-8 w-[135px] min-[375px]:h-9 min-[375px]:w-[152px] sm:h-11 sm:w-[185px] lg:h-12 lg:w-[202px]'
+    : 'h-[52px] w-[219px]';
+
+  function logo(surface: 'dark' | 'light', visibility = '') {
+    return (
+      <Image
+        src={`/brand/autotrampa-${surface}.svg`}
+        alt="AutoTrampa.rs"
+        width={1235}
+        height={293}
+        priority={header}
+        unoptimized
+        draggable={false}
+        className={`h-full w-full object-contain ${visibility}`}
+      />
+    );
+  }
+
   return (
-    <span
-      className={`inline-flex shrink-0 items-baseline whitespace-nowrap font-heading font-extrabold leading-none tracking-[-0.045em] ${header ? 'text-[25px] sm:text-[28px] lg:text-[30px]' : 'text-[27px]'}`}
-    >
-      <span className={variant === 'dark' ? 'text-brand-dark-primary' : 'text-app-primary'}>Auto</span>
-      <span className={variant === 'dark' ? 'text-brand-500' : 'text-brand-text'}>Trampa</span>
+    <span className={`inline-flex shrink-0 items-center ${size}`} translate="no">
+      {variant === 'auto' ? (
+        <>
+          {logo('light', 'block dark:hidden')}
+          {logo('dark', 'hidden dark:block')}
+        </>
+      ) : logo(variant)}
     </span>
   );
 }
