@@ -70,11 +70,11 @@ const config: Config = {
           '5': 'hsl(var(--chart-5))',
         },
         brand: {
-          300: '#FAEB00',
-          400: 'hsl(var(--brand-hover))',
-          500: '#FAEB00',
-          600: 'hsl(var(--brand-hover))',
-          700: 'hsl(var(--brand-pressed))',
+          300: 'hsl(var(--primary) / <alpha-value>)',
+          400: 'hsl(var(--brand-hover) / <alpha-value>)',
+          500: 'hsl(var(--primary) / <alpha-value>)',
+          600: 'hsl(var(--brand-hover) / <alpha-value>)',
+          700: 'hsl(var(--brand-pressed) / <alpha-value>)',
         },
       },
       keyframes: {

@@ -9,7 +9,7 @@ const TONE_STYLES = {
   },
   'you-add': {
     Icon: ArrowUpRight,
-    arrowClass: 'text-[#FAEB00]',
+    arrowClass: 'text-brand-500',
   },
   even: {
     Icon: ArrowLeftRight,

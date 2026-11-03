@@ -120,7 +120,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
             />
 
             {index === 0 ? (
-              <span className="absolute bottom-1.5 left-1.5 rounded bg-brand-500 px-1.5 py-0.5 text-[9px] font-extrabold text-app-primary shadow">
+              <span className="absolute bottom-1.5 left-1.5 rounded bg-brand-500 px-1.5 py-0.5 text-[9px] font-extrabold text-on-accent shadow">
                 GLAVNA
               </span>
             ) : (
@@ -129,7 +129,7 @@ export function ImageUpload({ images, onChange, maxImages = 20 }: ImageUploadPro
                 onClick={() => makeCover(index)}
                 title="Postavi kao glavnu"
                 aria-label={`Postavi sliku ${index + 1} kao glavnu`}
-                className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm transition hover:bg-brand-500 hover:text-app-primary"
+                className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm transition hover:bg-brand-500 hover:text-on-accent"
               >
                 <Star size={9} />
                 GLAVNA

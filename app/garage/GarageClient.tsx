@@ -177,7 +177,7 @@ export default function GarageClient() {
                   </span>
                 )}
                 {isSelected && (
-                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-app-primary">
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-on-accent">
                     <Check size={11} strokeWidth={3} />
                     Aktivno
                   </span>

@@ -18,8 +18,8 @@ export default function GlobalError({
           alignItems: 'center',
           justifyContent: 'center',
           gap: '12px',
-          background: '#ffffff',
-          color: '#18181b',
+          background: '#F4F6FA',
+          color: '#0B1628',
           fontFamily: 'system-ui, sans-serif',
           padding: '24px',
           textAlign: 'center',
@@ -28,7 +28,7 @@ export default function GlobalError({
         <h1 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>
           AutoTrampa se nije učitala
         </h1>
-        <p style={{ fontSize: '14px', color: '#a3a3a3', margin: 0, maxWidth: '320px' }}>
+        <p style={{ fontSize: '14px', color: '#52647C', margin: 0, maxWidth: '320px' }}>
           Došlo je do greške pri učitavanju aplikacije.
           {error.digest ? ` (#${error.digest})` : ''}
         </p>
@@ -38,8 +38,8 @@ export default function GlobalError({
             marginTop: '8px',
             border: 0,
             borderRadius: '12px',
-            background: '#FAEB00',
-            color: '#18181b',
+            background: '#F97316',
+            color: '#0B1628',
             fontWeight: 700,
             fontSize: '14px',
             padding: '12px 20px',

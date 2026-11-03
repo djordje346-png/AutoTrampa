@@ -60,7 +60,7 @@ export default function UpdatePasswordPage() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-5 py-12">
       <section className="w-full max-w-sm rounded-2xl border border-surface dark:border-surface bg-card-surface dark:bg-card-surface p-6">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500 text-app-primary">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500 text-on-accent">
           <LockKeyhole size={21} />
         </div>
         <h1 className="text-xl font-bold text-app-primary dark:text-app-primary">Promeni lozinku</h1>

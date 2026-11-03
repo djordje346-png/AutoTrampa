@@ -141,7 +141,7 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
               onClick={() => switchTab(key)}
               className={`min-h-11 flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:focus-visible:ring-offset-card ${
                 tab === key
-                  ? 'bg-brand-500 text-app-primary shadow-sm'
+                  ? 'bg-brand-500 text-on-accent shadow-sm'
                   : 'text-app-secondary hover:bg-card-surface hover:text-app-primary dark:text-app-secondary dark:hover:bg-elevated dark:hover:text-white'
               }`}
             >

@@ -753,7 +753,7 @@ function CarFormFields({
                           onClick={() => toggleEquipment(item.id)}
                           className={`flex min-h-9 items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-all ${
                             active
-                              ? 'border-brand-500 bg-brand-500 text-app-primary'
+                              ? 'border-brand-500 bg-brand-500 text-on-accent'
                               : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary dark:border-surface'
                           }`}
                         >
@@ -945,7 +945,7 @@ export default function CarFormComponent({
                   <li key={stepNumber} aria-current={active ? 'step' : undefined} className="min-w-0">
                     <div className={`h-1 rounded-full ${active || complete ? 'bg-brand-500' : 'bg-hover-surface dark:bg-elevated'}`} />
                     <div className={`mt-1.5 flex items-center gap-1.5 truncate text-[11px] font-semibold sm:text-xs ${active ? 'text-app-primary dark:text-app-primary' : 'text-app-muted'}`}>
-                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${active || complete ? 'bg-brand-500 text-app-primary' : 'bg-hover-surface text-app-muted dark:bg-elevated'}`}>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${active || complete ? 'bg-brand-500 text-on-accent' : 'bg-hover-surface text-app-muted dark:bg-elevated'}`}>
                         {complete ? <Check size={12} strokeWidth={3} /> : stepNumber}
                       </span>
                       <span className="truncate">{label}</span>

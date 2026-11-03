@@ -1,41 +1,47 @@
-# AutoTrampa — Pearl / Graphite / Volt palette
+# AutoTrampa — Navy / Orange palette
 
-The AutoTrampa palette uses neutral graphite surfaces inspired by premium automotive photography. It keeps the existing Volt accent **#FAEB00**. Prefer semantic tokens instead of hard-coded colors.
+The approved HTML palette preview defines deep navy surfaces and warm orange actions. Prefer semantic tokens over hard-coded colors so listings, details, forms and messages share the same palette.
 
-## Dark mode — Graphite Night
-
-| Role | HEX | CSS token |
-| --- | --- | --- |
-| Canvas | `#101115` | `--surface-base` |
-| Cards, dialogs | `#191A1E` | `--surface-card` |
-| Input / inset / secondary panel | `#232429` | `--surface-elevated` |
-| Hover | `#303137` | `--surface-hover` |
-| Hairline border | `#35373D` | `--surface-border` |
-| Heading / principal text | `#F5F5F3` | `--text-primary` |
-| Supporting text | `#B6B9BE` | `--text-secondary` |
-| Muted labels | `#989DA4` | `--text-muted` |
-
-## Light mode — Pearl Neutral
+## Dark mode
 
 | Role | HEX | CSS token |
 | --- | --- | --- |
-| Canvas | `#F5F5F3` | `--surface-base` |
+| Canvas | `#0B1628` | `--surface-base` |
+| Cards, dialogs | `#13233A` | `--surface-card` |
+| Input / secondary panel | `#192C46` | `--surface-elevated` |
+| Hover surface | `#213650` | `--surface-hover` |
+| Border | `#2A3B53` | `--surface-border` |
+| Primary text | `#F8FAFC` | `--text-primary` |
+| Supporting text | `#A8B5C8` | `--text-secondary` |
+| Muted text | `#91A1B7` | `--text-muted` |
+
+Card containers retain a subtle navy gradient from `#162840` to `#13233A`.
+
+## Light mode
+
+| Role | HEX | CSS token |
+| --- | --- | --- |
+| Canvas | `#F4F6FA` | `--surface-base` |
 | Cards, dialogs | `#FFFFFF` | `--surface-card` |
-| Input / inset / secondary panel | `#EFEFED` | `--surface-elevated` |
-| Hover | `#E5E6E3` | `--surface-hover` |
-| Hairline border | `#D9DADC` | `--surface-border` |
-| Heading / principal text | `#1E2024` | `--text-primary` |
-| Supporting text | `#565B61` | `--text-secondary` |
-| Muted labels | `#686C72` | `--text-muted` |
+| Input / secondary panel | `#F6F8FC` | `--surface-elevated` |
+| Hover surface | `#EDF1F7` | `--surface-hover` |
+| Border | `#DCE3EC` | `--surface-border` |
+| Primary text | `#0B1628` | `--text-primary` |
+| Supporting text | `#52647C` | `--text-secondary` |
+| Muted text | `#5C6F88` | `--text-muted` |
 
-## Consistent dark navigation and Volt brand
+Muted labels use a slightly deeper blue than the prototype so small text also remains readable on hover surfaces. The marketing landing canvas stays light around the supplied photographs.
 
-- Header, dark footer, and bottom navigation always use `#101115`, including in light mode.
-- Secondary navigation labels: `#AFB2B8`; primary navigation: `#F5F5F3`.
-- The brand yellow remains exactly `#FAEB00`. Hover `#EADD00`, pressed `#D9CC00`. Text on yellow: `#101115`.
-- Avoid yellow-tinted card surfaces or giant yellow shadows. Reserve Volt for actions, highlights, selected states and focus.
-- Semantic status colors (success, warning, error) intentionally remain distinct; these convey meaning, not brand decoration.
-- Shadows and micro-movements should be subtle. Use existing radius scale and Manrope/Inter typography.
-- Light mode remains the default; the existing theme toggle and saved preference must continue to work.
+## Brand and navigation
 
-Text-pair contrast ratios (WCAG, rounded): `#989DA4` over `#191A1E` ~6.4:1; `#686C72` over `#F5F5F3` ~4.8:1; `#101115` on Volt yellow ~15.2:1.
+- Primary orange: `#F97316`; hover: `#EA580C`; pressed: `#E0520B`.
+- Solid orange controls always use navy `#0B1628` labels through `text-on-accent` or `--primary-foreground`, including selected states in dark mode.
+- Inline orange text on light surfaces uses `#C2410C` through `text-brand-text`; dark surfaces use `#F97316`.
+- Light accent surfaces: `#FFF2E7`; borders: `#FED7AA`.
+- Header, footer, bottom navigation and browser/PWA theme color use navy `#0B1628` in both themes, with `#F8FAFC` primary text and `#A8B5C8` supporting text.
+- The vector logo and app icon use orange arrows and domain suffix, with navy or light foregrounds according to their surface.
+- Semantic success, warning, error and trade direction colors retain their meanings.
+- Light mode remains the default; the existing theme toggle and saved preference continue to work.
+- Keep the existing radius scale and Manrope/Inter typography.
+
+Verified text contrast ratios, rounded: navy on orange **6.46:1**, navy on hover orange **5.09:1**, navy on pressed orange **4.64:1**, light muted text on its hover surface **4.54:1**, dark muted text on its hover surface **4.67:1**.
