@@ -413,19 +413,21 @@ function AuthenticatedFeed({
               <div className="flex shrink-0 bg-elevated rounded-lg p-0.5 border border-surface dark:border-surface lg:hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-brand-500 text-on-accent' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
+                  className={`control-focus flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
+                    viewMode === 'grid' ? 'bg-control text-control-foreground hover:bg-control-hover' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
                   }`}
                   aria-label="Prikaz mreže"
+                  aria-pressed={viewMode === 'grid'}
                 >
                   <LayoutGrid size={14} />
                 </button>
                 <button
                   onClick={() => enterSwipeMode()}
-                  className={`flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
-                    viewMode === 'swipe' ? 'bg-brand-500 text-on-accent' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
+                  className={`control-focus flex items-center justify-center w-8 h-7 rounded-md transition-all duration-200 ${
+                    viewMode === 'swipe' ? 'bg-control text-control-foreground hover:bg-control-hover' : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
                   }`}
                   aria-label="Svajp režim"
+                  aria-pressed={viewMode === 'swipe'}
                 >
                   <Flame size={14} />
                 </button>
@@ -528,10 +530,11 @@ function AuthenticatedFeed({
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
                 key={key}
+                aria-pressed={filters.trade === key}
                 onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
+                className={`control-focus flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                   filters.trade === key
-                    ? 'bg-brand-500 text-on-accent'
+                    ? 'bg-control text-control-foreground hover:bg-control-hover'
                     : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
                 }`}
               >
@@ -547,7 +550,7 @@ function AuthenticatedFeed({
               <SlidersHorizontal size={11} />
               Filteri
               {activeFilters > 0 && (
-                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-on-accent">{activeFilters}</span>
+                <span className="rounded-full bg-control px-1.5 text-[10px] font-bold text-control-foreground">{activeFilters}</span>
               )}
             </button>
           </div>
@@ -614,7 +617,7 @@ function AuthenticatedFeed({
               <SlidersHorizontal size={15} />
               Filteri
               {advancedFilterCount > 0 && (
-                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[11px] font-bold text-on-accent">
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-control px-1.5 text-[11px] font-bold text-control-foreground">
                   {advancedFilterCount}
                 </span>
               )}
@@ -630,10 +633,10 @@ function AuthenticatedFeed({
                     type="button"
                     onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
                     aria-pressed={filters.trade === key}
-                    className={`inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
+                    className={`control-focus inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
                       filters.trade === key
-                        ? 'border-brand-500 bg-brand-500 text-on-accent shadow-sm shadow-brand-500/20'
-                        : 'border-surface bg-card-surface text-app-secondary hover:-translate-y-px hover:border-brand-500/40 hover:bg-elevated hover:shadow-sm dark:border-surface dark:bg-card-surface dark:text-app-secondary'
+                        ? 'border-control bg-control text-control-foreground hover:bg-control-hover shadow-sm shadow-control/20'
+                        : 'border-surface bg-card-surface text-app-secondary hover:-translate-y-px hover:border-control/60 hover:bg-elevated hover:shadow-sm dark:border-surface dark:bg-card-surface dark:text-app-secondary'
                     }`}
                   >
                     {label}

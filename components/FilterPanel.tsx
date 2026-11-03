@@ -36,9 +36,9 @@ const TRADE_OPTIONS: { key: SearchFilters['trade']; label: string }[] = [
 const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'LPG', 'CNG', 'Hybrid', 'Electric'];
 
 const GROUP_TITLE = 'text-xs font-bold uppercase tracking-widest text-app-muted';
-const CHIP_BASE = 'rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors';
-const CHIP_ON = 'border-brand-500 bg-brand-500 text-on-accent';
-const CHIP_OFF = 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-surface';
+const CHIP_BASE = 'control-focus rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors';
+const CHIP_ON = 'border-control bg-control text-control-foreground hover:bg-control-hover';
+const CHIP_OFF = 'border-surface bg-elevated text-app-secondary hover:border-control/60 dark:border-surface';
 const NUM_INPUT =
   'h-10 w-full rounded-xl border border-surface bg-elevated px-3 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:border-brand-500 dark:border-surface dark:text-app-primary';
 
@@ -103,7 +103,7 @@ export function DesktopCompactFilterGroups({
                 type="button"
                 onClick={() => { select(null); setOpen(null); }}
                 aria-pressed={filters.bodyType === null}
-                className={`mb-2 flex h-8 w-full items-center justify-center rounded-lg border px-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${filters.bodyType === null ? 'border-brand-500 bg-brand-500/10 text-app-primary' : 'border-surface text-app-secondary hover:bg-elevated'}`}
+                className={`control-focus mb-2 flex h-8 w-full items-center justify-center rounded-lg border px-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-control-ring ${filters.bodyType === null ? 'border-control bg-control text-control-foreground hover:bg-control-hover' : 'border-surface text-app-secondary hover:bg-elevated'}`}
               >
                 Sve karoserije
               </button>

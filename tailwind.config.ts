@@ -62,6 +62,13 @@ const config: Config = {
         ring: 'hsl(var(--ring))',
         'secondary-accent': 'hsl(var(--secondary-accent) / <alpha-value>)',
         'brand-dark': 'hsl(var(--surface-brand-dark) / <alpha-value>)',
+        control: {
+          DEFAULT: 'hsl(var(--control) / <alpha-value>)',
+          hover: 'hsl(var(--control-hover) / <alpha-value>)',
+          foreground: 'hsl(var(--control-foreground) / <alpha-value>)',
+          thumb: 'hsl(var(--control-thumb) / <alpha-value>)',
+          ring: 'hsl(var(--control-ring) / <alpha-value>)',
+        },
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',

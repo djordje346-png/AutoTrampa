@@ -123,7 +123,7 @@ export default function SearchClient() {
               <SlidersHorizontal size={12} />
               Filteri
               {countActiveFilters(filters) > 0 && (
-                <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-on-accent">
+                <span className="rounded-full bg-control px-1.5 text-[10px] font-bold text-control-foreground">
                   {countActiveFilters(filters)}
                 </span>
               )}
@@ -140,9 +140,9 @@ export default function SearchClient() {
             <button
               key={key}
               onClick={() => updateFilters({ sortBy: key })}
-              className={`flex-shrink-0 whitespace-nowrap text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
+              className={`control-focus flex-shrink-0 whitespace-nowrap text-[11px] font-semibold px-2 py-1 rounded-lg transition-all ${
                 (filters.sortBy === key || (filters.sortBy === 'trade' && !showTrade && key === 'price-asc'))
-                  ? 'text-brand-text bg-brand-500/10'
+                  ? 'bg-control text-control-foreground hover:bg-control-hover'
                   : 'text-app-muted hover:text-app-secondary dark:text-app-secondary'
               }`}
             >

@@ -190,10 +190,10 @@ export function DesktopFeedSidebar({
                 key={key}
                 onClick={() => onTradeChange(key)}
                 aria-pressed={filters.trade === key}
-                className={`min-h-8 rounded-full border px-2 py-1 text-[9px] font-semibold leading-tight transition-colors ${
+                className={`control-focus min-h-8 rounded-full border px-2 py-1 text-[9px] font-semibold leading-tight transition-colors ${
                   filters.trade === key
-                    ? 'border-brand-500 bg-brand-500 text-on-accent'
-                    : 'border-surface bg-elevated text-app-secondary hover:border-brand-500/40 dark:border-surface dark:text-app-secondary'
+                    ? 'border-control bg-control text-control-foreground hover:bg-control-hover'
+                    : 'border-surface bg-elevated text-app-secondary hover:border-control/60 dark:border-surface dark:text-app-secondary'
                 }`}
               >
                 {label}

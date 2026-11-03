@@ -44,4 +44,16 @@ Muted labels use a slightly deeper blue than the prototype so small text also re
 - Light mode remains the default; the existing theme toggle and saved preference continue to work.
 - Keep the existing radius scale and Manrope/Inter typography.
 
-Verified text contrast ratios, rounded: navy on orange **6.46:1**, navy on hover orange **5.09:1**, navy on pressed orange **4.64:1**, light muted text on its hover surface **4.54:1**, dark muted text on its hover surface **4.67:1**.
+## Selection controls
+
+| Role | HEX | CSS token |
+| --- | --- | --- |
+| Selected filter / active switch | `#6B91B8` | `--control` |
+| Selected control hover | `#7EA1C4` | `--control-hover` |
+| Text on blue controls | `#0B1628` | `--control-foreground` |
+| Switch thumb | `#F8FAFC` | `--control-thumb` |
+| Focus on light surfaces | `#3D648C` | `--control-ring` |
+
+Use blue for quick trade filters, filter chips, sort selection, Grid/Swipe selection and preference switches. Selected controls use the same blue in both themes; unselected controls use neutral surfaces. Dark-mode focus uses `#6B91B8`. Primary submit and offer actions use the orange brand tokens.
+
+Verified text contrast ratios, rounded: navy on orange **6.46:1**, navy on hover orange **5.09:1**, navy on pressed orange **4.64:1**, navy on selected blue **5.49:1**, navy on blue hover **6.71:1**, light muted text on its hover surface **4.54:1**, dark muted text on its hover surface **4.67:1**. The light switch thumb has **3.15:1** contrast against the blue track.

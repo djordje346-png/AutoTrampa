@@ -303,12 +303,13 @@ export default function ProfileClient() {
               ref={noTopUpButtonRef}
               disabled={!preferencesReady}
               onClick={() => void savePreference({ noTopUp: !noTopUp, ...(noTopUp ? {} : { budget: null }) })}
-              className="mt-2.5 flex items-center gap-2.5 w-full text-left"
+              aria-pressed={noTopUp}
+              className="control-focus mt-2.5 flex items-center gap-2.5 w-full text-left"
             >
               <span className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                noTopUp ? 'bg-brand-500' : 'bg-elevated border border-surface dark:border-surface'
+                noTopUp ? 'bg-control' : 'bg-elevated border border-surface dark:border-surface'
               }`}>
-                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-card-surface shadow-sm transition-transform duration-200 ${
+                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-control-thumb shadow-sm transition-transform duration-200 ${
                   noTopUp ? 'translate-x-5' : 'translate-x-0'
                 }`} />
               </span>
@@ -325,8 +326,8 @@ export default function ProfileClient() {
                     key={type}
                     onClick={() => toggleBodyPref(type)}
                     disabled={!preferencesReady}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                      active ? 'bg-brand-500 border-brand-500 text-on-accent' : 'bg-elevated border-surface dark:border-surface text-app-secondary dark:text-app-secondary hover:border-brand-500/40'
+                    className={`control-focus px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                      active ? 'bg-control border-control text-control-foreground hover:bg-control-hover' : 'bg-elevated border-surface dark:border-surface text-app-secondary dark:text-app-secondary hover:border-control/60'
                     }`}
                   >
                     {bodyLabel(type)}
@@ -358,16 +359,17 @@ export default function ProfileClient() {
               </div>
               <button
                 onClick={toggleTheme}
-                className="relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 bg-elevated border border-surface dark:border-surface"
+                className={`control-focus relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${theme === 'dark' ? 'bg-control' : 'bg-elevated border border-surface dark:border-surface'}`}
                 aria-label="Promeni temu"
+                aria-pressed={theme === 'dark'}
               >
-                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-transform duration-200 flex items-center justify-center ${
-                  theme === 'dark' ? 'translate-x-5 bg-brand-500' : 'translate-x-0 bg-card-surface'
+                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-control-thumb text-control-foreground transition-transform duration-200 flex items-center justify-center ${
+                  theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
                 }`}>
                   {theme === 'dark' ? (
-                    <Moon size={10} className="text-white" />
+                    <Moon size={10} />
                   ) : (
-                    <Sun size={10} className="text-brand-text" />
+                    <Sun size={10} />
                   )}
                 </span>
               </button>
@@ -390,11 +392,11 @@ export default function ProfileClient() {
                 aria-busy={phonePrivacySaving}
                 aria-pressed={phoneAfterMatch}
                 aria-label="Prikaži telefon samo posle dogovorene zamene"
-                className={`relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                  phoneAfterMatch ? 'bg-brand-500' : 'bg-elevated'
+                className={`control-focus relative w-12 h-7 rounded-full flex-shrink-0 transition-colors duration-200 ${
+                  phoneAfterMatch ? 'bg-control' : 'bg-elevated'
                 }`}
               >
-                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-card-surface shadow-sm transition-transform duration-200 ${
+                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-control-thumb shadow-sm transition-transform duration-200 ${
                   phoneAfterMatch ? 'translate-x-5' : 'translate-x-0'
                 }`} />
               </button>

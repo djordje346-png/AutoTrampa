@@ -53,6 +53,13 @@ export function BodyTypePicker({
   const buttons = useRef<Array<HTMLButtonElement | null>>([]);
   const isForm = variant === 'form';
   const layout = LAYOUTS[variant];
+  const selectedStyle = isForm
+    ? 'border-brand-500 bg-brand-soft text-app-primary'
+    : 'border-control bg-control text-control-foreground hover:bg-control-hover';
+  const unselectedStyle = isForm
+    ? 'border-surface bg-card-surface text-app-primary hover:border-brand-500/60 hover:bg-elevated'
+    : 'border-surface bg-card-surface text-app-primary hover:border-control/60 hover:bg-elevated';
+  const focusStyle = isForm ? 'focus-visible:ring-secondary-accent' : 'control-focus focus-visible:ring-control-ring';
 
   useEffect(() => {
     const container = group.current;
@@ -106,14 +113,10 @@ export function BodyTypePicker({
                 buttons.current[nextIndex]?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
               }
             } : undefined}
-            className={`relative flex min-w-0 items-center justify-center border text-center transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-accent focus-visible:ring-offset-1 focus-visible:ring-offset-card-surface ${layout.button} ${
-              active
-                ? 'border-brand-500 bg-brand-soft text-app-primary'
-                : 'border-surface bg-card-surface text-app-primary hover:border-brand-500/60 hover:bg-elevated'
-            }`}
+            className={`relative flex min-w-0 items-center justify-center border text-center transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-card-surface ${focusStyle} ${layout.button} ${active ? selectedStyle : unselectedStyle}`}
           >
             {active && (
-              <span className={`absolute right-1 top-1 h-3.5 w-3.5 items-center justify-center rounded-full bg-brand-500 text-on-accent ${layout.check}`} aria-hidden="true">
+              <span className={`absolute right-1 top-1 h-3.5 w-3.5 items-center justify-center rounded-full ${isForm ? 'bg-brand-500 text-on-accent' : 'bg-control-foreground text-control-thumb'} ${layout.check}`} aria-hidden="true">
                 <Check size={9} strokeWidth={3} />
               </span>
             )}

@@ -31,6 +31,13 @@
     --ring: 17.47253 88.34951% 40.39216%;
     --radius: 0.75rem;
 
+    /* Light blue denotes selections and switches; labels stay navy. */
+    --control: 210.38961 35.15982% 57.05882%;
+    --control-hover: 210.00000 37.23404% 63.13725%;
+    --control-foreground: 217.24138 56.86275% 10.00000%;
+    --control-thumb: 210.00000 40.00000% 98.03922%;
+    --control-ring: 210.37975 39.30348% 39.41176%;
+
     /* semantic surface tokens (light defaults) */
     --surface-base: 220.00000 37.50000% 96.86275%;
     --surface-card: 0.00000 0.00000% 100.00000%;
@@ -100,6 +107,13 @@
     --input: 215.12195 32.80000% 24.50980%;
     --ring: 24.58150 94.97908% 53.13725%;
     --radius: 0.75rem;
+
+    /* Light blue denotes selections and switches; labels stay navy. */
+    --control: 210.38961 35.15982% 57.05882%;
+    --control-hover: 210.00000 37.23404% 63.13725%;
+    --control-foreground: 217.24138 56.86275% 10.00000%;
+    --control-thumb: 210.00000 40.00000% 98.03922%;
+    --control-ring: 210.38961 35.15982% 57.05882%;
 
     /* semantic surface tokens (dark defaults) */
     --surface-card-gradient: linear-gradient(145deg, #162840 0%, #13233A 85%);
@@ -286,6 +300,9 @@
   }
   .text-on-accent {
     color: hsl(var(--on-accent));
+  }
+  .control-focus {
+    --ring: var(--control-ring);
   }
   /* Accent text uses burnt orange on light surfaces and bright orange on navy. */
   .text-brand-text {
