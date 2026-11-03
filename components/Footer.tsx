@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { House as Home, Heart, Warehouse, MessageCircle, User, Plus, ChevronDown, LogOut, ArrowLeftRight, Flame, LayoutGrid } from 'lucide-react';
+import { House as Home, Heart, Warehouse, MessageCircle, Plus, Flame, LayoutGrid } from 'lucide-react';
 import BrandLockup from '@/components/BrandLockup';
 import HeaderCarSelector from '@/components/HeaderCarSelector';
 import { useFeedView } from '@/hooks/use-feed-view';
@@ -12,8 +12,6 @@ import { useSaved } from '@/hooks/use-saved';
 import { useAuth } from '@/hooks/use-auth';
 import { useUser } from '@/hooks/use-user';
 import { useGarage } from '@/hooks/use-garage';
-import { toast } from 'sonner';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 const DESKTOP_NAV_ITEMS = [
   { href: '/', label: 'Početna', icon: Home },
@@ -45,9 +43,9 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
   const { totalUnread, unreadMatches, mounted: messagesReady } = useMessages({ poll: true });
   const { viewMode, setViewMode, hrefForView } = useFeedView();
   const { count: savedCount, mounted: savedReady } = useSaved();
-  const { isLoggedIn, mounted: authReady, userId, logout, requireAuth } = useAuth();
+  const { isLoggedIn, mounted: authReady, userId, requireAuth } = useAuth();
   const { user: profile } = useUser();
-  const { cars, limit, selectedCar, selectCar, canAddCar, mounted: garageReady } = useGarage();
+  const { cars, selectedCar, selectCar, canAddCar, mounted: garageReady } = useGarage();
   const router = useRouter();
   const name = profile.id === userId ? profile.name.trim() || 'Moj nalog' : 'Moj nalog';
   const initials = name.split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
@@ -59,11 +57,6 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
     }
     url.searchParams.set('intent', 'add-car');
     router.push(url.pathname + url.search, { scroll: false });
-  }
-  async function signOut() {
-    const result = await logout();
-    if (result.ok) router.push('/');
-    else toast.error(result.message);
   }
 
   function badgeFor(href: string): number {
@@ -99,21 +92,10 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
             {isLoggedIn ? <>
               <HeaderCarSelector cars={cars} selectedCar={selectedCar} ready={garageReady} canAddCar={canAddCar} selectCar={selectCar} onAddCar={addVehicle} />
               <div className="lg:border-l lg:border-white/10 lg:pl-3">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild><button type="button" aria-label="Meni profila" className="app-header-icon !h-11 !w-11 gap-2 lg:!h-9 lg:!w-auto lg:px-1">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/10 text-[10px] font-bold text-brand-dark-primary">{initials}</span>
-                    <span className="hidden max-w-[110px] truncate text-xs text-brand-dark-primary xl:inline">{name}</span><ChevronDown size={12} className="hidden lg:block" aria-hidden="true" />
-                  </button></DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" sideOffset={14} className="app-header-menu w-60 max-w-[calc(100vw-24px)] rounded-2xl p-2">
-                    <div className="px-3 py-3"><strong className="block truncate text-sm">{name}</strong><span className="text-xs text-app-muted">Lični nalog</span></div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild><Link href="/profile" className="gap-2 rounded-lg p-3"><User size={16} />Moj profil</Link></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link href="/garage" className="gap-2 rounded-lg p-3"><Warehouse size={16} />Moja garaža<span className="ml-auto text-xs text-app-muted">{cars.length} / {limit}</span></Link></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link href="/messages?tab=offers" className="gap-2 rounded-lg p-3"><ArrowLeftRight size={16} />Ponude za zamenu<span className="ml-auto text-xs text-app-muted">{offerUnread || ''}</span></Link></DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => void signOut()} className="gap-2 rounded-lg p-3"><LogOut size={16} />Odjavi se</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Link href="/profile" aria-label="Moj profil" aria-current={pathname === '/profile' ? 'page' : undefined} className="app-header-icon !h-11 !w-11 gap-2 lg:!h-9 lg:!w-auto lg:px-1">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/10 text-[10px] font-bold text-brand-dark-primary">{initials}</span>
+                  <span className="hidden max-w-[110px] truncate text-xs text-brand-dark-primary xl:inline">{name}</span>
+                </Link>
               </div>
             </> : <button className="carbon-nav-link" onClick={() => requireAuth('Prijavi se na AutoTrampu')}>Prijavi se</button>}
           </div>
