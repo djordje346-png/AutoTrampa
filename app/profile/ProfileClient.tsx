@@ -112,7 +112,7 @@ export default function ProfileClient() {
       <div className="flex flex-col">
         <header className="app-page-header safe-top">
           <div className="app-container py-4">
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Profil</h1>
+            <h1 className="app-page-title-accent text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Profil</h1>
             <p className="mt-1 text-xs text-app-muted">Nalog, vozila i podešavanja zamene</p>
           </div>
         </header>
@@ -128,7 +128,7 @@ export default function ProfileClient() {
     <div className="flex flex-col pb-6">
       <header className="app-page-header safe-top">
         <div className="app-container py-4">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Profil</h1>
+          <h1 className="app-page-title-accent text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Profil</h1>
           <p className="mt-1 text-xs text-app-muted">Nalog, vozila i podešavanja zamene</p>
         </div>
       </header>
