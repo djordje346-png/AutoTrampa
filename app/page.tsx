@@ -741,16 +741,12 @@ function AuthenticatedFeed({
             <span className="flex items-center gap-2"><HeartHandshake size={18} className="text-brand-text" />{unreadMatches.length === 1 ? 'Novo poklapanje!' : `${unreadMatches.length} novih poklapanja`}</span><span className="text-xs">Pogledaj →</span>
           </Link>}
           {/* Scroll on short phones rather than hiding the actions behind navigation. */}
-          <div className="app-swipe-content min-h-0 flex-1 flex flex-col items-center px-4 py-3 overflow-y-auto lg:justify-center lg:overflow-hidden lg:py-3">
+          <div className="app-swipe-content min-h-0 flex-1 flex flex-col items-center px-4 py-2 overflow-y-auto lg:justify-center lg:overflow-hidden lg:py-3">
             {swipeIndex < swipeCars.length && swipeCar ? (
               <>
-                {/* Progress dots */}
-                <div className="flex gap-1.5 mb-2 flex-wrap justify-center max-w-sm lg:mb-3 lg:max-w-2xl">
-                  {swipeCars.map((_, i) => (
-                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === swipeIndex ? 'w-6 bg-brand-400' : i < swipeIndex ? 'w-1.5 bg-brand-400/40' : 'w-1.5 bg-elevated'
-                    }`} />
-                  ))}
+                {/* Compact progress indicator; the exact count remains between the action buttons. */}
+                <div className="mb-3 h-1 w-full max-w-sm overflow-hidden rounded-full bg-elevated lg:max-w-2xl" role="progressbar" aria-label="Pregledani oglasi" aria-valuemin={0} aria-valuemax={swipeCars.length} aria-valuenow={swipeIndex + 1}>
+                  <div className="h-full rounded-full bg-brand-500 transition-[width] duration-300" style={{ width: `${((swipeIndex + 1) / swipeCars.length) * 100}%` }} />
                 </div>
 
                 {/* Card stack */}
@@ -833,17 +829,12 @@ function AuthenticatedFeed({
                         ))}
                       </div>
 
-                      <p className="app-swipe-description text-xs text-app-secondary dark:text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
-
                       <div className="app-swipe-price-row mt-3 flex items-center justify-between gap-3 border-t border-surface pt-3">
                         <p className="shrink-0 font-sans text-xl font-extrabold tracking-tight text-app-primary">{formatEuro(swipeCar.price)}</p>
                         <span title={`Lokacija oglasa: ${swipeCar.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[40%] items-center gap-1 text-[13px] font-semibold text-app-secondary">
                           <MapPin size={14} className="shrink-0 text-app-muted" aria-hidden="true" />
                           <span className="truncate">{swipeCar.city || 'Nije navedeno'}</span>
                         </span>
-                        <Link href={`/car/${swipeCar.id}`} className="shrink-0 rounded-lg bg-elevated px-2.5 py-2 text-xs font-semibold text-app-secondary transition-colors hover:bg-hover-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500" aria-label={`Detalji: ${carTitle(swipeCar)}`}>
-                          Detalji
-                        </Link>
                       </div>
                     </div>
                   </div>
