@@ -15,7 +15,7 @@ import { useMatchLike } from '@/hooks/use-match-like';
 import { useActiveOfferIds } from '@/hooks/use-offers';
 import { useAuth } from '@/hooks/use-auth';
 import { countActiveFilters, useSearchPrefs } from '@/hooks/use-search-prefs';
-import { filterCars } from '@/hooks/use-filtered-cars';
+import { filterCars, getAlternativeCars } from '@/hooks/use-filtered-cars';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { displayValue } from '@/lib/car-row';
@@ -26,7 +26,7 @@ import TradeBadge from '@/components/TradeBadge';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import { useListingMessage } from '@/hooks/use-listing-message';
 import ListingPagination from '@/components/ListingPagination';
-import { useListingPagination } from '@/hooks/use-listing-pagination';
+import { LISTINGS_PER_PAGE, useListingPagination } from '@/hooks/use-listing-pagination';
 import { Car } from '@/types';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 
@@ -67,10 +67,25 @@ export default function SearchClient() {
     [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius],
   );
 
-  const pagination = useListingPagination(results, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, preferences.budget, preferences.noTopUp, preferences.radius, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
-
   const hasFilters =
     filters.query.trim() !== '' || countActiveFilters(filters) > 0;
+  const showAlternatives = hasFilters && results.length < LISTINGS_PER_PAGE;
+  const alternativeCars = useMemo(
+    () => showAlternatives
+      ? getAlternativeCars(
+          marketplaceCars, results, { ...filters, sortBy: effectiveSort },
+          selectedCar, preferences.budget, preferences.noTopUp,
+          selectedCar?.city ?? '', preferences.radius,
+        )
+      : [],
+    [showAlternatives, marketplaceCars, results, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius],
+  );
+  const displayCars = useMemo(
+    () => showAlternatives ? [...results, ...alternativeCars] : results,
+    [showAlternatives, results, alternativeCars],
+  );
+
+  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, preferences.budget, preferences.noTopUp, preferences.radius, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   function openOffer(car: Car) {
     const continueToOffer = () => requestPhoneAction(() => setOfferCar(car));
@@ -181,7 +196,7 @@ export default function SearchClient() {
         )}
 
         <div id="listing-results" className="grid min-w-0 flex-1 scroll-mt-24 grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
-        {results.length === 0 ? (
+        {displayCars.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-elevated flex items-center justify-center mb-4">
               <Search size={28} className="text-app-muted" />
@@ -190,34 +205,50 @@ export default function SearchClient() {
             <p className="text-app-muted text-sm mt-1">Pokušaj sa drugim terminom</p>
           </div>
         ) : (
-          pagination.items.map(car => {
+          pagination.items.map((car, index) => {
             const tl = showTrade ? getTradeLabel(selectedCar!, car) : null;
+            const globalIndex = (pagination.page - 1) * LISTINGS_PER_PAGE + index;
+            const startsAlternatives = showAlternatives && alternativeCars.length > 0
+              && globalIndex === results.length;
             return (
-              <MarketplaceV13Card
-                key={car.id}
-                minimalHome
-                car={car}
-                trade={tl}
-                onLike={(listing) => { void likeCar(listing); }}
-                liking={isLiking(car.id)}
-                liked={isSaved(car.id)}
-                onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
-                messaging={messagingId === car.id}
-                offerId={isLoggedIn ? activeOfferIds.get(car.id) : undefined}
-                onOffer={isLoggedIn ? (listing) => {
-                  if (!selectedCar) {
-                    toast.error('Prvo dodaj svoj auto u garažu.', {
-                      action: { label: 'Garaža', onClick: () => router.push('/garage') },
-                    });
-                    return;
-                  }
-                  openOffer(listing);
-                } : undefined}
-              />
+              <div key={car.id} className="contents">
+                {startsAlternatives && (
+                  <div className="col-span-full rounded-xl border border-surface bg-elevated/50 px-4 py-3 dark:border-[#35465E] dark:bg-[#19263B]/70" role="status">
+                    <p className="text-[13px] font-semibold text-app-primary">
+                      {results.length === 0
+                        ? 'Trenutno nema vozila koja ispunjavaju sve tvoje kriterijume.'
+                        : `Pronašli smo samo ${results.length} ${results.length === 1 ? 'oglas' : 'oglasa'} po tvojim kriterijumima.`}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-app-secondary">
+                      Ispod su druga vozila koja bi te mogla zanimati, poređana po postojećim pravilima sortiranja.
+                    </p>
+                  </div>
+                )}
+                <MarketplaceV13Card
+                  minimalHome
+                  car={car}
+                  trade={tl}
+                  onLike={(listing) => { void likeCar(listing); }}
+                  liking={isLiking(car.id)}
+                  liked={isSaved(car.id)}
+                  onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
+                  messaging={messagingId === car.id}
+                  offerId={isLoggedIn ? activeOfferIds.get(car.id) : undefined}
+                  onOffer={isLoggedIn ? (listing) => {
+                    if (!selectedCar) {
+                      toast.error('Prvo dodaj svoj auto u garažu.', {
+                        action: { label: 'Garaža', onClick: () => router.push('/garage') },
+                      });
+                      return;
+                    }
+                    openOffer(listing);
+                  } : undefined}
+                />
+              </div>
             );
           })
         )}
-          <ListingPagination page={pagination.page} total={results.length} onChange={pagination.changePage} />
+          <ListingPagination page={pagination.page} total={displayCars.length} onChange={pagination.changePage} />
         </div>
       </div>
 
