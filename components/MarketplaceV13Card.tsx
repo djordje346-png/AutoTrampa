@@ -72,7 +72,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
 
         <div className="relative flex min-w-0 flex-1 flex-col px-4 pb-4 pt-3.5 sm:px-[18px] sm:pb-[18px]">
           <h3 title={carTitle(car)} className="truncate font-heading text-[19px] font-bold leading-[1.3] tracking-[-0.025em] text-app-primary sm:text-[20px]">{carTitle(car)}</h3>
-          <p className="mt-1 truncate text-[12px] leading-[1.5] text-app-secondary">{carSubtitle(car) || '\u00a0'}</p>
+          {carSubtitle(car) && <p className="mt-1 truncate text-[12px] leading-[1.5] text-app-secondary">{carSubtitle(car)}</p>}
           <div className="mt-3 grid min-w-0 grid-cols-[0.76fr_1.26fr_1.08fr_1.17fr] items-center text-[11px] leading-[1.5] text-app-secondary sm:text-[11px]">
             {homeSpecs.map(({ Icon, text, label }, index) => (
               <span
@@ -92,7 +92,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
             </span>
           </div>
           {(hasOfferAction || onMessage) && (
-            <div className="relative z-20 mt-3 flex min-w-0 items-center gap-2 border-t border-surface pt-3">
+            <div className="relative z-20 mt-2.5 flex min-w-0 items-center gap-2">
               {offerId ? (
                 <Link href={`/messages?tab=offers&offer=${offerId}`} aria-label={`Pogledaj ponudu za ${carTitle(car)}`}
                   className="inline-flex min-h-10 flex-1 items-center justify-center rounded-[10px] border border-brand-500/40 bg-brand-500/10 px-3 text-[12px] font-semibold text-brand-text transition-colors hover:bg-brand-500/20 dark:text-brand-500">
