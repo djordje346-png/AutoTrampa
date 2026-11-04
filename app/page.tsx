@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeft, ChevronRight, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Settings2, ChevronDown, Check, Plus, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeft, ChevronRight, Search, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Settings2, ChevronDown, Check, Plus, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
 import { transmissionLabel } from '@/lib/labels';
@@ -517,15 +517,17 @@ function AuthenticatedFeed({
         </header>
 
         {/* Trade filter bar */}
-        {showTrade && (
+        {(showTrade || viewMode === 'grid') && (
         <div className={`border-t border-surface dark:border-surface/50 ${viewMode === 'grid' ? 'lg:hidden' : ''}`}>
           <div className="app-container flex items-center gap-1.5 py-2 overflow-x-auto scrollbar-hide">
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
                 key={key}
                 aria-pressed={filters.trade === key}
+                disabled={!showTrade && key !== 'all'}
+                title={!showTrade && key !== 'all' ? 'Dodaj svoj auto da koristiš filtere doplate' : undefined}
                 onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
-                className={`control-focus flex-shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap transition-colors duration-150 ${
+                className={`control-focus flex-shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-45 ${
                   filters.trade === key
                     ? 'border-control bg-control text-control-foreground hover:bg-control-hover'
                     : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface hover:border-control/40 hover:text-app-primary dark:border-[#2C3B51] dark:bg-[#19263B] dark:text-[#C4CDDA] dark:hover:bg-[#22344F]'
@@ -534,18 +536,7 @@ function AuthenticatedFeed({
                 {label}
               </button>
             ))}
-            {/* Below lg the sidebar is hidden, so the sheet is the only way in. */}
-            <button
-              onClick={() => setFiltersOpen(true)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary transition-all duration-150 lg:hidden"
-              aria-label={`Filteri${activeFilters > 0 ? ` (${activeFilters} aktivnih)` : ''}`}
-            >
-              <SlidersHorizontal size={11} />
-              Filteri
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-control px-1.5 text-[10px] font-bold text-control-foreground">{activeFilters}</span>
-              )}
-            </button>
+
           </div>
         </div>
         )}
@@ -979,9 +970,18 @@ function AuthenticatedFeed({
 
           <div className="min-w-0 flex-1">
             <div className="mb-3 min-w-0">
-              <h1 className="truncate text-base font-bold leading-tight text-app-primary dark:text-app-primary sm:text-lg">
-                {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži oglase'}
-              </h1>
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-base font-bold leading-snug text-app-primary dark:text-app-primary sm:text-lg">
+                    {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži automobile'}
+                  </h1>
+                </div>
+                <Link href="/search" aria-label="Otvori detaljnu pretragu automobila"
+                  className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-surface bg-elevated px-3 text-[12px] font-semibold text-app-primary transition-colors hover:border-control/50 hover:bg-hover-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-control dark:border-[#35465E] dark:bg-[#19263B] dark:text-white sm:text-[13px]">
+                  <Search size={15} strokeWidth={2} aria-hidden="true" />
+                  Pretraga
+                </Link>
+              </div>
               <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-app-muted">
                 <span>{marketplaceReady
                   ? `Pronađeno ${filteredCars.length} ${filteredCars.length === 1 ? 'oglas' : 'oglasa'}`
