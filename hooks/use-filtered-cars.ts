@@ -7,6 +7,27 @@ import { distanceBetweenCitiesKm } from '@/lib/city-coordinates';
 import type { SearchFilters } from '@/hooks/use-search-prefs';
 
 /**
+ * Convert stored displacement values to cm³.
+ * Handles "2.0L", "1,9 l", "1995 cm3", and "1.998 cm³".
+ */
+function displacementCm3(raw: string | null | undefined): number | null {
+  if (!raw) return null;
+  const value = raw.trim().toLowerCase().replace(/\s+/g, '');
+  const match = value.match(/\d+(?:[.,]\d+)?/);
+  if (!match) return null;
+  const token = match[0];
+  const inLitres = /(?:l|litara|liter)/.test(value);
+  if (inLitres) {
+    const litres = Number(token.replace(',', '.'));
+    return litres > 0 && litres < 25 ? Math.round(litres * 1000) : null;
+  }
+  const numeric = Number(token.replace(/[.,]/g, token.includes('.') && token.split('.')[1]?.length === 3 ? '' : '.'));
+  if (!Number.isFinite(numeric) || numeric <= 0) return null;
+  // Older listings can store just "1.9" instead of "1.9L".
+  return numeric < 25 ? Math.round(numeric * 1000) : Math.round(numeric);
+}
+
+/**
  * The single place that turns a list of listings plus the chosen filters into
  * what the screen shows. Feed and Pretraga both use it, so a filter can never
  * mean one thing on one screen and something else on the other.
@@ -35,8 +56,12 @@ export function filterCars(
     if (filters.priceMax != null && car.price > filters.priceMax) return false;
     if (filters.yearMin != null && (car.year == null || car.year < filters.yearMin)) return false;
     if (filters.yearMax != null && (car.year == null || car.year > filters.yearMax)) return false;
-    if (filters.kmMin != null && (car.mileage == null || car.mileage < filters.kmMin)) return false;
-    if (filters.kmMax != null && (car.mileage == null || car.mileage > filters.kmMax)) return false;
+    if (filters.displacementMin != null || filters.displacementMax != null) {
+      const cm3 = displacementCm3(car.specs.displacement);
+      if (cm3 == null) return false;
+      if (filters.displacementMin != null && cm3 < filters.displacementMin) return false;
+      if (filters.displacementMax != null && cm3 > filters.displacementMax) return false;
+    }
 
     if (q) {
       const haystack = `${car.brand} ${car.model} ${car.generation} ${car.city}`.toLowerCase();
