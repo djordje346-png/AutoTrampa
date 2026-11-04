@@ -149,8 +149,8 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
         </section>
       )}
 
-      <section className="space-y-3">
-        <div>
+      <section className="grid min-w-0 gap-3 sm:grid-cols-2 sm:gap-3">
+        <div className="min-w-0">
           <label htmlFor="car-filter-brand" className="block text-[11px] font-bold uppercase tracking-[0.1em] text-app-muted">Marka</label>
           <div className="relative mt-1.5">
             <select
@@ -165,7 +165,7 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
             <ChevronDown size={16} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-app-muted" />
           </div>
         </div>
-        <div>
+        <div className="min-w-0">
           <label htmlFor="car-filter-model" className="block text-[11px] font-bold uppercase tracking-[0.1em] text-app-muted">Model</label>
           <div className="relative mt-1.5">
             <select
@@ -186,7 +186,10 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
       </section>
 
       <section className="min-w-0 w-full max-w-full">
-        <p className={GROUP_TITLE}>Karoserija</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className={GROUP_TITLE}>Karoserija</p>
+          <span className="text-[11px] text-app-muted">Prevuci za još</span>
+        </div>
         <div className="mt-2 min-w-0 w-full max-w-full overflow-hidden">
           <BodyTypePicker
             value={filters.bodyType ?? ''}
