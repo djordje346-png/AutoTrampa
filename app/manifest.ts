@@ -15,6 +15,7 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['shopping', 'lifestyle', 'travel'],
     icons: [
       { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+      { src: '/brand/autotrampa-mark-maskable.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
     ],
   };
 }
