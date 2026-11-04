@@ -593,7 +593,7 @@ function AuthenticatedFeed({
           <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-2 dark:border-surface">
             <button
               type="button"
-              onClick={() => setFiltersOpen(true)}
+              onClick={() => { updateFilters({ query: '' }); setFiltersOpen(true); }}
               aria-label="Otvori detaljnu pretragu automobila"
               className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-surface dark:bg-card-surface dark:text-app-primary"
             >
@@ -678,18 +678,6 @@ function AuthenticatedFeed({
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6">
-          <label htmlFor="feed-search-query" className="mb-2 block text-xs font-bold uppercase tracking-wider text-app-muted">Naziv automobila</label>
-          <div className="relative mb-6">
-            <Search size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
-            <input
-              id="feed-search-query"
-              type="search"
-              value={filters.query}
-              onChange={(event) => updateFilters({ query: event.target.value })}
-              placeholder="Npr. Golf 7, BMW 320d..."
-              className="h-11 w-full rounded-xl border border-surface bg-elevated pl-10 pr-3 text-sm text-app-primary outline-none placeholder:text-app-muted focus:border-control dark:border-surface"
-            />
-          </div>
           <FilterSheetBody
             filters={filters}
             update={updateFilters}
@@ -728,7 +716,7 @@ function AuthenticatedFeed({
               <h1 className="text-sm font-bold text-app-primary dark:text-app-primary">Svajp</h1>
             </div>
             <button
-              onClick={() => setFiltersOpen(true)}
+              onClick={() => { updateFilters({ query: '' }); setFiltersOpen(true); }}
               className="flex min-h-[44px] items-center gap-2 rounded-xl bg-elevated px-3 text-xs font-semibold text-app-secondary hover:bg-hover-surface"
               aria-label={`Filteri${activeFilters > 0 ? ` (${activeFilters} aktivnih)` : ''}`}
             >
@@ -984,7 +972,7 @@ function AuthenticatedFeed({
                     {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži automobile'}
                   </h1>
                 </div>
-                <button type="button" onClick={() => setFiltersOpen(true)} aria-label="Otvori detaljnu pretragu automobila"
+                <button type="button" onClick={() => { updateFilters({ query: '' }); setFiltersOpen(true); }} aria-label="Otvori detaljnu pretragu automobila"
                   className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-surface bg-elevated px-3 text-[12px] font-semibold text-app-primary transition-colors hover:border-control/50 hover:bg-hover-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-control dark:border-[#35465E] dark:bg-[#19263B] dark:text-white sm:text-[13px]">
                   <Search size={15} strokeWidth={2} aria-hidden="true" />
                   Pretraga
