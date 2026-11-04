@@ -136,7 +136,6 @@ function AuthenticatedFeed({
   const [showAddForm, setShowAddForm] = useState(false);
   const { viewMode, setViewMode } = useFeedView();
   const { unreadMatches } = useMessages({ poll: viewMode === 'swipe' });
-  const [desktopFiltersOpen, setDesktopFiltersOpen] = useState(false);
   const [swipeIndex, setSwipeIndex] = useState(0);
   const { preferences, mounted: preferencesMounted } = usePreferences();
   const budget = preferences.budget;
@@ -594,12 +593,12 @@ function AuthenticatedFeed({
           <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-2 dark:border-surface">
             <button
               type="button"
-              onClick={() => setDesktopFiltersOpen(true)}
-              aria-label={`Otvori napredne filtere${advancedFilterCount > 0 ? `, ${advancedFilterCount} aktivnih filtera` : ''}`}
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Otvori detaljnu pretragu automobila"
               className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-surface dark:bg-card-surface dark:text-app-primary"
             >
               <SlidersHorizontal size={15} />
-              Filteri
+              Pretraga
               {advancedFilterCount > 0 && (
                 <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-control px-1.5 text-[11px] font-bold text-control-foreground">
                   {advancedFilterCount}
@@ -659,47 +658,56 @@ function AuthenticatedFeed({
         </div>
       )}
 
-      {/* Mobile/tablet filter sheet — the desktop column lives beside the grid. */}
+      {/* Unified search sheet: same shared filter state as the search page. */}
       <BottomSheet
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
-        title="Filteri"
-        className="sm:max-w-lg"
+        title="Pretraži automobile"
+        bare
+        className="flex !max-h-[min(92dvh,920px)] flex-col !overflow-hidden !p-0 sm:max-w-2xl"
       >
-        <FilterSheetBody
-          filters={filters}
-          update={updateFilters}
-          onReset={resetFilters}
-          showTrade={showTrade}
-        />
-        <button
-          onClick={() => setFiltersOpen(false)}
-          className="mt-6 w-full rounded-xl bg-elevated py-3 text-sm font-semibold text-app-primary dark:text-app-primary transition-colors hover:bg-hover-surface"
-        >
-          Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
-        </button>
-      </BottomSheet>
-
-      <BottomSheet
-        open={desktopFiltersOpen}
-        onClose={() => setDesktopFiltersOpen(false)}
-        title="Napredni filteri"
-        className="sm:max-w-4xl"
-      >
-        <FilterSheetBody
-          filters={filters}
-          update={updateFilters}
-          onReset={() => { resetFilters(); setSwipeIndex(0); }}
-          showTrade={false}
-          className="grid gap-x-8 gap-y-5 sm:grid-cols-2 sm:space-y-0"
-        />
-        <button
-          type="button"
-          onClick={() => setDesktopFiltersOpen(false)}
-          className="mt-6 w-full rounded-xl bg-brand-500 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-brand-600"
-        >
-          Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
-        </button>
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-surface px-5 pb-4 pt-5 dark:border-surface sm:px-6">
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">Pretraži automobile</h2>
+            <p className="mt-1 text-xs text-app-muted">Izaberi kriterijume i pronađi željeni automobil.</p>
+          </div>
+          <button type="button" onClick={() => setFiltersOpen(false)}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary"
+            aria-label="Zatvori pretragu">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6">
+          <label htmlFor="feed-search-query" className="mb-2 block text-xs font-bold uppercase tracking-wider text-app-muted">Naziv automobila</label>
+          <div className="relative mb-6">
+            <Search size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
+            <input
+              id="feed-search-query"
+              type="search"
+              value={filters.query}
+              onChange={(event) => updateFilters({ query: event.target.value })}
+              placeholder="Npr. Golf 7, BMW 320d..."
+              className="h-11 w-full rounded-xl border border-surface bg-elevated pl-10 pr-3 text-sm text-app-primary outline-none placeholder:text-app-muted focus:border-control dark:border-surface"
+            />
+          </div>
+          <FilterSheetBody
+            filters={filters}
+            update={updateFilters}
+            onReset={() => { resetFilters(); setSwipeIndex(0); }}
+            showTrade={false}
+            className="grid gap-x-6 gap-y-6 sm:grid-cols-2 sm:space-y-0"
+          />
+        </div>
+        <div className="flex shrink-0 items-center gap-3 border-t border-surface bg-card-surface px-5 py-3 dark:border-surface dark:bg-card-surface sm:px-6">
+          <button type="button" onClick={() => { resetFilters(); setSwipeIndex(0); }}
+            className="shrink-0 rounded-xl px-3 py-3 text-xs font-semibold text-app-secondary transition-colors hover:bg-elevated hover:text-app-primary">
+            Poništi sve
+          </button>
+          <button type="button" onClick={() => setFiltersOpen(false)}
+            className="min-w-0 flex-1 rounded-xl bg-brand-500 px-3 py-3 text-sm font-bold text-on-accent transition-colors hover:bg-brand-600">
+            Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
+          </button>
+        </div>
       </BottomSheet>
 
       {/* Mobile swipe keeps the shared header and bottom navigation available. */}
@@ -976,11 +984,11 @@ function AuthenticatedFeed({
                     {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži automobile'}
                   </h1>
                 </div>
-                <Link href="/search" aria-label="Otvori detaljnu pretragu automobila"
+                <button type="button" onClick={() => setFiltersOpen(true)} aria-label="Otvori detaljnu pretragu automobila"
                   className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-surface bg-elevated px-3 text-[12px] font-semibold text-app-primary transition-colors hover:border-control/50 hover:bg-hover-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-control dark:border-[#35465E] dark:bg-[#19263B] dark:text-white sm:text-[13px]">
                   <Search size={15} strokeWidth={2} aria-hidden="true" />
                   Pretraga
-                </Link>
+                </button>
               </div>
               <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-app-muted">
                 <span>{marketplaceReady
