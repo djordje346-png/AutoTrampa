@@ -91,6 +91,30 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
               <span className="leading-[18px]">Pogledaj oglas</span><ChevronRight size={14} className="block shrink-0 self-center" aria-hidden="true" />
             </span>
           </div>
+          {(hasOfferAction || onMessage) && (
+            <div className="relative z-20 mt-3 flex min-w-0 items-center gap-2 border-t border-surface pt-3">
+              {offerId ? (
+                <Link href={`/messages?tab=offers&offer=${offerId}`} aria-label={`Pogledaj ponudu za ${carTitle(car)}`}
+                  className="inline-flex min-h-10 flex-1 items-center justify-center rounded-[10px] border border-brand-500/40 bg-brand-500/10 px-3 text-[12px] font-semibold text-brand-text transition-colors hover:bg-brand-500/20 dark:text-brand-500">
+                  Pogledaj ponudu
+                </Link>
+              ) : onOffer ? (
+                <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onOffer(car); }}
+                  aria-label={`Ponudi zamenu za ${carTitle(car)}`}
+                  className="inline-flex min-h-10 flex-1 items-center justify-center rounded-[10px] bg-brand-500 px-3 text-[12px] font-semibold text-on-accent transition-colors hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
+                  Ponudi zamenu
+                </button>
+              ) : null}
+              {onMessage && (
+                <button type="button" disabled={messaging} aria-label={`Pošalji poruku za ${carTitle(car)}`} title="Pošalji poruku vlasniku"
+                  onClick={(event) => { event.preventDefault(); event.stopPropagation(); onMessage(car); }}
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-surface text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary disabled:opacity-50"
+                  aria-busy={messaging}>
+                  <MessageCircle size={18} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </article>
     );
