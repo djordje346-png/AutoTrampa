@@ -36,9 +36,9 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
   ];
 
   return (
-    <article className={`listing-card group/card relative isolate min-w-0 overflow-hidden rounded-[12px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] sm:aspect-auto sm:flex sm:h-full sm:flex-col ${hasOfferAction ? 'flex flex-col' : 'grid aspect-square grid-rows-[minmax(0,1fr)_auto]'}`}>
-      <Link href={`/car/${car.id}`} aria-label={`Otvori oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[12px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
-      <div className={`relative overflow-hidden rounded-t-[11px] bg-elevated sm:aspect-auto sm:h-[237px] sm:flex-none ${hasOfferAction ? 'aspect-[16/10] flex-none' : 'min-h-0'}`}>
+    <article className={`listing-card group/card relative isolate min-w-0 overflow-hidden rounded-[14px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] sm:aspect-auto sm:flex sm:h-full sm:flex-col ${hasOfferAction ? 'flex flex-col' : 'grid aspect-square grid-rows-[minmax(0,1fr)_auto]'}`}>
+      <Link href={`/car/${car.id}`} aria-label={`Otvori oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
+      <div className={`relative overflow-hidden rounded-t-[13px] bg-elevated sm:aspect-auto sm:h-[237px] sm:flex-none ${hasOfferAction ? 'aspect-[16/10] flex-none' : 'min-h-0'}`}>
         <div className="absolute inset-0 [&>div]:!aspect-auto [&>div]:!h-full">
           <FeedCardPhoto car={car} showDemoBadge={false} />
         </div>
@@ -59,10 +59,10 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
         {!car.ownerId && <span className="pointer-events-none absolute bottom-2 left-3 z-20 rounded-full bg-black/65 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white">Demo</span>}
       </div>
 
-      <div className="relative flex min-w-0 flex-col bg-card-surface px-[13px] pb-3 pt-3 sm:flex-1 sm:px-[18px] sm:pb-[18px]">
-        <h3 title={carTitle(car)} className="truncate font-heading text-[clamp(17px,5vw,21px)] font-bold leading-[1.2] tracking-tight text-app-primary sm:text-[22px]">{carTitle(car)}</h3>
-        <p className="mt-1 min-h-[16px] truncate text-[11px] leading-4 text-app-secondary sm:text-xs">{carSubtitle(car) || '\u00a0'}</p>
-        <div className="listing-card-specs mt-2 text-[clamp(8px,2.4vw,10px)] leading-tight text-app-secondary sm:text-[11px]">
+      <div className="relative flex min-w-0 flex-col bg-card-surface px-4 pb-4 pt-3.5 sm:flex-1 sm:px-[18px] sm:pb-[18px]">
+        <h3 title={carTitle(car)} className="truncate font-heading text-[clamp(18px,4.5vw,21px)] font-extrabold leading-[1.25] tracking-[-0.025em] text-app-primary sm:text-[22px]">{carTitle(car)}</h3>
+        <p className="mt-1 min-h-[17px] truncate text-xs leading-[1.45] text-app-secondary sm:text-xs">{carSubtitle(car) || '\u00a0'}</p>
+        <div className="listing-card-specs mt-2.5 text-[10px] leading-[1.35] text-app-secondary sm:text-[11px]">
           {specs.map(({ Icon, text, label }, index) => (
             <span key={label} className="contents">
               {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center self-center rounded-full listing-spec-dot" />}
@@ -73,8 +73,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
             </span>
           ))}
         </div>
-        <div className="mt-3 flex min-h-[40px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-t border-surface pt-2.5">
-          <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(20px,5.7vw,24px)] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
+        <div className="mt-3.5 flex min-h-[42px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-t border-surface pt-3">
+          <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(21px,5.7vw,24px)] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
           {hasOfferAction ? <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1.5">
           {offerId ? (
             <Link href={`/messages?tab=offers&offer=${offerId}`} aria-label={`Pogledaj ponudu za ${carTitle(car)}`}
