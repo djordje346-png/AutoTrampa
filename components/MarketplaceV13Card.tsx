@@ -78,7 +78,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
               <span
                 key={label}
                 title={`${label}: ${text}`}
-                className={`flex min-w-0 items-center justify-center gap-1 px-1 first:pl-0 last:pr-0 ${index > 0 ? 'border-l border-surface' : ''}`}
+                className={`flex min-w-0 items-center justify-start gap-1 px-1.5 first:pl-0 last:pr-0 ${index > 0 ? 'border-l border-surface' : ''}`}
               >
                 <Icon size={12} className="shrink-0 text-app-muted" strokeWidth={1.7} aria-hidden="true" />
                 <span className="min-w-0 truncate tabular-nums">{text}</span>
@@ -87,8 +87,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           </div>
           <div className="mt-4 flex min-h-[42px] items-center justify-between gap-3 border-t border-surface pt-3.5 sm:mt-auto sm:pt-4">
             <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[22px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[24px]">{formatEuro(car.price)}</strong>
-            <span aria-hidden="true" className="inline-flex shrink-0 items-center gap-1 text-[12px] font-semibold text-[#B45309] transition-colors dark:text-[#F58A38] sm:text-[13px]">
-              Pogledaj oglas <ChevronRight size={16} className="transition-transform duration-200 group-hover/card:translate-x-[3px] group-focus-within/card:translate-x-[3px]" aria-hidden="true" />
+            <span aria-hidden="true" className="inline-flex shrink-0 items-center gap-0.5 text-[12px] font-medium text-[#B45309] transition-colors dark:text-[#F58A38] sm:text-[13px]">
+              <span>Pogledaj oglas</span><ChevronRight size={15} className="relative top-px shrink-0 transition-transform duration-200 group-hover/card:translate-x-[2px] group-focus-within/card:translate-x-[2px]" aria-hidden="true" />
             </span>
           </div>
         </div>
