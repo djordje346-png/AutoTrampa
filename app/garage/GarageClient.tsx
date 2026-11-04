@@ -105,7 +105,7 @@ export default function GarageClient() {
       <div className="flex flex-col">
         <header className="app-page-header safe-top">
           <div className="app-container py-4">
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Garaža</h1>
+            <h1 className="app-page-title-accent text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Garaža</h1>
             <p className="text-xs text-app-muted mt-0.5">Tvoja kolekcija vozila</p>
           </div>
         </header>
@@ -124,7 +124,7 @@ export default function GarageClient() {
       <header className="app-page-header safe-top">
         <div className="app-container flex items-center justify-between py-4">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Garaža</h1>
+            <h1 className="app-page-title-accent text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Garaža</h1>
             <p className="text-xs text-app-muted mt-0.5">{cars.length} / {limit} vozila u garaži</p>
           </div>
           <button
