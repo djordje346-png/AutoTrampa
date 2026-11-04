@@ -195,6 +195,7 @@ export default function SearchClient() {
             return (
               <MarketplaceV13Card
                 key={car.id}
+                minimalHome
                 car={car}
                 trade={tl}
                 onLike={(listing) => { void likeCar(listing); }}
