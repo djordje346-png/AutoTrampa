@@ -185,9 +185,9 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
         </div>
       </section>
 
-      <section>
+      <section className="min-w-0 w-full max-w-full">
         <p className={GROUP_TITLE}>Karoserija</p>
-        <div className="mt-2">
+        <div className="mt-2 min-w-0 w-full max-w-full overflow-hidden">
           <BodyTypePicker
             value={filters.bodyType ?? ''}
             onChange={(type) => update({ bodyType: filters.bodyType === type ? null : type })}
