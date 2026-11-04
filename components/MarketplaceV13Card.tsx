@@ -94,23 +94,23 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
             </span>
           </div>
           {showQuickActions && (hasOfferAction || onMessage) && (
-            <div className="relative z-20 mt-2.5 flex min-w-0 items-center gap-2">
+            <div className="relative z-20 mt-3 flex min-w-0 items-stretch gap-2">
               {offerId ? (
                 <Link href={`/messages?tab=offers&offer=${offerId}`} aria-label={`Pogledaj ponudu za ${carTitle(car)}`}
-                  className="inline-flex min-h-10 flex-1 items-center justify-center rounded-[10px] border border-brand-500/40 bg-brand-500/10 px-3 text-[12px] font-semibold text-brand-text transition-colors hover:bg-brand-500/20 dark:text-brand-500">
+                  className="inline-flex h-11 min-h-[44px] min-w-0 flex-1 items-center justify-center rounded-[10px] border border-brand-500/40 bg-brand-500/10 px-3 py-2 text-[13px] font-semibold leading-none text-brand-text transition-colors hover:bg-brand-500/20 dark:text-brand-500">
                   Pogledaj ponudu
                 </Link>
               ) : onOffer ? (
                 <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onOffer(car); }}
                   aria-label={`Ponudi zamenu za ${carTitle(car)}`}
-                  className="inline-flex min-h-10 flex-1 items-center justify-center rounded-[10px] bg-brand-500 px-3 text-[12px] font-semibold text-on-accent transition-colors hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
+                  className="inline-flex h-11 min-h-[44px] min-w-0 flex-1 items-center justify-center rounded-[10px] bg-brand-500 px-3 py-2 text-[13px] font-semibold leading-none text-on-accent transition-colors hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
                   Ponudi zamenu
                 </button>
               ) : null}
               {onMessage && (
                 <button type="button" disabled={messaging} aria-label={`Pošalji poruku za ${carTitle(car)}`} title="Pošalji poruku vlasniku"
                   onClick={(event) => { event.preventDefault(); event.stopPropagation(); onMessage(car); }}
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-surface text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary disabled:opacity-50"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-surface text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary disabled:opacity-50"
                   aria-busy={messaging}>
                   <MessageCircle size={18} aria-hidden="true" />
                 </button>
