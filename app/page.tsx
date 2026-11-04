@@ -1035,6 +1035,7 @@ function AuthenticatedFeed({
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             return (
               <MarketplaceV13Card
+                minimalHome
                 key={car.id}
                 car={car}
                 trade={tl}
