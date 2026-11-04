@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import type { Car } from '@/types';
 import { sortByBudget, TRADE_TOLERANCE } from '@/lib/trade';
 import { distanceBetweenCitiesKm } from '@/lib/city-coordinates';
-import type { SearchFilters } from '@/hooks/use-search-prefs';
+import { DEFAULT_FILTERS, type SearchFilters } from '@/hooks/use-search-prefs';
 
 /**
  * Convert stored displacement values to cm³.
@@ -106,6 +106,35 @@ export function filterCars(
   const budgetAware = myCar && (budget != null || noTopUp);
   const ranked = budgetAware ? sortByBudget(sorted, myCar, budget, noTopUp) : sorted;
   return applySoftRadius(ranked, originCity, radiusKm);
+}
+
+/**
+ * Supplement a sparse filtered search with other listings, ranked by the
+ * existing sorting, trade-value, budget and soft-radius rules.
+ *
+ * The caller keeps exact matches first and labels these as alternatives,
+ * so relaxed criteria are never represented as exact search results.
+ */
+export function getAlternativeCars(
+  cars: Car[],
+  exactMatches: Car[],
+  filters: SearchFilters,
+  myCar: Pick<Car, 'price'> | null,
+  budget: number | null,
+  noTopUp: boolean,
+  originCity = '',
+  radiusKm = 0,
+): Car[] {
+  const exactIds = new Set(exactMatches.map(car => car.id));
+  return filterCars(
+    cars,
+    { ...DEFAULT_FILTERS, sortBy: filters.sortBy },
+    myCar,
+    budget,
+    noTopUp,
+    originCity,
+    radiusKm,
+  ).filter(car => !exactIds.has(car.id));
 }
 
 /** Soft radius ranks nearby cars first but never hides distant listings. */
