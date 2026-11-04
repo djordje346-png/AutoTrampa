@@ -197,15 +197,16 @@ export default function ProfileClient() {
 
       <div className="app-container mb-4">
         <div className="bg-card-surface dark:bg-card-surface rounded-2xl border border-surface dark:border-surface p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
+          <Link href="/garage" className="mb-3 flex min-h-[44px] items-center justify-between gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+            <span className="flex items-center gap-2">
               <Car size={16} className="text-brand-text" />
-              <p className="text-sm font-bold text-app-primary dark:text-app-primary">Moja garaža</p>
-            </div>
-            <span className="text-xs font-semibold text-app-secondary dark:text-app-secondary bg-elevated px-2.5 py-1 rounded-full">
-              {cars.length}/{garageLimit} popunjeno
+              <span className="text-sm font-bold text-app-primary dark:text-app-primary">Moja garaža</span>
             </span>
-          </div>
+            <span className="flex items-center gap-2">
+              <span className="rounded-full bg-elevated px-2.5 py-1 text-xs font-semibold text-app-secondary dark:text-app-secondary">{cars.length}/{garageLimit} vozila</span>
+              <ChevronRight size={17} className="text-app-muted" aria-hidden="true" />
+            </span>
+          </Link>
 
           {activeCar && (
             <div className="flex items-center gap-3 bg-elevated rounded-xl p-3 mb-3">

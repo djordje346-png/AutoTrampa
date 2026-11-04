@@ -1,6 +1,6 @@
 'use client';
 
-import { CarFront, ChevronDown, Plus } from 'lucide-react';
+import { CarFront, ChevronDown, Plus, Pencil } from 'lucide-react';
 import { carTitle, formatEuro, formatYear } from '@/lib/cars';
 import type { MyGarageCar } from '@/types';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@/components/ui/dropdown-menu';
@@ -12,9 +12,10 @@ interface HeaderCarSelectorProps {
   canAddCar: boolean;
   selectCar: (id: string) => void;
   onAddCar: () => void;
+  onEditCar: () => void;
 }
 
-export default function HeaderCarSelector({ cars, selectedCar, ready, canAddCar, selectCar, onAddCar }: HeaderCarSelectorProps) {
+export default function HeaderCarSelector({ cars, selectedCar, ready, canAddCar, selectCar, onAddCar, onEditCar }: HeaderCarSelectorProps) {
   const selectedLabel = selectedCar ? `${selectedCar.brand} ${selectedCar.model}` : '';
   if (!ready) return <span className="app-header-car animate-pulse lg:hidden" role="status" aria-label="Učitavanje vozila" />;
 
@@ -46,6 +47,9 @@ export default function HeaderCarSelector({ cars, selectedCar, ready, canAddCar,
             </DropdownMenuRadioItem>)}
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={onEditCar} className="min-h-[44px] gap-2 rounded-xl font-semibold">
+            <Pencil size={16} aria-hidden="true" />Izmeni oglas
+          </DropdownMenuItem>
           <DropdownMenuItem disabled={!canAddCar} onSelect={onAddCar} className="min-h-[44px] justify-center gap-2 rounded-xl font-semibold text-brand-text">
             <Plus size={16} aria-hidden="true" />{canAddCar ? 'Dodaj vozilo' : 'Garaža je popunjena'}
           </DropdownMenuItem>

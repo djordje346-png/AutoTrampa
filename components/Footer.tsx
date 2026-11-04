@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { House as Home, Heart, Warehouse, MessageCircle, Plus, Flame, LayoutGrid } from 'lucide-react';
+import { House as Home, Heart, Warehouse, MessageCircle, Plus, Flame, LayoutGrid, User } from 'lucide-react';
 import BrandLockup from '@/components/BrandLockup';
 import HeaderCarSelector from '@/components/HeaderCarSelector';
 import { useFeedView } from '@/hooks/use-feed-view';
@@ -25,7 +25,7 @@ const MOBILE_NAV_ITEMS = [
   { href: '/saved', label: 'Sačuvano', icon: Heart },
   { href: '/?view=swipe', label: 'Svajp', icon: Flame, view: 'swipe' },
   { href: '/messages', label: 'Poruke', icon: MessageCircle },
-  { href: '/garage', label: 'Garaža', icon: Warehouse },
+  { href: '/profile', label: 'Profil', icon: User },
 ] as const;
 
 function Badge({ count, desktop = false }: { count: number; desktop?: boolean }) {
@@ -59,6 +59,10 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
     router.push(url.pathname + url.search, { scroll: false });
   }
 
+  function editVehicle() {
+    if (selectedCar) router.push(`/garage?edit=${encodeURIComponent(selectedCar.id)}`);
+  }
+
   function badgeFor(href: string): number {
     // Unread messages sit behind sign-in; badging them for a visitor who would
     // only hit the sign-in prompt is noise.
@@ -90,8 +94,8 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
               <Plus size={19} aria-hidden="true" /><span className="hidden lg:inline">Dodaj oglas</span>
             </Link>
             {isLoggedIn ? <>
-              <HeaderCarSelector cars={cars} selectedCar={selectedCar} ready={garageReady} canAddCar={canAddCar} selectCar={selectCar} onAddCar={addVehicle} />
-              <div className="lg:border-l lg:border-white/10 lg:pl-3">
+              <HeaderCarSelector cars={cars} selectedCar={selectedCar} ready={garageReady} canAddCar={canAddCar} selectCar={selectCar} onAddCar={addVehicle} onEditCar={editVehicle} />
+              <div className="hidden lg:block lg:border-l lg:border-white/10 lg:pl-3">
                 <Link href="/profile" aria-label="Moj profil" aria-current={pathname === '/profile' ? 'page' : undefined} className="app-header-icon !h-11 !w-11 gap-2 lg:!h-9 lg:!w-auto lg:px-1">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/10 text-[10px] font-bold text-brand-dark-primary">{initials}</span>
                   <span className="hidden max-w-[110px] truncate text-xs text-brand-dark-primary xl:inline">{name}</span>
@@ -111,7 +115,7 @@ export default function Footer({ hideDesktopHeader = false }: { hideDesktopHeade
             const { label, icon: Icon } = item;
             const view = 'view' in item ? item.view : null;
             const href = view ? hrefForView(view) : item.href;
-            const active = view ? pathname === '/' && viewMode === view : pathname.startsWith(item.href);
+            const active = view ? pathname === '/' && viewMode === view : pathname.startsWith(item.href) || (item.href === '/profile' && pathname.startsWith('/garage'));
             const count = view === 'swipe' ? (isLoggedIn && messagesReady ? unreadMatches.length : 0) : badgeFor(item.href);
             const badgeLabel = view === 'swipe' ? 'novih poklapanja' : item.href === '/saved' ? 'sačuvanih oglasa' : 'nepročitanih poruka i ponuda';
             return (

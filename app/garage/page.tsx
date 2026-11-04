@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import GarageClient from './GarageClient';
 
 export const metadata: Metadata = {
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <GarageClient />;
+  return <Suspense fallback={<div className="app-container py-8" role="status">Učitavanje garaže…</div>}><GarageClient /></Suspense>;
 }

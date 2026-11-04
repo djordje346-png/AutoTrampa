@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Settings, Gauge, MapPin, Plus, CreditCard as Edit3, Trash2, Check, Fuel, TriangleAlert } from 'lucide-react';
+import { TrendingUp, Settings, Gauge, MapPin, Plus, Pencil as Edit3, Trash2, Check, Fuel, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { carTitle, formatEuro, formatKm } from '@/lib/cars';
 import { fuelLabel, transmissionLabel } from '@/lib/labels';
@@ -16,12 +17,36 @@ import { SignedOutPage } from '@/components/SignedOut';
 import CarForm from '@/components/CarForm';
 
 export default function GarageClient() {
+  const router = useRouter();
+  const params = useSearchParams();
   const { cars, selectedId, selectCar, addCar, updateCar, removeCar, canAddCar, limit, mounted, ownerPhone } = useGarage();
   const { isLoggedIn, userId, mounted: authReady } = useAuth();
   const { user: profile, profileReady } = useUser();
   const [showForm, setShowForm] = useState(false);
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
   const [pendingDelete, setPendingDelete] = useState<MyGarageCar | null>(null);
+  const handledEdit = useRef<string | null>(null);
+  const editId = params.get('edit');
+
+  useEffect(() => {
+    if (!editId) {
+      handledEdit.current = null;
+      return;
+    }
+    if (!authReady || !isLoggedIn || !mounted || handledEdit.current === editId) return;
+    handledEdit.current = editId;
+    // Resolve only against the signed-in account's garage, never a public ad.
+    const car = cars.find(item => item.id === editId);
+    if (car) {
+      setEditingCar(car);
+      setShowForm(true);
+    } else {
+      toast.error('Vozilo nije pronađeno u tvojoj garaži.');
+    }
+    const next = new URLSearchParams(params.toString());
+    next.delete('edit');
+    router.replace(next.size ? `/garage?${next.toString()}` : '/garage', { scroll: false });
+  }, [authReady, cars, editId, isLoggedIn, mounted, params, router]);
 
   function openAddForm() {
     if (!canAddCar) {
@@ -217,15 +242,16 @@ export default function GarageClient() {
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <button
                       onClick={() => openEditForm(car)}
-                      className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 text-sm font-semibold text-app-secondary transition-colors hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 dark:border-surface"
+                      aria-label={`Izmeni oglas: ${carTitle(car)}`}
+                      className="inline-flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 dark:border-surface sm:text-sm"
                     >
                       <Edit3 size={14} className="shrink-0" />
-                      Uredi
+                      Izmeni oglas
                     </button>
                     <button
                       onClick={() => setPendingDelete(car)}
                       aria-label={`Obriši ${car.brand} ${car.model} iz garaže`}
-                      className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-xl border border-tone-negative-surface bg-tone-negative-surface px-3 text-sm font-semibold text-tone-negative transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="inline-flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-tone-negative-surface bg-tone-negative-surface px-3 text-sm font-semibold text-tone-negative transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       <Trash2 size={14} className="shrink-0" />
                       Obriši
