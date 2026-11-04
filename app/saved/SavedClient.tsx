@@ -9,8 +9,6 @@ import { getTradeLabel } from '@/lib/trade';
 import { useSaved } from '@/hooks/use-saved';
 import { useGarage } from '@/hooks/use-garage';
 import { useAuth } from '@/hooks/use-auth';
-import { useSwipes } from '@/hooks/use-swipes';
-import { useMatchLike } from '@/hooks/use-match-like';
 import { useActiveOfferIds } from '@/hooks/use-offers';
 import { useMarketplace } from '@/hooks/use-marketplace';
 import { TradeOfferSheet } from '@/components/TradeOfferSheet';
@@ -26,8 +24,6 @@ export default function SavedClient() {
   const { openMessage, messagingId } = useListingMessage();
   const { cars: marketplaceCars } = useMarketplace();
   const { isLoggedIn, mounted: authReady, requireAuth } = useAuth();
-  const { recordSwipe } = useSwipes();
-  const { likeCar, isLiking } = useMatchLike(recordSwipe, save);
   const [confirmClear, setConfirmClear] = useState(false);
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const router = useRouter();
@@ -140,11 +136,9 @@ export default function SavedClient() {
               <MarketplaceV13Card
                 key={car.id}
                 minimalHome
+                showQuickActions
                 car={car}
                 trade={tl}
-                onLike={(likedCar) => { void likeCar(likedCar); }}
-                liking={isLiking(car.id)}
-                liked={savedIds.includes(car.id)}
                 onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
                 messaging={messagingId === car.id}
                 offerId={activeOfferIds.get(car.id)}
