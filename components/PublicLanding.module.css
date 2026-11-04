@@ -16,7 +16,7 @@
   background: #fff;
   font-family: var(--font-inter), Inter, sans-serif;
 }
-.landing h1, .landing h2, .landing h3 { font-family: 'Satoshi', var(--font-inter), Inter, sans-serif; letter-spacing: -.035em; }
+.landing h1, .landing h2, .landing h3 { font-family: var(--font-manrope), Manrope, sans-serif; letter-spacing: -.035em; }
 .landing button, .landing a { -webkit-tap-highlight-color: transparent; }
 .landing a:focus-visible, .landing button:focus-visible { outline: 3px solid hsl(var(--ring)); outline-offset: 5px; }
 .hero { position: relative; overflow: hidden; background: #F4F6FA; }
