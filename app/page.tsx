@@ -666,7 +666,7 @@ function AuthenticatedFeed({
         bare
         className="flex !max-h-[min(94dvh,920px)] flex-col !overflow-hidden !p-0 sm:max-w-xl sm:!max-h-[min(90dvh,850px)]"
       >
-        <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-app-muted/25 sm:hidden" aria-hidden="true" />
+        <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-surface sm:hidden" aria-hidden="true" />
         <div className="flex shrink-0 items-center justify-between gap-3 border-b border-surface px-5 pb-4 pt-4 dark:border-surface sm:px-6 sm:pt-5">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
