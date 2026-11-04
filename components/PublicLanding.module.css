@@ -1,22 +1,22 @@
 /* The selected public marketing design has a light canvas in both app themes.
    Tokens are scoped here; signed-in screens and shared listing components retain their styles. */
 .landing {
-  --surface-base: 220.00000 37.50000% 96.86275%;
+  --surface-base: 220 42.86% 97.25%;
   --surface-card: 0.00000 0.00000% 100.00000%;
-  --surface-elevated: 220.00000 50.00000% 97.64706%;
-  --surface-border: 213.75000 29.62963% 89.41176%;
+  --surface-elevated: 213.33 39.13% 95.49%;
+  --surface-border: 215.29 34.69% 90.39%;
   --surface-card-gradient: none;
-  --brand-text: 17.47253 88.34951% 40.39216%;
-  --ring: 17.47253 88.34951% 40.39216%;
+  --brand-text: 20.14 76.84% 37.25%;
+  --ring: 20.14 76.84% 37.25%;
   --text-primary: 217.24138 56.86275% 10.00000%;
-  --text-secondary: 214.28571 20.38835% 40.39216%;
-  --text-muted: 214.09091 19.29825% 44.70588%;
+  --text-secondary: 213 19.61% 40%;
+  --text-muted: 213 16.95% 46.27%;
   color-scheme: light;
   color: hsl(var(--text-primary));
   background: #fff;
   font-family: var(--font-inter), Inter, sans-serif;
 }
-.landing h1, .landing h2, .landing h3 { font-family: inherit; }
+.landing h1, .landing h2, .landing h3 { font-family: var(--font-manrope), Manrope, sans-serif; letter-spacing: -.035em; }
 .landing button, .landing a { -webkit-tap-highlight-color: transparent; }
 .landing a:focus-visible, .landing button:focus-visible { outline: 3px solid hsl(var(--ring)); outline-offset: 5px; }
 .hero { position: relative; overflow: hidden; background: #F4F6FA; }
@@ -27,7 +27,7 @@
 .hero h1 { font-size: clamp(48px, 5.3vw, 76px); line-height: 1.04; font-weight: 700; letter-spacing: -.055em; color: #0B1628; }
 .intro { max-width: 450px; margin-top: 25px; font-size: 19px; line-height: 1.65; color: hsl(var(--text-secondary)); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 32px; }
-.primary, .secondary { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 24px; border: 1px solid transparent; border-radius: 9px; font-size: 15px; line-height: 1.4; font-weight: 650; transition: background-color .18s, transform .18s; }
+.primary, .secondary { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 24px; border: 1px solid transparent; border-radius: 12px; font-size: 15px; line-height: 1.4; font-weight: 650; transition: background-color .18s, transform .18s; }
 .primary { color: #0B1628; background: hsl(var(--primary)); box-shadow: 0 4px 10px #0b16280d; }
 .primary:hover { background: hsl(var(--brand-hover)); transform: translateY(-1px); }
 .secondary { color: #0B1628; background: #ffffffb8; border-color: #DCE3EC; }
@@ -56,7 +56,7 @@
 .listings { padding: 72px 0 64px; background: #F4F6FA; scroll-margin-top: 90px; }
 .listingHeading { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 32px; }
 .allListings { display: inline-flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 2px solid hsl(var(--primary)); font-size: 14px; font-weight: 600; white-space: nowrap; }
-.listingGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.listingGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .skeleton { height: 380px; border-radius: 12px; background: #EDF1F7; animation: pulse 1.5s ease-in-out infinite alternate; }
 .empty { padding: 36px; display: flex; flex-direction: column; align-items: center; gap: 18px; color: hsl(var(--text-secondary)); border: 1px solid #DCE3EC; border-radius: 12px; }
 .closing { position: relative; overflow: hidden; background: #0B1628; color: #fff; scroll-margin-top: 72px; }
@@ -116,7 +116,7 @@
   .stepArrow { display: none; }
   .listings { padding: 45px 0; }
   .listingHeading { align-items: flex-start; flex-direction: column; gap: 16px; margin-bottom: 24px; }
-  .listingGrid { grid-template-columns: 1fr; gap: 22px; }
+  .listingGrid { grid-template-columns: 1fr; gap: 16px; }
   .closingInner { padding-top: 42px; padding-bottom: 230px; min-height: 0; }
   .closingImage { object-position: 73% bottom; filter: brightness(.48); }
   .closing h2 { font-size: 30px; max-width: 480px; }
