@@ -25,7 +25,7 @@ const LAYOUTS = {
     check: 'hidden lg:flex',
   },
   filter: {
-    group: 'flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain pb-2 pt-1 scrollbar-hide [touch-action:pan-x_pan-y]',
+    group: 'flex w-full min-w-0 max-w-full snap-x snap-proximity gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-2 pt-1 [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]',
     button: 'min-h-[80px] w-[116px] shrink-0 snap-start flex-col gap-1 rounded-xl px-2 py-2',
     silhouette: 'h-8 w-[82px] max-w-full shrink-0',
     label: 'text-[11px] leading-[15px]',
