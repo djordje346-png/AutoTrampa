@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { createPersistentStore, usePersistentStore } from '@/lib/persistent-store';
 import type { BodyType, FuelType } from '@/types';
 
@@ -59,15 +59,13 @@ export function countActiveFilters(filters: SearchFilters, includeQuery = false)
 
 interface Prefs {
   filters: SearchFilters;
-  /** Panels remember being open, so a reload does not silently drop a filter. */
-  filtersOpen: boolean;
 }
 
-const DEFAULT_PREFS: Prefs = { filters: DEFAULT_FILTERS, filtersOpen: false };
+const DEFAULT_PREFS: Prefs = { filters: DEFAULT_FILTERS };
 
 const prefsStore = createPersistentStore<Prefs>('autotrampa_search_prefs', DEFAULT_PREFS, (raw) => {
   if (!raw || typeof raw !== 'object') return null;
-  const stored = raw as { filters?: unknown; filtersOpen?: unknown; bodyType?: unknown; sortBy?: unknown };
+  const stored = raw as { filters?: unknown; bodyType?: unknown; sortBy?: unknown };
   // The store used to hold flat `bodyType`/`sortBy` keys; fold them into the
   // filter object so nobody loses their choice on the first load after this.
   const legacy = stored.filters === undefined;
@@ -78,11 +76,13 @@ const prefsStore = createPersistentStore<Prefs>('autotrampa_search_prefs', DEFAU
     ...(legacy && typeof stored.sortBy === 'string' ? { sortBy: stored.sortBy as SortKey } : {}),
   };
   if (!filters.brand) filters.model = null;
-  return { filters, filtersOpen: Boolean(stored.filtersOpen) };
+  return { filters };
 });
 
 export function useSearchPrefs() {
   const [prefs, mounted] = usePersistentStore(prefsStore);
+  // Modal visibility is transient UI state; never restore it after a page reload.
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const update = useCallback((patch: Partial<SearchFilters>) => {
     prefsStore.set((prev) => ({
@@ -103,13 +103,9 @@ export function useSearchPrefs() {
     }));
   }, []);
 
-  const setFiltersOpen = useCallback((open: boolean) => {
-    prefsStore.set((prev) => ({ ...prev, filtersOpen: open }));
-  }, []);
-
   return {
     filters: prefs.filters,
-    filtersOpen: prefs.filtersOpen,
+    filtersOpen,
     setFiltersOpen,
     update,
     reset,
