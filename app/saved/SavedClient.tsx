@@ -139,6 +139,7 @@ export default function SavedClient() {
             return (
               <MarketplaceV13Card
                 key={car.id}
+                minimalHome
                 car={car}
                 trade={tl}
                 onLike={(likedCar) => { void likeCar(likedCar); }}
