@@ -73,14 +73,15 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
         <div className="relative flex min-w-0 flex-1 flex-col px-4 pb-4 pt-3.5 sm:px-[18px] sm:pb-[18px]">
           <h3 title={carTitle(car)} className="truncate font-heading text-[clamp(18px,4.5vw,21px)] font-extrabold leading-[1.25] tracking-[-0.025em] text-app-primary sm:text-[22px]">{carTitle(car)}</h3>
           <p className="mt-1 truncate text-xs leading-[1.45] text-app-secondary">{carSubtitle(car) || '\u00a0'}</p>
-          <div className="listing-card-specs mt-3 text-[10px] leading-[1.35] text-app-secondary sm:text-[11px]">
+          <div className="mt-3 grid min-w-0 grid-cols-[0.76fr_1.26fr_1.08fr_1.17fr] items-center text-[10px] leading-[1.5] text-app-secondary sm:text-[11px]">
             {homeSpecs.map(({ Icon, text, label }, index) => (
-              <span key={label} className="contents">
-                {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center self-center rounded-full listing-spec-dot" />}
-                <span title={`${label}: ${text}`} className="flex min-w-0 items-center gap-[3px]">
-                  <Icon size={11} className="shrink-0 text-app-muted" strokeWidth={1.7} aria-hidden="true" />
-                  <span className="min-w-0 truncate tabular-nums">{text}</span>
-                </span>
+              <span
+                key={label}
+                title={`${label}: ${text}`}
+                className={`flex min-w-0 items-center justify-center gap-1 px-1 first:pl-0 last:pr-0 ${index > 0 ? 'border-l border-surface' : ''}`}
+              >
+                <Icon size={11} className="shrink-0 text-app-muted" strokeWidth={1.7} aria-hidden="true" />
+                <span className="min-w-0 truncate tabular-nums">{text}</span>
               </span>
             ))}
           </div>
