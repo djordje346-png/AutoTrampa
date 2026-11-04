@@ -741,12 +741,16 @@ function AuthenticatedFeed({
             <span className="flex items-center gap-2"><HeartHandshake size={18} className="text-brand-text" />{unreadMatches.length === 1 ? 'Novo poklapanje!' : `${unreadMatches.length} novih poklapanja`}</span><span className="text-xs">Pogledaj →</span>
           </Link>}
           {/* Scroll on short phones rather than hiding the actions behind navigation. */}
-          <div className="app-swipe-content min-h-0 flex-1 flex flex-col items-center px-4 py-2 overflow-y-auto lg:justify-center lg:overflow-hidden lg:py-3">
+          <div className="app-swipe-content min-h-0 flex-1 flex flex-col items-center px-4 py-4 overflow-y-auto lg:justify-center lg:overflow-hidden lg:py-3">
             {swipeIndex < swipeCars.length && swipeCar ? (
               <>
-                {/* Compact progress indicator; the exact count remains between the action buttons. */}
-                <div className="mb-3 h-1 w-full max-w-sm overflow-hidden rounded-full bg-elevated lg:max-w-2xl" role="progressbar" aria-label="Pregledani oglasi" aria-valuemin={0} aria-valuemax={swipeCars.length} aria-valuenow={swipeIndex + 1}>
-                  <div className="h-full rounded-full bg-brand-500 transition-[width] duration-300" style={{ width: `${((swipeIndex + 1) / swipeCars.length) * 100}%` }} />
+                {/* Progress dots */}
+                <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm lg:mb-3 lg:max-w-2xl">
+                  {swipeCars.map((_, i) => (
+                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
+                      i === swipeIndex ? 'w-6 bg-brand-400' : i < swipeIndex ? 'w-1.5 bg-brand-400/40' : 'w-1.5 bg-elevated'
+                    }`} />
+                  ))}
                 </div>
 
                 {/* Card stack */}
@@ -829,19 +833,29 @@ function AuthenticatedFeed({
                         ))}
                       </div>
 
-                      <div className="app-swipe-price-row mt-3 flex items-center justify-between gap-3 border-t border-surface pt-3">
+                      <p className="text-xs text-app-secondary dark:text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
+
+                      <div className="mt-4 flex items-center justify-between gap-3 border-t border-surface pt-3">
                         <p className="shrink-0 font-sans text-xl font-extrabold tracking-tight text-app-primary">{formatEuro(swipeCar.price)}</p>
-                        <span title={`Lokacija oglasa: ${swipeCar.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[40%] items-center gap-1 text-[13px] font-semibold text-app-secondary">
+                        <span title={`Lokacija oglasa: ${swipeCar.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center gap-1 text-[13px] font-semibold text-app-secondary">
                           <MapPin size={14} className="shrink-0 text-app-muted" aria-hidden="true" />
                           <span className="truncate">{swipeCar.city || 'Nije navedeno'}</span>
                         </span>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2">
+                        <button onClick={() => openOffer(swipeCar)} className="btn-primary btn-primary-compact flex-1 text-sm">
+                          <ArrowLeftRight size={15} /> Ponudi zamenu
+                        </button>
+                        <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary dark:text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
+                          Detalji
+                        </Link>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Action buttons */}
-                <div className="app-swipe-actions flex shrink-0 items-center gap-5 mt-3 lg:mt-4 lg:gap-7">
+                <div className="flex shrink-0 items-center gap-5 mt-3 lg:mt-4 lg:gap-7">
                   <button
                     onClick={() => void handleSwipeSkip()}
                     disabled={isAnimating}
@@ -860,7 +874,7 @@ function AuthenticatedFeed({
                     <Heart size={28} strokeWidth={3} />
                   </button>
                 </div>
-                <p className="app-swipe-hint text-[10px] text-app-muted mt-2 opacity-70 lg:hidden">Prevuci desno = LIKE · levo = PRESKOK</p>
+                <p className="text-[10px] text-app-muted mt-3 opacity-70 lg:hidden">Prevuci desno = LIKE · levo = PRESKOK</p>
                 <p className="hidden items-center gap-2 text-xs text-app-muted opacity-80 lg:flex">
                   <kbd className="rounded-md border border-surface bg-elevated px-2 py-1 font-semibold dark:border-surface">←</kbd>
                   Preskoči
