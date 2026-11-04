@@ -151,13 +151,13 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
 
       <section className="space-y-3">
         <div>
-          <label htmlFor="car-filter-brand" className={GROUP_TITLE}>Marka</label>
-          <div className="relative mt-2">
+          <label htmlFor="car-filter-brand" className="block text-[11px] font-bold uppercase tracking-[0.1em] text-app-muted">Marka</label>
+          <div className="relative mt-1.5">
             <select
               id="car-filter-brand"
               value={filters.brand ?? ''}
               onChange={(event) => update({ brand: event.target.value || null, model: null })}
-              className={`${NUM_INPUT} appearance-none pr-10`}
+              className="h-11 w-full appearance-none rounded-xl border border-surface bg-elevated px-3.5 pr-10 text-[14px] font-medium text-app-primary outline-none transition-colors focus:border-control focus:ring-2 focus:ring-control/15 dark:border-[#35465E] dark:bg-[#19263B] dark:text-white"
             >
               <option value="">Sve marke</option>
               {BRAND_NAMES.map((brand) => <option key={brand} value={brand}>{brand}</option>)}
@@ -166,14 +166,14 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
           </div>
         </div>
         <div>
-          <label htmlFor="car-filter-model" className={GROUP_TITLE}>Model</label>
-          <div className="relative mt-2">
+          <label htmlFor="car-filter-model" className="block text-[11px] font-bold uppercase tracking-[0.1em] text-app-muted">Model</label>
+          <div className="relative mt-1.5">
             <select
               id="car-filter-model"
               value={filters.brand && CAR_BRANDS[filters.brand]?.includes(filters.model ?? '') ? filters.model ?? '' : ''}
               onChange={(event) => update({ model: event.target.value || null })}
               disabled={!filters.brand}
-              className={`${NUM_INPUT} appearance-none pr-10 disabled:cursor-not-allowed disabled:opacity-50`}
+              className="h-11 w-full appearance-none rounded-xl border border-surface bg-elevated px-3.5 pr-10 text-[14px] font-medium text-app-primary outline-none transition-colors focus:border-control focus:ring-2 focus:ring-control/15 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#35465E] dark:bg-[#19263B] dark:text-white"
             >
               <option value="">{filters.brand ? 'Svi modeli' : 'Prvo izaberi marku'}</option>
               {(filters.brand ? CAR_BRANDS[filters.brand] ?? [] : []).map((model) => (
@@ -330,7 +330,7 @@ export function FilterSidebar({ className = '', onReset, ...groups }: FilterPane
 }
 
 /** The same groups, for the mobile sheet. */
-export function FilterSheetBody({ onReset, className, ...groups }: Omit<FilterPanelProps, 'className'> & { className?: string }) {
+export function FilterSheetBody({ onReset, className, hideInlineReset = false, ...groups }: Omit<FilterPanelProps, 'className'> & { className?: string; hideInlineReset?: boolean }) {
   const active = countActiveFilters(groups.filters, false);
   const visibleActive = groups.showTrade
     ? active
@@ -338,7 +338,7 @@ export function FilterSheetBody({ onReset, className, ...groups }: Omit<FilterPa
 
   return (
     <div>
-      {visibleActive > 0 && (
+      {!hideInlineReset && visibleActive > 0 && (
         <button
           onClick={onReset}
           className="mb-4 flex items-center gap-1.5 text-xs font-semibold text-app-muted transition-colors hover:text-brand-text"
