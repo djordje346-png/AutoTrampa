@@ -764,7 +764,7 @@ function AuthenticatedFeed({
                   {/* Next card peeking behind */}
                   {swipeCars[swipeIndex + 1] && (
                     <div className="absolute inset-0 overflow-hidden rounded-[14px] border border-surface bg-card-surface shadow-lg dark:border-surface dark:bg-card-surface" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
-                      <div className="relative aspect-[16/10] w-full">
+                      <div className="relative aspect-[4/3] w-full sm:aspect-[16/10]">
                         <img src={swipeCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
                       </div>
                     </div>
@@ -785,7 +785,7 @@ function AuthenticatedFeed({
                     onPointerCancel={() => { dragStart.current = null; setDragX(0); }}
                   >
                     {/* Image */}
-                    <div className="relative aspect-[16/10] w-full">
+                    <div className="relative aspect-[4/3] w-full sm:aspect-[16/10]">
                       <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover pointer-events-none" draggable={false} />
                       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35 pointer-events-none" />
 
