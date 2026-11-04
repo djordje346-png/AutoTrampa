@@ -525,10 +525,10 @@ function AuthenticatedFeed({
                 key={key}
                 aria-pressed={filters.trade === key}
                 onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
-                className={`control-focus flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
+                className={`control-focus flex-shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap transition-colors duration-150 ${
                   filters.trade === key
-                    ? 'bg-control text-control-foreground hover:bg-control-hover'
-                    : 'bg-elevated/70 text-app-secondary hover:bg-hover-surface hover:text-app-primary'
+                    ? 'border-control bg-control text-control-foreground hover:bg-control-hover'
+                    : 'border-surface bg-elevated text-app-secondary hover:bg-hover-surface hover:border-control/40 hover:text-app-primary dark:border-[#2C3B51] dark:bg-[#19263B] dark:text-[#C4CDDA] dark:hover:bg-[#22344F]'
                 }`}
               >
                 {label}
@@ -629,7 +629,7 @@ function AuthenticatedFeed({
                     className={`control-focus inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
                       filters.trade === key
                         ? 'border-control bg-control text-control-foreground hover:bg-control-hover shadow-sm shadow-control/20'
-                        : 'border-surface bg-card-surface text-app-secondary hover:-translate-y-px hover:border-control/60 hover:bg-elevated hover:shadow-sm dark:border-surface dark:bg-card-surface dark:text-app-secondary'
+                        : 'border-surface bg-elevated text-app-secondary hover:-translate-y-px hover:border-control/60 hover:bg-hover-surface hover:shadow-sm dark:border-[#2C3B51] dark:bg-[#19263B] dark:text-[#C4CDDA] dark:hover:bg-[#22344F]'
                     }`}
                   >
                     {label}
