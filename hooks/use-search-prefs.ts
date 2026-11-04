@@ -18,7 +18,10 @@ export interface SearchFilters {
   priceMax: number | null;
   yearMin: number | null;
   yearMax: number | null;
-  /** Kilometres, inclusive. */
+  /** Engine displacement in cubic centimetres (cm³), inclusive. */
+  displacementMin: number | null;
+  displacementMax: number | null;
+  /** Legacy mileage settings retained only for compatibility with other consumers. */
   kmMin: number | null;
   kmMax: number | null;
   /** Trade filter; only meaningful with a garage car. */
@@ -38,6 +41,8 @@ export const DEFAULT_FILTERS: SearchFilters = {
   yearMax: null,
   kmMin: null,
   kmMax: null,
+  displacementMin: null,
+  displacementMax: null,
   trade: 'all',
   sortBy: 'trade',
 };
@@ -51,7 +56,7 @@ export function countActiveFilters(filters: SearchFilters, includeQuery = false)
   if (filters.fuelType) count += 1;
   if (filters.priceMin != null || filters.priceMax != null) count += 1;
   if (filters.yearMin != null || filters.yearMax != null) count += 1;
-  if (filters.kmMin != null || filters.kmMax != null) count += 1;
+  if (filters.displacementMin != null || filters.displacementMax != null) count += 1;
   if (filters.trade !== 'all') count += 1;
   if (includeQuery && filters.query.trim()) count += 1;
   return count;
@@ -76,6 +81,9 @@ const prefsStore = createPersistentStore<Prefs>('autotrampa_search_prefs', DEFAU
     ...(legacy && typeof stored.sortBy === 'string' ? { sortBy: stored.sortBy as SortKey } : {}),
   };
   if (!filters.brand) filters.model = null;
+  // Retire previously saved mileage criteria: they no longer belong to search.
+  filters.kmMin = null;
+  filters.kmMax = null;
   return { filters };
 });
 
