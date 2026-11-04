@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Settings, Gauge, MapPin, Plus, Pencil as Edit3, Trash2, Check, Fuel, TriangleAlert } from 'lucide-react';
+import { TrendingUp, CalendarDays, Settings2, Gauge, MapPin, Plus, Pencil as Edit3, Trash2, Check, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { carTitle, formatEuro, formatKm } from '@/lib/cars';
-import { fuelLabel, transmissionLabel } from '@/lib/labels';
+import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
+import { transmissionLabel } from '@/lib/labels';
 import { carSubtitle } from '@/lib/car-row';
 import { MyGarageCar, getCarImages } from '@/types';
 import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
@@ -188,11 +188,11 @@ export default function GarageClient() {
           const images = getCarImages(car);
 
           return (
-            <article key={car.id} className="flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-[0_14px_30px_rgba(0,0,0,.10)] transition-shadow duration-200 hover:shadow-xl dark:border-white/10 dark:shadow-[0_14px_30px_rgba(0,0,0,.16)]">
+            <article key={car.id} className="listing-card listing-card-minimal group/card flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.08)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.14)] dark:shadow-[0_4px_16px_rgba(0,0,0,.20)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.28)]">
               <Link
                 href={`/car/${car.id}`}
                 aria-label={`Otvori oglas: ${car.brand} ${car.model}`}
-                className="group relative block aspect-[16/10] w-full flex-shrink-0 sm:aspect-[16/9] overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                className="group relative block aspect-[16/10] w-full flex-shrink-0 overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
               >
                 <img src={car.image} alt={`${car.brand} ${car.model}`} className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
@@ -210,29 +210,34 @@ export default function GarageClient() {
                 <span className="sr-only">Pogledaj oglas</span>
               </Link>
 
-              <div className="flex min-w-0 flex-1 flex-col bg-card-surface p-3.5 sm:p-4">
+              <div className="relative flex min-w-0 flex-1 flex-col bg-card-surface px-4 pb-4 pt-3.5 sm:px-[18px] sm:pb-[18px]">
                 <div className="min-w-0">
-                  <h2 className="line-clamp-2 min-h-10 font-heading text-[19px] font-extrabold leading-tight text-app-primary dark:text-app-primary">
+                  <h2 className="truncate font-heading text-[19px] font-bold leading-[1.3] tracking-[-0.025em] text-app-primary sm:text-[20px]">
                     <Link href={`/car/${car.id}`} className="rounded-sm transition-colors hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                     {carTitle(car)}
                     </Link>
                   </h2>
-                  <p className="mt-0.5 min-h-4 truncate text-xs text-app-muted">{carSubtitle(car)}</p>
+                  <p className="mt-1 truncate text-[12px] leading-[1.5] text-app-secondary">{carSubtitle(car)}</p>
 
-                  <div className="mt-2.5 flex min-h-5 flex-wrap content-start items-center gap-x-2 gap-y-1.5 text-[11px] text-app-secondary dark:text-app-secondary">
-                    <span className="flex min-w-0 items-center gap-1"><Gauge size={12} className="shrink-0 text-app-muted" /><span className="truncate">{formatKm(car.mileage)}</span></span>
-                    <span className="text-app-muted/60" aria-hidden="true">·</span>
-                    <span className="flex min-w-0 items-center gap-1"><Fuel size={12} className="shrink-0 text-app-muted" /><span className="truncate">{fuelLabel(car.specs.fuelType)}</span></span>
-                    <span className="text-app-muted/60" aria-hidden="true">·</span>
-                    <span className="flex min-w-0 items-center gap-1"><Settings size={12} className="shrink-0 text-app-muted" /><span className="truncate">{transmissionLabel(car.specs.transmission)}</span></span>
-                    <span className="text-app-muted/60" aria-hidden="true">·</span>
-                    <span className="flex min-w-0 items-center gap-1"><MapPin size={12} className="shrink-0 text-app-muted" /><span className="truncate">{car.city}</span></span>
+
+                  <div className="mt-3 grid min-w-0 grid-cols-[0.76fr_1.26fr_1.08fr_1.17fr] items-center text-[11px] leading-[1.5] text-app-secondary">
+                    {[
+                      { Icon: CalendarDays, text: formatYear(car.year), label: 'Godište' },
+                      { Icon: Gauge, text: formatKm(car.mileage), label: 'Kilometraža' },
+                      { Icon: Settings2, text: transmissionLabel(car.specs.transmission), label: 'Menjač' },
+                      { Icon: MapPin, text: car.city || 'Nije navedeno', label: 'Lokacija' },
+                    ].map(({ Icon, text, label }, index) => (
+                      <span key={label} title={`${label}: ${text}`} className={`flex min-w-0 items-center justify-start gap-1 px-1.5 first:pl-0 last:pr-0 ${index > 0 ? 'border-l border-surface' : ''}`}>
+                        <Icon size={12} strokeWidth={1.7} className="shrink-0 text-app-muted" aria-hidden="true" />
+                        <span className="min-w-0 truncate tabular-nums">{text}</span>
+                      </span>
+                    ))}
                   </div>
                 </div>
 
-                <div className="mt-auto border-t border-surface pt-3">
+                <div className="mt-4 border-t border-surface pt-3.5 sm:mt-auto sm:pt-4">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="shrink-0 text-[23px] font-extrabold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(car.price)}</p>
+                    <p className="shrink-0 whitespace-nowrap font-sans text-[22px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[24px]">{formatEuro(car.price)}</p>
                     <span className="inline-flex min-w-0 items-center gap-1 truncate text-[11px] font-semibold text-app-muted">
                       <TrendingUp size={12} className="shrink-0 text-brand-text" />
                       <span className="truncate">{formatEuro(car.estimatedValue)}</span>
@@ -243,7 +248,7 @@ export default function GarageClient() {
                     <button
                       onClick={() => openEditForm(car)}
                       aria-label={`Izmeni oglas: ${carTitle(car)}`}
-                      className="inline-flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-surface bg-elevated px-3 text-xs font-semibold text-app-secondary transition-colors hover:border-brand-500/40 hover:bg-hover-surface hover:text-app-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 dark:border-surface sm:text-sm"
+                      className="inline-flex h-10 min-w-0 items-center justify-center gap-1.5 rounded-[10px] border border-brand-500/45 bg-brand-500/10 px-2 text-[12px] font-semibold text-brand-text transition-colors hover:bg-brand-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 dark:text-brand-500 sm:text-[13px]"
                     >
                       <Edit3 size={14} className="shrink-0" />
                       Izmeni oglas
@@ -251,7 +256,7 @@ export default function GarageClient() {
                     <button
                       onClick={() => setPendingDelete(car)}
                       aria-label={`Obriši ${car.brand} ${car.model} iz garaže`}
-                      className="inline-flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-tone-negative-surface bg-tone-negative-surface px-3 text-sm font-semibold text-tone-negative transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="inline-flex h-10 min-w-0 items-center justify-center gap-1.5 rounded-[10px] border border-tone-negative/30 bg-transparent px-2 text-[12px] font-medium text-tone-negative transition-colors hover:bg-tone-negative-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tone-negative focus-visible:ring-offset-2 sm:text-[13px]"
                     >
                       <Trash2 size={14} className="shrink-0" />
                       Obriši
