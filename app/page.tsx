@@ -683,6 +683,7 @@ function AuthenticatedFeed({
             update={updateFilters}
             onReset={() => { resetFilters(); setSwipeIndex(0); }}
             showTrade={false}
+            hideInlineReset
             className="grid gap-x-6 gap-y-6 sm:grid-cols-2 sm:space-y-0"
           />
         </div>
