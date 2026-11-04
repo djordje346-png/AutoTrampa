@@ -436,8 +436,9 @@
   @media (max-width: 1023px) {
     .app-account-brand > span { width: clamp(105px, 35vw, 185px); height: auto; aspect-ratio: 1235 / 293; }
     .app-swipe-view .h-72 { height: clamp(140px, 24dvh, 240px); }
-    .app-swipe-view .app-swipe-content { overflow: hidden; }
-    .app-swipe-content .app-swipe-card { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .app-swipe-view .app-swipe-content { overflow-y: auto; }
+    /* Size the stack to the active card, not the remaining viewport height. */
+    .app-swipe-content .app-swipe-card { flex: 0 0 auto; overflow: visible; }
   }
   @media (min-width: 1024px) { .app-swipe-view { inset: 0; z-index: 60; } }
   .app-header-link {
