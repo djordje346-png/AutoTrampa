@@ -744,13 +744,19 @@ function AuthenticatedFeed({
           <div className="app-swipe-content min-h-0 flex-1 flex flex-col items-center px-4 py-4 overflow-y-auto lg:justify-center lg:overflow-hidden lg:py-3">
             {swipeIndex < swipeCars.length && swipeCar ? (
               <>
-                {/* Progress dots */}
-                <div className="flex gap-1.5 mb-4 flex-wrap justify-center max-w-sm lg:mb-3 lg:max-w-2xl">
-                  {swipeCars.map((_, i) => (
-                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === swipeIndex ? 'w-6 bg-brand-400' : i < swipeIndex ? 'w-1.5 bg-brand-400/40' : 'w-1.5 bg-elevated'
-                    }`} />
-                  ))}
+                {/* Compact progress bar replaces the long row of dots. */}
+                <div
+                  className="mb-4 h-1 w-full max-w-sm overflow-hidden rounded-full bg-elevated lg:mb-3 lg:max-w-2xl"
+                  role="progressbar"
+                  aria-label="Pregledani oglasi"
+                  aria-valuemin={0}
+                  aria-valuemax={swipeCars.length}
+                  aria-valuenow={swipeIndex + 1}
+                >
+                  <div
+                    className="h-full rounded-full bg-brand-500 transition-[width] duration-300"
+                    style={{ width: `${((swipeIndex + 1) / swipeCars.length) * 100}%` }}
+                  />
                 </div>
 
                 {/* Card stack */}
