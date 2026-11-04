@@ -658,42 +658,50 @@ function AuthenticatedFeed({
         </div>
       )}
 
-      {/* Unified search sheet: same shared filter state as the search page. */}
+      {/* Focused search modal. Filters remain shared with /search and the home feed. */}
       <BottomSheet
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         title="Pretraži automobile"
         bare
-        className="flex !max-h-[min(92dvh,920px)] flex-col !overflow-hidden !p-0 sm:max-w-2xl"
+        className="flex !max-h-[min(94dvh,920px)] flex-col !overflow-hidden !p-0 sm:max-w-xl sm:!max-h-[min(90dvh,850px)]"
       >
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-surface px-5 pb-4 pt-5 dark:border-surface sm:px-6">
+        <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-app-muted/25 sm:hidden" aria-hidden="true" />
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-surface px-5 pb-4 pt-4 dark:border-surface sm:px-6 sm:pt-5">
           <div className="min-w-0">
-            <h2 className="text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">Pretraži automobile</h2>
-            <p className="mt-1 text-xs text-app-muted">Izaberi kriterijume i pronađi željeni automobil.</p>
+            <div className="flex items-center gap-2">
+              <h2 className="text-[19px] font-bold leading-6 tracking-tight text-app-primary dark:text-app-primary sm:text-xl">Pretraži automobile</h2>
+              {advancedFilterCount > 0 && (
+                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-control/15 px-1.5 text-[11px] font-bold text-control">
+                  {advancedFilterCount}
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-xs leading-5 text-app-muted">Pronađi vozilo po svojim kriterijumima.</p>
           </div>
           <button type="button" onClick={() => setFiltersOpen(false)}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-elevated text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-surface bg-elevated text-app-secondary transition-colors hover:bg-hover-surface hover:text-app-primary focus-visible:outline-2 focus-visible:outline-control"
             aria-label="Zatvori pretragu">
             <X size={18} />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6">
+        <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain px-5 py-5 sm:px-6">
           <FilterSheetBody
             filters={filters}
             update={updateFilters}
             onReset={() => { resetFilters(); setSwipeIndex(0); }}
             showTrade={false}
             hideInlineReset
-            className="grid gap-x-6 gap-y-6 sm:grid-cols-2 sm:space-y-0"
+            className="min-w-0 space-y-5 [&>section]:min-w-0 [&>section:not(:last-child)]:border-b [&>section:not(:last-child)]:border-surface [&>section:not(:last-child)]:pb-5"
           />
         </div>
-        <div className="flex shrink-0 items-center gap-3 border-t border-surface bg-card-surface px-5 py-3 dark:border-surface dark:bg-card-surface sm:px-6">
+        <div className="flex shrink-0 items-center gap-3 border-t border-surface bg-card-surface px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 shadow-[0_-6px_24px_rgba(0,0,0,0.06)] dark:border-surface dark:bg-card-surface sm:px-6">
           <button type="button" onClick={() => { resetFilters(); setSwipeIndex(0); }}
-            className="shrink-0 rounded-xl px-3 py-3 text-xs font-semibold text-app-secondary transition-colors hover:bg-elevated hover:text-app-primary">
+            className="shrink-0 rounded-xl px-2.5 py-3 text-[13px] font-semibold text-app-secondary transition-colors hover:bg-elevated hover:text-app-primary">
             Poništi sve
           </button>
           <button type="button" onClick={() => setFiltersOpen(false)}
-            className="min-w-0 flex-1 rounded-xl bg-brand-500 px-3 py-3 text-sm font-bold text-on-accent transition-colors hover:bg-brand-600">
+            className="min-h-12 min-w-0 flex-1 rounded-xl bg-brand-500 px-3 py-3 text-sm font-bold text-on-accent transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
             Prikaži {filteredCars.length} {filteredCars.length === 1 ? 'oglas' : 'oglasa'}
           </button>
         </div>
