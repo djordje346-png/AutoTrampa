@@ -76,7 +76,7 @@ export default function SavedClient() {
       <div className="flex flex-col">
         <header className="app-page-header safe-top">
           <div className="app-container py-4">
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Sačuvano</h1>
+            <h1 className="app-page-title-accent text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Sačuvano</h1>
           </div>
         </header>
         <div className="app-container space-y-3 pt-6">
@@ -92,7 +92,7 @@ export default function SavedClient() {
       <header className="app-page-header safe-top">
         <div className="app-container flex items-center justify-between gap-3 py-4">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Sačuvano</h1>
+            <h1 className="app-page-title-accent text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Sačuvano</h1>
             <p className="mt-0.5 text-xs text-app-muted">
               {savedCars.length === 0
                 ? 'Tvoja lista želja'
