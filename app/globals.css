@@ -4,55 +4,55 @@
 
 @layer base {
   :root {
-    /* Graphite / yellow palette: light remains the default application theme. */
-    --background: 204 16.13% 93.92%;
-    --foreground: 210 7.69% 10.2%;
-    --card: 0 0% 100%;
-    --card-foreground: 210 7.69% 10.2%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 7.69% 10.2%;
-    --primary: 50.47 87.63% 61.96%;
-    --brand-text: 50.6 100% 16.27%;
-    --brand-hover: 50.74 78.48% 56.27%;
-    --brand-pressed: 50 66.67% 50.59%;
-    --brand-soft: 49.71 100% 93.14%;
-    --brand-soft-border: 49.82 72.73% 69.8%;
-    --primary-foreground: 210 7.69% 10.2%;
-    --secondary: 200 14.29% 95.88%;
-    --secondary-foreground: 210 7.69% 10.2%;
-    --muted: 200 14.29% 95.88%;
-    --muted-foreground: 206.67 8.57% 41.18%;
-    --accent: 50.47 87.63% 61.96%;
-    --accent-foreground: 210 7.69% 10.2%;
+    /* Navy / Orange palette: light remains the default application theme. */
+    --background: 220 42.86% 97.25%;
+    --foreground: 219.13 41.82% 10.78%;
+    --card: 0.00000 0.00000% 100.00000%;
+    --card-foreground: 219.13 41.82% 10.78%;
+    --popover: 0.00000 0.00000% 100.00000%;
+    --popover-foreground: 219.13 41.82% 10.78%;
+    --primary: 26.03 90.43% 59.02%;
+    --brand-text: 20.14 76.84% 37.25%;
+    --brand-hover: 25.4 81.12% 54.31%;
+    --brand-pressed: 25 71.43% 49.41%;
+    --brand-soft: 25.38 100% 94.9%;
+    --brand-soft-border: 26.4 78.95% 81.37%;
+    --primary-foreground: 219.13 41.82% 10.78%;
+    --secondary: 220.00000 50.00000% 97.64706%;
+    --secondary-foreground: 217.24138 56.86275% 10.00000%;
+    --muted: 220.00000 50.00000% 97.64706%;
+    --muted-foreground: 213 16.95% 46.27%;
+    --accent: 26.03 90.43% 59.02%;
+    --accent-foreground: 217.24138 56.86275% 10.00000%;
     --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
-    --border: 200 11.69% 84.9%;
-    --input: 200 11.69% 84.9%;
-    --ring: 213.33 90.83% 42.75%;
+    --border: 215.29 34.69% 90.39%;
+    --input: 215.29 34.69% 90.39%;
+    --ring: 20.14 76.84% 37.25%;
     --radius: 0.75rem;
 
-    /* Accessible blue denotes active filters, selections, and switches. */
-    --control: 213.33 90.83% 42.75%;
-    --control-hover: 213.33 91.44% 36.67%;
-    --control-foreground: 0 0% 100%;
-    --control-thumb: 0 0% 100%;
-    --control-ring: 213.33 90.83% 42.75%;
+    /* Denim blue denotes selections and switches with light labels. */
+    --control: 216.61017 48.36066% 47.84314%;
+    --control-hover: 216.57143 50.23923% 40.98039%;
+    --control-foreground: 210.00000 40.00000% 98.03922%;
+    --control-thumb: 210.00000 40.00000% 98.03922%;
+    --control-ring: 210.37975 39.30348% 39.41176%;
 
     /* semantic surface tokens (light defaults) */
-    --surface-base: 204 16.13% 93.92%;
-    --surface-card: 0 0% 100%;
-    --surface-elevated: 200 14.29% 95.88%;
-    --surface-hover: 210 13.64% 91.37%;
-    --surface-border: 200 11.69% 84.9%;
-    --text-primary: 210 7.69% 10.2%;
-    --text-secondary: 204 12.35% 31.76%;
-    --text-muted: 206.67 8.57% 41.18%;
-    --on-accent: 210 7.69% 10.2%;
-    --secondary-accent: 204 12.35% 31.76%;
-    --surface-brand-dark: 210 7.69% 10.2%;
-    --text-brand-dark-primary: 210 10% 96.08%;
-    --text-brand-dark-secondary: 205 9.68% 75.69%;
-    --border-brand-dark: 206.67 7.69% 22.94%;
+    --surface-base: 220 42.86% 97.25%;
+    --surface-card: 0.00000 0.00000% 100.00000%;
+    --surface-elevated: 213.33 39.13% 95.49%;
+    --surface-hover: 214.29 43.75% 93.73%;
+    --surface-border: 215.29 34.69% 90.39%;
+    --text-primary: 219.13 41.82% 10.78%;
+    --text-secondary: 213 19.61% 40%;
+    --text-muted: 213 16.95% 46.27%;
+    --on-accent: 219.13 41.82% 10.78%;
+    --secondary-accent: 214.28571 20.38835% 40.39216%;
+    --surface-brand-dark: 220.91 57.89% 7.45%;
+    --text-brand-dark-primary: 210.00000 40.00000% 98.03922%;
+    --text-brand-dark-secondary: 215.62 23.19% 72.94%;
+    --border-brand-dark: 215.38 31.2% 24.51%;
 
     /* System feedback colors: semantic text and soft surface are paired. */
     --tone-positive: 155.06 63.64% 23.73%;
@@ -81,56 +81,56 @@
   }
 
   .dark {
-    /* Neutral graphite canvas with near-solid charcoal card surfaces. */
-    --background: 210 7.69% 10.2%;
-    --foreground: 206.67 16.98% 89.61%;
-    --card: 210 8.11% 14.51%;
-    --card-foreground: 206.67 16.98% 89.61%;
-    --popover: 210 8.11% 14.51%;
-    --popover-foreground: 206.67 16.98% 89.61%;
-    --primary: 50.47 87.63% 61.96%;
-    --brand-text: 50.47 87.63% 61.96%;
-    --brand-hover: 50.74 78.48% 56.27%;
-    --brand-pressed: 50 66.67% 50.59%;
-    --brand-soft: 47.37 20.88% 17.84%;
-    --brand-soft-border: 49.41 41.98% 31.76%;
-    --primary-foreground: 210 7.69% 10.2%;
-    --secondary: 210 8.33% 18.82%;
-    --secondary-foreground: 206.67 16.98% 89.61%;
-    --muted: 210 8.33% 18.82%;
-    --muted-foreground: 205.71 9.59% 71.37%;
-    --accent: 50.47 87.63% 61.96%;
-    --accent-foreground: 210 7.69% 10.2%;
+    /* Deep navy canvas with a subtle blue gradient on card surfaces. */
+    --background: 220.91 57.89% 7.45%;
+    --foreground: 220 42.86% 97.25%;
+    --card: 218 42.86% 13.73%;
+    --card-foreground: 220 42.86% 97.25%;
+    --popover: 218 42.86% 13.73%;
+    --popover-foreground: 220 42.86% 97.25%;
+    --primary: 26.03 90.43% 59.02%;
+    --brand-text: 26.03 90.43% 59.02%;
+    --brand-hover: 25.4 81.12% 54.31%;
+    --brand-pressed: 25 71.43% 49.41%;
+    --brand-soft: 17.65 21.52% 15.49%;
+    --brand-soft-border: 24.55 41.77% 30.98%;
+    --primary-foreground: 219.13 41.82% 10.78%;
+    --secondary: 216.67 39.13% 18.04%;
+    --secondary-foreground: 210.00000 40.00000% 98.03922%;
+    --muted: 216.67 39.13% 18.04%;
+    --muted-foreground: 215.62 23.19% 72.94%;
+    --accent: 26.03 90.43% 59.02%;
+    --accent-foreground: 219.13 41.82% 10.78%;
     --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
-    --border: 207.27 8.53% 25.29%;
-    --input: 207.27 8.53% 25.29%;
-    --ring: 213.33 90.83% 42.75%;
+    --border: 215.38 31.2% 24.51%;
+    --input: 215.38 31.2% 24.51%;
+    --ring: 26.03 90.43% 59.02%;
     --radius: 0.75rem;
 
     /* Denim blue denotes selections and switches with light labels. */
-    --control: 213.33 90.83% 42.75%;
-    --control-hover: 213.59 74.8% 51.76%;
-    --control-foreground: 0 0% 100%;
-    --control-thumb: 0 0% 100%;
-    --control-ring: 213.56 100% 65.29%;
+    --control: 216.61017 48.36066% 47.84314%;
+    --control-hover: 216.57143 50.23923% 40.98039%;
+    --control-foreground: 210.00000 40.00000% 98.03922%;
+    --control-thumb: 210.00000 40.00000% 98.03922%;
+    --control-ring: 210.38961 35.15982% 57.05882%;
 
     /* semantic surface tokens (dark defaults) */
-    --surface-card-gradient: linear-gradient(155deg, #25282B 0%, #222528 90%);
-    --surface-base: 210 7.69% 10.2%;
-    --surface-card: 210 8.11% 14.51%;
-    --surface-elevated: 210 8.33% 18.82%;
-    --surface-hover: 207.27 9.4% 22.94%;
-    --surface-border: 207.27 8.53% 25.29%;
-    --text-primary: 206.67 16.98% 89.61%;
-    --text-secondary: 204 10.64% 81.57%;
-    --text-muted: 205.71 9.59% 71.37%;
-    --on-accent: 210 7.69% 10.2%;
-    --secondary-accent: 204 10.64% 81.57%;
-    --surface-brand-dark: 210 7.69% 10.2%;
-    --text-brand-dark-primary: 210 10% 96.08%;
-    --text-brand-dark-secondary: 205 9.68% 75.69%;
-    --border-brand-dark: 206.67 7.69% 22.94%;
+    --surface-card-gradient: linear-gradient(145deg, #19263B 0%, #141F32 88%);
+    --surface-base: 220.91 57.89% 7.45%;
+    --surface-card: 218 42.86% 13.73%;
+    --surface-elevated: 216.67 39.13% 18.04%;
+    --surface-hover: 216.82 37.93% 22.75%;
+    --surface-border: 215.38 31.2% 24.51%;
+    --text-primary: 220 42.86% 97.25%;
+    --text-secondary: 214 27.78% 78.82%;
+    --text-muted: 215.62 23.19% 72.94%;
+    --on-accent: 219.13 41.82% 10.78%;
+    --secondary-accent: 214 27.78% 78.82%;
+    --surface-brand-dark: 220.91 57.89% 7.45%;
+    --text-brand-dark-primary: 220 42.86% 97.25%;
+    --text-brand-dark-secondary: 215.62 23.19% 72.94%;
+    --border-brand-dark: 215.38 31.2% 24.51%;
 
     /* Dark feedback colors keep the same meaning with lighter foregrounds. */
     --tone-positive: 145.95 57.81% 74.9%;
@@ -206,14 +206,14 @@
 .theme-atmosphere {
   background-color: hsl(var(--surface-base));
   background-image:
-    radial-gradient(ellipse 100% 62% at 12% 0%, rgb(255 255 255 / 0.46), transparent 76%),
-    radial-gradient(ellipse 85% 75% at 100% 100%, rgb(24 26 28 / 0.035), transparent 82%),
-    repeating-linear-gradient(115deg, rgb(24 26 28 / 0.005) 0 1px, transparent 1px 8px);
+    radial-gradient(ellipse 100% 62% at 12% 0%, rgb(255 255 255 / 0.76), transparent 76%),
+    radial-gradient(ellipse 85% 75% at 100% 100%, rgb(11 22 40 / 0.045), transparent 82%),
+    repeating-linear-gradient(115deg, rgb(11 22 40 / 0.007) 0 1px, transparent 1px 8px);
 }
 
 .dark .theme-atmosphere {
   background-image:
-    radial-gradient(ellipse 95% 64% at 12% 0%, rgb(105 110 114 / 0.06), transparent 76%),
+    radial-gradient(ellipse 95% 64% at 12% 0%, rgb(42 59 83 / 0.10), transparent 76%),
     radial-gradient(ellipse 85% 70% at 100% 100%, rgb(0 0 0 / 0.17), transparent 82%),
     repeating-linear-gradient(45deg, rgb(226 227 229 / 0.012) 0 1px, transparent 1px 9px),
     repeating-linear-gradient(135deg, rgb(226 227 229 / 0.008) 0 1px, transparent 1px 9px);
@@ -306,7 +306,7 @@
   .control-focus {
     --ring: var(--control-ring);
   }
-  /* Yellow action accent: restrained on backgrounds and readable on charcoal. */
+  /* Legible warm accent: deeper on white, energetic orange on navy. */
   .text-brand-text {
     color: hsl(var(--brand-text));
   }
@@ -408,8 +408,8 @@
   .listing-card { border-radius: 14px; }
   /* Minimal listing: subtle navy depth, with no warm/orange corner glow. */
   .dark .listing-card-minimal > div:last-child {
-    background-color: #222528;
-    background-image: linear-gradient(160deg, #25282B 0%, #222528 100%);
+    background-color: #141F32;
+    background-image: linear-gradient(160deg, #18253A 0%, #141F32 100%);
   }
   .listing-card-minimal > div:last-child {
     background-color: hsl(var(--surface-card));
@@ -464,7 +464,7 @@
   .app-navigation-shell .app-page-header { top: 64px; }
   @media (min-width: 1024px) { .app-navigation-shell .app-page-header { top: 80px; } }
 
-  /* Shared public/application header language using the graphite / yellow tokens. */
+  /* Shared public/application header language using the Navy / Orange tokens. */
   .carbon-header {
     --ring: var(--primary);
     border-bottom: 1px solid hsl(var(--border-brand-dark));
@@ -625,7 +625,7 @@
 }
 
 ::selection {
-  background-color: rgb(243 216 73 / 0.35);
+  background-color: rgb(242 140 69 / 0.30);
   color: hsl(var(--on-accent));
 }
 
