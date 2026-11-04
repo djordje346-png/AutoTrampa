@@ -35,12 +35,12 @@ const TRADE_OPTIONS: { key: SearchFilters['trade']; label: string }[] = [
 
 const FUEL_TYPES: FuelType[] = ['Diesel', 'Petrol', 'LPG', 'CNG', 'Hybrid', 'Electric'];
 
-const GROUP_TITLE = 'text-xs font-bold uppercase tracking-widest text-app-muted';
-const CHIP_BASE = 'control-focus rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors';
+const GROUP_TITLE = 'text-[11px] font-bold uppercase tracking-[0.08em] text-app-muted';
+const CHIP_BASE = 'control-focus rounded-full border px-2.5 py-1 text-[12px] font-semibold transition-colors';
 const CHIP_ON = 'border-control bg-control text-control-foreground hover:bg-control-hover';
 const CHIP_OFF = 'border-surface bg-elevated text-app-secondary hover:border-control/60 dark:border-surface';
 const NUM_INPUT =
-  'h-10 w-full rounded-xl border border-surface bg-elevated px-3 text-sm text-app-primary outline-none transition-colors placeholder:text-app-muted focus:border-brand-500 dark:border-surface dark:text-app-primary';
+  'h-9 min-h-[36px] w-full rounded-lg border border-surface bg-elevated px-3 text-[13px] text-app-primary outline-none transition-colors placeholder:text-app-muted focus:border-brand-500 dark:border-surface dark:text-app-primary';
 
 /** Compact desktop-only controls matching the sidebar design; mobile keeps FilterGroups unchanged. */
 export function DesktopCompactFilterGroups({
@@ -149,15 +149,15 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
         </section>
       )}
 
-      <section className="grid min-w-0 gap-3 sm:grid-cols-2 sm:gap-3">
+      <section className="grid min-w-0 gap-2.5 sm:grid-cols-2 sm:gap-3">
         <div className="min-w-0">
-          <label htmlFor="car-filter-brand" className="block text-[11px] font-bold uppercase tracking-[0.1em] text-app-muted">Marka</label>
+          <label htmlFor="car-filter-brand" className="block text-[11px] font-bold uppercase tracking-[0.08em] text-app-muted">Marka</label>
           <div className="relative mt-1.5">
             <select
               id="car-filter-brand"
               value={filters.brand ?? ''}
               onChange={(event) => update({ brand: event.target.value || null, model: null })}
-              className="h-11 w-full appearance-none rounded-xl border border-surface bg-elevated px-3.5 pr-10 text-[14px] font-medium text-app-primary outline-none transition-colors focus:border-control focus:ring-2 focus:ring-control/15 dark:border-[#35465E] dark:bg-[#19263B] dark:text-white"
+              className="h-10 w-full appearance-none rounded-lg border border-surface bg-elevated px-3 pr-9 text-[13px] font-medium text-app-primary outline-none transition-colors focus:border-control focus:ring-2 focus:ring-control/15 dark:border-[#35465E] dark:bg-[#19263B] dark:text-white"
             >
               <option value="">Sve marke</option>
               {BRAND_NAMES.map((brand) => <option key={brand} value={brand}>{brand}</option>)}
@@ -166,14 +166,14 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
           </div>
         </div>
         <div className="min-w-0">
-          <label htmlFor="car-filter-model" className="block text-[11px] font-bold uppercase tracking-[0.1em] text-app-muted">Model</label>
+          <label htmlFor="car-filter-model" className="block text-[11px] font-bold uppercase tracking-[0.08em] text-app-muted">Model</label>
           <div className="relative mt-1.5">
             <select
               id="car-filter-model"
               value={filters.brand && CAR_BRANDS[filters.brand]?.includes(filters.model ?? '') ? filters.model ?? '' : ''}
               onChange={(event) => update({ model: event.target.value || null })}
               disabled={!filters.brand}
-              className="h-11 w-full appearance-none rounded-xl border border-surface bg-elevated px-3.5 pr-10 text-[14px] font-medium text-app-primary outline-none transition-colors focus:border-control focus:ring-2 focus:ring-control/15 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#35465E] dark:bg-[#19263B] dark:text-white"
+              className="h-10 w-full appearance-none rounded-lg border border-surface bg-elevated px-3 pr-9 text-[13px] font-medium text-app-primary outline-none transition-colors focus:border-control focus:ring-2 focus:ring-control/15 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#35465E] dark:bg-[#19263B] dark:text-white"
             >
               <option value="">{filters.brand ? 'Svi modeli' : 'Prvo izaberi marku'}</option>
               {(filters.brand ? CAR_BRANDS[filters.brand] ?? [] : []).map((model) => (
@@ -188,9 +188,9 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
       <section className="min-w-0 w-full max-w-full">
         <div className="flex items-center justify-between gap-2">
           <p className={GROUP_TITLE}>Karoserija</p>
-          <span className="text-[11px] text-app-muted">Prevuci za još</span>
+          <span className="text-[10px] text-app-muted">Prevuci za još</span>
         </div>
-        <div className="mt-2 min-w-0 w-full max-w-full overflow-hidden">
+        <div className="mt-1.5 min-w-0 w-full max-w-full overflow-hidden">
           <BodyTypePicker
             value={filters.bodyType ?? ''}
             onChange={(type) => update({ bodyType: filters.bodyType === type ? null : type })}
