@@ -1,5 +1,5 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Manrope } from 'next/font/google';
 import AppShell from '@/components/AppShell';
 
@@ -30,21 +30,6 @@ export const metadata: Metadata = {
   description,
   applicationName: 'AutoTrampa',
   manifest: '/manifest.webmanifest',
-  /**
-   * Next 13.5 still expects themeColor/viewport inside `metadata`; the separate
-   * `viewport` export with a `Viewport` type only exists from Next 14, and
-   * importing that type here fails `tsc` with TS2614.
-   */
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#0B1628' },
-    { media: '(prefers-color-scheme: dark)', color: '#0B1628' },
-  ],
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    viewportFit: 'cover',
-  },
   appleWebApp: {
     capable: true,
     title: 'AutoTrampa',
@@ -60,6 +45,14 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary_large_image', title, description },
   robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0B1628',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
 };
 
 /**

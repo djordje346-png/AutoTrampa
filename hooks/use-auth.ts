@@ -1,5 +1,7 @@
 'use client';
 
+import { MIN_NEW_PASSWORD_LENGTH, NEW_PASSWORD_ERROR } from '@/lib/password-policy';
+
 import { useCallback, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { createMemoryStore, usePersistentStore } from '@/lib/persistent-store';
@@ -109,6 +111,7 @@ export function useAuth() {
     password: string,
     name: string,
   ): Promise<AuthResult> => {
+    if (password.length < MIN_NEW_PASSWORD_LENGTH) return { ok: false, message: NEW_PASSWORD_ERROR };
     try {
       const callbackUrl = new URL('/auth/callback', window.location.origin);
       const next = promptStore.get()?.next;
@@ -140,6 +143,7 @@ export function useAuth() {
   }, []);
 
   const updatePassword = useCallback(async (password: string): Promise<AuthResult> => {
+    if (password.length < MIN_NEW_PASSWORD_LENGTH) return { ok: false, message: NEW_PASSWORD_ERROR };
     try {
       const { error } = await getSupabase().auth.updateUser({ password });
       return error ? { ok: false, message: error.message } : { ok: true };

@@ -54,6 +54,7 @@ export function useOffers({ poll = false }: { poll?: boolean } = {}) {
   }, [userId]);
 
   useEffect(() => {
+    const requestSequence = sequence;
     void refresh();
     const onVisible = () => {
       if (document.visibilityState === "visible") void refresh();
@@ -63,7 +64,7 @@ export function useOffers({ poll = false }: { poll?: boolean } = {}) {
     window.addEventListener("autotrampa:offers", onVisible);
     document.addEventListener("visibilitychange", onVisible);
     return () => {
-      ++sequence.current;
+      ++requestSequence.current;
       if (timer !== null) window.clearInterval(timer);
       window.removeEventListener("focus", onVisible);
       window.removeEventListener("autotrampa:offers", onVisible);

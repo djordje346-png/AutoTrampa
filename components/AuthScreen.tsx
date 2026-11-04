@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { LEGAL } from '@/lib/legal';
+import { MIN_NEW_PASSWORD_LENGTH, NEW_PASSWORD_ERROR } from '@/lib/password-policy';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, TriangleAlert } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
@@ -40,8 +43,10 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
       next.email = 'Unesi ispravnu email adresu.';
     }
 
-    if (password.length < 6) {
-      next.password = 'Lozinka mora imati bar 6 karaktera.';
+    if (tab === 'register' && password.length < MIN_NEW_PASSWORD_LENGTH) {
+      next.password = NEW_PASSWORD_ERROR;
+    } else if (tab === 'login' && !password) {
+      next.password = 'Unesi lozinku.';
     }
 
     return next;
@@ -279,7 +284,10 @@ export default function AuthScreen({ initialTab = 'login', contextReason }: Auth
         </p>
 
         <p className="mx-auto mt-3 max-w-sm text-center text-[11px] leading-relaxed text-app-muted dark:text-app-secondary">
-          Registracijom prihvataš Uslove korišćenja i Politiku privatnosti.
+          Registracijom prihvataš{' '}
+          <Link href={LEGAL.termsPath} target="_blank" rel="noopener noreferrer" className="rounded underline underline-offset-2 hover:text-app-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">Uslove korišćenja<span className="sr-only"> (otvara se u novoj kartici)</span></Link>
+          {' '}i potvrđuješ da si pročitao/la{' '}
+          <Link href={LEGAL.privacyPath} target="_blank" rel="noopener noreferrer" className="rounded underline underline-offset-2 hover:text-app-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500">Politiku privatnosti<span className="sr-only"> (otvara se u novoj kartici)</span></Link>.
         </p>
       </div>
     </section>

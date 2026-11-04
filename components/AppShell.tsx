@@ -22,7 +22,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const isPublicSearch = pathname === '/search' && !isLoggedIn;
   const isListing = pathname.startsWith('/car/');
   const isPublicListing = isListing && !isLoggedIn;
-  const hasPublicHeader = authReady && (isPublicSearch || isPublicListing);
+  const isLegalPage = pathname === '/terms' || pathname === '/privacy';
+  const isPublicLegalPage = isLegalPage && !isLoggedIn;
+  const hasPublicHeader = authReady && (isPublicSearch || isPublicListing || isPublicLegalPage);
   const hasDesktopAppNavigation = authReady && !isPublicLanding && !hasPublicHeader;
 
   return (
@@ -35,7 +37,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </a>
 
       {hasDesktopAppNavigation && <Suspense fallback={null}><Footer /></Suspense>}
-      {!authReady && (isListing || pathname === '/search') && <div aria-label="Učitavanje navigacije" className="h-16 border-b border-brand-dark bg-brand-dark lg:h-[72px]" />}
+      {!authReady && (isListing || pathname === '/search' || isLegalPage) && <div aria-label="Učitavanje navigacije" className="h-16 border-b border-brand-dark bg-brand-dark lg:h-[72px]" />}
       {hasPublicHeader && (
           <PublicHeader
             onAddCar={() => requireAuth('Prijavi se i dodaj svoj oglas', undefined, '/?intent=add-car')}
@@ -43,11 +45,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             onRegister={() => requireAuth('Napravi AutoTrampa nalog', undefined, undefined, 'register')}
           />
       )}
-      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : isPublicSearch || isPublicListing ? 'pb-8' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? (isLoggedIn ? 'pt-16 lg:pt-20' : 'lg:pt-20') : ''} ${isPublicSearch ? 'public-search-content' : ''}`}>
+      <main id="sadrzaj" className={`w-full flex-1 ${isPublicLanding ? 'pb-0' : isPublicSearch || isPublicListing || isPublicLegalPage ? 'pb-8' : 'pb-28 md:pb-24 lg:pb-8'} ${hasDesktopAppNavigation ? (isLoggedIn ? 'pt-16 lg:pt-20' : 'lg:pt-20') : ''} ${isPublicSearch ? 'public-search-content' : ''}`}>
         {children}
       </main>
 
-      {!isPublicLanding && <DesktopFooter />}
+      {!isPublicLanding && <DesktopFooter showOnMobile={isLegalPage} />}
 
       {promptOpen && <AuthOverlay />}
       <PhoneGateHost />

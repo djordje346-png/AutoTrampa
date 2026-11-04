@@ -33,7 +33,7 @@ export default function ProfileClient() {
   const { theme, toggleTheme } = useTheme();
   const { user, profileReady } = useUser();
   const { preferences, update: updatePreferences, toggleBodyPref, mounted: preferencesReady } = usePreferences();
-  const [activeModal, setActiveModal] = useState<'faq' | 'terms' | 'privacy' | null>(null);
+  const [activeModal, setActiveModal] = useState<'faq' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [phonePrivacySaving, setPhonePrivacySaving] = useState(false);
@@ -430,8 +430,8 @@ export default function ProfileClient() {
               <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary dark:text-app-secondary transition" />
             </button>
 
-            <button
-              onClick={() => setActiveModal('terms')}
+            <Link
+              href="/terms"
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
@@ -444,10 +444,10 @@ export default function ProfileClient() {
                 </div>
               </div>
               <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary dark:text-app-secondary transition" />
-            </button>
+            </Link>
 
-            <button
-              onClick={() => setActiveModal('privacy')}
+            <Link
+              href="/privacy"
               className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-hover-surface transition text-left group"
             >
               <div className="flex items-center gap-3">
@@ -460,7 +460,7 @@ export default function ProfileClient() {
                 </div>
               </div>
               <ChevronRight size={16} className="text-app-muted group-hover:text-app-secondary dark:text-app-secondary transition" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -520,13 +520,7 @@ export default function ProfileClient() {
       <BottomSheet
         open={activeModal !== null}
         onClose={() => setActiveModal(null)}
-        title={
-          activeModal === 'faq'
-            ? 'Često postavljana pitanja'
-            : activeModal === 'terms'
-              ? 'Uslovi korišćenja'
-              : 'Politika privatnosti'
-        }
+        title="Često postavljana pitanja"
         className="sm:max-w-lg"
       >
         <div className="space-y-4 text-xs leading-relaxed text-app-secondary dark:text-app-secondary">
@@ -535,9 +529,9 @@ export default function ProfileClient() {
               <div className="space-y-1.5">
                 <p className="font-bold text-brand-text">1. Kako funkcioniše zamena automobila?</p>
                 <p className="text-app-muted">
-                  Kada pronađete vozilo u feed-u i pošaljete ponudu, otvara se razgovor sa
-                  vlasnikom u kome se dogovarate o pregledu i razlici u ceni. Cena i doplata se
-                  prikazuju unapred, na osnovu vrednosti tvog i njegovog vozila.
+                  Kada pronađeš vozilo i pošalješ ponudu, ona stiže vlasniku u odeljak Ponude.
+                  Iz ponude možeš otvoriti razgovor i dogovoriti pregled i konačnu doplatu.
+                  Prikazana razlika vrednosti vozila je orijentaciona.
                 </p>
               </div>
               <div className="space-y-1.5">
@@ -552,29 +546,11 @@ export default function ProfileClient() {
                 <p className="text-app-muted">
                   Nalog, garaža, sačuvani oglasi, razgovori i fotografije vezani su za tvoj nalog.
                   Budžet, radijus pretrage i podešavanje doplate čuvaju se uz tvoj profil. Tema se
-                  pamti u ovom pregledaču, a izbor tipova karoserije i privatnosti za prijavljeni
-                  nalog čuva se odvojeno za taj nalog.
+                  pamti u ovom pregledaču, a izbor tipova karoserije čuva se odvojeno za svaki
+                  nalog na tom pregledaču. Vidljivost telefona proverava se na serveru.
                 </p>
               </div>
             </>
-          )}
-          {activeModal === 'terms' && (
-            <div className="space-y-1.5">
-              <p className="font-bold text-brand-text">Pravila platforme</p>
-              <p className="text-app-muted">
-                Svi oglasi moraju predstavljati realno stanje vozila u vašem vlasništvu. Zabranjeno
-                je unošenje lažnih podataka.
-              </p>
-            </div>
-          )}
-          {activeModal === 'privacy' && (
-            <div className="space-y-1.5">
-              <p className="font-bold text-brand-text">Zaštita podataka</p>
-              <p className="text-app-muted">
-                Broj telefona se čuva u privatnoj tabeli profila i nikada se ne prikazuje na
-                javnom oglasu. Ostali korisnici vide samo tvoje ime, grad i ocenu.
-              </p>
-            </div>
           )}
         </div>
 

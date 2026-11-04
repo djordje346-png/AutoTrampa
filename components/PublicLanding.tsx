@@ -102,7 +102,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
       <footer className={styles.footer}>
         <div className={`app-container ${styles.footerInner}`}>
           <Link href="/" aria-label="AutoTrampa — početna"><BrandLockup /></Link>
-          <nav aria-label="Linkovi u podnožju"><a href="#kako-funkcionise">Kako funkcioniše</a><Link href="/search">Oglasi</Link><button type="button" onClick={onSignIn}>Prijavi se</button></nav>
+          <nav aria-label="Linkovi u podnožju" className="flex-wrap"><a href="#kako-funkcionise">Kako funkcioniše</a><Link href="/search">Oglasi</Link><button type="button" onClick={onSignIn}>Prijavi se</button><Link href="/terms">Uslovi korišćenja</Link><Link href="/privacy">Politika privatnosti</Link></nav>
           <p>© {new Date().getFullYear()} AutoTrampa</p>
         </div>
       </footer>

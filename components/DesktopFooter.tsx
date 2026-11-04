@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BrandLockup from '@/components/BrandLockup';
+import { LEGAL } from '@/lib/legal';
 
 const DISCOVERY_LINKS = [
   { href: '/', label: 'Oglasi' },
@@ -15,9 +16,9 @@ const ACCOUNT_LINKS = [
 
 const LINK_CLASS = 'w-fit text-sm text-brand-dark-secondary transition-colors hover:text-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
 
-export function DesktopFooter() {
+export function DesktopFooter({ showOnMobile = false }: { showOnMobile?: boolean }) {
   return (
-    <footer className="mt-auto hidden border-t border-brand-dark bg-brand-dark text-brand-dark-secondary lg:block">
+    <footer className={`mt-auto ${showOnMobile ? 'block' : 'hidden lg:block'} border-t border-brand-dark bg-brand-dark text-brand-dark-secondary`}>
       <div className="mx-auto max-w-7xl px-8">
         <div className="grid gap-8 py-9 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div className="max-w-sm">
@@ -40,8 +41,13 @@ export function DesktopFooter() {
           </nav>
         </div>
 
-        <div className="border-t border-brand-dark py-4 text-xs text-brand-dark-secondary">
-          AutoTrampa · Platforma za zamenu automobila
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-brand-dark py-4 text-xs text-brand-dark-secondary">
+          <span>AutoTrampa · Platforma za zamenu automobila</span>
+          <nav aria-label="Pravila u podnožju" className="flex flex-wrap gap-x-5 gap-y-3">
+            <Link href={LEGAL.termsPath} className={LINK_CLASS}>Uslovi korišćenja</Link>
+            <Link href={LEGAL.privacyPath} className={LINK_CLASS}>Politika privatnosti</Link>
+            <a href={`mailto:${LEGAL.email}`} className={LINK_CLASS}>Kontakt</a>
+          </nav>
         </div>
       </div>
     </footer>

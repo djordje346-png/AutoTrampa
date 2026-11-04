@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { LockKeyhole } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { getSupabase } from '@/lib/supabase';
+import { MIN_NEW_PASSWORD_LENGTH, NEW_PASSWORD_ERROR } from '@/lib/password-policy';
 
 export default function UpdatePasswordPage() {
   const { updatePassword, mounted, isLoggedIn } = useAuth();
@@ -42,8 +43,8 @@ export default function UpdatePasswordPage() {
   async function submit(event: FormEvent) {
     event.preventDefault();
     setMessage('');
-    if (password.length < 8) {
-      setMessage('Lozinka mora imati bar 8 karaktera.');
+    if (password.length < MIN_NEW_PASSWORD_LENGTH) {
+      setMessage(NEW_PASSWORD_ERROR);
       return;
     }
     if (password !== confirmation) {

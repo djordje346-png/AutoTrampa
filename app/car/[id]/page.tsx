@@ -32,8 +32,8 @@ export const revalidate = 60;
 
 /** Next 13.5 requires the prop to be declared when it is destructured. */
 interface PageProps {
-  params: { id: string };
-  searchParams?: Record<string, string | string[] | undefined>;
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
 const getCar = cache(async (id: string): Promise<Car | null> => {
@@ -48,7 +48,8 @@ const getCar = cache(async (id: string): Promise<Car | null> => {
 });
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const car = await getCar(params.id);
+  const { id } = await params;
+  const car = await getCar(id);
   if (!car) return { title: 'Oglas nije pronađen' };
 
   const title = listingTitle(car);
@@ -73,7 +74,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function CarPage({ params }: PageProps) {
-  const car = await getCar(params.id);
+  const { id } = await params;
+  const car = await getCar(id);
   if (!car) notFound();
   return <CarDetail car={car} />;
 }
