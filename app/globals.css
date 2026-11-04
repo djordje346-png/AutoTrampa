@@ -561,6 +561,10 @@
     border-radius: 999px;
     background-color: hsl(var(--primary));
   }
+  /* Subtitle starts beneath the heading text, not beneath its accent bar. */
+  .app-page-title-accent + p {
+    margin-left: 15px;
+  }
   /* Sticky page header that scrolls with the content it belongs to. */
   .app-page-header {
     position: sticky;
