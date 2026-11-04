@@ -419,7 +419,7 @@
   .app-account-header { background: linear-gradient(110deg, hsl(var(--surface-brand-dark)), hsl(var(--surface-brand-dark) / .98)); }
   .app-header-car {
     display: flex; align-items: center; gap: 6px; min-width: 0;
-    width: clamp(142px, 44vw, 216px); height: 44px; padding: 5px 8px;
+    width: fit-content; max-width: min(55vw, 240px); height: 44px; padding: 5px 8px;
     border: 1px solid hsl(var(--border-brand-dark)); border-radius: 11px;
     background: rgb(255 255 255 / .045); color: hsl(var(--text-brand-dark-primary));
   }
