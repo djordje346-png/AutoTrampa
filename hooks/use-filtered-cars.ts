@@ -28,6 +28,7 @@ export function filterCars(
 
   const matched = cars.filter((car) => {
     if (filters.brand && car.brand !== filters.brand) return false;
+    if (filters.model && car.model.toLocaleLowerCase().trim() !== filters.model.toLocaleLowerCase().trim()) return false;
     if (filters.bodyType && car.bodyType !== filters.bodyType) return false;
     if (filters.fuelType && car.specs.fuelType !== filters.fuelType) return false;
     if (filters.priceMin != null && car.price < filters.priceMin) return false;
