@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Inter, Manrope } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import AppShell from '@/components/AppShell';
 
 const inter = Inter({
@@ -9,9 +9,9 @@ const inter = Inter({
   display: 'swap',
 });
 
-const manrope = Manrope({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin', 'latin-ext'],
-  variable: '--font-manrope',
+  variable: '--font-jakarta',
   display: 'swap',
 });
 
@@ -73,7 +73,7 @@ const themeInitScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sr" className={`${inter.variable} ${manrope.variable}`} suppressHydrationWarning>
+    <html lang="sr" className={`${inter.variable} ${jakarta.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
