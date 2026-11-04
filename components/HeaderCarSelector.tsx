@@ -33,7 +33,7 @@ export default function HeaderCarSelector({ cars, selectedCar, ready, canAddCar,
             <span className="app-header-car-photo" aria-hidden="true">
               {selectedCar.image ? <img src={selectedCar.image} alt="" /> : <CarFront size={20} />}
             </span>
-            <span className="min-w-0 flex-1 text-left"><small>Moj auto</small><strong>{selectedLabel}</strong></span>
+            <span className="min-w-0 text-left"><small>Moj auto</small><strong>{selectedLabel}</strong></span>
             <ChevronDown size={12} className="shrink-0" aria-hidden="true" />
           </button>
         </DropdownMenuTrigger>
