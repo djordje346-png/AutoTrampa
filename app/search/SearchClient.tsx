@@ -83,7 +83,7 @@ export default function SearchClient() {
       <header className="app-page-header safe-top">
         <div className="app-container pt-4 pb-3">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Pretraga</h1>
+          <h1 className="app-page-title-accent text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">Pretraga</h1>
           {mounted && showTrade && selectedCar && (
             <Link
               href="/garage"
