@@ -496,7 +496,7 @@ export default function MessagesClient() {
     <section className="pb-6">
       <header className="app-page-header safe-top">
         <div className="app-container pt-5">
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-app-primary sm:text-3xl">
+          <h1 className="app-page-title-accent font-heading text-2xl font-bold tracking-tight text-app-primary sm:text-3xl">
             Poruke i ponude
           </h1>
           <p className="mt-2 text-sm text-app-secondary">
