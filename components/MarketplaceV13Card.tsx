@@ -71,9 +71,9 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
         </div>
 
         <div className="relative flex min-w-0 flex-1 flex-col px-4 pb-4 pt-3.5 sm:px-[18px] sm:pb-[18px]">
-          <h3 title={carTitle(car)} className="truncate font-heading text-[20px] font-bold leading-[1.3] tracking-[-0.025em] text-app-primary sm:text-[22px]">{carTitle(car)}</h3>
-          <p className="mt-1 truncate text-[13px] leading-[1.5] text-app-secondary">{carSubtitle(car) || '\u00a0'}</p>
-          <div className="mt-3 grid min-w-0 grid-cols-[0.76fr_1.26fr_1.08fr_1.17fr] items-center text-[11px] leading-[1.5] text-app-secondary sm:text-[12px]">
+          <h3 title={carTitle(car)} className="truncate font-heading text-[19px] font-bold leading-[1.3] tracking-[-0.025em] text-app-primary sm:text-[20px]">{carTitle(car)}</h3>
+          <p className="mt-1 truncate text-[12px] leading-[1.5] text-app-secondary">{carSubtitle(car) || '\u00a0'}</p>
+          <div className="mt-3 grid min-w-0 grid-cols-[0.76fr_1.26fr_1.08fr_1.17fr] items-center text-[11px] leading-[1.5] text-app-secondary sm:text-[11px]">
             {homeSpecs.map(({ Icon, text, label }, index) => (
               <span
                 key={label}
@@ -86,8 +86,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
             ))}
           </div>
           <div className="mt-4 flex min-h-[42px] items-center justify-between gap-3 border-t border-surface pt-3.5 sm:mt-auto sm:pt-4">
-            <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[24px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[26px]">{formatEuro(car.price)}</strong>
-            <span aria-hidden="true" className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-app-secondary transition-colors group-hover/card:text-app-primary sm:text-[14px]">
+            <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[22px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[24px]">{formatEuro(car.price)}</strong>
+            <span aria-hidden="true" className="inline-flex shrink-0 items-center gap-1 text-[12px] font-semibold text-app-secondary transition-colors group-hover/card:text-app-primary sm:text-[13px]">
               Pogledaj oglas <ChevronRight size={16} aria-hidden="true" />
             </span>
           </div>
