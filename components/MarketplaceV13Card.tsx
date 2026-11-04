@@ -87,8 +87,8 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           </div>
           <div className="mt-4 flex min-h-[42px] items-center justify-between gap-3 border-t border-surface pt-3.5 sm:mt-auto sm:pt-4">
             <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[22px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[24px]">{formatEuro(car.price)}</strong>
-            <span aria-hidden="true" className="inline-flex shrink-0 items-center gap-0 text-[12px] font-medium text-[#B45309] transition-colors dark:text-[#F58A38] sm:text-[13px]">
-              <span>Pogledaj oglas</span><ChevronRight size={15} className="shrink-0 translate-y-px" aria-hidden="true" />
+            <span aria-hidden="true" className="inline-flex shrink-0 items-center gap-[3px] whitespace-nowrap text-[12px] font-medium leading-[18px] text-[#B45309] transition-colors dark:text-[#F58A38] sm:text-[13px]">
+              <span className="leading-[18px]">Pogledaj oglas</span><ChevronRight size={14} className="block shrink-0 self-center" aria-hidden="true" />
             </span>
           </div>
         </div>
