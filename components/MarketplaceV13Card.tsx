@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { CalendarDays, Car as CarIcon, Gauge, Heart, MapPin, MessageCircle, Settings2 } from 'lucide-react';
+import { CalendarDays, Car as CarIcon, ChevronRight, Gauge, Heart, MapPin, MessageCircle, Settings2 } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { carSubtitle } from '@/lib/car-row';
 import { bodyLabel, transmissionLabel } from '@/lib/labels';
@@ -22,9 +22,11 @@ type Props = {
   onMessage?: (car: Car) => void;
   messaging?: boolean;
   photoActions?: ReactNode;
+  /** Minimalist home-feed card, preserving the legacy card elsewhere. */
+  minimalHome?: boolean;
 };
 
-export default function MarketplaceV13Card({ car, trade, onLike, liking = false, liked = false, onOffer, offerId, onMessage, messaging = false, photoActions }: Props) {
+export default function MarketplaceV13Card({ car, trade, onLike, liking = false, liked = false, onOffer, offerId, onMessage, messaging = false, photoActions, minimalHome = false }: Props) {
   const hasOfferAction = Boolean(onOffer || offerId);
   const specs = [
     { Icon: CalendarDays, text: formatYear(car.year), label: 'Godište' },
@@ -34,6 +36,64 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
       ? { Icon: MapPin, text: car.city || 'Nije navedeno', label: 'Lokacija' }
       : { Icon: CarIcon, text: bodyLabel(car.bodyType), label: 'Karoserija' },
   ];
+
+  if (minimalHome) {
+    const homeSpecs = [
+      { Icon: CalendarDays, text: formatYear(car.year), label: 'Godište' },
+      { Icon: Gauge, text: formatKm(car.mileage), label: 'Kilometraža' },
+      { Icon: Settings2, text: transmissionLabel(car.specs.transmission), label: 'Menjač' },
+      { Icon: MapPin, text: car.city || 'Nije navedeno', label: 'Lokacija' },
+    ];
+
+    return (
+      <article className="listing-card listing-card-minimal group/card relative isolate flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.08)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.14)] dark:shadow-[0_4px_16px_rgba(0,0,0,.20)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.28)]">
+        <Link href={`/car/${car.id}`} aria-label={`Pogledaj oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
+
+        <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
+          <div className="absolute inset-0 [&>div]:!aspect-auto [&>div]:!h-full">
+            <FeedCardPhoto car={car} showDemoBadge={false} />
+          </div>
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35" />
+          <div className="pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-2">
+            {photoActions}
+            {onLike && (
+              <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onLike(car); }} disabled={liking}
+                aria-label={`${liked ? 'Sačuvano:' : 'Lajkuj i sačuvaj'} ${car.brand} ${car.model}`}
+                aria-pressed={liked}
+                className={`pointer-events-auto relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 ${liked ? 'text-brand-500 !border-brand-500' : 'text-white'} transition-colors hover:border-brand-500 hover:text-brand-500 disabled:opacity-50`}
+                title={liked ? 'Oglas je sačuvan' : 'Lajkuj i sačuvaj za match'}>
+                <Heart size={18} fill={liked ? 'currentColor' : 'none'} strokeWidth={1.8} aria-hidden="true" />
+              </button>
+            )}
+          </div>
+          {trade && <TradeBadge trade={trade} variant="photo" className={`pointer-events-none absolute left-3 top-3 z-20 ${photoActions ? '!max-w-[calc(100%-112px)]' : '!max-w-[calc(100%-72px)]'}`}/>}
+          {!car.ownerId && <span className="pointer-events-none absolute bottom-3 left-3 z-20 text-[10px] font-bold uppercase tracking-wide text-white drop-shadow">Demo</span>}
+        </div>
+
+        <div className="relative flex min-w-0 flex-1 flex-col px-4 pb-4 pt-3.5 sm:px-[18px] sm:pb-[18px]">
+          <h3 title={carTitle(car)} className="truncate font-heading text-[clamp(18px,4.5vw,21px)] font-extrabold leading-[1.25] tracking-[-0.025em] text-app-primary sm:text-[22px]">{carTitle(car)}</h3>
+          <p className="mt-1 truncate text-xs leading-[1.45] text-app-secondary">{carSubtitle(car) || '\u00a0'}</p>
+          <div className="listing-card-specs mt-3 text-[10px] leading-[1.35] text-app-secondary sm:text-[11px]">
+            {homeSpecs.map(({ Icon, text, label }, index) => (
+              <span key={label} className="contents">
+                {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center self-center rounded-full listing-spec-dot" />}
+                <span title={`${label}: ${text}`} className="flex min-w-0 items-center gap-[3px]">
+                  <Icon size={11} className="shrink-0 text-app-muted" strokeWidth={1.7} aria-hidden="true" />
+                  <span className="min-w-0 truncate tabular-nums">{text}</span>
+                </span>
+              </span>
+            ))}
+          </div>
+          <div className="mt-4 flex min-h-[42px] items-center justify-between gap-3 border-t border-surface pt-3.5 sm:mt-auto sm:pt-4">
+            <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[clamp(21px,5.7vw,24px)] font-extrabold leading-none tracking-tight tabular-nums text-app-primary sm:text-[27px]">{formatEuro(car.price)}</strong>
+            <span aria-hidden="true" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-app-secondary transition-colors group-hover/card:text-app-primary sm:text-[13px]">
+              Pogledaj oglas <ChevronRight size={16} aria-hidden="true" />
+            </span>
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className={`listing-card group/card relative isolate min-w-0 overflow-hidden rounded-[14px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] sm:aspect-auto sm:flex sm:h-full sm:flex-col ${hasOfferAction ? 'flex flex-col' : 'grid aspect-square grid-rows-[minmax(0,1fr)_auto]'}`}>
