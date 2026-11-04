@@ -10,6 +10,7 @@ export type TradeFilter = 'all' | 'similar' | 'cheaper' | 'expensive';
 export interface SearchFilters {
   query: string;
   brand: string | null;
+  model: string | null;
   bodyType: BodyType | null;
   fuelType: FuelType | null;
   /** Euros, inclusive. null = no lower bound. */
@@ -28,6 +29,7 @@ export interface SearchFilters {
 export const DEFAULT_FILTERS: SearchFilters = {
   query: '',
   brand: null,
+  model: null,
   bodyType: null,
   fuelType: null,
   priceMin: null,
@@ -44,6 +46,7 @@ export const DEFAULT_FILTERS: SearchFilters = {
 export function countActiveFilters(filters: SearchFilters, includeQuery = false): number {
   let count = 0;
   if (filters.brand) count += 1;
+  if (filters.model) count += 1;
   if (filters.bodyType) count += 1;
   if (filters.fuelType) count += 1;
   if (filters.priceMin != null || filters.priceMax != null) count += 1;
@@ -74,6 +77,7 @@ const prefsStore = createPersistentStore<Prefs>('autotrampa_search_prefs', DEFAU
     ...(legacy && stored.bodyType ? { bodyType: stored.bodyType as BodyType } : {}),
     ...(legacy && typeof stored.sortBy === 'string' ? { sortBy: stored.sortBy as SortKey } : {}),
   };
+  if (!filters.brand) filters.model = null;
   return { filters, filtersOpen: Boolean(stored.filtersOpen) };
 });
 
@@ -81,7 +85,14 @@ export function useSearchPrefs() {
   const [prefs, mounted] = usePersistentStore(prefsStore);
 
   const update = useCallback((patch: Partial<SearchFilters>) => {
-    prefsStore.set((prev) => ({ ...prev, filters: { ...prev.filters, ...patch } }));
+    prefsStore.set((prev) => ({
+      ...prev,
+      filters: {
+        ...prev.filters,
+        ...patch,
+        ...('brand' in patch && patch.brand !== prev.filters.brand ? { model: null } : {}),
+      },
+    }));
   }, []);
 
   const reset = useCallback(() => {
