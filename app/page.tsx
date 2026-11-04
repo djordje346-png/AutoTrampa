@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
+import { Suspense, useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Heart, HeartHandshake, ArrowLeft, ChevronRight, Search, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Settings2, ChevronDown, Check, Plus, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
@@ -16,7 +16,7 @@ import { useSwipes } from '@/hooks/use-swipes';
 import { useMatchLike } from '@/hooks/use-match-like';
 import { useActiveOfferIds } from '@/hooks/use-offers';
 import { usePreferences } from '@/hooks/use-preferences';
-import { useFilteredCars } from '@/hooks/use-filtered-cars';
+import { getAlternativeCars, useFilteredCars } from '@/hooks/use-filtered-cars';
 import { countActiveFilters, useSearchPrefs, type SearchFilters } from '@/hooks/use-search-prefs';
 import { useAuth } from '@/hooks/use-auth';
 import { useUser } from '@/hooks/use-user';
@@ -35,7 +35,7 @@ import PublicLanding from '@/components/PublicLanding';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import { useListingMessage } from '@/hooks/use-listing-message';
 import ListingPagination from '@/components/ListingPagination';
-import { useListingPagination } from '@/hooks/use-listing-pagination';
+import { LISTINGS_PER_PAGE, useListingPagination } from '@/hooks/use-listing-pagination';
 import { useFeedView } from '@/hooks/use-feed-view';
 import { useMessages } from '@/hooks/use-messages';
 
@@ -211,7 +211,23 @@ function AuthenticatedFeed({
     preferences.radius,
   );
 
-  const pagination = useListingPagination(filteredCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
+  const hasSearchCriteria = countActiveFilters(filters, true) > 0;
+  const showAlternatives = hasSearchCriteria && filteredCars.length < LISTINGS_PER_PAGE;
+  const alternativeCars = useMemo(
+    () => showAlternatives
+      ? getAlternativeCars(
+          marketplaceCars, filteredCars, filters, tradeAware ? selectedCar : null,
+          budget, noTopUp, selectedCar?.city ?? '', preferences.radius,
+        )
+      : [],
+    [showAlternatives, marketplaceCars, filteredCars, filters, tradeAware, selectedCar, budget, noTopUp, preferences.radius],
+  );
+  // Exact matches remain first; other listings never count as exact results.
+  const displayCars = useMemo(
+    () => showAlternatives ? [...filteredCars, ...alternativeCars] : filteredCars,
+    [showAlternatives, filteredCars, alternativeCars],
+  );
+  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   const activeFilters = countActiveFilters(filters);
   const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
@@ -648,7 +664,7 @@ function AuthenticatedFeed({
       )}
 
       {/* No results */}
-      {filteredCars.length === 0 && (
+      {filteredCars.length === 0 && alternativeCars.length === 0 && marketplaceReady && (
         <div className="app-container pt-8 flex flex-col items-center text-center">
           <div className="w-14 h-14 rounded-full bg-elevated flex items-center justify-center mb-3">
             <SlidersHorizontal size={24} className="text-app-muted" />
@@ -1026,25 +1042,41 @@ function AuthenticatedFeed({
             )}
           {marketplaceReady && (
             <div id="listing-results" className="grid scroll-mt-24 grid-cols-1 gap-4 pb-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
-          {pagination.items.map(car => {
+          {pagination.items.map((car, index) => {
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
+            const globalIndex = (pagination.page - 1) * LISTINGS_PER_PAGE + index;
+            const startsAlternatives = showAlternatives && alternativeCars.length > 0
+              && globalIndex === filteredCars.length;
             return (
-              <MarketplaceV13Card
-                minimalHome
-                key={car.id}
-                car={car}
-                trade={tl}
-                onLike={(listing) => { void likeCar(listing); }}
-                liking={isLiking(car.id)}
-                liked={saved.includes(car.id) || likedCarIds.has(car.id)}
-                onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
-                messaging={messagingId === car.id}
-                onOffer={openOffer}
-                offerId={activeOfferIds.get(car.id)}
-              />
+              <div key={car.id} className="contents">
+                {startsAlternatives && (
+                  <div className="col-span-full rounded-xl border border-surface bg-elevated/50 px-4 py-3 dark:border-[#35465E] dark:bg-[#19263B]/70" role="status">
+                    <p className="text-[13px] font-semibold text-app-primary">
+                      {filteredCars.length === 0
+                        ? 'Trenutno nema vozila koja ispunjavaju sve tvoje kriterijume.'
+                        : `Pronašli smo samo ${filteredCars.length} ${filteredCars.length === 1 ? 'oglas' : 'oglasa'} po tvojim kriterijumima.`}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-app-secondary">
+                      Ispod su druga vozila koja bi te mogla zanimati, poređana po postojećim pravilima sortiranja.
+                    </p>
+                  </div>
+                )}
+                <MarketplaceV13Card
+                  minimalHome
+                  car={car}
+                  trade={tl}
+                  onLike={(listing) => { void likeCar(listing); }}
+                  liking={isLiking(car.id)}
+                  liked={saved.includes(car.id) || likedCarIds.has(car.id)}
+                  onMessage={isLoggedIn ? (listing) => { void openMessage(listing); } : undefined}
+                  messaging={messagingId === car.id}
+                  onOffer={openOffer}
+                  offerId={activeOfferIds.get(car.id)}
+                />
+              </div>
             );
           })}
-              <ListingPagination page={pagination.page} total={filteredCars.length} onChange={pagination.changePage} />
+              <ListingPagination page={pagination.page} total={displayCars.length} onChange={pagination.changePage} />
             </div>
           )}
           </div>
