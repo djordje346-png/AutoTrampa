@@ -3,10 +3,10 @@
 import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Heart, HeartHandshake, ArrowLeft, ArrowLeftRight, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Car as CarIcon, Settings2, ChevronDown, Check, Plus, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { Heart, HeartHandshake, ArrowLeft, ChevronRight, X, CircleCheck as CheckCircle, MapPin, Gauge, CalendarDays, Settings2, ChevronDown, Check, Plus, Flame, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
-import { bodyLabel, transmissionLabel } from '@/lib/labels';
+import { transmissionLabel } from '@/lib/labels';
 import { carSubtitle, displayValue } from '@/lib/car-row';
 import { Car, MyGarageCar } from '@/types';
 import { garageErrorMessage, useGarage } from '@/hooks/use-garage';
@@ -763,8 +763,8 @@ function AuthenticatedFeed({
                 <div className="app-swipe-card relative w-full max-w-sm lg:max-w-2xl">
                   {/* Next card peeking behind */}
                   {swipeCars[swipeIndex + 1] && (
-                    <div className="absolute inset-0 overflow-hidden rounded-3xl border border-surface bg-card-surface shadow-lg dark:border-surface dark:bg-card-surface" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
-                      <div className="relative h-72 sm:h-80 lg:h-[min(40vh,380px)]">
+                    <div className="absolute inset-0 overflow-hidden rounded-[14px] border border-surface bg-card-surface shadow-lg dark:border-surface dark:bg-card-surface" style={{ transform: 'translateY(10px) scale(0.95)', opacity: 0.5 }}>
+                      <div className="relative aspect-[16/10] w-full">
                         <img src={swipeCars[swipeIndex + 1].image} alt="" className="w-full h-full object-cover opacity-60" draggable={false} />
                       </div>
                     </div>
@@ -772,7 +772,7 @@ function AuthenticatedFeed({
 
                   {/* Active card */}
                   <div
-                    className="relative w-full overflow-hidden rounded-[22px] border border-surface bg-card-surface shadow-xl select-none touch-pan-y dark:border-surface lg:max-w-2xl lg:touch-none"
+                    className="listing-card listing-card-minimal group/card relative w-full overflow-hidden rounded-[14px] border border-surface bg-card-surface shadow-xl select-none touch-pan-y dark:border-surface lg:max-w-2xl lg:touch-none"
                     style={{
                       transform: `translateX(${dragX}px) rotate(${dragX * 0.08}deg)`,
                       transition: isAnimating ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
@@ -785,11 +785,11 @@ function AuthenticatedFeed({
                     onPointerCancel={() => { dragStart.current = null; setDragX(0); }}
                   >
                     {/* Image */}
-                    <div className="relative h-72 sm:h-80 lg:h-[min(40vh,380px)]">
+                    <div className="relative aspect-[16/10] w-full">
                       <img src={swipeCar.image} alt={`${swipeCar.brand} ${swipeCar.model}`} className="w-full h-full object-cover pointer-events-none" draggable={false} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35 pointer-events-none" />
 
-                      {!swipeCar.ownerId && <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">Demo</span>}
+                      {!swipeCar.ownerId && <span className="pointer-events-none absolute bottom-3 left-3 text-[10px] font-bold uppercase tracking-wide text-white drop-shadow">Demo</span>}
 
                       {/* LIKE badge */}
                       <div
@@ -813,47 +813,37 @@ function AuthenticatedFeed({
                       )}
                     </div>
 
-                    {/* Info */}
-                    <div className="bg-card-surface p-5 lg:p-6">
-                      <div className="flex items-start justify-between mb-2 gap-2">
-                        <div className="min-w-0">
-                          <h2 className="truncate font-heading text-xl font-extrabold tracking-tight text-app-primary">{carTitle(swipeCar)}</h2>
-                          <p className="text-xs text-app-muted mt-0.5">{swipeCar.generation} · {swipeCar.color}</p>
-                        </div>
-                      </div>
-
-                      <div className="listing-card-specs mt-3 text-[clamp(8px,2.4vw,11px)] leading-tight text-app-secondary sm:text-[11px]">
+                    {/* Same information hierarchy as the main feed; swipe controls remain below the card. */}
+                    <div className="relative flex min-w-0 flex-col px-4 pb-4 pt-3.5 sm:px-[18px] sm:pb-[18px]">
+                      <h2 title={carTitle(swipeCar)} className="truncate font-heading text-[19px] font-bold leading-[1.3] tracking-[-0.025em] text-app-primary sm:text-[20px]">
+                        {carTitle(swipeCar)}
+                      </h2>
+                      {carSubtitle(swipeCar) && (
+                        <p className="mt-1 truncate text-[12px] leading-[1.5] text-app-secondary">{carSubtitle(swipeCar)}</p>
+                      )}
+                      <div className="mt-3 grid min-w-0 grid-cols-[0.76fr_1.26fr_1.08fr_1.17fr] items-center text-[11px] leading-[1.5] text-app-secondary">
                         {[
                           { Icon: CalendarDays, text: formatYear(swipeCar.year), label: 'Godište' },
                           { Icon: Gauge, text: formatKm(swipeCar.mileage), label: 'Kilometraža' },
                           { Icon: Settings2, text: transmissionLabel(swipeCar.specs.transmission), label: 'Menjač' },
-                          { Icon: CarIcon, text: bodyLabel(swipeCar.bodyType), label: 'Karoserija' },
+                          { Icon: MapPin, text: swipeCar.city || 'Nije navedeno', label: 'Lokacija' },
                         ].map(({ Icon, text, label }, index) => (
-                          <span key={label} className="contents">
-                            {index > 0 && <span aria-hidden="true" className="h-[3px] w-[3px] justify-self-center rounded-full listing-spec-dot" />}
-                            <span title={`${label}: ${text}`} className="flex min-w-0 items-center gap-[3px]">
-                              <Icon size={12} className="shrink-0 text-app-muted" aria-hidden="true" />
-                              <span className="min-w-0 truncate">{text}</span>
-                            </span>
+                          <span key={label} title={`${label}: ${text}`}
+                            className={`flex min-w-0 items-center justify-start gap-1 px-1.5 first:pl-0 last:pr-0 ${index > 0 ? 'border-l border-surface' : ''}`}>
+                            <Icon size={12} strokeWidth={1.7} className="shrink-0 text-app-muted" aria-hidden="true" />
+                            <span className="min-w-0 truncate tabular-nums">{text}</span>
                           </span>
                         ))}
                       </div>
-
-                      <p className="text-xs text-app-secondary dark:text-app-secondary mt-3 line-clamp-2 leading-relaxed">{swipeCar.description}</p>
-
-                      <div className="mt-4 flex items-center justify-between gap-3 border-t border-surface pt-3">
-                        <p className="shrink-0 font-sans text-xl font-extrabold tracking-tight text-app-primary">{formatEuro(swipeCar.price)}</p>
-                        <span title={`Lokacija oglasa: ${swipeCar.city || 'Nije navedeno'}`} className="ml-auto flex min-w-0 max-w-[48%] items-center gap-1 text-[13px] font-semibold text-app-secondary">
-                          <MapPin size={14} className="shrink-0 text-app-muted" aria-hidden="true" />
-                          <span className="truncate">{swipeCar.city || 'Nije navedeno'}</span>
-                        </span>
-                      </div>
-                      <div className="mt-3 flex items-center gap-2">
-                        <button onClick={() => openOffer(swipeCar)} className="btn-primary btn-primary-compact flex-1 text-sm">
-                          <ArrowLeftRight size={15} /> Ponudi zamenu
-                        </button>
-                        <Link href={`/car/${swipeCar.id}`} className="flex items-center justify-center gap-1.5 px-3 bg-elevated hover:bg-hover-surface text-app-secondary dark:text-app-secondary text-sm font-semibold rounded-xl py-2.5 transition-all">
-                          Detalji
+                      <div className="mt-4 flex min-h-[42px] items-center justify-between gap-3 border-t border-surface pt-3.5">
+                        <strong className="min-w-0 shrink-0 whitespace-nowrap font-sans text-[22px] font-bold leading-none tracking-tight tabular-nums text-app-primary sm:text-[24px]">
+                          {formatEuro(swipeCar.price)}
+                        </strong>
+                        <Link href={`/car/${swipeCar.id}`} className="inline-flex shrink-0 items-center gap-[3px] whitespace-nowrap text-[12px] font-medium leading-[18px] text-[#B45309] dark:text-[#F58A38] sm:text-[13px]"
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onPointerUp={(event) => event.stopPropagation()}>
+                          <span className="leading-[18px]">Pogledaj oglas</span>
+                          <ChevronRight size={14} className="block shrink-0 self-center" aria-hidden="true" />
                         </Link>
                       </div>
                     </div>
