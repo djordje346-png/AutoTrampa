@@ -546,6 +546,21 @@
       padding-right: 2rem;
     }
   }
+  /* Restrained brand accent used on top-level page titles only. */
+  .app-page-title-accent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .app-page-title-accent::before {
+    content: "";
+    display: block;
+    flex: 0 0 3px;
+    width: 3px;
+    height: 26px;
+    border-radius: 999px;
+    background-color: hsl(var(--primary));
+  }
   /* Sticky page header that scrolls with the content it belongs to. */
   .app-page-header {
     position: sticky;
