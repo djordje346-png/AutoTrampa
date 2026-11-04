@@ -25,10 +25,10 @@ const LAYOUTS = {
     check: 'hidden lg:flex',
   },
   filter: {
-    group: 'grid grid-cols-[repeat(auto-fit,minmax(88px,1fr))] gap-2',
-    button: 'min-h-[64px] flex-col gap-0.5 rounded-xl px-1 py-1.5',
-    silhouette: 'h-7 w-[76px] max-w-full shrink-0',
-    label: 'text-[11px] leading-4',
+    group: 'flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain pb-2 pt-1 scrollbar-hide [touch-action:pan-x_pan-y]',
+    button: 'min-h-[80px] w-[116px] shrink-0 snap-start flex-col gap-1 rounded-xl px-2 py-2',
+    silhouette: 'h-8 w-[82px] max-w-full shrink-0',
+    label: 'text-[11px] leading-[15px]',
     check: 'flex',
   },
   compact: {
@@ -64,13 +64,13 @@ export function BodyTypePicker({
   useEffect(() => {
     const container = group.current;
     const selected = buttons.current[BODY_TYPES.findIndex((type) => type.value === value)];
-    if (!isForm || !container || !selected || container.scrollWidth <= container.clientWidth) return;
+    if (variant === 'compact' || !container || !selected || container.scrollWidth <= container.clientWidth) return;
 
     const bounds = container.getBoundingClientRect();
     const selection = selected.getBoundingClientRect();
     if (selection.left < bounds.left) container.scrollLeft += selection.left - bounds.left;
     else if (selection.right > bounds.right) container.scrollLeft += selection.right - bounds.right;
-  }, [value, isForm]);
+  }, [value, variant]);
 
   return (
     <div
