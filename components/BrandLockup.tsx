@@ -17,8 +17,8 @@ export default function BrandLockup({ header = false, variant = 'dark' }: BrandL
       <Image
         src={`/brand/autotrampa-${surface}.svg`}
         alt="AutoTrampa.rs"
-        width={1235}
-        height={293}
+        width={1425}
+        height={395}
         priority={header}
         unoptimized
         draggable={false}
