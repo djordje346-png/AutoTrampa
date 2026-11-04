@@ -422,17 +422,16 @@
   @media (max-width: 1023px) {
     .app-account-brand > span { width: clamp(105px, 35vw, 185px); height: auto; aspect-ratio: 1235 / 293; }
     /* One card + both swipe actions fit above browser and bottom navigation. */
-    .app-swipe-view .h-72 { height: clamp(118px, 20dvh, 180px); }
+    .app-swipe-view .h-72 { height: clamp(112px, 18dvh, 165px); }
     .app-swipe-view .app-swipe-content { overflow-x: hidden; overflow-y: auto; }
     .app-swipe-content .app-swipe-card { flex: 0 0 auto; min-height: 0; overflow: visible; }
     .app-swipe-card .bg-card-surface.p-5 { padding: 12px 14px; }
     .app-swipe-card .listing-card-specs { margin-top: 8px; }
-    .app-swipe-card .app-swipe-description { display: none; }
-    .app-swipe-card .app-swipe-price-row { margin-top: 10px; padding-top: 10px; }
-    .app-swipe-content .app-swipe-actions { margin-top: 12px; }
-    .app-swipe-content .app-swipe-hint { margin-top: 8px; }
+    .app-swipe-card .app-swipe-price-row { margin-top: 8px; padding-top: 9px; }
+    .app-swipe-content .app-swipe-actions { margin-top: 10px; }
+    .app-swipe-content .app-swipe-hint { margin-top: 6px; }
     @media (max-height: 750px) {
-      .app-swipe-view .h-72 { height: clamp(108px, 17dvh, 150px); }
+      .app-swipe-view .h-72 { height: clamp(100px, 16dvh, 142px); }
       .app-swipe-content .app-swipe-hint { display: none; }
       .app-swipe-content .app-swipe-actions { margin-top: 8px; }
     }
