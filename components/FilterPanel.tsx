@@ -66,8 +66,8 @@ export function DesktopCompactFilterGroups({
     },
   ];
 
-  function range(label: string, min: number | null, max: number | null, key: 'price' | 'year' | 'km', icon: typeof Tag) {
-    const patch = key === 'price' ? { minKey: 'priceMin', maxKey: 'priceMax' } : key === 'year' ? { minKey: 'yearMin', maxKey: 'yearMax' } : { minKey: 'kmMin', maxKey: 'kmMax' };
+  function range(label: string, min: number | null, max: number | null, key: 'price' | 'year' | 'displacement', icon: typeof Tag) {
+    const patch = key === 'price' ? { minKey: 'priceMin', maxKey: 'priceMax' } : key === 'year' ? { minKey: 'yearMin', maxKey: 'yearMax' } : { minKey: 'displacementMin', maxKey: 'displacementMax' };
     const updateValue = (which: 'min' | 'max', raw: string) => {
       const value = raw === '' ? null : Math.max(0, Number(raw));
       update({ [which === 'min' ? patch.minKey : patch.maxKey]: value });
@@ -122,7 +122,7 @@ export function DesktopCompactFilterGroups({
       ))}
       {range('Cena (€)', filters.priceMin, filters.priceMax, 'price', Tag)}
       {range('Godište', filters.yearMin, filters.yearMax, 'year', CalendarDays)}
-      {range('Kilometraža', filters.kmMin, filters.kmMax, 'km', Gauge)}
+      {range('Kubikaža (cm³)', filters.displacementMin, filters.displacementMax, 'displacement', Gauge)}
     </div>
   );
 }
@@ -265,15 +265,15 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
       </section>
 
       <section>
-        <p className={GROUP_TITLE}>Kilometraža</p>
+        <p className={GROUP_TITLE}>Kubikaža (cm³)</p>
         <div className="mt-2 flex items-center gap-2">
           <input
             type="number"
             inputMode="numeric"
             min={0}
             placeholder="od"
-            value={filters.kmMin ?? ''}
-            onChange={(e) => update({ kmMin: e.target.value === '' ? null : Math.max(0, Number(e.target.value)) })}
+            value={filters.displacementMin ?? ''}
+            onChange={(e) => update({ displacementMin: e.target.value === '' ? null : Math.max(0, Number(e.target.value)) })}
             className={NUM_INPUT}
           />
           <span className="text-app-muted">–</span>
@@ -282,8 +282,8 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
             inputMode="numeric"
             min={0}
             placeholder="do"
-            value={filters.kmMax ?? ''}
-            onChange={(e) => update({ kmMax: e.target.value === '' ? null : Math.max(0, Number(e.target.value)) })}
+            value={filters.displacementMax ?? ''}
+            onChange={(e) => update({ displacementMax: e.target.value === '' ? null : Math.max(0, Number(e.target.value)) })}
             className={NUM_INPUT}
           />
         </div>
