@@ -421,20 +421,9 @@
   @media (min-width: 375px) { .app-header-car-photo { display: flex; } }
   @media (max-width: 1023px) {
     .app-account-brand > span { width: clamp(105px, 35vw, 185px); height: auto; aspect-ratio: 1235 / 293; }
-    /* One card + both swipe actions fit above browser and bottom navigation. */
-    .app-swipe-view .h-72 { height: clamp(112px, 18dvh, 165px); }
-    .app-swipe-view .app-swipe-content { overflow-x: hidden; overflow-y: auto; }
-    .app-swipe-content .app-swipe-card { flex: 0 0 auto; min-height: 0; overflow: visible; }
-    .app-swipe-card .bg-card-surface.p-5 { padding: 12px 14px; }
-    .app-swipe-card .listing-card-specs { margin-top: 8px; }
-    .app-swipe-card .app-swipe-price-row { margin-top: 8px; padding-top: 9px; }
-    .app-swipe-content .app-swipe-actions { margin-top: 10px; }
-    .app-swipe-content .app-swipe-hint { margin-top: 6px; }
-    @media (max-height: 750px) {
-      .app-swipe-view .h-72 { height: clamp(100px, 16dvh, 142px); }
-      .app-swipe-content .app-swipe-hint { display: none; }
-      .app-swipe-content .app-swipe-actions { margin-top: 8px; }
-    }
+    .app-swipe-view .h-72 { height: clamp(140px, 24dvh, 240px); }
+    .app-swipe-view .app-swipe-content { overflow: hidden; }
+    .app-swipe-content .app-swipe-card { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
   }
   @media (min-width: 1024px) { .app-swipe-view { inset: 0; z-index: 60; } }
   .app-header-link {
