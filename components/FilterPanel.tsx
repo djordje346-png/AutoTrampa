@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CalendarDays, CarFront, ChevronDown, Fuel, Gauge, RotateCcw, SlidersHorizontal, Tag } from 'lucide-react';
-import { BRAND_NAMES } from '@/lib/car-brands';
+import { BRAND_NAMES, CAR_BRANDS } from '@/lib/car-brands';
 import { bodyLabel, fuelLabel } from '@/lib/labels';
 import { type BodyType, type FuelType } from '@/types';
 import { BODY_TYPES } from '@/lib/body-types';
@@ -52,7 +52,7 @@ export function DesktopCompactFilterGroups({
     {
       id: 'brand', label: 'Marka', value: filters.brand ?? 'Sve marke', icon: CarFront,
       options: [{ value: null, label: 'Sve marke' }, ...BRAND_NAMES.map((value) => ({ value, label: value }))],
-      select: (value: string | null) => update({ brand: value }),
+      select: (value: string | null) => update({ brand: value, model: null }),
     },
     {
       id: 'body', label: 'Karoserija', value: filters.bodyType ? bodyLabel(filters.bodyType) : 'Sve karoserije', icon: CarFront,
@@ -128,8 +128,7 @@ export function DesktopCompactFilterGroups({
 }
 
 export function FilterGroups({ filters, update, showTrade, className = 'space-y-5' }: FilterGroupsProps) {
-  const [showAllBrands, setShowAllBrands] = useState(false);
-  const brands = showAllBrands ? BRAND_NAMES : BRAND_NAMES.slice(0, 10);
+
 
   return (
     <div className={className}>
@@ -150,33 +149,40 @@ export function FilterGroups({ filters, update, showTrade, className = 'space-y-
         </section>
       )}
 
-      <section>
-        <p className={GROUP_TITLE}>Marka</p>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          <button
-            onClick={() => update({ brand: null })}
-            className={`${CHIP_BASE} ${filters.brand === null ? CHIP_ON : CHIP_OFF}`}
-          >
-            Sve marke
-          </button>
-          {brands.map((brand) => (
-            <button
-              key={brand}
-              onClick={() => update({ brand: filters.brand === brand ? null : brand })}
-              className={`${CHIP_BASE} ${filters.brand === brand ? CHIP_ON : CHIP_OFF}`}
+      <section className="space-y-3">
+        <div>
+          <label htmlFor="car-filter-brand" className={GROUP_TITLE}>Marka</label>
+          <div className="relative mt-2">
+            <select
+              id="car-filter-brand"
+              value={filters.brand ?? ''}
+              onChange={(event) => update({ brand: event.target.value || null, model: null })}
+              className={`${NUM_INPUT} appearance-none pr-10`}
             >
-              {brand}
-            </button>
-          ))}
+              <option value="">Sve marke</option>
+              {BRAND_NAMES.map((brand) => <option key={brand} value={brand}>{brand}</option>)}
+            </select>
+            <ChevronDown size={16} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-app-muted" />
+          </div>
         </div>
-        {BRAND_NAMES.length > 10 && (
-          <button
-            onClick={() => setShowAllBrands((v) => !v)}
-            className="mt-2 text-[11px] font-semibold text-brand-text hover:underline"
-          >
-            {showAllBrands ? 'Prikaži manje' : `Prikaži sve (${BRAND_NAMES.length})`}
-          </button>
-        )}
+        <div>
+          <label htmlFor="car-filter-model" className={GROUP_TITLE}>Model</label>
+          <div className="relative mt-2">
+            <select
+              id="car-filter-model"
+              value={filters.brand && CAR_BRANDS[filters.brand]?.includes(filters.model ?? '') ? filters.model ?? '' : ''}
+              onChange={(event) => update({ model: event.target.value || null })}
+              disabled={!filters.brand}
+              className={`${NUM_INPUT} appearance-none pr-10 disabled:cursor-not-allowed disabled:opacity-50`}
+            >
+              <option value="">{filters.brand ? 'Svi modeli' : 'Prvo izaberi marku'}</option>
+              {(filters.brand ? CAR_BRANDS[filters.brand] ?? [] : []).map((model) => (
+                <option key={model} value={model}>{model}</option>
+              ))}
+            </select>
+            <ChevronDown size={16} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-app-muted" />
+          </div>
+        </div>
       </section>
 
       <section>
