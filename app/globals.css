@@ -11,10 +11,10 @@
     --card-foreground: 219.13 41.82% 10.78%;
     --popover: 0.00000 0.00000% 100.00000%;
     --popover-foreground: 219.13 41.82% 10.78%;
-    --primary: 24.62 86.93% 60.98%;
+    --primary: 22.77 100% 54.31%;
     --brand-text: 20.14 76.84% 37.25%;
-    --brand-hover: 23.46 79.56% 55.88%;
-    --brand-pressed: 22.63 67.07% 51.18%;
+    --brand-hover: 21.03 94.48% 49.8%;
+    --brand-pressed: 20.42 88.95% 44.9%;
     --brand-soft: 25.38 100% 94.9%;
     --brand-soft-border: 26.4 78.95% 81.37%;
     --primary-foreground: 219.13 41.82% 10.78%;
@@ -22,7 +22,7 @@
     --secondary-foreground: 217.24138 56.86275% 10.00000%;
     --muted: 220.00000 50.00000% 97.64706%;
     --muted-foreground: 213 16.95% 46.27%;
-    --accent: 24.62 86.93% 60.98%;
+    --accent: 22.77 100% 54.31%;
     --accent-foreground: 217.24138 56.86275% 10.00000%;
     --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
@@ -88,10 +88,10 @@
     --card-foreground: 220 42.86% 97.25%;
     --popover: 218 42.86% 13.73%;
     --popover-foreground: 220 42.86% 97.25%;
-    --primary: 24.62 86.93% 60.98%;
-    --brand-text: 24.62 86.93% 60.98%;
-    --brand-hover: 23.46 79.56% 55.88%;
-    --brand-pressed: 22.63 67.07% 51.18%;
+    --primary: 22.77 100% 54.31%;
+    --brand-text: 22.77 100% 54.31%;
+    --brand-hover: 21.03 94.48% 49.8%;
+    --brand-pressed: 20.42 88.95% 44.9%;
     --brand-soft: 17.65 21.52% 15.49%;
     --brand-soft-border: 24.55 41.77% 30.98%;
     --primary-foreground: 219.13 41.82% 10.78%;
@@ -99,13 +99,13 @@
     --secondary-foreground: 210.00000 40.00000% 98.03922%;
     --muted: 216.67 39.13% 18.04%;
     --muted-foreground: 215.62 23.19% 72.94%;
-    --accent: 24.62 86.93% 60.98%;
+    --accent: 22.77 100% 54.31%;
     --accent-foreground: 219.13 41.82% 10.78%;
     --destructive: 2.18 50% 43.14%;
     --destructive-foreground: 0 0% 100%;
     --border: 215.38 31.2% 24.51%;
     --input: 215.38 31.2% 24.51%;
-    --ring: 24.62 86.93% 60.98%;
+    --ring: 22.77 100% 54.31%;
     --radius: 0.75rem;
 
     /* Denim blue denotes selections and switches with light labels. */
@@ -306,7 +306,7 @@
   .control-focus {
     --ring: var(--control-ring);
   }
-  /* Legible warm accent: deeper on white, soft orange on navy. */
+  /* Legible warm accent: deeper on white, energetic orange on navy. */
   .text-brand-text {
     color: hsl(var(--brand-text));
   }
