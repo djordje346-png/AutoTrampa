@@ -282,3 +282,23 @@
 .closingDescription{font-size:13px;line-height:1.65;margin-top:13px;max-width:450px}
 .closing .actions{margin-top:20px}
 }
+
+/* Two actual vehicle photos flanking the centered hero, cropped from the existing approved automotive asset. */
+.heroSideCars{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:-1}
+.heroSideCar{position:absolute;bottom:-20px;width:min(36vw,520px);height:320px;background-image:url('/images/landing/hero-swap.webp');background-repeat:no-repeat;background-size:1100px 550px;opacity:.62;filter:saturate(.72) contrast(.96);mix-blend-mode:multiply}
+.heroSideCarLeft{left:max(-100px,calc(50% - 820px));background-position:-410px -213px;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 57%,transparent 100%),linear-gradient(to top,#000 0%,#000 80%,transparent 100%);mask-image:linear-gradient(to right,#000 0%,#000 57%,transparent 100%),linear-gradient(to top,#000 0%,#000 80%,transparent 100%);-webkit-mask-composite:source-in;mask-composite:intersect}
+.heroSideCarRight{right:max(-100px,calc(50% - 820px));background-position:-780px -213px;-webkit-mask-image:linear-gradient(to left,#000 0%,#000 57%,transparent 100%),linear-gradient(to top,#000 0%,#000 80%,transparent 100%);mask-image:linear-gradient(to left,#000 0%,#000 57%,transparent 100%),linear-gradient(to top,#000 0%,#000 80%,transparent 100%);-webkit-mask-composite:source-in;mask-composite:intersect}
+.heroNew:after{background:radial-gradient(ellipse 46% 98% at 50% 43%,rgba(250,252,254,1) 0%,rgba(250,252,254,.98) 50%,rgba(250,252,254,.5) 84%,transparent 100%)}
+.heroNewInner{z-index:1}
+@media(max-width:1023px){
+.heroSideCar{width:42vw;height:290px;background-size:990px 495px;bottom:-22px;opacity:.46}
+.heroSideCarLeft{left:-95px;background-position:-369px -193px}
+.heroSideCarRight{right:-95px;background-position:-702px -193px}
+}
+@media(max-width:767px){
+.heroSideCar{width:65vw;max-width:330px;height:222px;background-size:750px 375px;bottom:-12px;opacity:.44}
+.heroSideCarLeft{left:-70px;background-position:-280px -146px}
+.heroSideCarRight{right:-70px;background-position:-532px -146px}
+.heroNew:after{background:linear-gradient(to bottom,rgba(250,252,254,1) 0%,rgba(250,252,254,.99) 43%,rgba(250,252,254,.78) 70%,rgba(250,252,254,.1) 100%)}
+.heroNewInner{padding-bottom:91px}
+}
