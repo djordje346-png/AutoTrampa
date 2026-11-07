@@ -32,10 +32,10 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
     <div className={styles.landing}>
       <PublicHeader landing onAddCar={onAddCar} onSignIn={onSignIn} onRegister={onRegister} />
       <section className={styles.heroNew} aria-labelledby="landing-title">
-        <picture className={styles.heroBackdrop}>
-          <source media="(max-width: 767px)" srcSet="/images/landing/hero-swap-mobile.webp" />
-          <img src="/images/landing/hero-swap.webp" alt="" fetchPriority="high" width={1774} height={887} />
-        </picture>
+        <div className={styles.heroSideCars} aria-hidden="true">
+          <div className={`${styles.heroSideCar} ${styles.heroSideCarLeft}`} />
+          <div className={`${styles.heroSideCar} ${styles.heroSideCarRight}`} />
+        </div>
         <div className={`app-container ${styles.heroNewInner}`}>
           <div className={styles.heroNewCopy}>
             <div className={styles.heroLogo}><BrandLockup variant="light" /></div>
