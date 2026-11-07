@@ -20,9 +20,11 @@ interface Priced {
 }
 
 /**
- * Sort cars by budget awareness — does NOT filter, only reorders.
- * Cars within budget float to the top; the rest stays below, still visible.
- * When noTopUp is true, cars where the user would add cash sink to the bottom.
+ * Budget is a ranking preference, not a hard filter.
+ * Zero/unset means "budget doesn't matter". A positive budget prioritizes
+ * eligible top-ups closest to that maximum (e.g. 19k before 15k for a 20k cap).
+ * Cars exceeding the maximum remain visible after eligible cars.
+ * "No top-up" overrides any stored budget without deleting it.
  */
 export function sortByBudget<T extends Priced>(
   cars: T[],
@@ -30,28 +32,36 @@ export function sortByBudget<T extends Priced>(
   budget: number | null,
   noTopUp: boolean,
 ): T[] {
-  if (!budget && !noTopUp) return cars;
+  if (!noTopUp && (budget == null || budget <= 0)) return cars;
 
-  const diff = (c: Priced) => c.price - myCar.price;
-
+  const diff = (car: Priced) => car.price - myCar.price;
   return [...cars].sort((a, b) => {
     const da = diff(a);
     const db = diff(b);
 
     if (noTopUp) {
-      const aTopUp = da > TRADE_TOLERANCE;
-      const bTopUp = db > TRADE_TOLERANCE;
-      if (aTopUp !== bTopUp) return aTopUp ? 1 : -1;
+      const aNeedsTopUp = da > TRADE_TOLERANCE;
+      const bNeedsTopUp = db > TRADE_TOLERANCE;
+      // Preserve the selected ordering within each group.
+      return aNeedsTopUp === bNeedsTopUp ? 0 : aNeedsTopUp ? 1 : -1;
     }
 
-    if (budget != null) {
-      const aInBudget = da <= budget;
-      const bInBudget = db <= budget;
-      if (aInBudget !== bInBudget) return aInBudget ? -1 : 1;
-      return Math.abs(da) - Math.abs(db);
+    const limit = budget!;
+    const aEligible = da <= limit;
+    const bEligible = db <= limit;
+    if (aEligible !== bEligible) return aEligible ? -1 : 1;
+
+    if (aEligible) {
+      // Eligible positive top-ups precede even swaps and received top-ups.
+      const aPositive = da >= 0;
+      const bPositive = db >= 0;
+      if (aPositive !== bPositive) return aPositive ? -1 : 1;
+      // Closest to the ceiling first; negative values naturally follow.
+      return db - da;
     }
 
-    return 0;
+    // Above limit: least additional money required comes first.
+    return da - db;
   });
 }
 
