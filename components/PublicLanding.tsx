@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftRight, ArrowRight, CarFront, CheckCircle2, Search, Sparkles, Wallet, RefreshCw } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Camera, CheckCircle2, Heart, Search, Sparkles, Wallet, RefreshCw, Upload, X } from 'lucide-react';
 import { formatEuro, formatYear } from '@/lib/cars';
 import type { Car } from '@/types';
 import BrandLockup from '@/components/BrandLockup';
@@ -17,9 +17,9 @@ interface PublicLandingProps {
 }
 
 const STEPS = [
-  { number: '01', icon: CarFront, title: 'Predstavi svoj auto', description: 'Dodaj fotografije i osnovne podatke o svom vozilu.' },
-  { number: '02', icon: Search, title: 'Pronađi vozilo', description: 'Pregledaj oglase i izaberi automobil koji želiš.' },
-  { number: '03', icon: ArrowLeftRight, title: 'Ponudi zamenu', description: 'Kontaktiraj vlasnika i dogovorite uslove zamene.' },
+  { number: '01', title: 'Predstavi svoj auto', description: 'Dodaj fotografije i osnovne podatke o svom vozilu.' },
+  { number: '02', title: 'Pronađi vozilo', description: 'Pregledaj automobile kroz Swipe i pametno sortirane oglase.' },
+  { number: '03', title: 'Ponudi zamenu', description: 'Pošalji ponudu za zamenu, a kada se dopadnete jedno drugom — povežite se.' },
 ] as const;
 
 export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn, onRegister }: PublicLandingProps) {
@@ -41,7 +41,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
             <div className={styles.heroLogo}><BrandLockup variant="light" /></div>
             <p className={styles.heroNewEyebrow}>Platforma za zamenu automobila</p>
             <h1 id="landing-title">Pronađi auto koji želiš.<span>Ponudi svoj u zamenu.</span></h1>
-            <p>Pregledaj oglase, pronađi vozilo koje ti odgovara i predloži zamenu. Uz doplatu ili bez nje — dogovarate se direktno.</p>
+            <p>Pronađi vozilo koje ti odgovara i ponudi svoj auto u zamenu — uz doplatu ili bez nje.</p>
             <div className={styles.heroNewActions}>
               <button type="button" onClick={onAddCar} className={styles.primary}>Dodaj svoj auto <ArrowRight size={17} aria-hidden="true" /></button>
               <Link href="/search" className={styles.secondary}><Search size={17} aria-hidden="true" /> Pogledaj oglase</Link>
@@ -58,13 +58,46 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
             <p>Tri jednostavna koraka do automobila koji želiš.</p>
           </div>
           <ol className={styles.howNewGrid}>
-            {STEPS.map(({ number, icon: Icon, title, description }, index) => (
+            {STEPS.map(({ number, title, description }, index) => (
               <li className={styles.howNewStep} key={number}>
-                <div className={styles.howNewVisual}>
-                  {publicCars[index]?.image ? (
-                    <img src={publicCars[index].image} alt="" loading="lazy" />
+                <div className={styles.howNewVisual} aria-hidden="true">
+                  {index === 0 ? (
+                    <div className={styles.stepMockupAdd}>
+                      <div className={styles.stepMockupTop}><span className={styles.stepMockupDot} /> Dodaj vozilo <span className={styles.stepMockupCount}>Korak 1/3</span></div>
+                      <div className={styles.stepUploadLayout}>
+                        <div className={styles.stepUploadImage}>
+                          {publicCars[0]?.image ? <img src={publicCars[0].image} alt="" loading="lazy" /> : <Camera size={27} />}
+                          <span className={styles.stepUploadBadge}><Upload size={10}/> Dodaj slike</span>
+                        </div>
+                        <div className={styles.stepFormFields}>
+                          <span>Marka i model</span><strong>Moje vozilo</strong>
+                          <span>Godište</span><strong>Izaberi godište <span>⌄</span></strong>
+                          <span className={styles.stepFormAction}>Nastavi <ArrowRight size={11}/></span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : index === 1 ? (
+                    <div className={styles.stepMockupSwipe}>
+                      <div className={styles.stepSwipeCard}>
+                        <div className={styles.stepSwipePicture}>{publicCars[1]?.image ? <img src={publicCars[1].image} alt="" loading="lazy" /> : <Camera size={34}/>}</div>
+                        <div className={styles.stepSwipeCaption}><strong>{publicCars[1]?.brand ?? 'Pronađi'} {publicCars[1]?.model ?? 'svoj auto'}</strong><span>Swipe režim</span></div>
+                        <div className={styles.stepSwipeButtons}><span><X size={14}/></span><span><Heart size={14}/></span></div>
+                      </div>
+                      <span className={styles.stepSwipeMini}><ArrowLeftRight size={15}/></span>
+                    </div>
                   ) : (
-                    <Icon size={52} strokeWidth={1.4} aria-hidden="true" />
+                    <div className={styles.stepMockupMatch}>
+                      <div className={styles.stepMatchImages}>
+                        <div>{publicCars[0]?.image ? <img src={publicCars[0].image} alt="" loading="lazy" /> : <Camera size={26}/>}</div>
+                        <span><ArrowLeftRight size={16}/></span>
+                        <div>{publicCars[2]?.image ? <img src={publicCars[2].image} alt="" loading="lazy" /> : <Camera size={26}/>}</div>
+                      </div>
+                      <div className={styles.stepMatchPanel}>
+                        <strong>Nova ponuda za zamenu</strong>
+                        <span>Vozila su povezana</span>
+                        <span className={styles.stepMatchAction}><CheckCircle2 size={12}/> Pogledaj ponudu</span>
+                      </div>
+                    </div>
                   )}
                 </div>
                 <div className={styles.howNewNumber}>KORAK {number}</div>
