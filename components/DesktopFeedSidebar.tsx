@@ -81,9 +81,9 @@ export function DesktopFeedSidebar({
     setBudgetEditorOpen(false);
   }
 
-  async function saveRadiusDraft() {
-    if (radiusDraft === preferences.radius) return;
-    const result = await update({ radius: radiusDraft });
+  async function saveRadiusDraft(value: number) {
+    if (value === preferences.radius) return;
+    const result = await update({ radius: value });
     if (!result.ok) {
       setRadiusDraft(preferences.radius);
       toast.error(result.message || 'Radius pretrage nije sačuvan. Pokušaj ponovo.');
@@ -250,21 +250,22 @@ export function DesktopFeedSidebar({
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold text-app-primary dark:text-app-primary">Radius pretrage</p>
             <span className="rounded-full bg-brand-500/10 px-2 py-0.5 text-xs font-bold text-brand-text">
-              {preferencesReady ? `${radiusDraft >= 200 ? "200+" : radiusDraft} km` : 'Učitavanje…'}
+              {preferencesReady ? `${radiusDraft >= 550 ? "500+" : radiusDraft} km` : 'Učitavanje…'}
             </span>
           </div>
           <input
             type="range"
-            min={10}
-            max={200}
-            step={10}
+            min={50}
+            max={550}
+            step={50}
             value={radiusDraft}
             disabled={!preferencesReady}
             onChange={(event) => setRadiusDraft(Number(event.target.value))}
-            onPointerUp={() => void saveRadiusDraft()}
+            onPointerUp={(event) => void saveRadiusDraft(Number(event.currentTarget.value))}
+            onBlur={(event) => void saveRadiusDraft(Number(event.currentTarget.value))}
             onKeyUp={(event) => {
               if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) {
-                void saveRadiusDraft();
+                void saveRadiusDraft(Number(event.currentTarget.value));
               }
             }}
             aria-label="Radius pretrage u kilometrima"
