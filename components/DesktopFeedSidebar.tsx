@@ -209,7 +209,7 @@ export function DesktopFeedSidebar({
           <div className="min-w-0">
             <p className="text-xs font-semibold text-app-primary dark:text-app-primary">Budžet za doplatu</p>
             <p className="mt-1 truncate text-sm font-bold text-brand-text">
-              {!preferencesReady ? 'Učitavanje…' : preferences.noTopUp ? 'Bez doplate' : preferences.budget == null ? 'Nije postavljen' : `do ${formatEuro(preferences.budget)}`}
+              {!preferencesReady ? 'Učitavanje…' : preferences.noTopUp ? 'Bez doplate' : preferences.budget == null || preferences.budget <= 0 ? 'Nije postavljen' : `do ${formatEuro(preferences.budget)}`}
             </p>
             <p className="mt-1 text-[10px] text-app-muted">Koristi se za preporuke</p>
           </div>
