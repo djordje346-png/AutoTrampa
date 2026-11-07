@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftRight, ArrowRight, CarFront, CheckCircle2, Search } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, CarFront, CheckCircle2, Search, MessageCircle, Wallet, RefreshCw } from 'lucide-react';
 import { formatEuro, formatYear } from '@/lib/cars';
 import type { Car } from '@/types';
 import BrandLockup from '@/components/BrandLockup';
 import PublicHeader from '@/components/PublicHeader';
-import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import styles from './PublicLanding.module.css';
 
 interface PublicLandingProps {
@@ -114,17 +113,43 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
         </div>
       </section>
 
+      <section id="zasto-autotrampa" className={styles.why} aria-labelledby="why-title">
+        <div className={`app-container ${styles.whyInner}`}>
+          <div className={styles.whyIntro}>
+            <p className={styles.howEyebrow}>Zašto AutoTrampa?</p>
+            <h2 id="why-title">Promeni auto.<br /><span>Ne moraš prvo da ga prodaš.</span></h2>
+            <p>Umesto da posebno tražiš kupca za svoj automobil, pronađi drugo vozilo i direktno predloži zamenu njegovom vlasniku.</p>
+            <Link href="/search" className={styles.whyLink}>Istraži vozila <ArrowRight size={17} aria-hidden="true" /></Link>
+          </div>
+          <div className={styles.whyFeatures}>
+            <article className={styles.whyFeature}>
+              <div className={styles.whyIcon}><RefreshCw size={22} strokeWidth={1.8} aria-hidden="true" /></div>
+              <div><h3>Zamena bez prethodne prodaje</h3><p>Ponudi automobil koji već voziš i pronađi vozilo koje želiš.</p></div>
+            </article>
+            <article className={styles.whyFeature}>
+              <div className={styles.whyIcon}><Wallet size={22} strokeWidth={1.8} aria-hidden="true" /></div>
+              <div><h3>Uz doplatu ili bez nje</h3><p>Uporedi vrednosti vozila i dogovori doplatu koja odgovara obema stranama.</p></div>
+            </article>
+            <article className={styles.whyFeature}>
+              <div className={styles.whyIcon}><MessageCircle size={22} strokeWidth={1.8} aria-hidden="true" /></div>
+              <div><h3>Direktno sa vlasnikom</h3><p>Pošalji ponudu i razgovaraj o uslovima zamene bez posredovanja u dogovoru.</p></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="smart-match" className={styles.closing} aria-labelledby="closing-title">
         <img className={styles.closingImage} src="/images/landing/drive-cta.webp" alt="" loading="lazy" width={1942} height={809} />
         <div className={`app-container ${styles.closingInner}`}>
-          <p className={styles.eyebrow}>Nova vožnja je bliže nego što misliš</p>
-          <h2 id="closing-title">Dodaj svoj auto<br />i pronađi zamenu već danas.</h2>
+          <p className={styles.eyebrow}>Spreman za sledeći automobil?</p>
+          <h2 id="closing-title">Tvoj sledeći auto počinje<br />jednom ponudom.</h2>
+          <p className={styles.closingDescription}>Dodaj svoje vozilo, pronađi automobil koji ti se dopada i predloži zamenu. Dalji dogovor je između vas.</p>
           <div className={styles.actions}>
             <button type="button" className={styles.primary} onClick={onAddCar}>Dodaj svoj auto <ArrowRight size={18} aria-hidden="true" /></button>
             <Link href="/search" className={`${styles.secondary} ${styles.secondaryDark}`}><Search size={18} aria-hidden="true" /> Pogledaj oglase</Link>
           </div>
           <ul className={styles.closingBenefits} aria-label="Prednosti zamene">
-            {['Brzo i jednostavno', 'Direktno sa vlasnicima', 'Uz doplatu ili bez nje'].map((text) => <li key={text}><CheckCircle2 size={18} aria-hidden="true" />{text}</li>)}
+            {['Besplatno pregledanje oglasa', 'Direktan dogovor', 'Zamena uz doplatu ili bez nje'].map((text) => <li key={text}><CheckCircle2 size={18} aria-hidden="true" />{text}</li>)}
           </ul>
         </div>
       </section>
