@@ -271,7 +271,7 @@ export default function ProfileClient() {
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-app-secondary dark:text-app-secondary">Budžet za doplatu</label>
               <span className="text-xs font-bold text-brand-text bg-brand-500/10 px-2 py-0.5 rounded-full">
-                {!preferencesReady ? 'Učitavanje…' : noTopUp ? 'Bez doplate' : budget != null ? formatEuro(budget) : 'Nije postavljen'}
+                {!preferencesReady ? 'Učitavanje…' : noTopUp ? 'Bez doplate' : budget != null && budget > 0 ? formatEuro(budget) : 'Nije postavljen'}
               </span>
             </div>
             <input
@@ -298,12 +298,12 @@ export default function ProfileClient() {
               }`}
             />
             <p className="mt-1.5 text-[11px] leading-relaxed text-app-muted">
-              Budžet služi da ti bolje predložimo oglase. Ne filtrira — sva vozila ostaju vidljiva, samo redosled se menja.
+              Za zadati budžet prvo prikazujemo doplate najbliže tom iznosu, bez prekoračenja. Ako ostaviš 0 €, budžet ne utiče na redosled. Sva vozila ostaju dostupna.
             </p>
             <button
               ref={noTopUpButtonRef}
               disabled={!preferencesReady}
-              onClick={() => void savePreference({ noTopUp: !noTopUp, ...(noTopUp ? {} : { budget: null }) })}
+              onClick={() => void savePreference({ noTopUp: !noTopUp })}
               aria-pressed={noTopUp}
               className="control-focus mt-2.5 flex items-center gap-2.5 w-full text-left"
             >
@@ -319,6 +319,8 @@ export default function ProfileClient() {
           </div>
 
           <div>
+            <p className="mb-2 text-xs font-semibold text-app-secondary">Omiljene karoserije</p>
+            <p className="mb-2 text-[11px] leading-relaxed text-app-muted">Dajemo prednost izabranim tipovima kada su ostali uslovi uporedivi; druga vozila i dalje ostaju vidljiva.</p>
             <div className="flex flex-wrap gap-2">
               {BODY_TYPE_PREFS.map(type => {
                 const active = bodyPrefs.includes(type);
