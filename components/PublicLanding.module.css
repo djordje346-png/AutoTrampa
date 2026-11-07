@@ -237,3 +237,48 @@
 }
 @media(max-width:359px){.heroNewActions .primary,.heroNewActions .secondary{flex-basis:100%}}
 @media(prefers-reduced-motion:reduce){.activityCard{transition:none}.activityCard:hover{transform:none}}
+
+/* Why AutoTrampa: editorial split layout, deliberately distinct from the three steps. */
+.why{background:#fff;scroll-margin-top:90px;padding:82px 0 87px}
+.whyInner{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(42px,7vw,115px);align-items:center}
+.whyIntro h2{margin:0;font-size:clamp(31px,3.7vw,48px);line-height:1.17;letter-spacing:-.049em;color:#0b1628;font-weight:800}
+.whyIntro h2 span{color:#bd692d}
+.whyIntro>p:not(.howEyebrow){max-width:465px;margin:18px 0 0;color:#61718a;font-size:15px;line-height:1.8}
+.whyLink{display:inline-flex;align-items:center;gap:10px;margin-top:25px;color:#994b19;border-bottom:2px solid #f58a38;padding-bottom:6px;font-size:13px;font-weight:800;text-decoration:none}
+.whyLink:hover{color:#703712}
+.whyFeatures{border-top:1px solid #e2e7ee}
+.whyFeature{display:flex;align-items:flex-start;gap:19px;padding:24px 0;border-bottom:1px solid #e2e7ee}
+.whyIcon{width:48px;height:48px;flex:0 0 48px;display:flex;align-items:center;justify-content:center;color:#ac5c27;border-radius:13px;background:#fff1e6}
+.whyFeature h3{margin:0;color:#0b1628;font-size:18px;line-height:1.4;font-weight:800;letter-spacing:-.025em}
+.whyFeature p{max-width:440px;margin:7px 0 0;color:#63748a;font-size:13px;line-height:1.7}
+.closingDescription{max-width:570px;margin:18px 0 0;font-size:15px;line-height:1.7;color:#e0e7ef}
+.closingInner{min-height:420px;display:flex;flex-direction:column;justify-content:center}
+.closing .eyebrow{margin-bottom:13px;letter-spacing:.15em}
+.closing h2{max-width:800px}
+.closing .actions{margin-top:24px}
+@media(max-width:1023px){
+.why{padding:65px 0 68px}
+.whyInner{grid-template-columns:1fr;gap:26px}
+.whyIntro h2{max-width:630px}
+.whyIntro>p:not(.howEyebrow){max-width:610px}
+.whyFeatures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;border-top:0}
+.whyFeature{display:block;border:1px solid #e2e7ee;padding:20px;border-radius:15px}
+.whyIcon{margin-bottom:15px}
+.whyFeature h3{font-size:16px}
+.whyFeature p{font-size:12px}
+}
+@media(max-width:767px){
+.why{padding:49px 0 53px}
+.whyInner{gap:24px}
+.whyIntro h2{font-size:30px}
+.whyIntro>p:not(.howEyebrow){font-size:13px;line-height:1.7;margin-top:12px}
+.whyLink{margin-top:16px}
+.whyFeatures{display:flex;flex-direction:column;gap:0;border-top:1px solid #e2e7ee}
+.whyFeature{display:flex;gap:14px;width:100%;padding:19px 0;border:0;border-bottom:1px solid #e2e7ee;border-radius:0}
+.whyIcon{width:43px;height:43px;flex-basis:43px;margin:0}
+.whyFeature h3{font-size:15px}
+.whyFeature p{font-size:12px;margin-top:5px}
+.closingInner{min-height:0}
+.closingDescription{font-size:13px;line-height:1.65;margin-top:13px;max-width:450px}
+.closing .actions{margin-top:20px}
+}
