@@ -67,7 +67,8 @@ export function sortByBudget<T extends Priced>(
 
 /** Returns true if a car's top-up falls within the user's budget. */
 export function isWithinBudget(car: Priced, myCar: Priced, budget: number | null): boolean {
-  if (budget == null) return false;
+  // Zero is an unset/neutral budget, not a request for a zero-euro top-up.
+  if (budget == null || budget <= 0) return false;
   return car.price - myCar.price <= budget;
 }
 
