@@ -169,7 +169,7 @@ export function DesktopFeedOverview({
                 ? 'Učitavanje…'
                 : preferences.noTopUp
                   ? 'Bez doplate'
-                  : preferences.budget == null
+                  : preferences.budget == null || preferences.budget <= 0
                     ? 'Nije postavljen'
                     : `do ${formatEuro(preferences.budget)}`}
             </p>
