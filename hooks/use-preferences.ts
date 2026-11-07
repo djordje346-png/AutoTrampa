@@ -14,7 +14,7 @@ export interface Preferences {
   phoneAfterMatch: boolean;
   /** Budget for top-up in EUR. null = not set. */
   budget: number | null;
-  /** If true, user does not want to pay extra — hide cars where they'd add cash. */
+  /** If true, prioritize swaps without user top-up; other cars remain visible. */
   noTopUp: boolean;
 }
 
