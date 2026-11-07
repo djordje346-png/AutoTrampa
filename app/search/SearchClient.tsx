@@ -63,8 +63,9 @@ export default function SearchClient() {
         preferences.noTopUp,
         selectedCar?.city ?? '',
         preferences.radius,
+        preferences.bodyPrefs,
       ),
-    [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius],
+    [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs],
   );
 
   const hasFilters =
@@ -75,17 +76,17 @@ export default function SearchClient() {
       ? getAlternativeCars(
           marketplaceCars, results, { ...filters, sortBy: effectiveSort },
           selectedCar, preferences.budget, preferences.noTopUp,
-          selectedCar?.city ?? '', preferences.radius,
+          selectedCar?.city ?? '', preferences.radius, preferences.bodyPrefs,
         )
       : [],
-    [showAlternatives, marketplaceCars, results, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius],
+    [showAlternatives, marketplaceCars, results, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs],
   );
   const displayCars = useMemo(
     () => showAlternatives ? [...results, ...alternativeCars] : results,
     [showAlternatives, results, alternativeCars],
   );
 
-  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, preferences.budget, preferences.noTopUp, preferences.radius, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
+  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   function openOffer(car: Car) {
     const continueToOffer = () => requestPhoneAction(() => setOfferCar(car));
