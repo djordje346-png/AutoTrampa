@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftRight, ArrowRight, CarFront, CheckCircle2, ChevronRight, MapPin, Search, Tag, UsersRound } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, CarFront, CheckCircle2, Search } from 'lucide-react';
+import { formatEuro, formatYear } from '@/lib/cars';
 import type { Car } from '@/types';
 import BrandLockup from '@/components/BrandLockup';
 import PublicHeader from '@/components/PublicHeader';
@@ -17,9 +18,9 @@ interface PublicLandingProps {
 }
 
 const STEPS = [
-  { number: '01', icon: CarFront, title: 'Dodaj auto', description: 'Unesi osnovne informacije i fotografije svog vozila.' },
-  { number: '02', icon: Search, title: 'Pronađi zamenu', description: 'Pregledaj oglase i vidi kakva doplata ti odgovara.' },
-  { number: '03', icon: ArrowLeftRight, title: 'Dogovori doplatu', description: 'Kontaktiraj vlasnika direktno i dogovorite zamenu.' },
+  { number: '01', icon: CarFront, title: 'Predstavi svoj auto', description: 'Dodaj fotografije i osnovne podatke o svom vozilu.' },
+  { number: '02', icon: Search, title: 'Pronađi vozilo', description: 'Pregledaj oglase i izaberi automobil koji želiš.' },
+  { number: '03', icon: ArrowLeftRight, title: 'Ponudi zamenu', description: 'Kontaktiraj vlasnika i dogovorite uslove zamene.' },
 ] as const;
 
 export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn, onRegister }: PublicLandingProps) {
@@ -31,56 +32,85 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
   return (
     <div className={styles.landing}>
       <PublicHeader landing onAddCar={onAddCar} onSignIn={onSignIn} onRegister={onRegister} />
-      <section className={styles.hero} aria-labelledby="landing-title">
-        <picture><source media="(max-width: 1023px)" srcSet="/images/landing/hero-swap-mobile.webp" /><img className={styles.heroImage} src="/images/landing/hero-swap.webp" alt="" fetchPriority="high" width={1774} height={887} /></picture>
-        <div className={`app-container ${styles.heroInner}`}>
-          <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Jasna zamena</p>
-            <h1 id="landing-title">Zameni auto.<br />Ne prodaj ga prvo.</h1>
-            <p className={styles.intro}>Dodaj svoj auto i pronađi vlasnike koji žele baš tvoje vozilo — uz doplatu ili bez nje.</p>
-            <div className={styles.actions}>
-              <button type="button" onClick={onAddCar} className={styles.primary}>Dodaj svoj auto <ArrowRight size={18} aria-hidden="true" /></button>
-              <Link href="/search" className={styles.secondary}><Search size={18} aria-hidden="true" /> Pogledaj oglase</Link>
+      <section className={styles.heroNew} aria-labelledby="landing-title">
+        <picture className={styles.heroBackdrop}>
+          <source media="(max-width: 767px)" srcSet="/images/landing/hero-swap-mobile.webp" />
+          <img src="/images/landing/hero-swap.webp" alt="" fetchPriority="high" width={1774} height={887} />
+        </picture>
+        <div className={`app-container ${styles.heroNewInner}`}>
+          <div className={styles.heroNewCopy}>
+            <div className={styles.heroLogo}><BrandLockup variant="light" /></div>
+            <p className={styles.heroNewEyebrow}>Platforma za zamenu automobila</p>
+            <h1 id="landing-title">Pronađi auto koji želiš.<span>Ponudi svoj u zamenu.</span></h1>
+            <p>Pregledaj oglase, pronađi vozilo koje ti odgovara i predloži zamenu. Uz doplatu ili bez nje — dogovarate se direktno.</p>
+            <div className={styles.heroNewActions}>
+              <button type="button" onClick={onAddCar} className={styles.primary}>Dodaj svoj auto <ArrowRight size={17} aria-hidden="true" /></button>
+              <Link href="/search" className={styles.secondary}><Search size={17} aria-hidden="true" /> Pogledaj oglase</Link>
             </div>
-            <ul className={styles.benefits} aria-label="Prednosti AutoTrampe">
-              <li><Tag size={18} aria-hidden="true" /> Stvarni oglasi</li>
-              <li><UsersRound size={18} aria-hidden="true" /> Direktno sa vlasnicima</li>
-              <li><MapPin size={18} aria-hidden="true" /> Širom Srbije</li>
-            </ul>
           </div>
-          <span className={styles.swapMark} aria-hidden="true"><ArrowLeftRight size={30} strokeWidth={2.3} /></span>
         </div>
       </section>
 
-      <section id="kako-funkcionise" className={`app-container ${styles.how}`} aria-labelledby="how-title">
-        <div className={styles.sectionHeading}>
-          <div><p className={styles.eyebrow}>Kako funkcioniše</p><h2 id="how-title">Tri koraka do nove vožnje</h2></div>
-          <p className={styles.sectionIntro}>AutoTrampa povezuje vlasnike koji žele zamenu vozila, uz mogućnost doplate ili bez nje. Jednostavno, direktno i bez nepotrebnog čekanja.</p>
-        </div>
-        <ol className={styles.steps}>
-          {STEPS.map(({ number, icon: Icon, title, description }, index) => (
-            <li key={number} className={styles.step}>
-              <div className={styles.stepIcons}><span className={styles.number}>{number}</span><span className={styles.stepIcon}><Icon size={27} strokeWidth={1.7} aria-hidden="true" /></span></div>
-              <div className={styles.stepCopy}><h3>{title}</h3><p>{description}</p></div>
-              {index < STEPS.length - 1 && <ChevronRight className={styles.stepArrow} size={20} aria-hidden="true" />}
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section id="popularne-zamene" className={styles.listings} aria-labelledby="listings-title">
+      <section id="kako-funkcionise" className={styles.howNew} aria-labelledby="how-title">
         <div className="app-container">
-          <div className={styles.listingHeading}>
-            <div><p className={styles.eyebrow}>Aktuelni oglasi</p><h2 id="listings-title">Vozila spremna za zamenu</h2></div>
-            <Link className={styles.allListings} href="/search">Pogledaj sve oglase <ArrowRight size={19} aria-hidden="true" /></Link>
+          <div className={styles.howNewHead}>
+            <p className={styles.howEyebrow}>Kako funkcioniše</p>
+            <h2 id="how-title">Od tvog auta do nove zamene.</h2>
+            <p>Tri jednostavna koraka do automobila koji želiš.</p>
           </div>
-          {!listingsReady && publicCars.length === 0 ? (
-            <div className={styles.listingGrid} role="status" aria-label="Učitavanje oglasa">{[0, 1, 2].map((n) => <div key={n} className={styles.skeleton} />)}</div>
-          ) : publicCars.length ? (
-            <div className={styles.listingGrid}>{publicCars.map((car) => <MarketplaceV13Card key={car.id} car={car} />)}</div>
-          ) : (
-            <div className={styles.empty}><CarFront size={30} aria-hidden="true" /><p>Novi oglasi uskoro stižu.</p><button className={styles.primary} type="button" onClick={onAddCar}>Dodaj svoj auto <ArrowRight size={18} aria-hidden="true" /></button></div>
-          )}
+          <ol className={styles.howNewGrid}>
+            {STEPS.map(({ number, icon: Icon, title, description }, index) => (
+              <li className={styles.howNewStep} key={number}>
+                <div className={styles.howNewVisual}>
+                  {publicCars[index]?.image ? (
+                    <img src={publicCars[index].image} alt="" loading="lazy" />
+                  ) : (
+                    <Icon size={52} strokeWidth={1.4} aria-hidden="true" />
+                  )}
+                </div>
+                <div className={styles.howNewNumber}>KORAK {number}</div>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section id="popularne-zamene" className={styles.activity} aria-labelledby="listings-title">
+        <div className="app-container">
+          <div className={styles.activityHeading}>
+            <p className={styles.howEyebrow}>Aktuelni oglasi</p>
+            <h2 id="listings-title">Pogledaj šta se nudi za zamenu.</h2>
+            <p>Istraži automobile drugih vlasnika i pronađi svoj sledeći auto.</p>
+          </div>
+        </div>
+        {!listingsReady && publicCars.length === 0 ? (
+          <div className={`app-container ${styles.activityLoading}`} role="status" aria-label="Učitavanje oglasa">Oglasi se učitavaju…</div>
+        ) : publicCars.length ? (
+          <div className={styles.activityViewport} aria-label="Izdvojeni oglasi u dva reda">
+            {[publicCars.filter((_, i) => i % 2 === 0), publicCars.filter((_, i) => i % 2 === 1)].map((row, i) => (
+              <div key={i} className={`${styles.activityRow} ${i === 1 ? styles.activityRowShifted : ''}`}>
+                {row.map((car) => (
+                  <Link key={car.id} href={`/car/${car.id}`} className={styles.activityCard} aria-label={`Pogledaj oglas ${car.brand} ${car.model}`}>
+                    <span className={styles.activityPhoto}><img src={car.image} alt="" loading="lazy" /></span>
+                    <span className={styles.activityDetails}>
+                      <strong>{car.brand} {car.model}</strong>
+                      <span>{formatYear(car.year)} · {car.city}</span>
+                      <b>{formatEuro(car.price)}</b>
+                      {!car.ownerId && <small>Demo oglas</small>}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={`app-container ${styles.activityLoading}`}>Novi oglasi uskoro stižu.</div>
+        )}
+        <div className={`app-container ${styles.activityFooter}`}>
+          <p><strong>Tvoj sledeći auto možda je već u oglasima.</strong> Pogledaj ponudu i pronađi vozilo za zamenu.</p>
+          <Link className={styles.activityCta} href="/search">Pogledaj sve oglase <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
 
