@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftRight, ArrowRight, CarFront, CheckCircle2, Search, MessageCircle, Wallet, RefreshCw } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, CarFront, CheckCircle2, Search, Sparkles, Wallet, RefreshCw } from 'lucide-react';
 import { formatEuro, formatYear } from '@/lib/cars';
 import type { Car } from '@/types';
 import BrandLockup from '@/components/BrandLockup';
@@ -131,8 +131,8 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
               <div><h3>Uz doplatu ili bez nje</h3><p>Uporedi vrednosti vozila i dogovori doplatu koja odgovara obema stranama.</p></div>
             </article>
             <article className={styles.whyFeature}>
-              <div className={styles.whyIcon}><MessageCircle size={22} strokeWidth={1.8} aria-hidden="true" /></div>
-              <div><h3>Direktno sa vlasnikom</h3><p>Pošalji ponudu i razgovaraj o uslovima zamene bez posredovanja u dogovoru.</p></div>
+              <div className={styles.whyIcon}><Sparkles size={22} strokeWidth={1.8} aria-hidden="true" /></div>
+              <div><h3>Swipe, Match i pametno sortiranje</h3><p>Listaj automobile u Swipe režimu, pronađi Match i lakše otkrij oglase koji ti odgovaraju.</p></div>
             </article>
           </div>
         </div>
