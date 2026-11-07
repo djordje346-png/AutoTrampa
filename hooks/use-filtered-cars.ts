@@ -44,6 +44,7 @@ export function filterCars(
   noTopUp: boolean,
   originCity = '',
   radiusKm = 0,
+  bodyPrefs: string[] = [],
 ): Car[] {
   const q = filters.query.trim().toLowerCase();
 
@@ -78,7 +79,13 @@ export function filterCars(
     return true;
   });
 
-  const sorted = [...matched];
+  // Preferred body styles are a soft preference: never remove other cars.
+  // Sorting by budget, price, year or trade keeps its established precedence.
+  const preferredBodies = new Set(bodyPrefs);
+  const sorted = [...matched].sort((a, b) =>
+    Number(Boolean(b.bodyType && preferredBodies.has(b.bodyType)))
+    - Number(Boolean(a.bodyType && preferredBodies.has(a.bodyType))),
+  );
   switch (filters.sortBy) {
     case 'price-asc':
       sorted.sort((a, b) => a.price - b.price);
@@ -103,7 +110,7 @@ export function filterCars(
       break;
   }
 
-  const budgetAware = myCar && (budget != null || noTopUp);
+  const budgetAware = myCar && ((budget != null && budget > 0) || noTopUp);
   const ranked = budgetAware ? sortByBudget(sorted, myCar, budget, noTopUp) : sorted;
   return applySoftRadius(ranked, originCity, radiusKm);
 }
@@ -124,6 +131,7 @@ export function getAlternativeCars(
   noTopUp: boolean,
   originCity = '',
   radiusKm = 0,
+  bodyPrefs: string[] = [],
 ): Car[] {
   const exactIds = new Set(exactMatches.map(car => car.id));
   return filterCars(
@@ -134,6 +142,7 @@ export function getAlternativeCars(
     noTopUp,
     originCity,
     radiusKm,
+    bodyPrefs,
   ).filter(car => !exactIds.has(car.id));
 }
 
@@ -169,9 +178,10 @@ export function useFilteredCars(
   noTopUp: boolean,
   originCity = '',
   radiusKm = 0,
+  bodyPrefs: string[] = [],
 ): Car[] {
   return useMemo(
-    () => filterCars(cars, filters, myCar, budget, noTopUp, originCity, radiusKm),
-    [cars, filters, myCar, budget, noTopUp, originCity, radiusKm],
+    () => filterCars(cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs),
+    [cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs],
   );
 }
