@@ -21,7 +21,7 @@ const VISITOR_GROUPS: FooterGroup[] = [
     heading: 'Istraži',
     links: [
       { href: '/search', label: 'Svi oglasi' },
-      { href: '/?view=swipe', label: 'Swipe režim' },
+      { href: '/#zasto-autotrampa', label: 'Swipe i Match' },
       { href: '/?intent=add-car', label: 'Dodaj svoj auto' },
     ],
   },
