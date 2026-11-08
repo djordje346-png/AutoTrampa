@@ -407,3 +407,25 @@
 @media (max-width: 359px) {
   .closingInner { min-height: 610px; }
 }
+
+/* Precise mobile fix: let content determine closing height; avoid a forced empty photo area. */
+@media (max-width: 767px) {
+  .closingInner {
+    min-height: 0;
+    height: auto;
+    padding-top: 36px;
+    padding-bottom: 34px;
+  }
+  .closingImage {
+    object-position: 77% 54%;
+  }
+  .closing .actions {
+    margin-top: 21px;
+  }
+  .closingBenefits {
+    margin-top: 20px;
+  }
+}
+@media (max-width: 359px) {
+  .closingInner { min-height: 0; }
+}
