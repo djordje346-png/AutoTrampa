@@ -22,7 +22,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const isPublicSearch = pathname === '/search' && !isLoggedIn;
   const isListing = pathname.startsWith('/car/');
   const isPublicListing = isListing && !isLoggedIn;
-  const isLegalPage = pathname === '/terms' || pathname === '/privacy';
+  const isLegalPage = pathname === '/terms' || pathname === '/privacy' || pathname === '/help' || pathname === '/safety';
   const isPublicLegalPage = isLegalPage && !isLoggedIn;
   const hasPublicHeader = authReady && (isPublicSearch || isPublicListing || isPublicLegalPage);
   const hasDesktopAppNavigation = authReady && !isPublicLanding && !hasPublicHeader;
