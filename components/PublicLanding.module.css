@@ -569,3 +569,71 @@
     transform: none;
   }
 }
+
+
+/* Swipe & Match showcase: responsive product storytelling between benefits and CTA. */
+.swipeFeature{padding:28px 0 77px;background:#fff;scroll-margin-top:85px}
+.swipeFeaturePanel{position:relative;display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);align-items:center;gap:35px;min-height:465px;padding:52px clamp(28px,5vw,72px);border-radius:27px;background:linear-gradient(117deg,#101b2c 2%,#1b2029 72%,#141c28 100%);color:#fff;overflow:hidden}
+.swipeFeaturePanel:after{content:"";position:absolute;right:-12%;bottom:-65%;width:65%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(245,138,56,.075),transparent 65%);pointer-events:none}
+.swipeFeatureCopy{position:relative;z-index:2;align-self:center;min-width:0}
+.swipeFeatureEyebrow{margin:0 0 19px;color:#f4a56f;font-size:11px;font-weight:800;letter-spacing:.18em}
+.swipeFeatureCopy h2{font-size:clamp(34px,3.3vw,49px);line-height:1.14;font-weight:800;letter-spacing:-.046em;color:#fff;margin:0}
+.swipeFeatureCopy h2 span{display:block;color:#f58a38}
+.swipeFeatureIntro{max-width:440px;margin:20px 0 0;font-size:14px;line-height:1.8;color:#b6c0ce}
+.swipeFeatureBullets{list-style:none;display:flex;flex-direction:column;gap:13px;margin:24px 0 0;padding:0;color:#e3e8f1;font-size:13px}
+.swipeFeatureBullets li{display:flex;align-items:center;gap:11px}
+.swipeFeatureBullets svg{color:#f58a38;flex:0 0 auto}
+.swipeFeatureAction{display:inline-flex;align-items:center;justify-content:center;gap:10px;margin-top:27px;padding:13px 21px;border-radius:999px;background:#f58a38;color:#101b2c;font-size:13px;font-weight:800;transition:background-color .2s}
+.swipeFeatureAction:hover{background:#ffa05c}
+.swipeFeatureVisual{position:relative;z-index:1;min-height:390px;height:100%;width:100%;max-width:520px;justify-self:center}
+.swipeFeatureCar{position:absolute;width:49%;max-width:246px;aspect-ratio: .79;background:#fff;color:#152134;border:7px solid #fff;border-radius:21px;box-shadow:0 16px 35px rgba(2,7,16,.28);overflow:hidden}
+.swipeFeatureCarOwn{top:40px;left:8%;transform:rotate(-10deg)}
+.swipeFeatureCarOther{top:15px;right:5%;transform:rotate(9deg)}
+.swipeFeatureCarPhoto{display:flex;align-items:center;justify-content:center;width:100%;height:83%;overflow:hidden;background:#dbe3ec;color:#7a8ca1;border-radius:13px}
+.swipeFeatureCarPhoto img{width:100%;height:100%;object-fit:cover}
+.swipeFeatureCar>span{display:flex;align-items:center;justify-content:center;height:17%;font-size:13px;font-weight:800}
+.swipeFeatureMatch{position:absolute;left:8%;right:5%;bottom:15px;display:flex;align-items:center;gap:14px;padding:15px 19px;border-radius:18px;border:1px solid #4c6380;background:#273c55;box-shadow:0 15px 25px rgba(3,8,19,.28)}
+.swipeFeatureMatchIcon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex:0 0 48px;border-radius:50%;background:#f58a38;color:#142034}
+.swipeFeatureMatch strong{display:block;font:800 20px/1.25 var(--font-manrope),Manrope,sans-serif;color:#fff}
+.swipeFeatureMatch small{display:block;margin-top:5px;color:#bec8d7;font-size:12px;line-height:1.35}
+.swipeFeatureNote{position:absolute;bottom:-15px;right:5%;font-size:10px;color:#9facbf;white-space:nowrap}
+@media(max-width:1023px){
+.swipeFeature{padding:24px 0 56px}
+.swipeFeaturePanel{padding:40px 34px;gap:15px;min-height:405px}
+.swipeFeatureCopy h2{font-size:clamp(29px,3.8vw,37px)}
+.swipeFeatureIntro{font-size:13px;line-height:1.7}
+.swipeFeatureVisual{min-height:345px}
+.swipeFeatureCar{border-width:6px}
+.swipeFeatureCarOwn{top:39px}
+.swipeFeatureMatch{bottom:18px;gap:10px;padding:12px}
+.swipeFeatureMatchIcon{width:39px;height:39px;flex-basis:39px}
+.swipeFeatureMatch strong{font-size:17px}
+.swipeFeatureMatch small{font-size:10px}
+}
+@media(max-width:767px){
+.swipeFeature{padding:19px 0 48px}
+.swipeFeaturePanel{grid-template-columns:minmax(0,1fr);gap:10px;padding:34px 22px 30px;min-height:0;border-radius:22px}
+.swipeFeatureEyebrow{font-size:10px;letter-spacing:.14em;margin-bottom:15px}
+.swipeFeatureCopy h2{font-size:clamp(29px,7.6vw,41px);line-height:1.17}
+.swipeFeatureIntro{font-size:13px;margin-top:15px}
+.swipeFeatureBullets{font-size:12px;gap:12px;margin-top:20px}
+.swipeFeatureBullets li{gap:10px}
+.swipeFeatureAction{margin-top:23px;padding:12px 18px;font-size:12px}
+.swipeFeatureVisual{width:100%;max-width:380px;height:325px;min-height:325px;margin:9px auto 0}
+.swipeFeatureCar{max-width:183px;border-width:6px;border-radius:18px}
+.swipeFeatureCarOwn{top:41px;left:5%;transform:rotate(-9deg)}
+.swipeFeatureCarOther{top:19px;right:3%;transform:rotate(8deg)}
+.swipeFeatureCarPhoto{border-radius:10px}
+.swipeFeatureCar>span{font-size:11px}
+.swipeFeatureMatch{bottom:13px;left:5%;right:3%;padding:12px;gap:10px;border-radius:15px}
+.swipeFeatureMatchIcon{width:39px;height:39px;flex-basis:39px}
+.swipeFeatureMatch strong{font-size:17px}
+.swipeFeatureMatch small{font-size:10px}
+.swipeFeatureNote{bottom:-9px;right:3%;font-size:9px}
+}
+@media(max-width:360px){
+.swipeFeaturePanel{padding-left:17px;padding-right:17px}
+.swipeFeatureVisual{height:295px;min-height:295px}
+.swipeFeatureMatch{bottom:12px}
+}
+@media(prefers-reduced-motion:reduce){.swipeFeatureAction{transition:none}}
