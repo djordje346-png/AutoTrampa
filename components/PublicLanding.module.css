@@ -429,3 +429,21 @@
 @media (max-width: 359px) {
   .closingInner { min-height: 0; }
 }
+
+/* Final mobile hero pass: the header already shows the logo. Keep cars under CTA. */
+@media (max-width: 767px) {
+  .heroLogo { display: none; }
+  .heroNewInner { padding-top: 27px; padding-bottom: 80px; }
+  .heroNewCopy { transform: translateY(-8px); }
+  .heroSideCar { bottom: -44px; }
+  .heroNew:after {
+    background: linear-gradient(
+      to bottom,
+      rgba(250,252,254,1) 0%,
+      rgba(250,252,254,.98) 33%,
+      rgba(250,252,254,.88) 57%,
+      rgba(250,252,254,.29) 82%,
+      rgba(250,252,254,.02) 100%
+    );
+  }
+}
