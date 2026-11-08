@@ -691,3 +691,28 @@ button, a {
     transform: none !important;
   }
 }
+
+
+/* Site-wide Lovable-inspired pill styling for genuine action controls.
+   Covers authenticated pages and custom Tailwind buttons, not just public header.
+   Keep existing color tokens, click handlers, heights, and semantic controls. */
+:where(
+  button[class*="rounded-"]:not([class*="aspect-"]):not([class*="inset-"]):not([class*="text-left"]):not([class*="rounded-sm"]):not([role="switch"]):not([role="checkbox"]):not([role="radio"]):not([role="tab"]),
+  a[class*="rounded-"][class*="px-"]:not([class*="aspect-"]):not([class*="inset-"]):not([class*="text-left"]),
+  button.btn-primary,
+  a.btn-primary,
+  input[type="submit"],
+  input[type="button"]
+) {
+  border-radius: 9999px !important;
+}
+
+/* Buttons with text keep a consistent premium visual rhythm.
+   Intentionally does not override background, foreground or hover colors. */
+:where(button, a)[class*="bg-brand-500"]:not([class*="aspect-"]):not([class*="inset-"]),
+:where(button, a)[class*="bg-primary"]:not([class*="aspect-"]):not([class*="inset-"]),
+:where(button, a).btn-primary {
+  font-weight: 700;
+  transition-property: background-color, color, border-color, box-shadow, transform;
+  transition-duration: 200ms;
+}
