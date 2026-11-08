@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftRight, ArrowRight, Camera, CheckCircle2, Heart, Search, Sparkles, Wallet, RefreshCw, Upload, X } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, CarFront, Camera, CheckCircle2, Heart, Search, Sparkles, Wallet, RefreshCw, Upload, X } from 'lucide-react';
 import { formatEuro, formatYear } from '@/lib/cars';
 import type { Car } from '@/types';
 import BrandLockup from '@/components/BrandLockup';
@@ -168,6 +168,43 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
               <div className={styles.whyIcon}><Sparkles size={22} strokeWidth={1.8} aria-hidden="true" /></div>
               <div><h3>Swipe, Match i pametno sortiranje</h3><p>Listaj automobile u Swipe režimu, pronađi Match i lakše otkrij oglase koji ti odgovaraju.</p></div>
             </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="swipe-match" className={styles.swipeFeature} aria-labelledby="swipe-title">
+        <div className="app-container">
+          <div className={styles.swipeFeaturePanel}>
+            <div className={styles.swipeFeatureCopy}>
+              <p className={styles.swipeFeatureEyebrow}>AUTOTRAMPA SWIPE &amp; MATCH</p>
+              <h2 id="swipe-title">Prevuci. Sačuvaj.<span>Pronađi Match.</span></h2>
+              <p className={styles.swipeFeatureIntro}>Istražuj automobile jedan po jedan. Kada postoji obostrano interesovanje, otvori razgovor i dogovorite moguću zamenu.</p>
+              <ul className={styles.swipeFeatureBullets}>
+                <li><CheckCircle2 size={18} aria-hidden="true" /> Brzo pregledanje automobila</li>
+                <li><CheckCircle2 size={18} aria-hidden="true" /> Match uz obostrano interesovanje</li>
+                <li><CheckCircle2 size={18} aria-hidden="true" /> Lakše otkrivanje vozila za tebe</li>
+              </ul>
+              <button type="button" onClick={onSignIn} className={styles.swipeFeatureAction}>Isprobaj Swipe <ArrowRight size={17} aria-hidden="true" /></button>
+            </div>
+            <div className={styles.swipeFeatureVisual} aria-label="Ilustracija Swipe i Match funkcionalnosti sa dva automobila">
+              <div className={`${styles.swipeFeatureCar} ${styles.swipeFeatureCarOwn}`}>
+                <div className={styles.swipeFeatureCarPhoto}>
+                  {publicCars[0]?.image ? <img src={publicCars[0].image} alt="" loading="lazy" /> : <CarFront size={52} aria-hidden="true" />}
+                </div>
+                <span>Tvoj auto</span>
+              </div>
+              <div className={`${styles.swipeFeatureCar} ${styles.swipeFeatureCarOther}`}>
+                <div className={styles.swipeFeatureCarPhoto}>
+                  {publicCars[1]?.image ? <img src={publicCars[1].image} alt="" loading="lazy" /> : <CarFront size={52} aria-hidden="true" />}
+                </div>
+                <span>Auto za zamenu</span>
+              </div>
+              <div className={styles.swipeFeatureMatch}>
+                <span className={styles.swipeFeatureMatchIcon}><Heart size={23} fill="currentColor" aria-hidden="true" /></span>
+                <span><strong>Imate Match!</strong><small>Obostrano interesovanje za zamenu.</small></span>
+              </div>
+              <p className={styles.swipeFeatureNote}>Ilustrativni prikaz funkcionalnosti</p>
+            </div>
           </div>
         </div>
       </section>
