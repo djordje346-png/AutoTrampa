@@ -373,3 +373,37 @@
 .stepSwipePicture{height:96px}
 .stepSwipeMini{right:14%}
 }
+
+/* Mobile closing CTA proportions: trim the old 230px bottom spacer while retaining the car. */
+@media (max-width: 767px) {
+  .closing { isolation: isolate; }
+  .closing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(9, 16, 28, .56) 0%,
+      rgba(9, 16, 28, .42) 57%,
+      rgba(9, 16, 28, .22) 100%
+    );
+  }
+  .closingImage {
+    object-position: 75% 53%;
+    filter: brightness(.78);
+  }
+  .closingInner {
+    position: relative;
+    z-index: 1;
+    min-height: 570px;
+    padding-top: 43px;
+    padding-bottom: 56px;
+    justify-content: flex-start;
+  }
+  .closingBenefits { margin-top: 23px; }
+}
+@media (max-width: 359px) {
+  .closingInner { min-height: 610px; }
+}
