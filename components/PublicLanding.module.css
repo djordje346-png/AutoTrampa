@@ -447,3 +447,40 @@
     );
   }
 }
+
+
+/* Desktop hero polish: matched car framing and four-sided feathering.
+   Kept entirely above the tablet/mobile breakpoint. */
+@media (min-width: 1024px) {
+  .heroSideCar {
+    width: min(35vw, 500px);
+    height: 308px;
+    bottom: -16px;
+    opacity: .9;
+    filter: saturate(.88) contrast(1.07);
+    background-size: 1100px 550px;
+    -webkit-mask-image: radial-gradient(ellipse 66% 66% at 50% 59%, #000 43%, rgba(0,0,0,.88) 60%, transparent 100%);
+    mask-image: radial-gradient(ellipse 66% 66% at 50% 59%, #000 43%, rgba(0,0,0,.88) 60%, transparent 100%);
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
+  }
+  .heroSideCarLeft {
+    left: max(-70px, calc(50% - 820px));
+    background-position: -330px -213px;
+  }
+  .heroSideCarRight {
+    right: max(-70px, calc(50% - 820px));
+    background-position: -660px -213px;
+  }
+  .heroNew:after {
+    background: radial-gradient(ellipse 38% 88% at 50% 37%, rgba(250,252,254,1) 0%, rgba(250,252,254,.97) 53%, rgba(250,252,254,.28) 89%, transparent 100%);
+  }
+
+  /* Product flow previews: ~20% larger and vertically aligned in three columns. */
+  .howNewVisual { height: 256px; padding: 20px; }
+  .stepMockupAdd { transform: rotate(-2deg) scale(1.14); }
+  .stepSwipeCard { width: min(70%, 218px); height: 214px; }
+  .stepSwipePicture { height: 139px; }
+  .stepSwipeMini { right: 4%; top: 21%; }
+  .stepMockupMatch { transform: scale(1.17); }
+}
