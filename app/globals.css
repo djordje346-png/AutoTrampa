@@ -656,8 +656,8 @@ button, a {
 
 /* Lovable landing reference: pill-shaped action buttons.
    Preserve existing semantic colors, dimensions and click behavior. */
-@layer components {
-  :where(button, a).bg-primary,
+/* Keep these rules outside Tailwind layers so local rounded-* utilities do not override the shared action silhouette. */
+:where(button, a).bg-primary,
   :where(button, a).bg-brand,
   .btn-primary,
   .btn-primary-compact,
@@ -680,7 +680,6 @@ button, a {
   .carbon-header-cta:active {
     transform: translateY(0);
   }
-}
 
 @media (prefers-reduced-motion: reduce) {
   :where(button, a).bg-primary,
