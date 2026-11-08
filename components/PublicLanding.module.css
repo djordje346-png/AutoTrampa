@@ -484,3 +484,52 @@
   .stepSwipeMini { right: 4%; top: 21%; }
   .stepMockupMatch { transform: scale(1.17); }
 }
+
+
+/* Final desktop-only spacing and visibility pass. Mobile and tablet stay unchanged. */
+@media (min-width: 1024px) {
+  .heroSideCar {
+    opacity: .98;
+    filter: saturate(.96) contrast(1.12);
+  }
+  .heroNew:after {
+    background: radial-gradient(
+      ellipse 35% 83% at 50% 37%,
+      rgba(250,252,254,1) 0%,
+      rgba(250,252,254,.96) 48%,
+      rgba(250,252,254,.24) 87%,
+      transparent 100%
+    );
+  }
+
+  .activity {
+    padding-top: 54px;
+    padding-bottom: 47px;
+  }
+  .activityHeading { margin-bottom: 23px; }
+  .activityViewport { gap: 12px; padding-bottom: 8px; }
+  .activityRow { gap: 13px; }
+  .activityCard {
+    width: clamp(300px, 22vw, 320px);
+    min-height: 107px;
+    padding: 10px;
+    gap: 12px;
+  }
+  .activityPhoto {
+    flex-basis: 112px;
+    width: 112px;
+    height: 85px;
+  }
+  .activityDetails strong { font-size: 13px; }
+  .activityDetails span { font-size: 11px; }
+  .activityDetails b { font-size: 13px; }
+  .activityFooter { margin-top: 9px; padding-top: 18px; }
+
+  .why { padding-top: 66px; padding-bottom: 69px; }
+  .whyInner { gap: clamp(40px, 6vw, 94px); }
+  .whyFeature { padding-top: 20px; padding-bottom: 20px; }
+}
+@media (min-width: 1600px) {
+  .activityCard { width: 320px; }
+  .activityRow { gap: 15px; }
+}
