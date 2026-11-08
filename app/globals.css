@@ -652,3 +652,42 @@
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
+
+
+/* Lovable landing reference: pill-shaped action buttons.
+   Preserve existing semantic colors, dimensions and click behavior. */
+/* Keep these rules outside Tailwind layers so local rounded-* utilities do not override the shared action silhouette. */
+:where(button, a).bg-primary,
+  :where(button, a).bg-brand,
+  .btn-primary,
+  .btn-primary-compact,
+  .carbon-header-cta {
+    border-radius: 9999px;
+    font-weight: 700;
+    transition-property: transform, background-color, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+
+  :where(button, a).bg-primary:hover:not(:disabled),
+  :where(button, a).bg-brand:hover:not(:disabled),
+  .carbon-header-cta:hover {
+    transform: translateY(-2px);
+  }
+
+  :where(button, a).bg-primary:active:not(:disabled),
+  :where(button, a).bg-brand:active:not(:disabled),
+  .carbon-header-cta:active {
+    transform: translateY(0);
+  }
+
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a).bg-primary,
+  :where(button, a).bg-brand,
+  .btn-primary,
+  .btn-primary-compact,
+  .carbon-header-cta {
+    transition-duration: 0.01ms;
+    transform: none !important;
+  }
+}
