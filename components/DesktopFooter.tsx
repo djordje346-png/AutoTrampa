@@ -1,53 +1,127 @@
+'use client';
+
 import Link from 'next/link';
 import BrandLockup from '@/components/BrandLockup';
+import { useAuth } from '@/hooks/use-auth';
 import { LEGAL } from '@/lib/legal';
 
-const DISCOVERY_LINKS = [
-  { href: '/', label: 'Oglasi' },
-  { href: '/search', label: 'Pretraga' },
-  { href: '/saved', label: 'Sačuvano' },
-] as const;
+type FooterLink = { href: string; label: string };
+type FooterGroup = { heading: string; links: FooterLink[] };
 
-const ACCOUNT_LINKS = [
-  { href: '/garage', label: 'Garaža' },
-  { href: '/messages', label: 'Poruke' },
-  { href: '/profile', label: 'Profil' },
-] as const;
+const VISITOR_GROUPS: FooterGroup[] = [
+  {
+    heading: 'AutoTrampa',
+    links: [
+      { href: '/#kako-funkcionise', label: 'Kako funkcioniše' },
+      { href: '/#zasto-autotrampa', label: 'Zašto AutoTrampa' },
+      { href: '/#zasto-autotrampa', label: 'O platformi' },
+    ],
+  },
+  {
+    heading: 'Istraži',
+    links: [
+      { href: '/search', label: 'Svi oglasi' },
+      { href: '/?view=swipe', label: 'Swipe režim' },
+      { href: '/?intent=add-car', label: 'Dodaj svoj auto' },
+    ],
+  },
+  {
+    heading: 'Podrška',
+    links: [
+      { href: '/help', label: 'Česta pitanja' },
+      { href: '/safety', label: 'Bezbedna zamena' },
+      { href: `mailto:${LEGAL.email}`, label: 'Kontakt' },
+    ],
+  },
+  {
+    heading: 'Pravne informacije',
+    links: [
+      { href: LEGAL.termsPath, label: 'Uslovi korišćenja' },
+      { href: LEGAL.privacyPath, label: 'Politika privatnosti' },
+      { href: '/privacy#kolacici', label: 'Kolačići i lokalno čuvanje' },
+    ],
+  },
+];
 
-const LINK_CLASS = 'w-fit text-sm text-brand-dark-secondary transition-colors hover:text-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const MEMBER_GROUPS: FooterGroup[] = [
+  {
+    heading: 'Moj nalog',
+    links: [
+      { href: '/profile', label: 'Moj profil' },
+      { href: '/garage', label: 'Moja garaža' },
+      { href: '/saved', label: 'Sačuvani oglasi' },
+      { href: '/messages', label: 'Poruke' },
+    ],
+  },
+  {
+    heading: 'Zamene i oglasi',
+    links: [
+      { href: '/search', label: 'Svi oglasi' },
+      { href: '/?view=swipe', label: 'Swipe režim' },
+      { href: '/messages?tab=offers', label: 'Moje ponude' },
+      { href: '/?intent=add-car', label: 'Dodaj automobil' },
+    ],
+  },
+  {
+    heading: 'Podrška',
+    links: [
+      { href: '/help', label: 'Centar za pomoć' },
+      { href: '/safety', label: 'Bezbedna zamena' },
+      { href: `mailto:${LEGAL.email}`, label: 'Kontakt' },
+    ],
+  },
+  {
+    heading: 'Pravne informacije',
+    links: [
+      { href: LEGAL.termsPath, label: 'Uslovi korišćenja' },
+      { href: LEGAL.privacyPath, label: 'Politika privatnosti' },
+      { href: '/privacy#kolacici', label: 'Kolačići i lokalno čuvanje' },
+    ],
+  },
+];
+
+const LINK_CLASS =
+  'block w-fit rounded text-[13px] leading-6 text-[#9AAAC1] transition-colors hover:text-[#F58A38] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F58A38]';
 
 export function DesktopFooter({ showOnMobile = false }: { showOnMobile?: boolean }) {
+  const { isLoggedIn, mounted } = useAuth();
+  const groups = mounted && isLoggedIn ? MEMBER_GROUPS : VISITOR_GROUPS;
+
   return (
-    <footer className={`mt-auto ${showOnMobile ? 'block' : 'hidden lg:block'} border-t border-brand-dark bg-brand-dark text-brand-dark-secondary`}>
-      <div className="mx-auto max-w-7xl px-8">
-        <div className="grid gap-8 py-9 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
-          <div className="max-w-sm">
-            <Link href="/" aria-label="AutoTrampa — početna" className="inline-flex items-center gap-2 text-brand-dark-primary">
+    <footer className={`${showOnMobile ? 'block' : 'hidden lg:block'} mt-auto border-t border-[#263348] bg-[#0B1628] text-[#9AAAC1]`}>
+      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
+        <div className="grid gap-9 py-10 lg:grid-cols-[minmax(200px,1.3fr)_minmax(0,3fr)] lg:gap-14 lg:py-14">
+          <div className="max-w-[290px]">
+            <Link href="/" aria-label="AutoTrampa — početna" className="inline-flex rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F58A38]">
               <BrandLockup />
             </Link>
-            <p className="mt-3 text-sm leading-relaxed text-brand-dark-secondary">
-              Pronađi automobil za zamenu i dogovori se direktno sa vlasnikom.
+            <p className="mt-3 max-w-[250px] text-[13px] leading-6 text-[#9AAAC1]">
+              Pronađi svoj sledeći automobil. Ponudi svoj u zamenu — uz doplatu ili bez nje.
             </p>
           </div>
 
-          <nav aria-label="Oglasi i pretraga" className="flex flex-col items-start gap-3">
-            <h2 className="mb-1 text-xs font-bold uppercase tracking-wider text-brand-dark-primary">Istraži</h2>
-            {DISCOVERY_LINKS.map(({ href, label }) => <Link key={href} href={href} className={LINK_CLASS}>{label}</Link>)}
-          </nav>
-
-          <nav aria-label="Nalog" className="flex flex-col items-start gap-3">
-            <h2 className="mb-1 text-xs font-bold uppercase tracking-wider text-brand-dark-primary">Moj nalog</h2>
-            {ACCOUNT_LINKS.map(({ href, label }) => <Link key={href} href={href} className={LINK_CLASS}>{label}</Link>)}
-          </nav>
+          <div className="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-4 md:gap-6">
+            {groups.map(({ heading, links }) => (
+              <nav key={heading} aria-label={heading} className="min-w-0">
+                <h2 className="mb-4 font-[var(--font-manrope)] text-xs font-extrabold tracking-wide text-white">{heading}</h2>
+                <ul className="space-y-2.5">
+                  {links.map(({ href, label }) => (
+                    <li key={href + label}>
+                      {href.startsWith('mailto:') ? (
+                        <a href={href} className={LINK_CLASS}>{label}</a>
+                      ) : (
+                        <Link href={href} className={LINK_CLASS}>{label}</Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
+          </div>
         </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-brand-dark py-4 text-xs text-brand-dark-secondary">
-          <span>AutoTrampa · Platforma za zamenu automobila</span>
-          <nav aria-label="Pravila u podnožju" className="flex flex-wrap gap-x-5 gap-y-3">
-            <Link href={LEGAL.termsPath} className={LINK_CLASS}>Uslovi korišćenja</Link>
-            <Link href={LEGAL.privacyPath} className={LINK_CLASS}>Politika privatnosti</Link>
-            <a href={`mailto:${LEGAL.email}`} className={LINK_CLASS}>Kontakt</a>
-          </nav>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#263348] py-5 text-xs text-[#8493AB]">
+          <span>© {new Date().getFullYear()} AutoTrampa.rs</span>
+          <span>Platforma za zamenu automobila</span>
         </div>
       </div>
     </footer>
