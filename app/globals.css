@@ -716,3 +716,39 @@ button, a {
   transition-property: background-color, color, border-color, box-shadow, transform;
   transition-duration: 200ms;
 }
+
+/* Public header: proportionate pill CTA and vertical alignment on all widths.
+   Does not alter existing semantic button colors or auth/navigation actions. */
+.carbon-header > .app-container {
+  align-items: center;
+}
+.carbon-header .carbon-brand {
+  align-self: center;
+  line-height: 1;
+}
+.carbon-header .carbon-brand img {
+  display: block;
+}
+.carbon-header .carbon-header-cta {
+  height: 40px;
+  min-height: 40px;
+  padding-inline: 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.carbon-header .carbon-nav-link {
+  height: 40px;
+  font-size: 13px;
+}
+@media (max-width: 1023px) {
+  .carbon-header .carbon-nav-link {
+    height: 40px;
+  }
+  .carbon-header #public-mobile-menu .carbon-header-cta {
+    min-height: 44px;
+    width: 100%;
+  }
+}

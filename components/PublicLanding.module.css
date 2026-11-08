@@ -533,3 +533,39 @@
   .activityCard { width: 320px; }
   .activityRow { gap: 15px; }
 }
+
+/* Public-page actions use CSS modules, so the shared Tailwind button rules
+   cannot style them. Mirror the Lovable pill silhouette without changing colors. */
+.landing .primary,
+.landing .secondary,
+.landing .activityCta {
+  border-radius: 9999px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+.landing .primary:hover,
+.landing .secondary:hover,
+.landing .activityCta:hover {
+  transform: translateY(-2px);
+}
+.landing .primary:active,
+.landing .secondary:active,
+.landing .activityCta:active {
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing .primary,
+  .landing .secondary,
+  .landing .activityCta {
+    transition: none;
+  }
+  .landing .primary:hover,
+  .landing .secondary:hover,
+  .landing .activityCta:hover {
+    transform: none;
+  }
+}

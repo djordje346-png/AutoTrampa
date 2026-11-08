@@ -9,7 +9,7 @@ type BrandLockupProps = {
 /** Approved vector logo shared by the headers, footers and sign-in screen. */
 export default function BrandLockup({ header = false, variant = 'dark' }: BrandLockupProps) {
   const size = header
-    ? 'h-7 w-[122px] min-[375px]:h-8 min-[375px]:w-[138px] sm:h-10 sm:w-[168px] lg:h-11 lg:w-[182px]'
+    ? 'h-[34px] w-[122px] min-[375px]:h-[38px] min-[375px]:w-[138px] sm:h-[44px] sm:w-[159px] lg:h-[48px] lg:w-[173px]'
     : 'h-[52px] w-[219px]';
 
   function logo(surface: 'dark' | 'light', visibility = '') {
@@ -28,7 +28,7 @@ export default function BrandLockup({ header = false, variant = 'dark' }: BrandL
   }
 
   return (
-    <span className={`inline-flex shrink-0 items-center ${size}`} translate="no">
+    <span className={`inline-flex shrink-0 items-center justify-center leading-none ${size}`} translate="no">
       {variant === 'auto' ? (
         <>
           {logo('light', 'block dark:hidden')}
