@@ -81,7 +81,7 @@ const MEMBER_GROUPS: FooterGroup[] = [
 ];
 
 const LINK_CLASS =
-  'block w-fit rounded text-[13px] leading-6 text-[#9AAAC1] transition-colors hover:text-[#F58A38] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F58A38]';
+  'block w-fit rounded text-xs leading-[21px] lg:text-[13px] lg:leading-6 text-[#9AAAC1] transition-colors hover:text-[#F58A38] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F58A38]';
 
 export function DesktopFooter({ showOnMobile = false }: { showOnMobile?: boolean }) {
   const { isLoggedIn, mounted } = useAuth();
@@ -90,21 +90,21 @@ export function DesktopFooter({ showOnMobile = false }: { showOnMobile?: boolean
   return (
     <footer className={`${showOnMobile ? 'block' : 'hidden lg:block'} mt-auto border-t border-[#263348] bg-[#0B1628] text-[#9AAAC1]`}>
       <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
-        <div className="grid gap-9 py-10 lg:grid-cols-[minmax(200px,1.3fr)_minmax(0,3fr)] lg:gap-14 lg:py-14">
+        <div className="grid gap-5 py-7 sm:gap-7 sm:py-9 lg:grid-cols-[minmax(200px,1.3fr)_minmax(0,3fr)] lg:gap-14 lg:py-14">
           <div className="max-w-[290px]">
-            <Link href="/" aria-label="AutoTrampa — početna" className="inline-flex rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F58A38]">
+            <Link href="/" aria-label="AutoTrampa — početna" className="inline-flex origin-left scale-[.82] rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F58A38] lg:scale-100">
               <BrandLockup />
             </Link>
-            <p className="mt-3 max-w-[250px] text-[13px] leading-6 text-[#9AAAC1]">
+            <p className="mt-0 max-w-[290px] text-xs leading-5 text-[#9AAAC1] lg:mt-3 lg:text-[13px] lg:leading-6">
               Pronađi svoj sledeći automobil. Ponudi svoj u zamenu — uz doplatu ili bez nje.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 md:gap-6">
             {groups.map(({ heading, links }) => (
               <nav key={heading} aria-label={heading} className="min-w-0">
-                <h2 className="mb-4 font-[var(--font-manrope)] text-xs font-extrabold tracking-wide text-white">{heading}</h2>
-                <ul className="space-y-2.5">
+                <h3 className="mb-2 font-[var(--font-manrope)] text-[13px] font-extrabold tracking-normal text-white lg:mb-4 lg:text-sm">{heading}</h3>
+                <ul className="space-y-1 lg:space-y-2.5">
                   {links.map(({ href, label }) => (
                     <li key={href + label}>
                       {href.startsWith('mailto:') ? (
@@ -119,7 +119,7 @@ export function DesktopFooter({ showOnMobile = false }: { showOnMobile?: boolean
             ))}
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#263348] py-5 text-xs text-[#8493AB]">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-[#263348] py-3 text-[11px] text-[#8493AB] lg:py-5 lg:text-xs">
           <span>© {new Date().getFullYear()} AutoTrampa.rs</span>
           <span>Platforma za zamenu automobila</span>
         </div>
