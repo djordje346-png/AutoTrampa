@@ -15,6 +15,8 @@ export interface Preferences {
   prioritizeFavoriteModels: boolean;
   /** Soft preferred trade direction; never hides other listings. */
   tradePreference: 'all' | 'similar' | 'cheaper' | 'expensive';
+  /** Minimum top-up received when offering a more expensive car. */
+  minReceived: number;
   /** Hide phone number until both sides accept a swap. */
   phoneAfterMatch: boolean;
   /** Budget for top-up in EUR. null = not set. */
@@ -23,7 +25,7 @@ export interface Preferences {
   noTopUp: boolean;
 }
 
-type AccountLocalPreferences = Pick<Preferences, 'bodyPrefs' | 'favoriteModels' | 'prioritizeFavoriteModels' | 'tradePreference'>;
+type AccountLocalPreferences = Pick<Preferences, 'bodyPrefs' | 'favoriteModels' | 'prioritizeFavoriteModels' | 'tradePreference' | 'minReceived'>;
 type PreferencePatch = Partial<Preferences>;
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -32,6 +34,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
   favoriteModels: [],
   prioritizeFavoriteModels: true,
   tradePreference: 'all',
+  minReceived: 0,
   phoneAfterMatch: true,
   budget: null,
   noTopUp: false,
@@ -53,9 +56,14 @@ const guestPreferencesStore = createPersistentStore<Preferences>(
       ? { ...DEFAULT_PREFERENCES, ...(raw as Partial<Preferences>),
           favoriteModels: sanitizeFavoriteModels((raw as Partial<Preferences>).favoriteModels),
           prioritizeFavoriteModels: (raw as Partial<Preferences>).prioritizeFavoriteModels !== false,
-          tradePreference: normalizeTradePreference((raw as Partial<Preferences>).tradePreference) }
+          tradePreference: normalizeTradePreference((raw as Partial<Preferences>).tradePreference),
+          minReceived: normalizeMinReceived((raw as Partial<Preferences>).minReceived) }
       : null,
 );
+
+function normalizeMinReceived(raw: unknown): number {
+  return typeof raw === 'number' && Number.isFinite(raw) ? Math.max(0, Math.min(100000, raw)) : 0;
+}
 
 function normalizeTradePreference(raw: unknown): Preferences['tradePreference'] {
   return raw === 'similar' || raw === 'cheaper' || raw === 'expensive' ? raw : 'all';
@@ -82,7 +90,8 @@ function getAccountLocalStore(userId: string): PersistentStore<AccountLocalPrefe
             : DEFAULT_ACCOUNT_LOCAL.bodyPrefs,
           favoriteModels: sanitizeFavoriteModels((raw as Partial<AccountLocalPreferences>).favoriteModels),
           prioritizeFavoriteModels: (raw as Partial<AccountLocalPreferences>).prioritizeFavoriteModels !== false,
-          tradePreference: normalizeTradePreference((raw as Partial<AccountLocalPreferences>).tradePreference) }
+          tradePreference: normalizeTradePreference((raw as Partial<AccountLocalPreferences>).tradePreference),
+          minReceived: normalizeMinReceived((raw as Partial<AccountLocalPreferences>).minReceived) }
         : null,
   );
   accountLocalStores.set(userId, store);
@@ -152,6 +161,7 @@ export function usePreferences() {
     if ('bodyPrefs' in patch) localPatch.bodyPrefs = patch.bodyPrefs;
     if ('favoriteModels' in patch) localPatch.favoriteModels = sanitizeFavoriteModels(patch.favoriteModels);
     if ('tradePreference' in patch) localPatch.tradePreference = normalizeTradePreference(patch.tradePreference);
+    if ('minReceived' in patch) localPatch.minReceived = normalizeMinReceived(patch.minReceived);
     if ('prioritizeFavoriteModels' in patch) localPatch.prioritizeFavoriteModels = patch.prioritizeFavoriteModels;
     if (Object.keys(localPatch).length > 0) accountStore.set((previous) => ({ ...previous, ...localPatch }));
 
