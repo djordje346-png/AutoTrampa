@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronRight, SlidersHorizontal, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { FavoriteModelsEditor } from '@/components/FavoriteModelsEditor';
@@ -16,8 +16,9 @@ const directions: {value: Trade; label: string; detail: string}[] = [
 ];
 const distances = [50, 100, 200, 300, 550];
 
-export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
+export function MobilePreferences({ hasGarageCar, autoOpen = false, hideTrigger = false, onDismiss }: { hasGarageCar: boolean; autoOpen?: boolean; hideTrigger?: boolean; onDismiss?: () => void }) {
   const { preferences, update, mounted } = usePreferences();
+  const autoOpened = useRef(false);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -42,8 +43,20 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
   }
 
   useEffect(() => {
+    if (autoOpen && mounted && !autoOpened.current) {
+      autoOpened.current = true;
+      start();
+    }
+  }, [autoOpen, mounted]);
+
+  function close() {
+    setOpen(false);
+    onDismiss?.();
+  }
+
+  useEffect(() => {
     if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false); };
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') close(); };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [open]);
@@ -74,13 +87,13 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
       });
       if (!result.ok) { toast.error(result.message || 'Podešavanja nisu sačuvana.'); return; }
       toast.success('Preferencije su sačuvane.');
-      setOpen(false);
+      close();
     } finally { setSaving(false); }
   }
 
   return (
     <>
-      <button type="button" onClick={start} className="flex w-full items-center gap-3 rounded-2xl border border-brand-500/40 bg-brand-500/[.055] px-3.5 py-3.5 text-left shadow-[0_3px_12px_rgba(245,138,56,.06)] dark:bg-brand-500/[.07]">
+      {!hideTrigger && <button type="button" onClick={start} className="flex w-full items-center gap-3 rounded-2xl border border-brand-500/40 bg-brand-500/[.055] px-3.5 py-3.5 text-left shadow-[0_3px_12px_rgba(245,138,56,.06)] dark:bg-brand-500/[.07]">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-text"><SlidersHorizontal size={20}/></span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-bold text-app-primary dark:text-app-primary">Moje preferencije</span>
@@ -89,13 +102,13 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
           </span>
         </span>
         <span className="flex items-center gap-1 text-xs font-semibold text-brand-text">Uredi <ChevronRight size={15}/></span>
-      </button>
+      </button>}
 
-      {open && <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/65 p-0 sm:items-center sm:p-4" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setOpen(false); }}>
+      {open && <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/65 p-0 sm:items-center sm:p-4" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
         <section role="dialog" aria-modal="true" aria-labelledby="preferences-wizard-title" className="flex w-full max-w-lg flex-col overflow-hidden rounded-t-[24px] border border-surface bg-card-surface shadow-2xl dark:border-surface sm:max-h-[90vh] sm:rounded-2xl" style={{maxHeight:'min(92dvh,800px)'}}>
           <div className="flex items-center justify-between border-b border-surface px-5 py-4 dark:border-surface">
             <div className="flex items-center gap-2"><SlidersHorizontal size={18} className="text-brand-text"/><strong className="text-sm text-app-primary">Moje preferencije</strong></div>
-            <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-app-secondary hover:bg-elevated" aria-label="Zatvori"><X size={20}/></button>
+            <button type="button" onClick={close} className="rounded-lg p-2 text-app-secondary hover:bg-elevated" aria-label="Zatvori"><X size={20}/></button>
           </div>
           <div className="flex gap-1.5 px-5 pt-4">{steps.map((item,index)=><span key={item} className={`h-1.5 min-w-0 flex-1 rounded-full ${index <= step ? 'bg-brand-500' : 'bg-elevated'}`}/>)}</div>
           <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-6">
