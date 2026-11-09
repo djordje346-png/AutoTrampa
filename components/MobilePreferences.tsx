@@ -16,7 +16,7 @@ const directions: {value: Trade; label: string; detail: string}[] = [
 ];
 const distances = [50, 100, 200, 300, 550];
 
-export function MobilePreferences({ hasGarageCar, autoOpen = false, hideTrigger = false, onDismiss }: { hasGarageCar: boolean; autoOpen?: boolean; hideTrigger?: boolean; onDismiss?: () => void }) {
+export function MobilePreferences({ hasGarageCar, autoOpen = false, hideTrigger = false, compactTrigger = false, onDismiss }: { hasGarageCar: boolean; autoOpen?: boolean; hideTrigger?: boolean; compactTrigger?: boolean; onDismiss?: () => void }) {
   const { preferences, update, mounted } = usePreferences();
   const autoOpened = useRef(false);
   const [open, setOpen] = useState(false);
@@ -93,7 +93,14 @@ export function MobilePreferences({ hasGarageCar, autoOpen = false, hideTrigger 
 
   return (
     <>
-      {!hideTrigger && <button type="button" onClick={start} className="flex w-full items-center gap-3 rounded-2xl border border-brand-500/40 bg-brand-500/[.055] px-3.5 py-3.5 text-left shadow-[0_3px_12px_rgba(245,138,56,.06)] dark:bg-brand-500/[.07]">
+      {!hideTrigger && (compactTrigger ? (
+        <button type="button" onClick={start} disabled={!mounted || !hasGarageCar}
+          aria-label="Uredi preferencije izabranog automobila"
+          className="control-focus inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/10 disabled:opacity-50">
+          <SlidersHorizontal size={14} aria-hidden="true" /> Uredi preferencije
+        </button>
+      ) : (
+      <button type="button" onClick={start} className="flex w-full items-center gap-3 rounded-2xl border border-brand-500/40 bg-brand-500/[.055] px-3.5 py-3.5 text-left shadow-[0_3px_12px_rgba(245,138,56,.06)] dark:bg-brand-500/[.07]">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-text"><SlidersHorizontal size={20}/></span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-bold text-app-primary dark:text-app-primary">Moje preferencije</span>
@@ -102,7 +109,8 @@ export function MobilePreferences({ hasGarageCar, autoOpen = false, hideTrigger 
           </span>
         </span>
         <span className="flex items-center gap-1 text-xs font-semibold text-brand-text">Uredi <ChevronRight size={15}/></span>
-      </button>}
+      </button>
+      ))}
 
       {open && <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/65 p-0 sm:items-center sm:p-4" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
         <section role="dialog" aria-modal="true" aria-labelledby="preferences-wizard-title" className="flex w-full max-w-lg flex-col overflow-hidden rounded-t-[24px] border border-surface bg-card-surface shadow-2xl dark:border-surface sm:max-h-[90vh] sm:rounded-2xl" style={{maxHeight:'min(92dvh,800px)'}}>
