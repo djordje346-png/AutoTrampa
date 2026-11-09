@@ -3,34 +3,25 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useUser } from '@/hooks/use-user';
-import { createPersistentStore, usePersistentStore, type PersistentStore } from '@/lib/persistent-store';
+import { useActiveGarageCarId } from '@/hooks/use-garage';
+import { getSupabase } from '@/lib/supabase';
 
 export interface Preferences {
-  /** Search radius in km. */
   radius: number;
-  /** Preferred body types, stored as BodyType keys and displayed via labels. */
   bodyPrefs: string[];
-  /** Up to five brand/model pairs prioritized in the feed and Swipe. */
   favoriteModels: string[];
   prioritizeFavoriteModels: boolean;
-  /** Soft preferred trade direction; never hides other listings. */
   tradePreference: 'all' | 'similar' | 'cheaper' | 'expensive';
-  /** Minimum top-up received when offering a more expensive car. */
   minReceived: number;
-  /** Hide phone number until both sides accept a swap. */
   phoneAfterMatch: boolean;
-  /** Budget for top-up in EUR. null = not set. */
   budget: number | null;
-  /** If true, prioritize swaps without user top-up; other cars remain visible. */
   noTopUp: boolean;
 }
-
-type AccountLocalPreferences = Pick<Preferences, 'bodyPrefs' | 'favoriteModels' | 'prioritizeFavoriteModels' | 'tradePreference' | 'minReceived'>;
-type PreferencePatch = Partial<Preferences>;
+export type PreferencePatch = Partial<Preferences>;
 
 export const DEFAULT_PREFERENCES: Preferences = {
   radius: 50,
-  bodyPrefs: ['Sedan', 'Caravan'],
+  bodyPrefs: [],
   favoriteModels: [],
   prioritizeFavoriteModels: true,
   tradePreference: 'all',
@@ -40,171 +31,142 @@ export const DEFAULT_PREFERENCES: Preferences = {
   noTopUp: false,
 };
 
-const DEFAULT_ACCOUNT_LOCAL: AccountLocalPreferences = {
-  minReceived: 0,
-  bodyPrefs: DEFAULT_PREFERENCES.bodyPrefs,
-  favoriteModels: DEFAULT_PREFERENCES.favoriteModels,
-  prioritizeFavoriteModels: true,
-  tradePreference: 'all',
+type SwapRow = {
+  car_id: string;
+  favorite_models: string[];
+  trade_direction: Preferences['tradePreference'];
+  max_top_up: number | string | null;
+  no_top_up: boolean;
+  min_received: number | string;
+  radius_km: number;
+  body_types: string[];
 };
 
-/** Guest-only legacy store. Signed-in accounts never read or write this key. */
-const guestPreferencesStore = createPersistentStore<Preferences>(
-  'autotrampa_preferences',
-  DEFAULT_PREFERENCES,
-  (raw) =>
-    raw && typeof raw === 'object'
-      ? { ...DEFAULT_PREFERENCES, ...(raw as Partial<Preferences>),
-          favoriteModels: sanitizeFavoriteModels((raw as Partial<Preferences>).favoriteModels),
-          prioritizeFavoriteModels: (raw as Partial<Preferences>).prioritizeFavoriteModels !== false,
-          tradePreference: normalizeTradePreference((raw as Partial<Preferences>).tradePreference),
-          minReceived: normalizeMinReceived((raw as Partial<Preferences>).minReceived) }
-      : null,
-);
-
-function normalizeMinReceived(raw: unknown): number {
-  return typeof raw === 'number' && Number.isFinite(raw) ? Math.max(0, Math.min(100000, raw)) : 0;
+function parseRow(row: SwapRow, phoneAfterMatch: boolean): Preferences {
+  return {
+    ...DEFAULT_PREFERENCES,
+    phoneAfterMatch,
+    favoriteModels: Array.isArray(row.favorite_models) ? row.favorite_models : [],
+    tradePreference: row.trade_direction,
+    budget: row.max_top_up == null ? null : Number(row.max_top_up),
+    noTopUp: Boolean(row.no_top_up),
+    minReceived: Number(row.min_received ?? 0),
+    radius: Number(row.radius_km ?? 50),
+    bodyPrefs: Array.isArray(row.body_types) ? row.body_types : [],
+  };
 }
 
-function normalizeTradePreference(raw: unknown): Preferences['tradePreference'] {
-  return raw === 'similar' || raw === 'cheaper' || raw === 'expensive' ? raw : 'all';
+function serializePatch(patch: PreferencePatch) {
+  const data: Record<string, unknown> = {};
+  if (patch.favoriteModels !== undefined) data.favorite_models = patch.favoriteModels.slice(0, 5);
+  if (patch.tradePreference !== undefined) data.trade_direction = patch.tradePreference;
+  if (patch.budget !== undefined) data.max_top_up = patch.budget;
+  if (patch.noTopUp !== undefined) data.no_top_up = patch.noTopUp;
+  if (patch.minReceived !== undefined) data.min_received = patch.minReceived;
+  if (patch.radius !== undefined) data.radius_km = patch.radius;
+  if (patch.bodyPrefs !== undefined) data.body_types = patch.bodyPrefs;
+  return data;
 }
 
-function sanitizeFavoriteModels(raw: unknown): string[] {
-  if (!Array.isArray(raw)) return [];
-  return Array.from(new Set(raw.filter((value): value is string => typeof value === 'string' && value.includes('::') && value.length <= 120))).slice(0, 5);
-}
+const CAR_FIELDS = 'car_id,favorite_models,trade_direction,max_top_up,no_top_up,min_received,radius_km,body_types';
 
-const accountLocalStores = new Map<string, PersistentStore<AccountLocalPreferences>>();
-
-function getAccountLocalStore(userId: string): PersistentStore<AccountLocalPreferences> {
-  const existing = accountLocalStores.get(userId);
-  if (existing) return existing;
-
-  const store = createPersistentStore<AccountLocalPreferences>(
-    `autotrampa_preferences_user_${userId}`,
-    DEFAULT_ACCOUNT_LOCAL,
-    (raw) =>
-      raw && typeof raw === 'object'
-        ? { bodyPrefs: Array.isArray((raw as Partial<AccountLocalPreferences>).bodyPrefs)
-            ? (raw as AccountLocalPreferences).bodyPrefs.filter((value) => typeof value === 'string')
-            : DEFAULT_ACCOUNT_LOCAL.bodyPrefs,
-          favoriteModels: sanitizeFavoriteModels((raw as Partial<AccountLocalPreferences>).favoriteModels),
-          prioritizeFavoriteModels: (raw as Partial<AccountLocalPreferences>).prioritizeFavoriteModels !== false,
-          tradePreference: normalizeTradePreference((raw as Partial<AccountLocalPreferences>).tradePreference),
-          minReceived: normalizeMinReceived((raw as Partial<AccountLocalPreferences>).minReceived) }
-        : null,
-  );
-  accountLocalStores.set(userId, store);
-  return store;
-}
-
-export function usePreferences() {
+export function usePreferences(explicitCarId?: string | null) {
   const { userId, mounted: authReady } = useAuth();
   const { user, profileReady, updateProfilePreferences } = useUser();
-  const [guestPreferences, guestReady] = usePersistentStore(guestPreferencesStore);
-  const accountStore = userId ? getAccountLocalStore(userId) : null;
-  const [accountSnapshot, setAccountSnapshot] = useState<{
-    userId: string | null;
-    value: AccountLocalPreferences;
-  }>({ userId: null, value: DEFAULT_ACCOUNT_LOCAL });
+  const selectedId = useActiveGarageCarId();
+  const carId = explicitCarId === undefined ? selectedId : explicitCarId;
+  const profileMatches = Boolean(userId && profileReady && user.id === userId);
+  const [snapshot, setSnapshot] = useState<{ key: string; value: Preferences; exists: boolean }>({
+    key: '', value: DEFAULT_PREFERENCES, exists: false,
+  });
+  const [revision, setRevision] = useState(0);
+  const key = userId && carId ? `${userId}:${carId}` : '';
 
   useEffect(() => {
-    if (!userId || !accountStore) {
-      setAccountSnapshot({ userId: null, value: DEFAULT_ACCOUNT_LOCAL });
+    const onUpdate = (event: Event) => {
+      const changed = (event as CustomEvent<{ key: string }>).detail?.key;
+      if (changed === key) setRevision(x => x + 1);
+    };
+    window.addEventListener('autotrampa:car-preferences', onUpdate);
+    return () => window.removeEventListener('autotrampa:car-preferences', onUpdate);
+  }, [key]);
+
+  useEffect(() => {
+    if (!key) {
+      setSnapshot({ key: '', value: DEFAULT_PREFERENCES, exists: false });
       return;
     }
+    let cancelled = false;
+    void (async () => {
+      const { data, error } = await getSupabase()
+        .from('car_swap_preferences').select(CAR_FIELDS)
+        .eq('car_id', carId!).eq('owner_id', userId!).maybeSingle();
+      if (cancelled) return;
+      if (error) {
+        // A failed read must not be mistaken for a blank preference record.
+        setSnapshot({ key: 'error', value: DEFAULT_PREFERENCES, exists: false });
+        return;
+      }
+      setSnapshot({
+        key, value: data ? parseRow(data as SwapRow, true) : DEFAULT_PREFERENCES,
+        exists: Boolean(data),
+      });
+    })();
+    return () => { cancelled = true; };
+  }, [key, revision, carId, userId]);
 
-    const publish = (value: AccountLocalPreferences) => setAccountSnapshot({ userId, value });
-    const unsubscribe = accountStore.subscribe(publish);
-    accountStore.hydrate();
-    publish(accountStore.get());
-    return unsubscribe;
-  }, [userId, accountStore]);
-
-  const profileMatches = Boolean(userId && profileReady && user.id === userId);
-  const accountLocal = userId && accountSnapshot.userId === userId
-    ? accountSnapshot.value
-    : DEFAULT_ACCOUNT_LOCAL;
-  const preferences: Preferences = !authReady
-    ? DEFAULT_PREFERENCES
-    : !userId
-      ? { ...guestPreferences, prioritizeFavoriteModels: true }
-      : profileMatches
-        ? {
-            ...DEFAULT_PREFERENCES,
-            ...accountLocal,
-            prioritizeFavoriteModels: true,
-            budget: user.budget,
-            radius: user.searchRadius,
-            noTopUp: user.noTopUp,
-            // Privacy must be enforced from the owner's server profile. Never
-            // import a local opt-out that other users cannot securely verify.
-            phoneAfterMatch: user.phoneAfterMatch,
-          }
-        : DEFAULT_PREFERENCES;
+  const loaded = !key || snapshot.key === key;
+  const preferences: Preferences = {
+    ...(key && loaded ? snapshot.value : DEFAULT_PREFERENCES),
+    phoneAfterMatch: profileMatches ? user.phoneAfterMatch : true,
+  };
 
   const update = useCallback(async (patch: PreferencePatch) => {
-    if (!authReady) return { ok: false as const, message: 'Sačekaj da se prijava proveri.' };
-
-    if (!userId) {
-      const result = guestPreferencesStore.set((previous) => ({ ...previous, ...patch }));
-      return result.ok
-        ? { ok: true as const }
-        : { ok: false as const, message: 'Preference nisu sačuvane u pregledaču.' };
+    if (!authReady || !profileMatches || !userId) {
+      return { ok: false as const, message: 'Prijavi se i sačekaj učitavanje profila.' };
+    }
+    if ('phoneAfterMatch' in patch && patch.phoneAfterMatch !== undefined) {
+      const result = await updateProfilePreferences({ phoneAfterMatch: patch.phoneAfterMatch });
+      if (!result.ok) return result;
     }
 
-    if (!profileMatches || !accountStore) {
-      return { ok: false as const, message: 'Profil još nije učitan. Pokušaj ponovo.' };
+    const fields = serializePatch(patch);
+    if (Object.keys(fields).length === 0) return { ok: true as const };
+    if (!carId) return { ok: false as const, message: 'Izaberi automobil za koji podešavaš preferencije.' };
+    if (!loaded) return { ok: false as const, message: 'Preferencije se još učitavaju.' };
+
+    const supabase = getSupabase();
+    // Create a default row for legacy cars without overwriting an existing
+    // row. The unique car_id constraint guards concurrent initializations.
+    if (!snapshot.exists) {
+      const { error: insertError } = await supabase.from('car_swap_preferences').upsert({
+        car_id: carId, owner_id: userId,
+      }, { onConflict: 'car_id', ignoreDuplicates: true });
+      if (insertError) return { ok: false as const, message: 'Ne mogu da pripremim preferencije ovog auta.' };
     }
-
-    const localPatch: Partial<AccountLocalPreferences> = {};
-    if ('bodyPrefs' in patch) localPatch.bodyPrefs = patch.bodyPrefs;
-    if ('favoriteModels' in patch) localPatch.favoriteModels = sanitizeFavoriteModels(patch.favoriteModels);
-    if ('tradePreference' in patch) localPatch.tradePreference = normalizeTradePreference(patch.tradePreference);
-    if ('minReceived' in patch) localPatch.minReceived = normalizeMinReceived(patch.minReceived);
-    if ('prioritizeFavoriteModels' in patch) localPatch.prioritizeFavoriteModels = patch.prioritizeFavoriteModels;
-    if (Object.keys(localPatch).length > 0) accountStore.set((previous) => ({ ...previous, ...localPatch }));
-
-    const profilePatch: { budget?: number | null; searchRadius?: number; noTopUp?: boolean; phoneAfterMatch?: boolean } = {};
-    if ('budget' in patch) profilePatch.budget = patch.budget;
-    if ('radius' in patch) profilePatch.searchRadius = patch.radius;
-    if ('noTopUp' in patch) profilePatch.noTopUp = patch.noTopUp;
-    if ('phoneAfterMatch' in patch) profilePatch.phoneAfterMatch = patch.phoneAfterMatch;
-
-    if (Object.keys(profilePatch).length === 0) return { ok: true as const };
-    return updateProfilePreferences(profilePatch);
-  }, [accountStore, authReady, profileMatches, updateProfilePreferences, userId]);
+    const { data, error } = await supabase.from('car_swap_preferences')
+      .update({ ...fields, updated_at: new Date().toISOString() })
+      .eq('car_id', carId).eq('owner_id', userId).select('car_id').maybeSingle();
+    if (error || !data) return { ok: false as const, message: 'Preferencije nisu sačuvane. Pokušaj ponovo.' };
+    setSnapshot(previous => previous.key === key
+      ? { key, exists: true, value: { ...previous.value, ...patch } }
+      : previous);
+    window.dispatchEvent(new CustomEvent('autotrampa:car-preferences', { detail: { key } }));
+    return { ok: true as const };
+  }, [authReady, profileMatches, userId, carId, loaded, snapshot.exists, key, updateProfilePreferences]);
 
   const toggleBodyPref = useCallback((type: string) => {
-    if (userId) {
-      getAccountLocalStore(userId).set((previous: AccountLocalPreferences) => {
-        const bodyPrefs = previous.bodyPrefs;
-        return {
-          ...previous,
-          bodyPrefs: bodyPrefs.includes(type)
-            ? bodyPrefs.filter((item) => item !== type)
-            : [...bodyPrefs, type],
-        };
-      });
-      return;
-    }
-
-    guestPreferencesStore.set((previous: Preferences) => {
-      const bodyPrefs = previous.bodyPrefs;
-      return {
-        ...previous,
-        bodyPrefs: bodyPrefs.includes(type)
-          ? bodyPrefs.filter((item) => item !== type)
-          : [...bodyPrefs, type],
-      };
-    });
-  }, [userId]);
+    const bodyPrefs = preferences.bodyPrefs.includes(type)
+      ? preferences.bodyPrefs.filter(item => item !== type)
+      : [...preferences.bodyPrefs, type];
+    void update({ bodyPrefs });
+  }, [preferences.bodyPrefs, update]);
 
   return {
     preferences,
     update,
     toggleBodyPref,
-    mounted: authReady && (userId ? profileMatches : guestReady),
+    carId,
+    mounted: authReady && profileMatches && loaded,
   };
 }
