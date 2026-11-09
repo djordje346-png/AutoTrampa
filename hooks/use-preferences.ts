@@ -41,6 +41,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
 };
 
 const DEFAULT_ACCOUNT_LOCAL: AccountLocalPreferences = {
+  minReceived: 0,
   bodyPrefs: DEFAULT_PREFERENCES.bodyPrefs,
   favoriteModels: DEFAULT_PREFERENCES.favoriteModels,
   prioritizeFavoriteModels: true,
