@@ -607,7 +607,18 @@ function AuthenticatedFeed({
 
       {viewMode === 'grid' && authReady && isLoggedIn && (
         <section className="app-container mt-3 space-y-3" aria-label="Moje preferencije i brzi filteri">
-          <div className="desktop:hidden"><MobilePreferences hasGarageCar={Boolean(selectedCar)} /></div>
+          {selectedCar && (
+            <div className="desktop:hidden flex min-w-0 items-center justify-between gap-2 rounded-xl border border-surface bg-card-surface px-3 py-2 dark:border-surface">
+              <div className="flex min-w-0 items-center gap-2">
+                {selectedCar.image && <img src={selectedCar.image} alt="" className="h-9 w-11 shrink-0 rounded-lg object-cover" />}
+                <div className="min-w-0">
+                  <p className="text-[10px] font-medium text-app-muted">Izabrani automobil</p>
+                  <p className="truncate text-xs font-bold text-app-primary">{selectedCar.brand} {selectedCar.model}</p>
+                </div>
+              </div>
+              <MobilePreferences key={selectedCar.id} hasGarageCar compactTrigger />
+            </div>
+          )}
           <div className="min-w-0 space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-xs font-bold text-app-primary dark:text-app-primary">Brzi filteri</h2>
