@@ -21,6 +21,7 @@ import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { ProfileEditSheet } from '@/components/ProfileEditSheet';
 import { FavoriteModelsEditor } from '@/components/FavoriteModelsEditor';
+import { MobilePreferences } from '@/components/MobilePreferences';
 
 const BODY_TYPE_PREFS = BODY_TYPES.map(({ value }) => value);
 
@@ -36,6 +37,7 @@ export default function ProfileClient() {
   const { preferences, update: updatePreferences, toggleBodyPref, mounted: preferencesReady } = usePreferences();
   const [activeModal, setActiveModal] = useState<'faq' | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [preferencesCarId, setPreferencesCarId] = useState<string | null>(null);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [phonePrivacySaving, setPhonePrivacySaving] = useState(false);
 
@@ -88,9 +90,11 @@ export default function ProfileClient() {
       toast.error(garageErrorMessage(result.error, 'add', garageLimit));
       return;
     }
-    selectCar(result.id ?? car.id);
+    const createdId = result.id ?? car.id;
+    selectCar(createdId);
     setShowAddForm(false);
-    toast.success('Vozilo dodato u garažu.');
+    setPreferencesCarId(createdId);
+    toast.success('Vozilo dodato. Podesi željenu zamenu.');
   }
 
   function openAddCarForm() {
@@ -518,6 +522,10 @@ export default function ProfileClient() {
       </div>
 
       <p className="text-center text-[10px] text-app-muted opacity-50 pb-2">AutoTrampa v1.0</p>
+
+      {preferencesCarId && selectedCar?.id === preferencesCarId && (
+        <MobilePreferences key={preferencesCarId} hasGarageCar autoOpen hideTrigger onDismiss={() => setPreferencesCarId(null)} />
+      )}
 
       {showAddForm && (
         <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
