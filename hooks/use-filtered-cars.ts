@@ -47,6 +47,7 @@ export function filterCars(
   bodyPrefs: string[] = [],
   favoriteModels: string[] = [],
   prioritizeFavoriteModels = true,
+  tradePreference: 'all' | 'similar' | 'cheaper' | 'expensive' = 'all',
 ): Car[] {
   const q = filters.query.trim().toLowerCase();
 
@@ -115,11 +116,21 @@ export function filterCars(
   const budgetAware = myCar && ((budget != null && budget > 0) || noTopUp);
   const ranked = budgetAware ? sortByBudget(sorted, myCar, budget, noTopUp) : sorted;
   const radiusRanked = applySoftRadius(ranked, originCity, radiusKm);
-  if (!prioritizeFavoriteModels || favoriteModels.length === 0) return radiusRanked;
+  const tradePreferred = myCar && tradePreference !== 'all'
+    ? [...radiusRanked].sort((a, b) => {
+        const score = (car: Car) => {
+          const diff = car.price - myCar.price;
+          if (tradePreference === 'similar') return Math.abs(diff) <= TRADE_TOLERANCE ? 1 : 0;
+          if (tradePreference === 'cheaper') return diff < -TRADE_TOLERANCE ? 1 : 0;
+          return diff > TRADE_TOLERANCE ? 1 : 0;
+        };
+        return score(b) - score(a);
+      }) : radiusRanked;
+  if (!prioritizeFavoriteModels || favoriteModels.length === 0) return tradePreferred;
   const favoriteSet = new Set(favoriteModels.map(key => key.toLocaleLowerCase('sr').trim()));
   // Stable priority tier: explicit search filters always apply first, and users
   // can disable favorite-first ordering without changing their chosen sort.
-  return [...radiusRanked].sort((a, b) =>
+  return [...tradePreferred].sort((a, b) =>
     Number(favoriteSet.has(`${b.brand}::${b.model}`.toLocaleLowerCase('sr').trim())) -
     Number(favoriteSet.has(`${a.brand}::${a.model}`.toLocaleLowerCase('sr').trim()))
   );
@@ -144,6 +155,7 @@ export function getAlternativeCars(
   bodyPrefs: string[] = [],
   favoriteModels: string[] = [],
   prioritizeFavoriteModels = true,
+  tradePreference: 'all' | 'similar' | 'cheaper' | 'expensive' = 'all',
 ): Car[] {
   const exactIds = new Set(exactMatches.map(car => car.id));
   return filterCars(
@@ -157,6 +169,7 @@ export function getAlternativeCars(
     bodyPrefs,
     favoriteModels,
     prioritizeFavoriteModels,
+    tradePreference,
   ).filter(car => !exactIds.has(car.id));
 }
 
@@ -195,9 +208,10 @@ export function useFilteredCars(
   bodyPrefs: string[] = [],
   favoriteModels: string[] = [],
   prioritizeFavoriteModels = true,
+  tradePreference: 'all' | 'similar' | 'cheaper' | 'expensive' = 'all',
 ): Car[] {
   return useMemo(
-    () => filterCars(cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs, favoriteModels, prioritizeFavoriteModels),
-    [cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs, favoriteModels, prioritizeFavoriteModels],
+    () => filterCars(cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs, favoriteModels, prioritizeFavoriteModels, tradePreference),
+    [cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs, favoriteModels, prioritizeFavoriteModels, tradePreference],
   );
 }
