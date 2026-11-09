@@ -142,6 +142,8 @@ export function getAlternativeCars(
   originCity = '',
   radiusKm = 0,
   bodyPrefs: string[] = [],
+  favoriteModels: string[] = [],
+  prioritizeFavoriteModels = true,
 ): Car[] {
   const exactIds = new Set(exactMatches.map(car => car.id));
   return filterCars(
