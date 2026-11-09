@@ -54,7 +54,7 @@ const guestPreferencesStore = createPersistentStore<Preferences>(
 
 function sanitizeFavoriteModels(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
-  return [...new Set(raw.filter((value): value is string => typeof value === 'string' && value.includes('::') && value.length <= 120))].slice(0, 5);
+  return Array.from(new Set(raw.filter((value): value is string => typeof value === 'string' && value.includes('::') && value.length <= 120))).slice(0, 5);
 }
 
 const accountLocalStores = new Map<string, PersistentStore<AccountLocalPreferences>>();
