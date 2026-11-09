@@ -33,6 +33,7 @@ import { DesktopRadiusControl } from '@/components/DesktopRadiusControl';
 import { FeedCardPhoto } from '@/components/FeedCardPhoto';
 import PublicLanding from '@/components/PublicLanding';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
+import { MobilePreferences } from '@/components/MobilePreferences';
 import { useListingMessage } from '@/hooks/use-listing-message';
 import ListingPagination from '@/components/ListingPagination';
 import { LISTINGS_PER_PAGE, useListingPagination } from '@/hooks/use-listing-pagination';
@@ -137,6 +138,7 @@ function AuthenticatedFeed({
   const { viewMode, setViewMode } = useFeedView();
   const { unreadMatches } = useMessages({ poll: viewMode === 'swipe' });
   const [swipeIndex, setSwipeIndex] = useState(0);
+  const [mobileQuickFilter, setMobileQuickFilter] = useState<'all' | 'diesel' | 'petrol' | 'automatic' | 'suv' | 'newer'>('all');
   const { preferences, mounted: preferencesMounted } = usePreferences();
   const budget = preferences.budget;
   const noTopUp = preferences.noTopUp;
@@ -201,8 +203,18 @@ function AuthenticatedFeed({
    * filter means the same thing on both screens. `selectedCar` is passed as
    * null when the garage is empty, which switches the trade filter off.
    */
+  const quickCars = useMemo(() => marketplaceCars.filter(car => {
+    switch (mobileQuickFilter) {
+      case 'diesel': return car.specs.fuelType === 'Diesel';
+      case 'petrol': return car.specs.fuelType === 'Petrol';
+      case 'automatic': return /auto|dsg|cvt|tiptronic|steptronic/i.test(car.specs.transmission ?? '');
+      case 'suv': return car.bodyType === 'SUV';
+      case 'newer': return car.year != null && car.year >= 2015;
+      default: return true;
+    }
+  }), [marketplaceCars, mobileQuickFilter]);
   const filteredCars = useFilteredCars(
-    marketplaceCars,
+    quickCars,
     filters,
     tradeAware ? selectedCar : null,
     budget,
@@ -212,6 +224,7 @@ function AuthenticatedFeed({
     preferences.bodyPrefs,
     preferences.favoriteModels,
     preferences.prioritizeFavoriteModels,
+    preferences.tradePreference,
   );
 
   const hasSearchCriteria = countActiveFilters(filters, true) > 0;
@@ -219,19 +232,19 @@ function AuthenticatedFeed({
   const alternativeCars = useMemo(
     () => showAlternatives
       ? getAlternativeCars(
-          marketplaceCars, filteredCars, filters, tradeAware ? selectedCar : null,
+          quickCars, filteredCars, filters, tradeAware ? selectedCar : null,
           budget, noTopUp, selectedCar?.city ?? '', preferences.radius, preferences.bodyPrefs,
-          preferences.favoriteModels, preferences.prioritizeFavoriteModels,
+          preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference,
         )
       : [],
-    [showAlternatives, marketplaceCars, filteredCars, filters, tradeAware, selectedCar, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels],
+    [showAlternatives, quickCars, filteredCars, filters, tradeAware, selectedCar, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference],
   );
   // Exact matches remain first; other listings never count as exact results.
   const displayCars = useMemo(
     () => showAlternatives ? [...filteredCars, ...alternativeCars] : filteredCars,
     [showAlternatives, filteredCars, alternativeCars],
   );
-  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
+  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference, mobileQuickFilter, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   const activeFilters = countActiveFilters(filters);
   const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
@@ -536,8 +549,8 @@ function AuthenticatedFeed({
         </header>
 
         {/* Trade filter bar */}
-        {(showTrade || viewMode === 'grid') && (
-        <div className={`border-t border-surface dark:border-surface/50 ${viewMode === 'grid' ? 'lg:hidden' : ''}`}>
+        {viewMode === 'swipe' && showTrade && (
+        <div className="border-t border-surface dark:border-surface/50">
           <div className="app-container flex items-center gap-1.5 py-2 overflow-x-auto scrollbar-hide">
             {TRADE_FILTERS.map(({ key, label }) => (
               <button
@@ -560,6 +573,25 @@ function AuthenticatedFeed({
         </div>
         )}
       </div>
+
+      {viewMode === 'grid' && authReady && isLoggedIn && (
+        <section className="app-container mt-3 space-y-3 lg:hidden" aria-label="Moje preferencije i brzi filteri">
+          <MobilePreferences hasGarageCar={Boolean(selectedCar)} />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-xs font-bold text-app-primary dark:text-app-primary">Brzi filteri</h2>
+              <button type="button" onClick={() => setFiltersOpen(true)} className="inline-flex items-center gap-1 text-xs font-semibold text-brand-text"><SlidersHorizontal size={13}/> Svi filteri</button>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" aria-label="Privremeni filteri">
+              {([
+                ['all','Svi oglasi'],['diesel','Dizel'],['petrol','Benzin'],['automatic','Automatik'],['suv','SUV'],['newer','Noviji']
+              ] as const).map(([key,label]) => (
+                <button key={key} type="button" aria-pressed={mobileQuickFilter===key} onClick={() => { setMobileQuickFilter(key); setSwipeIndex(0); }} className={`control-focus shrink-0 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${mobileQuickFilter===key ? 'border-control bg-control text-control-foreground' : 'border-surface bg-elevated text-app-secondary dark:border-surface'}`}>{label}</button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {viewMode === 'grid' && authReady && isLoggedIn && cars.length === 0 && (
         <div className="app-container mt-3 flex flex-col gap-2 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
