@@ -109,11 +109,12 @@ export function usePreferences() {
   const preferences: Preferences = !authReady
     ? DEFAULT_PREFERENCES
     : !userId
-      ? guestPreferences
+      ? { ...guestPreferences, prioritizeFavoriteModels: true }
       : profileMatches
         ? {
             ...DEFAULT_PREFERENCES,
             ...accountLocal,
+            prioritizeFavoriteModels: true,
             budget: user.budget,
             radius: user.searchRadius,
             noTopUp: user.noTopUp,
