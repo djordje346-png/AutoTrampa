@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Star, X } from 'lucide-react';
+import { Star, X } from 'lucide-react';
 import { BRAND_NAMES, CAR_BRANDS } from '@/lib/car-brands';
 import { usePreferences } from '@/hooks/use-preferences';
 import { toast } from 'sonner';
@@ -10,21 +10,38 @@ export function FavoriteModelsEditor({ compact = false }: { compact?: boolean })
   const { preferences, update, mounted } = usePreferences();
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [saving, setSaving] = useState(false);
   const selected = preferences.favoriteModels;
   const options = brand ? (CAR_BRANDS[brand] || []) : [];
 
-  async function saveFavoriteModels(next: string[]) {
+  async function saveFavoriteModels(next: string[]): Promise<boolean> {
     const result = await update({ favoriteModels: next });
-    if (!result.ok) toast.error(result.message || 'Nije moguće sačuvati omiljene modele.');
+    if (!result.ok) {
+      toast.error(result.message || 'Nije moguće sačuvati omiljene modele.');
+      return false;
+    }
+    return true;
   }
 
-  function addModel() {
-    if (!brand || !model) return;
-    const key = `${brand}::${model}`;
-    if (selected.includes(key) || selected.length >= 5) return;
-    void saveFavoriteModels([...selected, key]);
-    setBrand('');
-    setModel('');
+  async function handleModelChange(nextModel: string) {
+    if (!brand || !nextModel || saving) return;
+    const key = `${brand}::${nextModel}`;
+    if (selected.includes(key)) {
+      toast.info('Ovaj model je već dodat.');
+      return;
+    }
+    if (selected.length >= 5) return;
+    setModel(nextModel);
+    setSaving(true);
+    try {
+      const saved = await saveFavoriteModels([...selected, key]);
+      if (saved) {
+        setBrand('');
+        setModel('');
+      }
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -56,20 +73,18 @@ export function FavoriteModelsEditor({ compact = false }: { compact?: boolean })
       ) : <p className="rounded-lg border border-dashed border-surface p-2.5 text-[11px] text-app-muted dark:border-surface">Još nisi izabrao omiljene modele.</p>}
 
       {selected.length < 5 && (
-        <div className={compact ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto]'}>
-          <select aria-label="Marka omiljenog automobila" disabled={!mounted} value={brand} onChange={event => { setBrand(event.target.value); setModel(''); }} className="min-w-0 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs text-app-primary dark:border-surface dark:bg-app dark:text-app-primary">
+        <div className={compact ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
+          <select aria-label="Marka omiljenog automobila" disabled={!mounted || saving} value={brand} onChange={event => { setBrand(event.target.value); setModel(''); }} className="min-w-0 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs text-app-primary dark:border-surface dark:bg-app dark:text-app-primary">
             <option value="">Izaberi marku</option>
             {BRAND_NAMES.map(name => <option key={name} value={name}>{name}</option>)}
           </select>
-          <select aria-label="Omiljeni model" disabled={!mounted || !brand} value={model} onChange={event => setModel(event.target.value)} className="min-w-0 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs text-app-primary dark:border-surface dark:bg-app dark:text-app-primary">
+          <select aria-label="Omiljeni model" disabled={!mounted || !brand || saving} value={model} onChange={event => void handleModelChange(event.target.value)} className="min-w-0 rounded-xl border border-surface bg-elevated px-3 py-2 text-xs text-app-primary dark:border-surface dark:bg-app dark:text-app-primary">
             <option value="">Izaberi model</option>
             {options.map(name => <option key={name} value={name}>{name}</option>)}
           </select>
-          <button type="button" disabled={!mounted || !brand || !model || selected.includes(`${brand}::${model}`)} onClick={addModel} className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl bg-brand-500 px-3 py-2 text-xs font-bold text-on-accent transition-opacity disabled:opacity-40">
-            <Plus size={15} /> Dodaj
-          </button>
         </div>
       )}
+      {saving && <p role="status" className="text-[11px] text-app-muted">Čuvanje modela…</p>}
 
     </div>
   );
