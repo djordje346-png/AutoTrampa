@@ -37,24 +37,15 @@ export function useSmartSwaps(
     async function load() {
       const supabase = getSupabase();
       const city = getSerbianPlace(myCar!.city);
-      const { error } = await supabase.from('car_swap_preferences').upsert({
-        car_id: myCar!.id,
-        owner_id: userId,
-        favorite_models: preferences.favoriteModels,
-        trade_direction: preferences.tradePreference,
-        max_top_up: preferences.budget,
-        no_top_up: preferences.noTopUp,
-        min_received: preferences.minReceived,
-        radius_km: preferences.radius,
-        body_types: preferences.bodyPrefs,
-        city_lat: city?.latitude ?? null,
-        city_lon: city?.longitude ?? null,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'car_id' });
-      if (error) {
+      // Only update city coordinates. Preferences belong to the selected car
+      // and are saved by usePreferences; this hook must never overwrite them.
+      if (preferences.favoriteModels.length === 0) {
         if (!disposed) setSnapshot({ key, candidates: [] });
         return;
       }
+      await supabase.from('car_swap_preferences')
+        .update({ city_lat: city?.latitude ?? null, city_lon: city?.longitude ?? null })
+        .eq('car_id', myCar!.id).eq('owner_id', userId);
       const { data, error: searchError } = await supabase.rpc('find_smart_swaps', {
         p_my_car_id: myCar!.id, p_limit: 30,
       });
