@@ -10,6 +10,9 @@ export interface Preferences {
   radius: number;
   /** Preferred body types, stored as BodyType keys and displayed via labels. */
   bodyPrefs: string[];
+  /** Up to five brand/model pairs prioritized in the feed and Swipe. */
+  favoriteModels: string[];
+  prioritizeFavoriteModels: boolean;
   /** Hide phone number until both sides accept a swap. */
   phoneAfterMatch: boolean;
   /** Budget for top-up in EUR. null = not set. */
@@ -18,12 +21,14 @@ export interface Preferences {
   noTopUp: boolean;
 }
 
-type AccountLocalPreferences = Pick<Preferences, 'bodyPrefs'>;
+type AccountLocalPreferences = Pick<Preferences, 'bodyPrefs' | 'favoriteModels' | 'prioritizeFavoriteModels'>;
 type PreferencePatch = Partial<Preferences>;
 
 export const DEFAULT_PREFERENCES: Preferences = {
   radius: 50,
   bodyPrefs: ['Sedan', 'Caravan'],
+  favoriteModels: [],
+  prioritizeFavoriteModels: true,
   phoneAfterMatch: true,
   budget: null,
   noTopUp: false,
@@ -31,6 +36,8 @@ export const DEFAULT_PREFERENCES: Preferences = {
 
 const DEFAULT_ACCOUNT_LOCAL: AccountLocalPreferences = {
   bodyPrefs: DEFAULT_PREFERENCES.bodyPrefs,
+  favoriteModels: DEFAULT_PREFERENCES.favoriteModels,
+  prioritizeFavoriteModels: true,
 };
 
 /** Guest-only legacy store. Signed-in accounts never read or write this key. */
@@ -39,9 +46,16 @@ const guestPreferencesStore = createPersistentStore<Preferences>(
   DEFAULT_PREFERENCES,
   (raw) =>
     raw && typeof raw === 'object'
-      ? { ...DEFAULT_PREFERENCES, ...(raw as Partial<Preferences>) }
+      ? { ...DEFAULT_PREFERENCES, ...(raw as Partial<Preferences>),
+          favoriteModels: sanitizeFavoriteModels((raw as Partial<Preferences>).favoriteModels),
+          prioritizeFavoriteModels: (raw as Partial<Preferences>).prioritizeFavoriteModels !== false }
       : null,
 );
+
+function sanitizeFavoriteModels(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return [...new Set(raw.filter((value): value is string => typeof value === 'string' && value.includes('::') && value.length <= 120))].slice(0, 5);
+}
 
 const accountLocalStores = new Map<string, PersistentStore<AccountLocalPreferences>>();
 
@@ -56,7 +70,9 @@ function getAccountLocalStore(userId: string): PersistentStore<AccountLocalPrefe
       raw && typeof raw === 'object'
         ? { bodyPrefs: Array.isArray((raw as Partial<AccountLocalPreferences>).bodyPrefs)
             ? (raw as AccountLocalPreferences).bodyPrefs.filter((value) => typeof value === 'string')
-            : DEFAULT_ACCOUNT_LOCAL.bodyPrefs }
+            : DEFAULT_ACCOUNT_LOCAL.bodyPrefs,
+          favoriteModels: sanitizeFavoriteModels((raw as Partial<AccountLocalPreferences>).favoriteModels),
+          prioritizeFavoriteModels: (raw as Partial<AccountLocalPreferences>).prioritizeFavoriteModels !== false }
         : null,
   );
   accountLocalStores.set(userId, store);
@@ -123,6 +139,8 @@ export function usePreferences() {
 
     const localPatch: Partial<AccountLocalPreferences> = {};
     if ('bodyPrefs' in patch) localPatch.bodyPrefs = patch.bodyPrefs;
+    if ('favoriteModels' in patch) localPatch.favoriteModels = sanitizeFavoriteModels(patch.favoriteModels);
+    if ('prioritizeFavoriteModels' in patch) localPatch.prioritizeFavoriteModels = patch.prioritizeFavoriteModels;
     if (Object.keys(localPatch).length > 0) accountStore.set((previous) => ({ ...previous, ...localPatch }));
 
     const profilePatch: { budget?: number | null; searchRadius?: number; noTopUp?: boolean; phoneAfterMatch?: boolean } = {};
