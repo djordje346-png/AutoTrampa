@@ -253,6 +253,12 @@ export default function ProfileClient() {
             <SlidersHorizontal size={16} className="text-brand-text" />
             <p className="text-sm font-bold text-app-primary dark:text-app-primary">Preferencije zamene</p>
           </div>
+          <label htmlFor="profile-preferences-car" className="mb-1.5 block text-[11px] font-semibold text-app-secondary">Podešavanja za automobil</label>
+          <select id="profile-preferences-car" value={activeCar?.id ?? ''} onChange={event => selectCar(event.target.value)} disabled={cars.length === 0}
+            className="mb-4 w-full rounded-xl border border-brand-500/35 bg-elevated px-3 py-2.5 text-xs font-semibold text-app-primary focus:border-brand-500 focus:outline-none">
+            {cars.length === 0 && <option value="">Prvo dodaj automobil u garažu</option>}
+            {cars.map(car => <option key={car.id} value={car.id}>{car.brand} {car.model} · {formatYear(car.year)}</option>)}
+          </select>
 
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
