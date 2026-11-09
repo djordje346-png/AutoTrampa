@@ -41,8 +41,8 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
           <div className={styles.heroNewCopy}>
             <div className={styles.heroLogo}><BrandLockup variant="light" /></div>
             <p className={styles.heroNewEyebrow}>Platforma za zamenu automobila</p>
-            <h1 id="landing-title">Pronađi auto koji želiš.<span>Ponudi svoj u zamenu.</span></h1>
-            <p>Pronađi vozilo koje ti odgovara i ponudi svoj auto u zamenu — uz doplatu ili bez nje.</p>
+            <h1 id="landing-title">Tvoj sledeći auto<span>možda već čeka na tebe.</span></h1>
+            <p>Zameni svoj automobil za onaj koji stvarno želiš. Pronađi ljude koji traže baš ono što ti nudiš — jednostavno i bez gubljenja vremena.</p>
             <div className={styles.heroNewActions}>
               <button type="button" onClick={onAddCar} className={styles.primary}>Dodaj svoj auto <ArrowRight size={17} aria-hidden="true" /></button>
               <Link href="/search" className={styles.secondary}><Search size={17} aria-hidden="true" /> Pogledaj oglase</Link>
@@ -55,8 +55,8 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
         <div className="app-container">
           <div className={styles.howNewHead}>
             <p className={styles.howEyebrow}>Kako funkcioniše</p>
-            <h2 id="how-title">Od tvog auta do nove zamene.</h2>
-            <p>Tri jednostavna koraka do automobila koji želiš.</p>
+            <h2 id="how-title">Manje pregovaranja. Više vožnje.</h2>
+            <p>AutoTrampa povezuje vlasnike koji žele da naprave pametnu promenu. Ti biraš kada i sa kim razgovaraš.</p>
           </div>
           <ol className={styles.howNewGrid}>
             {STEPS.map(({ number, title, description }, index) => (
@@ -142,7 +142,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
           <div className={`app-container ${styles.activityLoading}`}>Novi oglasi uskoro stižu.</div>
         )}
         <div className={`app-container ${styles.activityFooter}`}>
-          <p><strong>Tvoj sledeći auto možda je već u oglasima.</strong> Pogledaj ponudu i pronađi vozilo za zamenu.</p>
+          <p><strong>Pronađi svoju trampu.</strong> Pogledaj ponudu i pronađi vozilo za zamenu.</p>
           <Link className={styles.activityCta} href="/search">Pogledaj sve oglase <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
@@ -151,8 +151,8 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
         <div className={`app-container ${styles.whyInner}`}>
           <div className={styles.whyIntro}>
             <p className={styles.howEyebrow}>Zašto AutoTrampa?</p>
-            <h2 id="why-title">Promeni auto.<br /><span>Ne moraš prvo da ga prodaš.</span></h2>
-            <p>Umesto da posebno tražiš kupca za svoj automobil, pronađi drugo vozilo i direktno predloži zamenu njegovom vlasniku.</p>
+            <h2 id="why-title">Tvoj auto ima vrednost.<br /><span>Iskoristi je pametno.</span></h2>
+            <p>Nema potrebe da prvo prodaš svoj automobil da bi pronašao sledeći. Iskoristi vrednost vozila koje već imaš i ponudi ga u zamenu — uz doplatu ili bez nje.</p>
             <Link href="/search" className={styles.whyLink}>Istraži vozila <ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
           <div className={styles.whyFeatures}>
@@ -213,7 +213,7 @@ export default function PublicLanding({ cars, listingsReady, onAddCar, onSignIn,
         <img className={styles.closingImage} src="/images/landing/drive-cta.webp" alt="" loading="lazy" width={1942} height={809} />
         <div className={`app-container ${styles.closingInner}`}>
           <p className={styles.eyebrow}>Spreman za sledeći automobil?</p>
-          <h2 id="closing-title">Tvoj sledeći auto počinje<br />jednom ponudom.</h2>
+          <h2 id="closing-title">Spreman za promenu?<br />Pronađi svoju trampu.</h2>
           <p className={styles.closingDescription}>Dodaj svoje vozilo, pronađi automobil koji ti se dopada i predloži zamenu. Dalji dogovor je između vas.</p>
           <div className={styles.actions}>
             <button type="button" className={styles.primary} onClick={onAddCar}>Dodaj svoj auto <ArrowRight size={18} aria-hidden="true" /></button>
