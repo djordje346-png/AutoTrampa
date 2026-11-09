@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { CarFront, Check, ChevronDown, Flame, Pencil, Plus, Sparkles } from 'lucide-react';
-import { toast } from 'sonner';
-import { usePreferences } from '@/hooks/use-preferences';
+import { useEffect, useRef, useState } from 'react';
+import { CarFront, Check, ChevronDown, Plus, Sparkles } from 'lucide-react';
+import { MobilePreferences } from '@/components/MobilePreferences';
 import { formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { fuelLabel } from '@/lib/labels';
 import { displayValue } from '@/lib/car-row';
@@ -30,15 +29,8 @@ export function DesktopFeedOverview({
   onAddCar,
   onOpenSwipe,
 }: DesktopFeedOverviewProps) {
-  const { preferences, update, mounted: preferencesReady } = usePreferences();
   const [carPickerOpen, setCarPickerOpen] = useState(false);
-  const [budgetEditorOpen, setBudgetEditorOpen] = useState(false);
-  const [budgetDraft, setBudgetDraft] = useState('');
   const carPickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setBudgetDraft(preferences.budget == null ? '' : String(preferences.budget));
-  }, [preferences.budget]);
 
   useEffect(() => {
     if (!carPickerOpen) return;
@@ -60,27 +52,8 @@ export function DesktopFeedOverview({
     };
   }, [carPickerOpen]);
 
-  async function saveBudget(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const raw = budgetDraft.trim();
-    const value = raw === '' ? null : Number(raw);
-    if (value !== null && (!Number.isFinite(value) || value < 0 || value > 100000)) {
-      toast.error('Unesi iznos između 0 i 100.000 €.');
-      return;
-    }
-
-    const result = await update({ budget: value });
-    if (!result.ok) {
-      toast.error(result.message || 'Budžet nije sačuvan. Pokušaj ponovo.');
-      return;
-    }
-    setBudgetEditorOpen(false);
-  }
-
-  const estimatedValue = selectedCar.estimatedValue || selectedCar.price;
-
   return (
-    <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface desktop:grid-cols-[minmax(0,1.25fr)_minmax(0,.75fr)_minmax(0,1fr)_minmax(190px,.8fr)]">
+    <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface desktop:grid-cols-[minmax(0,1.25fr)_minmax(0,1.4fr)_minmax(180px,.8fr)]">
       <div className={`${SEGMENT} relative min-w-0`} ref={carPickerRef}>
         <p className="mb-1.5 text-xs font-semibold text-app-secondary dark:text-app-secondary">Tvoj auto za zamenu</p>
         <button
@@ -154,62 +127,7 @@ export function DesktopFeedOverview({
 
       <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
         <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-surface-border desktop:block" />
-        <p className="text-xs font-medium text-app-secondary dark:text-app-secondary">Vrednost mog auta</p>
-        <p className="mt-1 truncate text-xl font-bold tracking-tight text-app-primary dark:text-app-primary">{formatEuro(estimatedValue)}</p>
-        <p className="mt-1 text-[11px] text-app-muted">Vrednost iz oglasa</p>
-      </div>
-
-      <div className={`${SEGMENT} relative z-30 flex min-w-0 flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-surface-border desktop:block" />
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-xs font-medium text-app-secondary dark:text-app-secondary">Budžet za doplatu</p>
-            <p className="mt-1 truncate text-lg font-bold tracking-tight text-app-primary dark:text-app-primary">
-              {!preferencesReady
-                ? 'Učitavanje…'
-                : preferences.noTopUp
-                  ? 'Bez doplate'
-                  : preferences.budget == null || preferences.budget <= 0
-                    ? 'Nije postavljen'
-                    : `do ${formatEuro(preferences.budget)}`}
-            </p>
-          </div>
-          {preferencesReady && !preferences.noTopUp && (
-            <button
-              type="button"
-              onClick={() => setBudgetEditorOpen((open) => !open)}
-              aria-label={budgetEditorOpen ? 'Zatvori izmenu budžeta' : 'Izmeni budžet za doplatu'}
-              aria-expanded={budgetEditorOpen}
-              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-elevated hover:text-brand-text dark:hover:bg-brand-dark"
-            >
-              <Pencil size={14} />
-            </button>
-          )}
-        </div>
-        <p className="mt-1 text-[11px] leading-relaxed text-app-muted">Koristi se za preporuke</p>
-        {budgetEditorOpen && (
-          <form onSubmit={saveBudget} className="absolute left-3 right-3 top-[calc(100%-0.25rem)] z-40 rounded-xl border border-surface bg-card-surface p-3 shadow-xl dark:border-surface dark:bg-card-surface">
-            <label htmlFor="desktop-budget-input" className="mb-2 block text-[11px] font-semibold text-app-secondary dark:text-app-secondary">Budžet za doplatu</label>
-            <div className="flex items-center gap-2">
-              <input
-                id="desktop-budget-input"
-                type="number"
-                min={0}
-                max={100000}
-                step={100}
-                inputMode="numeric"
-                value={budgetDraft}
-                onChange={(event) => setBudgetDraft(event.target.value)}
-                placeholder="Iznos u €"
-                aria-label="Budžet za doplatu u evrima"
-                className="h-9 min-w-0 flex-1 rounded-lg border border-surface bg-elevated px-2.5 text-xs text-app-primary outline-none focus:border-brand-500 dark:border-surface dark:bg-app dark:text-app-primary"
-              />
-              <button type="submit" aria-label="Sačuvaj budžet" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-500 text-on-accent transition-colors hover:bg-brand-600">
-                <Check size={16} />
-              </button>
-            </div>
-          </form>
-        )}
+        <MobilePreferences hasGarageCar />
       </div>
 
       <div className={`${SEGMENT} relative flex flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
@@ -220,10 +138,9 @@ export function DesktopFeedOverview({
           className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-dark px-4 py-3 text-sm font-semibold text-brand-dark-primary transition-all duration-200 hover:bg-brand-dark/90 hover:shadow-md"
         >
           <Sparkles size={17} />
-          Smart Match
-          <Flame size={16} className="ml-auto" />
+          Swipe režim
         </button>
-        <p className="mt-2 text-center text-[11px] leading-snug text-app-muted">Zamene odabrane za tvoj auto</p>
+        <p className="mt-2 text-center text-[11px] leading-snug text-app-muted">Pregledaj automobile jedan po jedan</p>
       </div>
     </section>
   );
