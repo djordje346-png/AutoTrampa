@@ -257,7 +257,8 @@ function AuthenticatedFeed({
     () => allDisplayCars.filter(car => !smartSwapCars.some(smart => smart.id === car.id)),
     [allDisplayCars, smartSwapCars],
   );
-  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference, mobileQuickFilter, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
+  const ordinaryExactCount = filteredCars.filter(car => !smartSwapCars.some(smart => smart.id === car.id)).length;
+  const pagination = useListingPagination(displayCars, JSON.stringify([smartSwapCars.map(car => car.id), filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference, mobileQuickFilter, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   const activeFilters = countActiveFilters(filters);
   const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
@@ -1125,7 +1126,7 @@ function AuthenticatedFeed({
             const tl = showTrade ? getTradeLabel(selectedCar, car) : null;
             const globalIndex = (pagination.page - 1) * LISTINGS_PER_PAGE + index;
             const startsAlternatives = showAlternatives && alternativeCars.length > 0
-              && globalIndex === filteredCars.length;
+              && globalIndex === ordinaryExactCount;
             return (
               <div key={car.id} className="contents">
                 {startsAlternatives && (
