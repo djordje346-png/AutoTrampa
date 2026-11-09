@@ -53,9 +53,12 @@ export function DesktopFeedOverview({
   }, [carPickerOpen]);
 
   return (
-    <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface desktop:grid-cols-[minmax(0,1.25fr)_minmax(0,1.4fr)_minmax(180px,.8fr)]">
+    <section className="relative z-20 grid min-w-0 grid-cols-1 overflow-visible rounded-2xl border border-surface bg-card-surface shadow-sm dark:border-surface dark:bg-card-surface desktop:grid-cols-[minmax(0,1fr)_minmax(165px,220px)]">
       <div className={`${SEGMENT} relative min-w-0`} ref={carPickerRef}>
-        <p className="mb-1.5 text-xs font-semibold text-app-secondary dark:text-app-secondary">Tvoj auto za zamenu</p>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <p className="text-xs font-semibold text-app-secondary dark:text-app-secondary">Tvoj auto za zamenu</p>
+          <MobilePreferences key={selectedCar.id} hasGarageCar compactTrigger />
+        </div>
         <button
           type="button"
           onClick={() => setCarPickerOpen((open) => !open)}
@@ -125,11 +128,6 @@ export function DesktopFeedOverview({
         )}
       </div>
 
-      <div className={`${SEGMENT} relative flex min-w-0 flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
-        <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-surface-border desktop:block" />
-        <MobilePreferences hasGarageCar />
-      </div>
-
       <div className={`${SEGMENT} relative flex flex-col justify-center border-t border-surface dark:border-surface desktop:border-t-0`}>
         <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-14 w-px -translate-y-1/2 bg-surface-border dark:bg-surface-border desktop:block" />
         <button
@@ -140,7 +138,7 @@ export function DesktopFeedOverview({
           <Sparkles size={17} />
           Swipe režim
         </button>
-        <p className="mt-2 text-center text-[11px] leading-snug text-app-muted">Pregledaj automobile jedan po jedan</p>
+
       </div>
     </section>
   );
