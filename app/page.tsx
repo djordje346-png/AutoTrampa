@@ -34,6 +34,7 @@ import { FeedCardPhoto } from '@/components/FeedCardPhoto';
 import PublicLanding from '@/components/PublicLanding';
 import MarketplaceV13Card from '@/components/MarketplaceV13Card';
 import { MobilePreferences } from '@/components/MobilePreferences';
+import { useSmartSwaps } from '@/hooks/use-smart-swaps';
 import { useListingMessage } from '@/hooks/use-listing-message';
 import ListingPagination from '@/components/ListingPagination';
 import { LISTINGS_PER_PAGE, useListingPagination } from '@/hooks/use-listing-pagination';
@@ -142,6 +143,7 @@ function AuthenticatedFeed({
   const { preferences, mounted: preferencesMounted } = usePreferences();
   const budget = preferences.budget;
   const noTopUp = preferences.noTopUp;
+  const { scoreById: smartSwapScores } = useSmartSwaps(selectedCar, preferences, userId, preferencesMounted && mounted && authReady && isLoggedIn);
   const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen, mounted: filtersMounted } = useSearchPrefs();
   const [dragX, setDragX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -239,10 +241,21 @@ function AuthenticatedFeed({
       : [],
     [showAlternatives, quickCars, filteredCars, filters, tradeAware, selectedCar, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference],
   );
-  // Exact matches remain first; other listings never count as exact results.
-  const displayCars = useMemo(
+  // Reciprocal candidates are shown separately, before the ordinary feed.
+  // Neither a recommendation nor a star creates a confirmed Match.
+  const allDisplayCars = useMemo(
     () => showAlternatives ? [...filteredCars, ...alternativeCars] : filteredCars,
     [showAlternatives, filteredCars, alternativeCars],
+  );
+  const smartSwapCars = useMemo(
+    () => allDisplayCars.filter(car => smartSwapScores.has(car.id))
+      .sort((a, b) => (smartSwapScores.get(b.id) ?? 0) - (smartSwapScores.get(a.id) ?? 0))
+      .slice(0, 3),
+    [allDisplayCars, smartSwapScores],
+  );
+  const displayCars = useMemo(
+    () => allDisplayCars.filter(car => !smartSwapCars.some(smart => smart.id === car.id)),
+    [allDisplayCars, smartSwapCars],
   );
   const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference, mobileQuickFilter, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
@@ -1051,6 +1064,36 @@ function AuthenticatedFeed({
                 )}
               </div>
             </div>
+
+            {marketplaceReady && smartSwapCars.length > 0 && (
+              <section aria-label="Predložene obostrane zamene" className="mb-6">
+                <div className="mb-3 flex items-center gap-2">
+                  <HeartHandshake size={19} className="text-brand-text" aria-hidden="true" />
+                  <div>
+                    <h2 className="text-base font-bold text-app-primary">Predložene zamene za tebe</h2>
+                    <p className="text-xs text-app-secondary">Oba vlasnika traže model koji drugi nudi. Ovo još nije potvrđen Match.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:grid-cols-3 desktop:gap-5">
+                  {smartSwapCars.map(car => (
+                    <MarketplaceV13Card
+                      key={car.id}
+                      minimalHome
+                      car={car}
+                      trade={showTrade ? getTradeLabel(selectedCar, car) : null}
+                      favoriteModel={preferences.favoriteModels.some(key => key.toLocaleLowerCase('sr').trim() === `${car.brand}::${car.model}`.toLocaleLowerCase('sr').trim())}
+                      onLike={listing => { void likeCar(listing); }}
+                      liking={isLiking(car.id)}
+                      liked={saved.includes(car.id) || likedCarIds.has(car.id)}
+                      onMessage={isLoggedIn ? listing => { void openMessage(listing); } : undefined}
+                      messaging={messagingId === car.id}
+                      onOffer={openOffer}
+                      offerId={activeOfferIds.get(car.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
 
             {!marketplaceReady && (
               /* Placeholder cards while the first request is in flight: real
