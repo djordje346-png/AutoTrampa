@@ -34,13 +34,13 @@ export default function TradeBadge({ trade, compact = false, variant = 'default'
 
   return (
     <span
-      className={`inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-white/20 leading-none text-white backdrop-blur-[3px] shadow-[0_2px_8px_rgba(0,0,0,0.18)] ${backgroundClass} ${
-        isPhotoBadge ? 'min-h-[28px] px-2 py-1 text-[10px] font-semibold sm:min-h-[32px] sm:px-2.5 sm:py-1.5 sm:text-[11px]' : `font-semibold ${compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'}`
+      className={`inline-flex min-w-0 max-w-full items-center gap-1 rounded-full border border-white/20 leading-none text-white backdrop-blur-[3px] shadow-[0_2px_8px_rgba(0,0,0,0.18)] ${backgroundClass} ${
+        isPhotoBadge ? 'min-h-[26px] px-2 py-1 text-[10px] font-semibold sm:min-h-[27px] sm:px-2 sm:py-1 sm:text-[10px]' : `font-semibold ${compact ? 'px-1.5 py-1 text-[9px]' : 'px-2.5 py-1.5 text-[11px]'}`
       } ${className}`}
       aria-label={trade.label}
       title={trade.label}
     >
-      <Icon size={isPhotoBadge ? 14 : compact ? 11 : 13} strokeWidth={2.8} className={`shrink-0 text-white ${isPhotoBadge ? 'h-3 w-3 sm:h-3.5 sm:w-3.5' : ''}`} aria-hidden="true" />
+      <Icon size={isPhotoBadge ? 12 : compact ? 11 : 13} strokeWidth={2.8} className={`shrink-0 text-white ${isPhotoBadge ? 'h-3 w-3' : ''}`} aria-hidden="true" />
       <span className="min-w-0 truncate leading-snug">{label}</span>
     </span>
   );
