@@ -603,8 +603,8 @@ function AuthenticatedFeed({
       )}
 
       {viewMode === 'grid' && authReady && isLoggedIn && (
-        <section className="app-container mt-3 space-y-3 desktop:grid desktop:grid-cols-[minmax(260px,1fr)_minmax(0,1.9fr)] desktop:items-center desktop:gap-5" aria-label="Moje preferencije i brzi filteri">
-          <MobilePreferences hasGarageCar={Boolean(selectedCar)} />
+        <section className="app-container mt-3 space-y-3" aria-label="Moje preferencije i brzi filteri">
+          <div className="desktop:hidden"><MobilePreferences hasGarageCar={Boolean(selectedCar)} /></div>
           <div className="min-w-0 space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-xs font-bold text-app-primary dark:text-app-primary">Brzi filteri</h2>
