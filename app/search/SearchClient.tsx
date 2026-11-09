@@ -83,7 +83,7 @@ export default function SearchClient() {
           preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference,
         )
       : [],
-    [showAlternatives, marketplaceCars, results, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels],
+    [showAlternatives, marketplaceCars, results, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, preferences.tradePreference],
   );
   const displayCars = useMemo(
     () => showAlternatives ? [...results, ...alternativeCars] : results,
