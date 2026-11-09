@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
+import { getSerbianPlace } from '@/lib/city-coordinates';
 import type { Car } from '@/types';
 import type { Preferences } from '@/hooks/use-preferences';
 
@@ -35,6 +36,7 @@ export function useSmartSwaps(
     let disposed = false;
     async function load() {
       const supabase = getSupabase();
+      const city = getSerbianPlace(myCar!.city);
       const { error } = await supabase.from('car_swap_preferences').upsert({
         car_id: myCar!.id,
         owner_id: userId,
@@ -45,6 +47,8 @@ export function useSmartSwaps(
         min_received: preferences.minReceived,
         radius_km: preferences.radius,
         body_types: preferences.bodyPrefs,
+        city_lat: city?.latitude ?? null,
+        city_lon: city?.longitude ?? null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'car_id' });
       if (error) {
