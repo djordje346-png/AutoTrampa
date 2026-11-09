@@ -24,6 +24,7 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
   const [trade, setTrade] = useState<Trade>('all');
   const [budget, setBudget] = useState('');
   const [noTopUp, setNoTopUp] = useState(false);
+  const [minReceived, setMinReceived] = useState('0');
   const [radius, setRadius] = useState(50);
   const [bodies, setBodies] = useState<string[]>([]);
   const steps = hasGarageCar ? ['Zamena', 'Budžet', 'Udaljenost', 'Karoserija', 'Modeli'] : ['Budžet', 'Udaljenost', 'Karoserija', 'Modeli'];
@@ -33,6 +34,7 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
     setTrade(preferences.tradePreference);
     setBudget(preferences.budget == null ? '' : String(preferences.budget));
     setNoTopUp(preferences.noTopUp);
+    setMinReceived(String(preferences.minReceived));
     setRadius(preferences.radius);
     setBodies([...preferences.bodyPrefs]);
     setStep(0);
@@ -49,8 +51,14 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
   async function complete() {
     if (saving) return;
     const value = budget.trim() ? Number(budget) : null;
+    const received = minReceived.trim() ? Number(minReceived) : 0;
     if (value !== null && (!Number.isFinite(value) || value < 0 || value > 100000)) {
       toast.error('Unesi budžet od 0 do 100.000 €.');
+      setStep(steps.indexOf('Budžet'));
+      return;
+    }
+    if (!Number.isFinite(received) || received < 0 || received > 100000) {
+      toast.error('Unesi očekivanu doplatu od 0 do 100.000 €.');
       setStep(steps.indexOf('Budžet'));
       return;
     }
@@ -59,7 +67,8 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
       const result = await update({
         tradePreference: hasGarageCar ? trade : 'all',
         budget: noTopUp ? 0 : value,
-        noTopUp,
+        noTopUp: trade === 'cheaper' ? false : noTopUp,
+        minReceived: trade === 'cheaper' ? received : 0,
         radius,
         bodyPrefs: bodies,
       });
@@ -95,13 +104,22 @@ export function MobilePreferences({ hasGarageCar }: { hasGarageCar: boolean }) {
               {current === 'Zamena' ? 'Kakvu zamenu želiš?' : current === 'Budžet' ? 'Koliki je tvoj budžet?' : current === 'Udaljenost' ? 'Koliko daleko bi otišao?' : current === 'Karoserija' ? 'Koju karoseriju voliš?' : 'Koji su tvoji omiljeni modeli?'}
             </h2>
             <p className="mb-5 mt-2 text-xs leading-relaxed text-app-secondary dark:text-app-secondary">
-              {current === 'Zamena' ? 'Izaberi vrednost zamene koja ti najviše odgovara. Ostale ponude ostaju vidljive.' : current === 'Budžet' ? 'Koliko najviše želiš da doplatiš? Ostali automobili ostaju dostupni.' : current === 'Udaljenost' ? 'Prvo ćemo prikazivati bliže oglase, ali nećemo sakriti udaljenije.' : current === 'Karoserija' ? 'Možeš izabrati više tipova ili nijedan.' : 'Izaberi do pet modela da ih češće vidiš među prvim oglasima.'}
+              {current === 'Zamena' ? 'Izaberi vrednost zamene koja ti najviše odgovara. Ostale ponude ostaju vidljive.' : current === 'Budžet' ? trade === 'cheaper' ? 'Koliku doplatu najmanje očekuješ da primiš?' : 'Koliko najviše želiš da doplatiš? Ostali automobili ostaju dostupni.' : current === 'Udaljenost' ? 'Prvo ćemo prikazivati bliže oglase, ali nećemo sakriti udaljenije.' : current === 'Karoserija' ? 'Možeš izabrati više tipova ili nijedan.' : 'Izaberi do pet modela da ih češće vidiš među prvim oglasima.'}
             </p>
             {current === 'Zamena' && <div className="grid gap-2">{directions.map(option => <button key={option.value} type="button" aria-pressed={trade === option.value} onClick={() => setTrade(option.value)} className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left ${trade===option.value?'border-brand-500 bg-brand-500/10':'border-surface bg-elevated/40 dark:border-surface'}`}><span><strong className="block text-sm text-app-primary">{option.label}</strong><small className="mt-0.5 block text-xs text-app-muted">{option.detail}</small></span>{trade===option.value&&<Check className="shrink-0 text-brand-text" size={18}/>}</button>)}</div>}
             {current === 'Budžet' && <div className="space-y-3">
-              <button type="button" aria-pressed={noTopUp} onClick={()=>setNoTopUp(v=>!v)} className={`flex w-full items-center justify-between rounded-xl border px-4 py-4 text-sm font-semibold ${noTopUp?'border-brand-500 bg-brand-500/10':'border-surface bg-elevated/40'}`}>Ne želim da doplaćujem {noTopUp&&<Check size={18} className="text-brand-text"/>}</button>
-              <label htmlFor="wizard-budget" className="block text-xs font-semibold text-app-secondary">Maksimalna doplata (€)</label>
-              <input id="wizard-budget" type="number" inputMode="numeric" min={0} max={100000} step={100} disabled={noTopUp} value={budget} onChange={event=>setBudget(event.target.value)} placeholder="Npr. 2000" className="w-full rounded-xl border border-surface bg-elevated px-4 py-3 text-base text-app-primary outline-none focus:border-brand-500 disabled:opacity-40"/>
+              {trade === 'cheaper' ? (
+                <>
+                  <label htmlFor="wizard-received" className="block text-xs font-semibold text-app-secondary">Najmanja doplata koju očekuješ (€)</label>
+                  <input id="wizard-received" type="number" inputMode="numeric" min={0} max={100000} step={100} value={minReceived} onChange={event=>setMinReceived(event.target.value)} placeholder="Npr. 1000" className="w-full rounded-xl border border-surface bg-elevated px-4 py-3 text-base text-app-primary outline-none focus:border-brand-500"/>
+                </>
+              ) : (
+                <>
+                  <button type="button" aria-pressed={noTopUp} onClick={()=>setNoTopUp(v=>!v)} className={`flex w-full items-center justify-between rounded-xl border px-4 py-4 text-sm font-semibold ${noTopUp?'border-brand-500 bg-brand-500/10':'border-surface bg-elevated/40'}`}>Ne želim da doplaćujem {noTopUp&&<Check size={18} className="text-brand-text"/>}</button>
+                  <label htmlFor="wizard-budget" className="block text-xs font-semibold text-app-secondary">Maksimalna doplata (€)</label>
+                  <input id="wizard-budget" type="number" inputMode="numeric" min={0} max={100000} step={100} disabled={noTopUp} value={budget} onChange={event=>setBudget(event.target.value)} placeholder="Npr. 2000" className="w-full rounded-xl border border-surface bg-elevated px-4 py-3 text-base text-app-primary outline-none focus:border-brand-500 disabled:opacity-40"/>
+                </>
+              )}
             </div>}
             {current === 'Udaljenost' && <div className="grid grid-cols-2 gap-2">{distances.map(distance=><button type="button" key={distance} onClick={()=>setRadius(distance)} aria-pressed={radius===distance} className={`rounded-xl border px-4 py-4 text-sm font-bold ${radius===distance?'border-brand-500 bg-brand-500/10 text-brand-text':'border-surface bg-elevated/40 text-app-primary'}`}>{distance>=550?'Cela Srbija (500+ km)':`Do ${distance} km`}</button>)}</div>}
             {current === 'Karoserija' && <div className="flex flex-wrap gap-2">{BODY_TYPES.map(item=><button key={item.value} type="button" aria-pressed={bodies.includes(item.value)} onClick={()=>setBodies(prev=>prev.includes(item.value)?prev.filter(x=>x!==item.value):[...prev,item.value])} className={`rounded-full border px-3 py-2 text-xs font-semibold ${bodies.includes(item.value)?'border-brand-500 bg-brand-500/10 text-brand-text':'border-surface bg-elevated text-app-secondary'}`}>{item.label}</button>)}</div>}
