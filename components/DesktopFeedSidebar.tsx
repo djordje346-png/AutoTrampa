@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { CarFront, Check, ChevronDown, Fuel, Pencil, Plus, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { DesktopCompactFilterGroups } from '@/components/FilterPanel';
+import { FavoriteModelsEditor } from '@/components/FavoriteModelsEditor';
 import { usePreferences } from '@/hooks/use-preferences';
 import { countActiveFilters, type SearchFilters, type TradeFilter } from '@/hooks/use-search-prefs';
 import { formatEuro, formatKm, formatYear } from '@/lib/cars';
@@ -203,8 +204,9 @@ export function DesktopFeedSidebar({
         </section>
       )}
 
-      <section className={SURFACE} aria-labelledby="desktop-preferences-title">
-        <p id="desktop-preferences-title" className={SECTION_TITLE}>Tvoje preference</p>
+      <section className="rounded-xl border border-brand-500/35 bg-card-surface p-3 shadow-[0_4px_16px_rgba(245,138,56,0.09)] dark:bg-card-surface" aria-labelledby="desktop-preferences-title">
+        <p id="desktop-preferences-title" className="flex items-center gap-2 border-l-[3px] border-brand-500 pl-2 text-sm font-bold text-app-primary dark:text-app-primary">Tvoje preference</p>
+        <div className="mt-3 rounded-lg bg-brand-500/5 p-2.5"><FavoriteModelsEditor compact /></div>
         <div className="mt-3 flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs font-semibold text-app-primary dark:text-app-primary">Budžet za doplatu</p>
