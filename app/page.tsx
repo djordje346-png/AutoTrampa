@@ -210,6 +210,8 @@ function AuthenticatedFeed({
     selectedCar?.city ?? '',
     preferences.radius,
     preferences.bodyPrefs,
+    preferences.favoriteModels,
+    preferences.prioritizeFavoriteModels,
   );
 
   const hasSearchCriteria = countActiveFilters(filters, true) > 0;
@@ -219,16 +221,17 @@ function AuthenticatedFeed({
       ? getAlternativeCars(
           marketplaceCars, filteredCars, filters, tradeAware ? selectedCar : null,
           budget, noTopUp, selectedCar?.city ?? '', preferences.radius, preferences.bodyPrefs,
+          preferences.favoriteModels, preferences.prioritizeFavoriteModels,
         )
       : [],
-    [showAlternatives, marketplaceCars, filteredCars, filters, tradeAware, selectedCar, budget, noTopUp, preferences.radius, preferences.bodyPrefs],
+    [showAlternatives, marketplaceCars, filteredCars, filters, tradeAware, selectedCar, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels],
   );
   // Exact matches remain first; other listings never count as exact results.
   const displayCars = useMemo(
     () => showAlternatives ? [...filteredCars, ...alternativeCars] : filteredCars,
     [showAlternatives, filteredCars, alternativeCars],
   );
-  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, preferences.bodyPrefs, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
+  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, budget, noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   const activeFilters = countActiveFilters(filters);
   const advancedFilterCount = countActiveFilters({ ...filters, trade: 'all' });
