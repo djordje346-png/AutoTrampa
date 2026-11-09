@@ -64,8 +64,10 @@ export default function SearchClient() {
         selectedCar?.city ?? '',
         preferences.radius,
         preferences.bodyPrefs,
+        preferences.favoriteModels,
+        preferences.prioritizeFavoriteModels,
       ),
-    [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs],
+    [marketplaceCars, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels],
   );
 
   const hasFilters =
@@ -77,16 +79,17 @@ export default function SearchClient() {
           marketplaceCars, results, { ...filters, sortBy: effectiveSort },
           selectedCar, preferences.budget, preferences.noTopUp,
           selectedCar?.city ?? '', preferences.radius, preferences.bodyPrefs,
+          preferences.favoriteModels, preferences.prioritizeFavoriteModels,
         )
       : [],
-    [showAlternatives, marketplaceCars, results, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs],
+    [showAlternatives, marketplaceCars, results, filters, effectiveSort, selectedCar, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels],
   );
   const displayCars = useMemo(
     () => showAlternatives ? [...results, ...alternativeCars] : results,
     [showAlternatives, results, alternativeCars],
   );
 
-  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
+  const pagination = useListingPagination(displayCars, JSON.stringify([filters, selectedCar?.id, selectedCar?.price, selectedCar?.city, preferences.budget, preferences.noTopUp, preferences.radius, preferences.bodyPrefs, preferences.favoriteModels, preferences.prioritizeFavoriteModels, userId]), marketplaceReady && filtersMounted && mounted && preferencesMounted);
 
   function openOffer(car: Car) {
     const continueToOffer = () => requestPhoneAction(() => setOfferCar(car));
