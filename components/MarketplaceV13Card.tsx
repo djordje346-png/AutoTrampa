@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { CalendarDays, Car as CarIcon, ChevronRight, Gauge, Heart, MapPin, MessageCircle, Settings2 } from 'lucide-react';
+import { CalendarDays, Car as CarIcon, ChevronRight, Gauge, Heart, MapPin, MessageCircle, Settings2, Star } from 'lucide-react';
 import { carTitle, formatEuro, formatKm, formatYear } from '@/lib/cars';
 import { carSubtitle } from '@/lib/car-row';
 import { bodyLabel, transmissionLabel } from '@/lib/labels';
@@ -24,11 +24,13 @@ type Props = {
   photoActions?: ReactNode;
   /** Minimalist home-feed card, preserving the legacy card elsewhere. */
   minimalHome?: boolean;
+  /** A brand/model pair from the user's preferences. */
+  favoriteModel?: boolean;
   /** Explicitly enable offer/message controls only on saved listings. */
   showQuickActions?: boolean;
 };
 
-export default function MarketplaceV13Card({ car, trade, onLike, liking = false, liked = false, onOffer, offerId, onMessage, messaging = false, photoActions, minimalHome = false, showQuickActions = false }: Props) {
+export default function MarketplaceV13Card({ car, trade, onLike, liking = false, liked = false, onOffer, offerId, onMessage, messaging = false, photoActions, minimalHome = false, showQuickActions = false, favoriteModel = false }: Props) {
   const hasOfferAction = Boolean(onOffer || offerId);
   const specs = [
     { Icon: CalendarDays, text: formatYear(car.year), label: 'Godište' },
@@ -48,7 +50,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
     ];
 
     return (
-      <article className="listing-card listing-card-minimal group/card relative isolate flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.08)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.14)] dark:shadow-[0_4px_16px_rgba(0,0,0,.20)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.28)]">
+      <article className={`listing-card listing-card-minimal group/card relative isolate flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border bg-card-surface text-app-primary transition-shadow duration-200 ${favoriteModel ? "border-brand-500 ring-1 ring-brand-500/70 bg-brand-500/[.025] shadow-[0_6px_22px_rgba(245,138,56,.17)] hover:shadow-[0_9px_26px_rgba(245,138,56,.24)]" : "border-surface shadow-[0_4px_16px_rgba(0,0,0,.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,.14)] dark:shadow-[0_4px_16px_rgba(0,0,0,.20)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.28)]"}`>
         <Link href={`/car/${car.id}`} aria-label={`Pogledaj oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
 
         <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
@@ -69,6 +71,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
             )}
           </div>
           {trade && <TradeBadge trade={trade} variant="photo" className={`pointer-events-none absolute left-3 top-3 z-20 ${photoActions ? '!max-w-[calc(100%-112px)]' : '!max-w-[calc(100%-72px)]'}`}/>}
+          {favoriteModel && <span className="pointer-events-none absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-full border border-brand-500/40 bg-[#101B2C]/90 px-2.5 py-1.5 text-[10px] font-bold text-[#FFAF69] shadow-sm"><Star size={11} fill="currentColor" aria-hidden="true"/> Omiljeni model</span>}
           {!car.ownerId && <span className="pointer-events-none absolute bottom-3 left-3 z-20 text-[10px] font-bold uppercase tracking-wide text-white drop-shadow">Demo</span>}
         </div>
 
@@ -123,7 +126,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
   }
 
   return (
-    <article className={`listing-card group/card relative isolate min-w-0 overflow-hidden rounded-[14px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] sm:aspect-auto sm:flex sm:h-full sm:flex-col ${hasOfferAction ? 'flex flex-col' : 'grid aspect-square grid-rows-[minmax(0,1fr)_auto]'}`}>
+    <article className={`listing-card group/card relative isolate min-w-0 overflow-hidden rounded-[14px] border border-surface bg-card-surface text-app-primary shadow-[0_4px_16px_rgba(0,0,0,.06)] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,.10)] dark:shadow-[0_4px_16px_rgba(0,0,0,.18)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.24)] sm:aspect-auto sm:flex sm:h-full sm:flex-col ${favoriteModel ? "border-brand-500 ring-1 ring-brand-500/70 shadow-[0_6px_22px_rgba(245,138,56,.17)]" : ""} ${hasOfferAction ? 'flex flex-col' : 'grid aspect-square grid-rows-[minmax(0,1fr)_auto]'}`}>
       <Link href={`/car/${car.id}`} aria-label={`Otvori oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
       <div className={`relative overflow-hidden rounded-t-[13px] bg-elevated sm:aspect-auto sm:h-[237px] sm:flex-none ${hasOfferAction ? 'aspect-[16/10] flex-none' : 'min-h-0'}`}>
         <div className="absolute inset-0 [&>div]:!aspect-auto [&>div]:!h-full">
@@ -143,6 +146,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
           )}
         </div>
         {trade && <TradeBadge trade={trade} variant="photo" className={`pointer-events-none absolute left-3 top-3 z-20 ${photoActions ? '!max-w-[calc(100%-112px)]' : '!max-w-[calc(100%-72px)]'}`} />}
+        {favoriteModel && <span className="pointer-events-none absolute bottom-2 right-3 z-20 inline-flex items-center gap-1 rounded-full border border-brand-500/40 bg-[#101B2C]/90 px-2 py-1 text-[10px] font-bold text-[#FFAF69]"><Star size={11} fill="currentColor" aria-hidden="true"/> Omiljeni model</span>}
         {!car.ownerId && <span className="pointer-events-none absolute bottom-2 left-3 z-20 rounded-full bg-black/65 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white">Demo</span>}
       </div>
 
