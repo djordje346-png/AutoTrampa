@@ -50,7 +50,7 @@ export default function MarketplaceV13Card({ car, trade, onLike, liking = false,
     ];
 
     return (
-      <article className={`listing-card listing-card-minimal group/card relative isolate flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border bg-card-surface text-app-primary transition-shadow duration-200 ${favoriteModel ? "border-brand-500 ring-1 ring-brand-500/70 bg-brand-500/[.025] shadow-[0_6px_22px_rgba(245,138,56,.17)] hover:shadow-[0_9px_26px_rgba(245,138,56,.24)]" : "border-surface shadow-[0_4px_16px_rgba(0,0,0,.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,.14)] dark:shadow-[0_4px_16px_rgba(0,0,0,.20)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.28)]"}`>
+      <article className={`listing-card listing-card-minimal group/card relative isolate flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border bg-card-surface text-app-primary transition-shadow duration-200 ${favoriteModel ? "border-brand-500 ring-1 ring-brand-500/70 bg-brand-500/[.025] shadow-[0_6px_22px_rgba(245,138,56,.17)] hover:shadow-[0_9px_26px_rgba(245,138,56,.24)]" : "border-surface shadow-[0_4px_16px_rgba(0,0,0,.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,.14)] dark:shadow-[0_4px_16px_rgba(0,0,0,.20)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,.28)]"}`}>
         <Link href={`/car/${car.id}`} aria-label={`Pogledaj oglas: ${carTitle(car)}`} className="absolute inset-0 z-10 rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-500" />
 
         <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-elevated">
