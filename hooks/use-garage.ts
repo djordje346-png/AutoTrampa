@@ -192,6 +192,11 @@ async function prepareCar(car: MyGarageCar, userId: string) {
   return { row: carToRow(savedCar, userId), car: savedCar, images, uploaded };
 }
 
+export function useActiveGarageCarId() {
+  const [selectedId] = usePersistentStore(selectedStore);
+  return selectedId || null;
+}
+
 export function useGarage() {
   const { userId } = useAuth();
   const [cars, setCars] = useState<MyGarageCar[]>([]);
