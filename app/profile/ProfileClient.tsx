@@ -20,6 +20,7 @@ import { BODY_TYPES } from '@/lib/body-types';
 import CarForm from '@/components/CarForm';
 import { BottomSheet } from '@/components/BottomSheet';
 import { ProfileEditSheet } from '@/components/ProfileEditSheet';
+import { FavoriteModelsEditor } from '@/components/FavoriteModelsEditor';
 
 const BODY_TYPE_PREFS = BODY_TYPES.map(({ value }) => value);
 
@@ -242,7 +243,8 @@ export default function ProfileClient() {
       </div>
 
       <div className="app-container mb-4">
-        <div className="bg-card-surface dark:bg-card-surface rounded-2xl border border-surface dark:border-surface p-4">
+        <div className="relative overflow-hidden rounded-2xl border border-brand-500/35 bg-card-surface p-4 shadow-[0_6px_24px_rgba(245,138,56,0.10)] dark:bg-card-surface">
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-brand-500" />
           <div className="flex items-center gap-2 mb-4">
             <SlidersHorizontal size={16} className="text-brand-text" />
             <p className="text-sm font-bold text-app-primary dark:text-app-primary">Preferencije zamene</p>
@@ -316,6 +318,10 @@ export default function ProfileClient() {
               </span>
               <span className="text-xs font-medium text-app-secondary dark:text-app-secondary">Ne želim da doplaćujem</span>
             </button>
+          </div>
+
+          <div className="mb-5 rounded-xl border border-brand-500/20 bg-brand-500/5 p-3">
+            <FavoriteModelsEditor />
           </div>
 
           <div>
