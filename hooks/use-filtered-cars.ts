@@ -45,6 +45,8 @@ export function filterCars(
   originCity = '',
   radiusKm = 0,
   bodyPrefs: string[] = [],
+  favoriteModels: string[] = [],
+  prioritizeFavoriteModels = true,
 ): Car[] {
   const q = filters.query.trim().toLowerCase();
 
@@ -112,7 +114,15 @@ export function filterCars(
 
   const budgetAware = myCar && ((budget != null && budget > 0) || noTopUp);
   const ranked = budgetAware ? sortByBudget(sorted, myCar, budget, noTopUp) : sorted;
-  return applySoftRadius(ranked, originCity, radiusKm);
+  const radiusRanked = applySoftRadius(ranked, originCity, radiusKm);
+  if (!prioritizeFavoriteModels || favoriteModels.length === 0) return radiusRanked;
+  const favoriteSet = new Set(favoriteModels.map(key => key.toLocaleLowerCase('sr').trim()));
+  // Stable priority tier: explicit search filters always apply first, and users
+  // can disable favorite-first ordering without changing their chosen sort.
+  return [...radiusRanked].sort((a, b) =>
+    Number(favoriteSet.has(`${b.brand}::${b.model}`.toLocaleLowerCase('sr').trim())) -
+    Number(favoriteSet.has(`${a.brand}::${a.model}`.toLocaleLowerCase('sr').trim()))
+  );
 }
 
 /**
@@ -143,6 +153,8 @@ export function getAlternativeCars(
     originCity,
     radiusKm,
     bodyPrefs,
+    favoriteModels,
+    prioritizeFavoriteModels,
   ).filter(car => !exactIds.has(car.id));
 }
 
@@ -179,9 +191,11 @@ export function useFilteredCars(
   originCity = '',
   radiusKm = 0,
   bodyPrefs: string[] = [],
+  favoriteModels: string[] = [],
+  prioritizeFavoriteModels = true,
 ): Car[] {
   return useMemo(
-    () => filterCars(cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs),
-    [cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs],
+    () => filterCars(cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs, favoriteModels, prioritizeFavoriteModels),
+    [cars, filters, myCar, budget, noTopUp, originCity, radiusKm, bodyPrefs, favoriteModels, prioritizeFavoriteModels],
   );
 }
