@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Plus, Star, X } from 'lucide-react';
+import { Plus, Star, X } from 'lucide-react';
 import { BRAND_NAMES, CAR_BRANDS } from '@/lib/car-brands';
 import { usePreferences } from '@/hooks/use-preferences';
 import { toast } from 'sonner';
@@ -16,11 +16,6 @@ export function FavoriteModelsEditor({ compact = false }: { compact?: boolean })
   async function saveFavoriteModels(next: string[]) {
     const result = await update({ favoriteModels: next });
     if (!result.ok) toast.error(result.message || 'Nije moguće sačuvati omiljene modele.');
-  }
-
-  async function saveToggle() {
-    const result = await update({ prioritizeFavoriteModels: !preferences.prioritizeFavoriteModels });
-    if (!result.ok) toast.error(result.message || 'Podešavanje nije sačuvano.');
   }
 
   function addModel() {
@@ -76,12 +71,6 @@ export function FavoriteModelsEditor({ compact = false }: { compact?: boolean })
         </div>
       )}
 
-      <button type="button" role="switch" aria-checked={preferences.prioritizeFavoriteModels} disabled={!mounted} onClick={() => void saveToggle()} className="flex w-full items-center justify-between gap-3 rounded-xl border border-surface bg-elevated/50 p-2.5 text-left dark:border-surface">
-        <span className="text-[11px] font-semibold text-app-secondary dark:text-app-secondary">Prikazuj omiljene modele prvo</span>
-        <span className={`flex h-6 w-10 flex-shrink-0 items-center rounded-full px-1 transition-colors ${preferences.prioritizeFavoriteModels ? 'bg-brand-500' : 'bg-surface'}`}>
-          <span className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${preferences.prioritizeFavoriteModels ? 'translate-x-4' : ''}`} />
-        </span>
-      </button>
     </div>
   );
 }
