@@ -1068,6 +1068,7 @@ function AuthenticatedFeed({
                 <MarketplaceV13Card
                   minimalHome
                   car={car}
+                  favoriteModel={preferences.favoriteModels.some(key => key.toLocaleLowerCase('sr').trim() === `${car.brand}::${car.model}`.toLocaleLowerCase('sr').trim())}
                   trade={tl}
                   onLike={(listing) => { void likeCar(listing); }}
                   liking={isLiking(car.id)}
