@@ -1048,7 +1048,7 @@ function AuthenticatedFeed({
                   </h1>
                 </div>
                 <button type="button" onClick={() => { updateFilters({ query: '' }); setFiltersOpen(true); }} aria-label="Otvori detaljnu pretragu automobila"
-                  className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-surface bg-elevated px-3 text-[12px] font-semibold text-app-primary transition-colors hover:border-control/50 hover:bg-hover-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-control dark:border-[#35465E] dark:bg-[#19263B] dark:text-white sm:text-[13px]">
+                  className="hidden lg:inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-surface bg-elevated px-3 text-[12px] font-semibold text-app-primary transition-colors hover:border-control/50 hover:bg-hover-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-control dark:border-[#35465E] dark:bg-[#19263B] dark:text-white sm:text-[13px]">
                   <Search size={15} strokeWidth={2} aria-hidden="true" />
                   Pretraga
                 </button>
