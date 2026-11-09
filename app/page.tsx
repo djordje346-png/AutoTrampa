@@ -588,10 +588,24 @@ function AuthenticatedFeed({
         )}
       </div>
 
+      {viewMode === 'grid' && isLoggedIn && selectedCar && (
+        <div className="app-container mt-4 hidden desktop:block">
+          <DesktopFeedOverview
+            cars={cars}
+            selectedCar={selectedCar}
+            selectedId={selectedId}
+            selectCar={selectCar}
+            canAddCar={canAddCar}
+            onAddCar={handleAddListing}
+            onOpenSwipe={() => enterSwipeMode()}
+          />
+        </div>
+      )}
+
       {viewMode === 'grid' && authReady && isLoggedIn && (
-        <section className="app-container mt-3 space-y-3 lg:hidden" aria-label="Moje preferencije i brzi filteri">
+        <section className="app-container mt-3 space-y-3 desktop:grid desktop:grid-cols-[minmax(260px,1fr)_minmax(0,1.9fr)] desktop:items-center desktop:gap-5" aria-label="Moje preferencije i brzi filteri">
           <MobilePreferences hasGarageCar={Boolean(selectedCar)} />
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-xs font-bold text-app-primary dark:text-app-primary">Brzi filteri</h2>
               <button type="button" onClick={() => setFiltersOpen(true)} className="inline-flex items-center gap-1 text-xs font-semibold text-brand-text"><SlidersHorizontal size={13}/> Svi filteri</button>
@@ -640,77 +654,6 @@ function AuthenticatedFeed({
             Prijavi se
           </button>
         </div>
-      )}
-
-      {viewMode === 'grid' && (
-        <section className="app-container mt-4 hidden space-y-2 desktop:block" aria-label="Podešavanja oglasa">
-          {isLoggedIn && selectedCar && (
-            <DesktopFeedOverview
-              cars={cars}
-              selectedCar={selectedCar}
-              selectedId={selectedId}
-              selectCar={selectCar}
-              canAddCar={canAddCar}
-              onAddCar={handleAddListing}
-              onOpenSwipe={() => enterSwipeMode()}
-            />
-          )}
-
-          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-surface pb-2 dark:border-surface">
-            <button
-              type="button"
-              onClick={() => { updateFilters({ query: '' }); setFiltersOpen(true); }}
-              aria-label="Otvori detaljnu pretragu automobila"
-              className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-xl border border-surface bg-card-surface px-3 text-[13px] font-semibold text-app-primary shadow-sm transition-colors hover:border-brand-500/40 hover:bg-elevated dark:border-surface dark:bg-card-surface dark:text-app-primary"
-            >
-              <SlidersHorizontal size={15} />
-              Pretraga
-              {advancedFilterCount > 0 && (
-                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-control px-1.5 text-[11px] font-bold text-control-foreground">
-                  {advancedFilterCount}
-                </span>
-              )}
-            </button>
-
-            <span className="hidden h-6 w-px bg-surface dark:bg-elevated sm:block" aria-hidden="true" />
-
-            {showTrade && (
-              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5" aria-label="Tip zamene">
-                {TRADE_FILTERS.map(({ key, label }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => { updateFilters({ trade: key }); setSwipeIndex(0); }}
-                    aria-pressed={filters.trade === key}
-                    className={`control-focus inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-semibold transition-all duration-150 ${
-                      filters.trade === key
-                        ? 'border-control bg-control text-control-foreground hover:bg-control-hover shadow-sm shadow-control/20'
-                        : 'border-surface bg-elevated text-app-secondary hover:-translate-y-px hover:border-control/60 hover:bg-hover-surface hover:shadow-sm dark:border-[#2C3B51] dark:bg-[#19263B] dark:text-[#C4CDDA] dark:hover:bg-[#22344F]'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {activeFilters > 0 && (
-              <button
-                type="button"
-                onClick={() => { resetFilters(); setSwipeIndex(0); }}
-                className="flex-shrink-0 px-2 py-2 text-xs font-semibold text-app-muted transition-colors hover:text-brand-text"
-              >
-                Očisti sve
-              </button>
-            )}
-
-            {isLoggedIn && selectedCar && (
-              <div className="ml-auto flex flex-shrink-0 items-center border-l border-surface pl-3 dark:border-surface">
-                <DesktopRadiusControl selectedCar={selectedCar} />
-              </div>
-            )}
-          </div>
-        </section>
       )}
 
       {/* No results */}
@@ -1047,11 +990,7 @@ function AuthenticatedFeed({
                     {activeCarName ? `Zamene za ${activeCarName}` : 'Istraži automobile'}
                   </h1>
                 </div>
-                <button type="button" onClick={() => { updateFilters({ query: '' }); setFiltersOpen(true); }} aria-label="Otvori detaljnu pretragu automobila"
-                  className="hidden lg:inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-surface bg-elevated px-3 text-[12px] font-semibold text-app-primary transition-colors hover:border-control/50 hover:bg-hover-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-control dark:border-[#35465E] dark:bg-[#19263B] dark:text-white sm:text-[13px]">
-                  <Search size={15} strokeWidth={2} aria-hidden="true" />
-                  Pretraga
-                </button>
+
               </div>
               <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-app-muted">
                 <span>{marketplaceReady
