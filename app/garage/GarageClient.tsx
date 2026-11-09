@@ -15,6 +15,7 @@ import { useUser } from '@/hooks/use-user';
 import { requestPhoneAction } from '@/hooks/use-phone-gate';
 import { SignedOutPage } from '@/components/SignedOut';
 import CarForm from '@/components/CarForm';
+import { MobilePreferences } from '@/components/MobilePreferences';
 
 export default function GarageClient() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function GarageClient() {
   const { isLoggedIn, userId, mounted: authReady } = useAuth();
   const { user: profile, profileReady } = useUser();
   const [showForm, setShowForm] = useState(false);
+  const [preferencesCarId, setPreferencesCarId] = useState<string | null>(null);
   const [editingCar, setEditingCar] = useState<MyGarageCar | null>(null);
   const [pendingDelete, setPendingDelete] = useState<MyGarageCar | null>(null);
   const handledEdit = useRef<string | null>(null);
@@ -72,8 +74,12 @@ export default function GarageClient() {
       return;
     }
 
-    if (!editingCar) selectCar(result.id ?? car.id);
-    toast.success(editingCar ? 'Izmene sačuvane.' : 'Vozilo dodato u garažu.');
+    if (!editingCar) {
+      const createdId = result.id ?? car.id;
+      selectCar(createdId);
+      setPreferencesCarId(createdId);
+    }
+    toast.success(editingCar ? 'Izmene sačuvane.' : 'Vozilo dodato. Podesi šta želiš u zamenu.');
     setShowForm(false);
     setEditingCar(null);
   }
@@ -263,6 +269,11 @@ export default function GarageClient() {
                     </button>
                   </div>
 
+                  <button type="button" onClick={() => { selectCar(car.id); setPreferencesCarId(car.id); }}
+                    className="mt-2 flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-brand-500/35 bg-brand-500/10 px-4 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-500/15">
+                    <Settings2 size={15} /> Preferencije za ovaj auto
+                  </button>
+
                   {!isSelected && (
                     <button
                       onClick={() => selectCar(car.id)}
@@ -315,6 +326,10 @@ export default function GarageClient() {
             </div>
           </div>
         </div>
+      )}
+
+      {preferencesCarId && selectedId === preferencesCarId && (
+        <MobilePreferences key={preferencesCarId} hasGarageCar autoOpen hideTrigger onDismiss={() => setPreferencesCarId(null)} />
       )}
 
       {showForm && (
