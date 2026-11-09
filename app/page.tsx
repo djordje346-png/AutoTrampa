@@ -136,6 +136,7 @@ function AuthenticatedFeed({
   const { openMessage, messagingId } = useListingMessage();
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [newCarPreferencesId, setNewCarPreferencesId] = useState<string | null>(null);
   const { viewMode, setViewMode } = useFeedView();
   const { unreadMatches } = useMessages({ poll: viewMode === 'swipe' });
   const [swipeIndex, setSwipeIndex] = useState(0);
@@ -312,9 +313,11 @@ function AuthenticatedFeed({
       toast.error(garageErrorMessage(result.error, 'add', limit));
       return;
     }
-    selectCar(result.id ?? form.id);
+    const createdId = result.id ?? form.id;
+    selectCar(createdId);
     setShowAddForm(false);
-    toast.success('Vozilo dodato u garažu.');
+    setNewCarPreferencesId(createdId);
+    toast.success('Vozilo dodato. Sada izaberi šta želiš u zamenu.');
   }
 
   function enterSwipeMode() {
@@ -1106,6 +1109,10 @@ function AuthenticatedFeed({
       {/* CarForm renders its own full-screen portal — no sheet wrapper. */}
       {showAddForm && (
         <CarForm onSave={handleAddCar} onCancel={() => setShowAddForm(false)} />
+      )}
+
+      {newCarPreferencesId && selectedCar?.id === newCarPreferencesId && (
+        <MobilePreferences key={newCarPreferencesId} hasGarageCar autoOpen hideTrigger onDismiss={() => setNewCarPreferencesId(null)} />
       )}
 
       <TradeOfferSheet car={offerCar} myCar={selectedCar} onClose={() => setOfferCar(null)} />
