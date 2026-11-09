@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, HeartHandshake, ArrowLeftRight, TrendingUp } from 'lucide-react';
+import { Search, MapPin, Gauge, Fuel, SlidersHorizontal, X, ArrowRight, HeartHandshake, ArrowLeftRight, TrendingUp, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { carTitle, formatEuro, formatKm } from '@/lib/cars';
 import { getTradeLabel } from '@/lib/trade';
@@ -43,7 +43,7 @@ export default function SearchClient() {
   // no difference to compute.
   const showTrade = authReady && isLoggedIn && selectedCar !== null;
   const { filters, update: updateFilters, reset: resetFilters, filtersOpen, setFiltersOpen, mounted: filtersMounted } = useSearchPrefs();
-  const { preferences, mounted: preferencesMounted } = usePreferences();
+  const { preferences, update: updatePreferences, mounted: preferencesMounted } = usePreferences();
   const [offerCar, setOfferCar] = useState<Car | null>(null);
   const router = useRouter();
 
@@ -149,6 +149,21 @@ export default function SearchClient() {
             </button>
           )}
 
+          {isLoggedIn && preferences.favoriteModels.length > 0 && (
+            <button
+              type="button"
+              aria-pressed={preferences.prioritizeFavoriteModels}
+              disabled={!preferencesMounted}
+              onClick={async () => {
+                const result = await updatePreferences({ prioritizeFavoriteModels: !preferences.prioritizeFavoriteModels });
+                if (!result.ok) toast.error(result.message || 'Podešavanje nije sačuvano.');
+              }}
+              className={`control-focus flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${preferences.prioritizeFavoriteModels ? 'border-brand-500/50 bg-brand-500/10 text-brand-text' : 'border-surface text-app-muted dark:border-surface'}`}
+              title="Uključi ili isključi prioritet omiljenih modela"
+            >
+              <Star size={12} fill={preferences.prioritizeFavoriteModels ? 'currentColor' : 'none'} /> Omiljeni prvo
+            </button>
+          )}
           <span className="flex-shrink-0 text-[10px] text-app-muted font-medium uppercase tracking-wider">Sortiraj:</span>
           {([
             ...(showTrade ? [{ key: 'trade', label: 'Najbolja zamena' }] as const : []),
